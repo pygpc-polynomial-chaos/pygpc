@@ -1290,7 +1290,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
                 fn_file = os.path.splitext(fn_file)[0]
                 fn = os.path.join(fn_folder,
                                   fn_file + '_' + str(i_iter).zfill(2) + "_" + str(interaction_order_current).zfill(2))
-                save_gpcobj(regobj, fn + '_gpc.gpc')
+                save_gpcobj(regobj, fn + '_gpc.pkl')
                 np.save(fn + '_results', res_complete)
 
             # increase current interaction order
