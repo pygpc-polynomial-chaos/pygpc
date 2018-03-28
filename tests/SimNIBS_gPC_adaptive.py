@@ -1658,4 +1658,3 @@ def fancy_bar(text, i, n_i):
 
 if __name__ == '__main__':
     main()
- 
