@@ -1158,7 +1158,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
             print(("Number of NaN elms: {} from {}, ratio per elm: {}".format(len(regobj.nan_elm),
                                                                      res_complete.shape[1],
                                                                      nan_ratio_per_elm)))
-    regobj.LOOCV(res_complete[:,non_nan_mask])
+    regobj.LOOCV(res_complete[:, non_nan_mask])
 
     if print_out:
         print(("    -> relerror_LOOCV = {}\n").format(regobj.relerror_loocv[-1]))
