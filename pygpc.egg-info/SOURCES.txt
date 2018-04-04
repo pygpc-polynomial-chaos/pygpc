@@ -8,6 +8,7 @@ pygpc.egg-info/PKG-INFO
 pygpc.egg-info/SOURCES.txt
 pygpc.egg-info/dependency_links.txt
 pygpc.egg-info/not-zip-safe
+pygpc.egg-info/requires.txt
 pygpc.egg-info/top_level.txt
 pygpc/testfuns/__init__.py
 pygpc/testfuns/g_function.py

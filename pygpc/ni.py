@@ -314,10 +314,10 @@ def read_sobol_idx(fname):
     
     return sobol_idx    
 
-def extract_sobol_1st_order(sobol, sobol_idx):
-    """ extract first order (linear) Sobol indices from sobol data
+def extract_sobol_order(sobol, sobol_idx, order=1):
+    """ Extract Sobol indices with specified order from Sobol data
 
-    extract_sobol_1st_order(sobol, sobol_idx)
+    extract_sobol_order(sobol, sobol_idx, order=1)
 
     Parameters:
     ----------------------------------
@@ -325,6 +325,8 @@ def extract_sobol_1st_order(sobol, sobol_idx):
             Sobol indices of N_out output quantities
         sobol_idx: list of np.array [N_sobol]
             List of parameter label indices belonging to Sobol indices
+        order: int
+            Sobol index order to extract
 
     Returns:
     ----------------------------------
@@ -336,7 +338,7 @@ def extract_sobol_1st_order(sobol, sobol_idx):
     """
 
     # make mask of 1st order (linear) sobol indices
-    mask = np.asarray([int(i) for i in range(len(sobol_idx)) if sobol_idx[i].shape[0] < 2])
+    mask = np.asarray([int(i) for i in range(len(sobol_idx)) if sobol_idx[i].shape[0] == order])
 
     # extract from dataset
     sobol_1st = sobol[mask, :]
@@ -1305,7 +1307,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
 class gpc:
     def __init__(self):
         """ Initialize gpc class """
-        dummy = 1
+        self.random_vars = []
     
     def setup_polynomial_basis(self):
         """ Setup polynomial basis functions for a maximum order expansion """
@@ -1765,8 +1767,8 @@ class gpc:
             y += np.outer(A1, coeffs[i_poly, output_idx.astype(int)])
         return y  
         
-    def sobol(self, coeffs):
-        """ Determine the available sobol indices
+    def sobol(self, coeffs, eval=False, fn_plot=None, verbose=True):
+        """ Determine the available sobol indices and evaluate results (optional)
 
         sobol, sobol_idx = sobol(self, coeffs)
 
@@ -1778,10 +1780,25 @@ class gpc:
         Returns:
         ----------------------------------
         sobol: np.array of float [N_sobol x N_out]
-            unnormalized sobol_indices
+            Not normalized sobol_indices
         sobol_idx: list of np.array of int [N_sobol x DIM]
-            list containing the parameter combinations in rows of sobol
+            List containing the parameter combinations in rows of sobol
+        sobol_rel_order_mean: nparray of float
+            Average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,)
+            over all output quantities
+        sobol_rel_order_std: nparray of float
+            Standard deviation of the proportion of the Sobol indices of the different order to the total variance
+            (1st, 2nd, etc..,) over all output quantities
+        sobol_rel_1st_order_mean: nparray of float
+            Average proportion of the random variables of the 1st order Sobol indices to the total variance over all
+            output quantities
+        sobol_rel_1st_order_std: nparray of float
+            Standard deviation of the proportion of the random variables of the 1st order Sobol indices to the total
+            variance over all output quantities
         """
+
+        if verbose:
+            print("Determining Sobol indices")
 
         N_sobol_theoretical = 2**self.DIM - 1
         N_coeffs = coeffs.shape[0]
@@ -1826,9 +1843,61 @@ class gpc:
         sobol_idx = [0 for x in range(sobol_idx_bool.shape[0])]
         for i_sobol in range(sobol_idx_bool.shape[0]):      
             sobol_idx[i_sobol] = np.array([i for i, x in enumerate(sobol_idx_bool[i_sobol,:]) if x])
-         
-        
-        return sobol, sobol_idx
+
+        # evaluate proportion of the sobol indices to the total variance
+        if eval:
+            order_max = np.max(np.sum(sobol_idx_bool, axis=1))
+
+            # total variance
+            var = np.sum(sobol, axis=0).flatten()
+
+            # get NaN values
+            not_nan_mask = np.logical_not(np.isnan(var))
+
+            sobol_rel_order_mean = []
+            sobol_rel_order_std = []
+            sobol_rel_1st_order_mean = []
+            sobol_rel_1st_order_std = []
+
+            if verbose:
+                print("\t Determining proportions of Sobol indices (mean +- std over output quantities)")
+
+            for i in range(order_max):
+                # extract sobol coefficients of order i
+                sobol_extracted, sobol_extracted_idx  = extract_sobol_order(sobol, sobol_idx, i)
+
+                # determine ratio to total variance
+                sobol_rel = np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten() / var[not_nan_mask]
+
+                # determine mean and std over all output quantities
+                sobol_rel_order_mean.append(np.mean(sobol_rel))
+                sobol_rel_order_std.append(np.std(sobol_rel))
+
+                if verbose:
+                    print("\t\t Ratio: Sobol indices order {} / total variance: {}+-{} ".format(i,
+                                                                                                sobol_rel_order_mean[i],
+                                                                                                sobol_rel_order_std[i]))
+
+                # for first order indices, determine ratios of all random variables
+                if i == 0:
+
+                    for j in range(sobol_extracted.shape[0]):
+                        sobol_rel_1st = sobol_extracted[j, not_nan_mask].flatten() / var[not_nan_mask]
+
+                        sobol_rel_1st_order_mean.append(np.mean(sobol_rel_1st))
+                        sobol_rel_1st_order_std.append(np.std(sobol_rel_1st))
+
+                        if verbose:
+                            print("\t\t\t {}: {}+-{}".format(self.random_vars[sobol_extracted_idx[j]],
+                                                             sobol_rel_1st_order_mean[j],
+                                                             sobol_rel_1st_order_std[j]))
+
+            return sobol, sobol_idx, \
+                   sobol_rel_order_mean, sobol_rel_order_std, \
+                   sobol_rel_1st_order_mean, sobol_rel_1st_order_std
+
+        else:
+            return sobol, sobol_idx
         
     def globalsens(self, coeffs):
         """ Determine the global derivative based sensitivity coefficients
