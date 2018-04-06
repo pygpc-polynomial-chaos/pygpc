@@ -15,6 +15,9 @@ import random
 import os
 import warnings
 import yaml
+import copy
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 from _functools import partial
 import multiprocessing
@@ -1858,39 +1861,135 @@ class gpc:
             sobol_rel_order_std = []
             sobol_rel_1st_order_mean = []
             sobol_rel_1st_order_std = []
+            str_out = []
 
-            if verbose:
-                print("\t Determining proportions of Sobol indices (mean +- std over output quantities)")
+            # get maximum length of random_vars label
+            max_len = max([len(self.random_vars[i]) for i in range(len(self.random_vars))])
 
             for i in range(order_max):
                 # extract sobol coefficients of order i
-                sobol_extracted, sobol_extracted_idx  = extract_sobol_order(sobol, sobol_idx, i)
+                sobol_extracted, sobol_extracted_idx = extract_sobol_order(sobol, sobol_idx, i+1)
 
-                # determine ratio to total variance
-                sobol_rel = np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten() / var[not_nan_mask]
+                sobol_rel_order_mean.append(np.sum(np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten())
+                                            / np.sum(var[not_nan_mask]))
+                sobol_rel_order_std.append(0)
 
-                # determine mean and std over all output quantities
-                sobol_rel_order_mean.append(np.mean(sobol_rel))
-                sobol_rel_order_std.append(np.std(sobol_rel))
+                # # determine ratio to total variance
+                # sobol_rel = np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten() / var[not_nan_mask]
+                #
+                # # determine mean and std over all output quantities
+                # sobol_rel_order_mean.append(np.mean(sobol_rel))
+                # sobol_rel_order_std.append(np.std(sobol_rel))
 
                 if verbose:
-                    print("\t\t Ratio: Sobol indices order {} / total variance: {}+-{} ".format(i,
-                                                                                                sobol_rel_order_mean[i],
-                                                                                                sobol_rel_order_std[i]))
+                    print("\tRatio: Sobol indices order {} / total variance: {:.4f}".format(i+1,
+                                                                                            sobol_rel_order_mean[i]))
 
                 # for first order indices, determine ratios of all random variables
                 if i == 0:
-
+                    sobol_extracted_idx_1st = copy.deepcopy(sobol_extracted_idx)
                     for j in range(sobol_extracted.shape[0]):
-                        sobol_rel_1st = sobol_extracted[j, not_nan_mask].flatten() / var[not_nan_mask]
 
-                        sobol_rel_1st_order_mean.append(np.mean(sobol_rel_1st))
-                        sobol_rel_1st_order_std.append(np.std(sobol_rel_1st))
+                        sobol_rel_1st_order_mean.append(np.sum(sobol_extracted[j, not_nan_mask].flatten())
+                                                        / np.sum(var[not_nan_mask]))
+                        sobol_rel_1st_order_std.append(0)
 
-                        if verbose:
-                            print("\t\t\t {}: {}+-{}".format(self.random_vars[sobol_extracted_idx[j]],
-                                                             sobol_rel_1st_order_mean[j],
-                                                             sobol_rel_1st_order_std[j]))
+                        # sobol_rel_1st = sobol_extracted[j, not_nan_mask].flatten() / var[not_nan_mask]
+                        #
+                        # sobol_rel_1st_order_mean.append(np.mean(sobol_rel_1st))
+                        # sobol_rel_1st_order_std.append(np.std(sobol_rel_1st))
+
+                        str_out.append("\t{}{}: {:.4f}".format((max_len -
+                                                                len(self.random_vars[sobol_extracted_idx_1st[j]]))*' ',
+                                                                self.random_vars[sobol_extracted_idx_1st[j]],
+                                                                sobol_rel_1st_order_mean[j]))
+
+            sobol_rel_order_mean = np.array(sobol_rel_order_mean)
+            sobol_rel_1st_order_mean = np.array(sobol_rel_1st_order_mean)
+
+            # print output of 1st order Sobol indice ratios of parameters
+            if verbose:
+                for j in range(len(str_out)):
+                    print(str_out[j])
+
+            # write logfile
+            if fn_plot:
+                log = open(os.path.splitext(fn_plot)[0] + '.txt', 'w')
+                log.write("Sobol indices:\n")
+                log.write("==============\n")
+                log.write("\n")
+
+                # print order ratios
+                log.write("Ratio: order / total variance over all output quantities:\n")
+                log.write("---------------------------------------------------------\n")
+                for i in range(len(sobol_rel_order_mean)):
+                    log.write("Order {}: {:.4f}\n".format(i+1, sobol_rel_order_mean[i]))
+
+                log.write("\n")
+
+                # print 1st order ratios of parameters
+                log.write("Ratio: 1st order Sobol indices of parameters / total variance over all output quantities\n")
+                log.write("----------------------------------------------------------------------------------------\n")
+
+                random_vars = []
+                for i in range(len(sobol_rel_1st_order_mean)):
+                    log.write("{}{:s}: {:.4f}\n".format(
+                                                    (max_len-len(self.random_vars[sobol_extracted_idx_1st[i]]))*' ',
+                                                    self.random_vars[sobol_extracted_idx_1st[i]],
+                                                    sobol_rel_1st_order_mean[i]))
+                    random_vars.append(self.random_vars[sobol_extracted_idx_1st[i]])
+
+                log.close()
+
+                # prepare plots
+
+                # set the global colors
+                mpl.rcParams['text.color'] = '000000'
+                mpl.rcParams['figure.facecolor'] = '111111'
+
+                # set a global style
+                plt.style.use('seaborn-talk')
+
+                cmap = plt.cm.rainbow
+
+                # make bar plot of order ratios
+                labels = ['order=' + str(i) for i in range(1, len(sobol_rel_order_mean) + 1)]
+                mask = np.where(sobol_rel_order_mean >= 0.05)[0]
+                mask_not = np.where(sobol_rel_order_mean < 0.05)[0]
+                labels = [labels[idx] for idx in mask]
+                if mask_not.any():
+                    labels.append('misc.')
+                    values = np.hstack((sobol_rel_order_mean[mask], np.sum(sobol_rel_order_mean[mask_not])))
+                else:
+                    values = sobol_rel_order_mean
+
+                colors = cmap(np.linspace(0.1, 0.9, len(labels)))
+
+                fig = plt.figure()
+                ax = fig.add_subplot(111, aspect='equal')
+                ax.set_title('Sobol indices (order)')
+                ax.pie(values, labels=labels, colors=colors,
+                       autopct='%1.2f%%', shadow=True, explode=[0.1]*len(labels))
+                plt.savefig(os.path.splitext(fn_plot)[0] + '_order.png', facecolor='#ffffff')
+
+                # make bar plot of 1st order parameter ratios
+                mask = np.where(sobol_rel_1st_order_mean >= 0.05)[0]
+                mask_not = np.where(sobol_rel_1st_order_mean < 0.05)[0]
+                labels = [random_vars[idx] for idx in mask]
+                if mask_not.any():
+                    labels.append('misc.')
+                    values = np.hstack((sobol_rel_1st_order_mean[mask], np.sum(sobol_rel_1st_order_mean[mask_not])))
+                else:
+                    values = sobol_rel_1st_order_mean
+
+                colors = cmap(np.linspace(0., 1., len(labels)))
+
+                fig = plt.figure()
+                ax = fig.add_subplot(111, aspect='equal')
+                ax.set_title('Sobol indices 1st order (parameters)')
+                ax.pie(values, labels=labels, colors = colors,
+                       autopct='%1.2f%%', shadow=True, explode=[0.1]*len(labels))
+                plt.savefig(os.path.splitext(fn_plot)[0] + '_parameters.png', facecolor='#ffffff')
 
             return sobol, sobol_idx, \
                    sobol_rel_order_mean, sobol_rel_order_std, \
