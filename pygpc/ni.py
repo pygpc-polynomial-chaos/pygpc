@@ -1661,7 +1661,7 @@ class gpc:
         mean = mean[np.newaxis,:]
         return mean
         
-    def std(self,coeffs):
+    def std(self, coeffs):
         """ Calculate the standard deviation
 
         std = std(coeffs)
@@ -1724,6 +1724,7 @@ class gpc:
         y = self.evaluate(coeffs, xi, output_idx)
         return xi, y
 
+    # TODO: Lucas: Parallelisierung der evaluate Funktion (CPU + GPU) [Matrix A* parallel aufbauen und mit coeffs Matrix multiplizieren]
     def evaluate(self, coeffs, xi, output_idx=[]):
         """ Calculate gpc approximation in points with output_idx and normalized parameters xi (interval: [-1, 1])
 
@@ -1739,7 +1740,7 @@ class gpc:
             gpc coefficients
         xi: np.array of float [1 x DIM]
             point in variable space to evaluate local sensitivity in (normalized coordinates!)
-        output_idx (optional): np.array of int [1 x N_out]
+        output_idx (optional): np.array of int [N_out]
             idx of output quantities to consider (Default: all outputs)
 
         Returns:
@@ -1748,6 +1749,8 @@ class gpc:
             gpc approximation at normalized coordinates xi
         """
 
+        output_idx = np.array(output_idx).flatten()
+
         if len(xi.shape) == 1:
             xi = xi[:, np.newaxis]
 
@@ -1755,11 +1758,11 @@ class gpc:
         self.N_poly = self.poly_idx.shape[0]
         
         # if point index list is not provided, evaluate over all points 
-        if not output_idx:
+        if output_idx.size == 0:
             output_idx = np.linspace(0,self.N_out-1,self.N_out)
-            output_idx = output_idx[np.newaxis,:]        
+            #output_idx = output_idx[np.newaxis,:]
         
-        N_out_eval = output_idx.shape[1]
+        N_out_eval = output_idx.shape[0]
         N_x = xi.shape[0]
         
         y = np.zeros([N_x, N_out_eval])
@@ -2192,7 +2195,7 @@ class reg(gpc):
             pdfshape: list of list of float
                 shape parameters of pdfs
                 beta-dist:   [[alpha], [beta]    ]
-                normal-dist: [[mean],  [variance]]
+                normal-dist: [[mean],  [std]]
             limits: list of list of float
                 upper and lower bounds of random variables
                 beta-dist:   [[a1 ...], [b1 ...]]
