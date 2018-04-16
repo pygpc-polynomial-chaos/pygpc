@@ -5,3 +5,4 @@ from . import testfuns as tf
 from .grid import *
 from .misc import *
 from .ni import *
+from .vis import *

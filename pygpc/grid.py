@@ -324,7 +324,7 @@ def quadrature_patterson_1D(N):
 		
 	return x,w
 
-def denorm(coords_norm,pdftype,gridshape,limits):
+def denorm(coords_norm, pdftype, gridshape, limits):
     """ Denormalize grid from standardized ([-1, 1] except hermite) to original parameter space for simulations """
     coords = np.zeros(coords_norm.shape)
     
@@ -351,14 +351,16 @@ def norm(coords, pdftype, gridshape, limits):
 
             # if gridtype[i_DIM] == 'hermite':
         if pdftype[i_DIM] == "norm" or pdftype[i_DIM] == "normal":
-            coords_norm[:, i_DIM] = coords[:, i_DIM] / gridshape[1][i_DIM] - gridshape[0][i_DIM]
+            # TODO das sollte falsch sein
+            #coords_norm[:, i_DIM] = coords[:, i_DIM] / gridshape[1][i_DIM] - gridshape[0][i_DIM]
+            # TODO geändert in
+            coords_norm[:, i_DIM] = (coords[:, i_DIM] - gridshape[0][i_DIM]) / gridshape[1][i_DIM]
 
     return coords_norm
 
    
 #%% full-grid object subclass   
 ###############################################################################
-    
 class tensgrid():
     """
     Generate tensorgrid object instance
@@ -373,8 +375,8 @@ class tensgrid():
         specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
     gridshape: list of list of float [2 x N_vars]
         shape parameters of PDF
-        beta (jacobi):  [alpha and beta]
-        norm (hermite): [mean, variance]
+        beta (jacobi):  [alpha, beta]
+        norm (hermite): [mean, std]
     limits: list of list of float [2 x N_vars]
         Upper and lower bounds of PDF
         beta (jacobi):  [min, max]
@@ -386,7 +388,7 @@ class tensgrid():
         #print '-> Generate full tensored grid'  
         self.pdftype   = pdftype         # 'beta', 'normal'
         self.gridtype  = gridtype        # 'jacobi', 'hermite', 'cc', 'fejer2'
-        self.gridshape = gridshape       # pdfshape: jacobi: -> [alpha and beta] hermite: -> [mean, variance]
+        self.gridshape = gridshape       # pdfshape: jacobi: -> [alpha, beta] hermite: -> [mean, std]
         self.limits    = limits          # limits: [min, max]        
         self.N         = N               # number of nodes in each dimension [DIM x 1]
         self.DIM       = len(self.N)     # number of dimension
@@ -430,7 +432,7 @@ class tensgrid():
         
 #%% sparse-grid object subclass   
 ###############################################################################
-    
+# TODO: gridshape[1] of norm is now STD!!! check if code changes in sparse grid
 class sparsegrid():
     """
     Generate sparsegrid object instance
@@ -445,8 +447,8 @@ class sparsegrid():
         specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
     gridshape: list of list of float [2 x N_vars]
         shape parameters of PDF
-        beta (jacobi):  [alpha and beta]
-        norm (hermite): [mean, variance]
+        beta (jacobi):  [alpha, beta]
+        norm (hermite): [mean, std]
     limits: list of list of float [2 x N_vars]
         Upper and lower bounds of PDF
         beta (jacobi):  [min, max]
@@ -575,26 +577,37 @@ class sparsegrid():
                 for i_level in level_sequence[i_dim]: #xrange(level[i_dim]+1):
 
                     if self.gridtype[i_dim] == 'jacobi':    # Jacobi polynomials
-                        knots_l, weights_l     = quadrature_jacobi_1D(order_sequence[i_dim][i_level],self.gridshape[0][i_dim]-1, self.gridshape[1][i_dim]-1)
-                        knots_l_1, weights_l_1 = quadrature_jacobi_1D(order_sequence[i_dim][i_level-1],self.gridshape[0][i_dim]-1, self.gridshape[1][i_dim]-1)
+                        knots_l, weights_l     = quadrature_jacobi_1D(order_sequence[i_dim][i_level],
+                                                                      self.gridshape[0][i_dim]-1,
+                                                                      self.gridshape[1][i_dim]-1)
+                        knots_l_1, weights_l_1 = quadrature_jacobi_1D(order_sequence[i_dim][i_level-1],
+                                                                      self.gridshape[0][i_dim]-1,
+                                                                      self.gridshape[1][i_dim]-1)
+
                     if self.gridtype[i_dim] == 'hermite':   # Hermite polynomials
                         knots_l, weights_l     = quadrature_hermite_1D(order_sequence[i_dim][i_level])
                         knots_l_1, weights_l_1 = quadrature_hermite_1D(order_sequence[i_dim][i_level-1])
+
                     if self.gridtype[i_dim] == 'patterson': # Gauss-Patterson
                         knots_l, weights_l     = quadrature_patterson_1D(order_sequence[i_dim][i_level])
                         knots_l_1, weights_l_1 = quadrature_patterson_1D(order_sequence[i_dim][i_level-1])
+
                     if self.gridtype[i_dim] == 'cc':        # Clenshaw Curtis
                         knots_l, weights_l     = quadrature_cc_1D(order_sequence[i_dim][i_level])
                         knots_l_1, weights_l_1 = quadrature_cc_1D(order_sequence[i_dim][i_level-1])
+
                     if self.gridtype[i_dim] == 'fejer2':    # Fejer type 2
                         knots_l, weights_l     = quadrature_fejer2_1D(order_sequence[i_dim][i_level-1])
                         knots_l_1, weights_l_1 = quadrature_fejer2_1D(order_sequence[i_dim][i_level-2])
+
                     if i_level == 0 and (not self.gridtype[i_dim] == 'fejer2'):
                         dl_k[i_level][i_dim] = knots_l
                         dl_w[i_level][i_dim] = weights_l
+
                     elif i_level == 1 and (self.gridtype[i_dim] == 'fejer2'):
                         dl_k[i_level][i_dim] = knots_l
                         dl_w[i_level][i_dim] = weights_l
+
                     else:
                         dl_k[i_level][i_dim] = np.hstack((knots_l, knots_l_1))
                         dl_w[i_level][i_dim] = np.hstack((weights_l, -weights_l_1))
@@ -695,8 +708,8 @@ class randomgrid():
             variable specific type of PDF ("beta", "normal")
         gridshape: list of list of float [2 x N_vars]
             shape parameters of PDF
-            beta (jacobi):  [alpha and beta]
-            norm (hermite): [mean, variance]
+            beta (jacobi):  [alpha, beta]
+            norm (hermite): [mean, std]
         limits: list of list of float [2 x N_vars]
             Upper and lower bounds of PDF
             beta (jacobi):  [min, max]

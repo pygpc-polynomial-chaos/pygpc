@@ -11,9 +11,8 @@ Created on Mon Oct 17 11:04:20 2016
 import pygpc
 import scipy.stats
 import numpy as np
-import matplotlib.pyplot as plt
 
-from .visualization import Visualization
+
 #%% simulation parameters
 DIM = 2                                # number of random variables
 testfun  = "peaks"                     # test function
@@ -122,7 +121,7 @@ y_gpc_tens = np.reshape(gpc_tens.evaluate(coeffs_tens, np.vstack([x1_norm,x2_nor
 y_gpc_SG   = np.reshape(gpc_SG.evaluate(coeffs_SG, np.vstack([x1_norm,x2_norm]).transpose()),[X1.shape[0],X1.shape[1]])
 
 ########### PLOTTING ################
-v1 = Visualization({'x':20,'y':15})
+v1 = pygpc.Visualization({'x':20,'y':15})
 
 # input pdfs
 inputPDFdata = {
