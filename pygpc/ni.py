@@ -1757,9 +1757,9 @@ class gpc:
         self.N_out = coeffs.shape[1]
         self.N_poly = self.poly_idx.shape[0]
         
-        # if point index list is not provided, evaluate over all points 
+        # if output index list is not provided, evaluate over all outputs
         if output_idx.size == 0:
-            output_idx = np.linspace(0,self.N_out-1,self.N_out)
+            output_idx = np.linspace(0, self.N_out-1, self.N_out)
             #output_idx = output_idx[np.newaxis,:]
         
         N_out_eval = output_idx.shape[0]
@@ -1769,10 +1769,16 @@ class gpc:
         for i_poly in range(self.N_poly):
             A1 = np.ones(N_x)
             for i_DIM in range(self.DIM):
-                A1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](xi[:,i_DIM])
+                A1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](xi[:, i_DIM])
             y += np.outer(A1, coeffs[i_poly, output_idx.astype(int)])
         return y  
-        
+
+
+    def evaluate2(self, coeffs, xi, output_idx=[]):
+
+        a = 1
+
+
     def sobol(self, coeffs, eval=False, fn_plot=None, verbose=True):
         """ Determine the available sobol indices and evaluate results (optional)
 
