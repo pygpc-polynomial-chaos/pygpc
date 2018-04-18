@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-import scipy.special
 import matplotlib.pyplot as plt
 import math
 import sys
-
+import scipy.stats
 
 def fancy_bar(text, i, n_i, more_text=None):
     """Displays a simple progess bar. Call for each iteration and start with i=1

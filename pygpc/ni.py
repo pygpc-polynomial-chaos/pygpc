@@ -13,6 +13,7 @@ import time
 import scipy
 import random
 import os
+import sys
 import warnings
 import yaml
 import copy
@@ -453,7 +454,8 @@ def calc_Nc_sparse(p_d, p_g, p_i, dim):
         
     return poly_idx.shape[0]
 
-def pdf_beta(x,p,q,a,b):
+
+def pdf_beta(x, p, q, a, b):
     """ Calculate the probability density function of the beta distribution in the interval [a,b]
 
     pdf = pdf_beta( x , p , q , a , b )
@@ -479,8 +481,8 @@ def pdf_beta(x,p,q,a,b):
     pdf: np.array of float
         probability density
     """
-    return (scipy.special.gamma(p)*scipy.special.gamma(q)/scipy.special.gamma(p+q)\
-        * (b-a)**(p+q-1))**(-1) * (x-a)**(p-1) * (b-x)**(q-1)
+    return (scipy.special.gamma(p)*scipy.special.gamma(q)/scipy.special.gamma(p+q)
+            * (b-a)**(p+q-1))**(-1) * (x-a)**(p-1) * (b-x)**(q-1)
 
 
 def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=None,
@@ -1311,7 +1313,18 @@ class gpc:
     def __init__(self):
         """ Initialize gpc class """
         self.random_vars = []
-    
+        self.pdfshape = []
+        self.pdftype = []
+        self.poly = []
+        self.poly_idx = []
+        self.DIM = []
+        self.poly_norm = []
+        self.poly_norm_basis = []
+        self.order = []
+        self.limits = []
+        self.N_poly = []
+        self.mean_random_vars = []
+
     def setup_polynomial_basis(self):
         """ Setup polynomial basis functions for a maximum order expansion """
         #print 'Setup polynomial basis functions ...'
@@ -2178,9 +2191,28 @@ class gpc:
             pdf_y[:,i_out] = kde(pdf_x[:,i_out])
             
         return pdf_x, pdf_y
-        
 
-        
+    def get_mean_random_vars(self):
+        """ Determine the average values of the input random variables from their pdfs
+
+        Returns:
+        --------
+        mean_random_vars: nparray of float [N_random_vars]
+            Average values of the input random variables
+        """
+        mean_random_vars = np.zeros(self.DIM)
+
+        for i_DIM in range(self.DIM):
+            if self.pdftype[i_DIM] == 'norm' or self.pdftype[i_DIM] == 'normal':
+                mean_random_vars[i_DIM] = self.pdfshape[0][i_DIM]
+            if self.pdftype[i_DIM] == 'beta':
+                mean_random_vars[i_DIM] = (float(self.pdfshape[0][i_DIM]) /
+                                                (self.pdfshape[0][i_DIM] + self.pdfshape[1][i_DIM])) / \
+                                                (self.limits[1][i_DIM] - self.limits[0][i_DIM]) + \
+                                                 self.limits[0][i_DIM]
+
+        return mean_random_vars
+
 #%%############################################################################
 # Regression based gpc object subclass
 ###############################################################################
@@ -2237,6 +2269,9 @@ class reg(gpc):
         
         # construct gpc matrix [Ngrid x Npolybasis]
         self.construct_gpc_matrix()
+
+        # get mean values of input random variables
+        self.mean_random_vars = self.get_mean_random_vars()
 
     def expand(self, data):
         """ Determine the gPC coefficients by the regression method
@@ -2365,6 +2400,9 @@ class quad(gpc):
         
         # construct gpc matrix [Ngrid x Npolybasis]
         self.construct_gpc_matrix()
+
+        # get mean values of input random variables
+        self.mean_random_vars = self.get_mean_random_vars()
            
     def expand(self, data):
         """ Determine the gPC coefficients by the quadrature method
@@ -2403,11 +2441,14 @@ class quad(gpc):
             
             for i_DIM in range(self.DIM):
                 if self.pdftype[i_DIM] == 'beta':
-                    joint_pdf[:,i_DIM] = pdf_beta(self.grid.coords_norm[:,i_DIM],self.pdfshape[0][i_DIM],self.pdfshape[1][i_DIM],-1,1)
-                if (self.pdftype[i_DIM] == 'norm' or self.pdftype[i_DIM] == 'normal'):
-                    joint_pdf[:,i_DIM] = scipy.stats.norm.pdf(self.grid.coords_norm[:,i_DIM])
+                    joint_pdf[:, i_DIM] = pdf_beta(self.grid.coords_norm[:, i_DIM],
+                                                   self.pdfshape[0][i_DIM],
+                                                   self.pdfshape[1][i_DIM], -1, 1)
+
+                if self.pdftype[i_DIM] == 'norm' or self.pdftype[i_DIM] == 'normal':
+                    joint_pdf[:, i_DIM] = scipy.stats.norm.pdf(self.grid.coords_norm[:, i_DIM])
             
-            joint_pdf = np.array([np.prod(joint_pdf,axis=1)]).transpose()
+            joint_pdf = np.array([np.prod(joint_pdf, axis=1)]).transpose()
             
             # weight data with the joint pdf
             data = data*joint_pdf*2**self.DIM
