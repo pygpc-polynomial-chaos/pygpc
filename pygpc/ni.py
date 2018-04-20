@@ -1206,7 +1206,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
             if seed:
                 seed += 1
             # generate new grid-points
-            regobj.enrich_gpc_matrix_samples(1.2, seed=seed)
+            regobj.enrich_gpc_matrix_samples(1.5, seed=seed)
 
             # run simulations
             print(("   " + str(i_grid) + " to " + str(regobj.grid.coords.shape[0])))
@@ -1222,7 +1222,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
                     #                                                       interaction_order_current,
                     #                                                       i_grid + 1,
                     #                                                       regobj.grid.coords.shape[0])
-                    fancy_bar("It/Subit: {}/{} Performing simulation".format(i_iter,
+                    fancy_bar("It/Subit: {}/{} Performing simulation\n".format(i_iter,
                                                                            interaction_order_current),
                               i_grid + 1, regobj.grid.coords.shape[0], more_text)
                 # try to read from file
@@ -1453,7 +1453,7 @@ class gpc:
         self.poly_norm_basis = np.ones([self.poly_idx.shape[0],1])
         for i_poly in range(self.poly_idx.shape[0]):
             for i_DIM in range(self.DIM):
-                self.poly_norm_basis[i_poly] *= self.poly_norm[self.poly_idx[i_poly,i_DIM],i_DIM]
+                self.poly_norm_basis[i_poly] *= self.poly_norm[self.poly_idx[i_poly, i_DIM], i_DIM]
     
     def enrich_polynomial_basis(self, poly_idx_added):
         """ Enrich polynomial basis functions and add new columns to gpc matrix
@@ -1529,7 +1529,7 @@ class gpc:
                         
                     # determine polynomial normalization factor
                     hermite_norm = scipy.special.factorial(i_order)
-                    self.poly_norm[i_order,i_DIM] = hermite_norm
+                    self.poly_norm[i_order, i_DIM] = hermite_norm
                         
                     # add entry to polynomial lookup table
                     self.poly[i_order][i_DIM] = scipy.special.hermitenorm(i_order, monic=0)/np.sqrt(self.poly_norm[i_order,i_DIM]) 
@@ -1545,17 +1545,17 @@ class gpc:
         poly_norm_basis_new = np.ones([N_poly_new,1])
         for i_poly in range(N_poly_new):
             for i_DIM in range(self.DIM):
-                poly_norm_basis_new[i_poly] *= self.poly_norm[poly_idx_added[i_poly,i_DIM],i_DIM]
+                poly_norm_basis_new[i_poly] *= self.poly_norm[poly_idx_added[i_poly, i_DIM], i_DIM]
         
         self.poly_norm_basis = np.vstack([self.poly_norm_basis, poly_norm_basis_new])
         
         # append new columns to gpc matrix [N_grid x N_poly_new]
-        A_new_columns = np.zeros([self.N_grid,N_poly_new])
+        A_new_columns = np.zeros([self.N_grid, N_poly_new])
         for i_poly_new in range(N_poly_new):
             A1 = np.ones(self.N_grid)
             for i_DIM in range(self.DIM):
-                A1 *= self.poly[poly_idx_added[i_poly_new][i_DIM]][i_DIM](self.grid.coords_norm[:,i_DIM])
-            A_new_columns[:,i_poly_new] = A1
+                A1 *= self.poly[poly_idx_added[i_poly_new][i_DIM]][i_DIM](self.grid.coords_norm[:, i_DIM])
+            A_new_columns[:, i_poly_new] = A1
         
         self.A = np.hstack([self.A, A_new_columns])
         self.Ainv = np.linalg.pinv(self.A)
@@ -1591,14 +1591,14 @@ class gpc:
             for i_poly in range(self.N_poly):
                 a1 = np.ones(N_grid_new)
                 for i_DIM in range(self.DIM):
-                    a1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](newgridpoints.coords_norm[:,i_DIM])
+                    a1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](newgridpoints.coords_norm[:, i_DIM])
                 a[:, i_poly] = a1
             
             # append new row to gpc matrix    
-            self.A = np.vstack([self.A,a])
+            self.A = np.vstack([self.A, a])
             
             # invert gpc matrix Ainv [N_basis x N_grid]
-            self.Ainv  = np.linalg.pinv(self.A)
+            self.Ainv = np.linalg.pinv(self.A)
 
     def replace_gpc_matrix_samples(self, idx, seed):
         """ Replace distinct sample points from the gpc matrix
@@ -1721,7 +1721,7 @@ class gpc:
              
         # if output index list is not provided, sample all gpc outputs
         if not output_idx:
-            output_idx = np.linspace(0,self.N_out-1,self.N_out)
+            output_idx = np.linspace(0, self.N_out-1, self.N_out)
             output_idx = output_idx[np.newaxis,:]
             
         np.random.seed()        
@@ -1730,9 +1730,10 @@ class gpc:
         xi = np.zeros([N_samples, self.DIM])
         for i_DIM in range(self.DIM):
             if self.pdftype[i_DIM] == "beta":
-                xi[:,i_DIM] = (np.random.beta(self.pdfshape[0][i_DIM], self.pdfshape[1][i_DIM],[N_samples,1])*2.0 - 1)[:,0]
+                xi[:, i_DIM] = (np.random.beta(self.pdfshape[0][i_DIM],
+                                               self.pdfshape[1][i_DIM], [N_samples, 1])*2.0 - 1)[:, 0]
             if self.pdftype[i_DIM] == "norm" or self.pdftype[i_DIM] == "normal":
-                xi[:,i_DIM] = (np.random.normal(0, 1, [N_samples,1]))[:,0]
+                xi[:, i_DIM] = (np.random.normal(0, 1, [N_samples, 1]))[:, 0]
         
         y = self.evaluate(coeffs, xi, output_idx)
         return xi, y
@@ -2205,11 +2206,12 @@ class gpc:
         for i_DIM in range(self.DIM):
             if self.pdftype[i_DIM] == 'norm' or self.pdftype[i_DIM] == 'normal':
                 mean_random_vars[i_DIM] = self.pdfshape[0][i_DIM]
+
             if self.pdftype[i_DIM] == 'beta':
                 mean_random_vars[i_DIM] = (float(self.pdfshape[0][i_DIM]) /
-                                                (self.pdfshape[0][i_DIM] + self.pdfshape[1][i_DIM])) / \
+                                                (self.pdfshape[0][i_DIM] + self.pdfshape[1][i_DIM])) * \
                                                 (self.limits[1][i_DIM] - self.limits[0][i_DIM]) + \
-                                                 self.limits[0][i_DIM]
+                                                (self.limits[0][i_DIM])
 
         return mean_random_vars
 
