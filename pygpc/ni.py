@@ -646,7 +646,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
 
         # run simulations on initial grid
         print("Iteration #{} (initial grid)".format(i_iter))
-        print("=============\n")
+        print("=============")
 
         for i_grid in range(i_grid, regobj.grid.coords.shape[0]):
             # if print_out:
@@ -680,7 +680,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
         regobj.LOOCV(results)
 
         if print_out:
-            print("    -> relerror_LOOCV = {}\n".format(regobj.relerror_loocv[-1]))
+            print("    -> relerror_LOOCV = {}".format(regobj.relerror_loocv[-1]))
 
         # main interations (order)
         while (regobj.relerror_loocv[-1] > eps) and order < order_end:
@@ -689,7 +689,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
             order = order + 1
 
             print("Iteration #{}".format(i_iter))
-            print("=============\n")
+            print("=============")
 
             # determine new possible polynomials
             poly_idx_all_new = allVL1leq(dim, order)
@@ -704,7 +704,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
                     (interaction_order_current <= interaction_order_max) and \
                     run_subiter:
                 print("   Subiteration #{}".format(interaction_order_current))
-                print("   =============\n")
+                print("   ================")
 
                 interaction_order_list = np.sum(poly_idx_all_new > 0, axis=1)
 
@@ -756,7 +756,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
                     x = []
                     if print_out:
                         print(results_folder + \
-                              "   Performing simulations #{} to {}\n".format(i_grid + 1,
+                              "   Performing simulations #{} to {}".format(i_grid + 1,
                                                                              regobj.grid.coords.shape[0]))
                     for i_grid in range(i_grid, regobj.grid.coords.shape[0]):
                         x.append([i_grid, regobj.grid.coords[i_grid, :]])
@@ -788,7 +788,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
                     assert cluster
                     if print_out:
                         # print("Scheduler connected. Now start dispynodes anywhere in the network")
-                        print("   Performing simulations #{} to {}\n".format(i_grid + 1,
+                        print("   Performing simulations #{} to {}".format(i_grid + 1,
                                                                              regobj.grid.coords.shape[0]))
                     # build job list
                     jobs = []
@@ -823,7 +823,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
                 else:  # no multiprocessing
                     for i_grid in range(i_grid, regobj.grid.coords.shape[0]):
                         if print_out:
-                            print("   Performing simulation #{}\n".format(i_grid+1))
+                            print("   Performing simulation #{}".format(i_grid+1))
                         # read conductivities from grid
                         x = [i_grid, regobj.grid.coords[i_grid, :]]
 
@@ -846,7 +846,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
                 # perform leave one out cross validation
                 regobj.LOOCV(results)
                 if print_out:
-                    print(results_folder + "    -> relerror_LOOCV = {}\n".format(regobj.relerror_loocv[-1]))
+                    print(results_folder + "    -> relerror_LOOCV = {}".format(regobj.relerror_loocv[-1]))
 
                 if regobj.relerror_loocv[-1] < eps:
                     run_subiter = False
@@ -944,7 +944,7 @@ def run_reg_adaptive(random_vars, pdftype, pdfshape, limits, func, args=(),
             i_iter = i_iter + 1
             if print_out:
                 print("Iteration #{}".format(i_iter))
-                print("=============\n")
+                print("=============")
 
         if i_iter == 1:
             # initialize gPC object in first iteration
@@ -967,7 +967,7 @@ def run_reg_adaptive(random_vars, pdftype, pdfshape, limits, func, args=(),
 
             if print_out:
                 print("   Subiteration #{}".format(interaction_order_count))
-                print("   =============\n")
+                print("   ================")
             # filter out polynomials of interaction_order = interaction_order_count
             poly_idx_added = poly_idx_all_new[interaction_order_list == interaction_order_count, :]
 
@@ -982,7 +982,7 @@ def run_reg_adaptive(random_vars, pdftype, pdfshape, limits, func, args=(),
             # run repeated simulations
         for i_grid in range(i_grid, regobj.grid.coords.shape[0]):
             if print_out:
-                print("   Performing simulation #{}\n".format(i_grid + 1))
+                print("   Performing simulation #{}".format(i_grid + 1))
             # read conductivities from grid
             x = regobj.grid.coords[i_grid, :]
 
@@ -1001,7 +1001,7 @@ def run_reg_adaptive(random_vars, pdftype, pdfshape, limits, func, args=(),
         # perform leave one out cross validation
         eps_gpc = regobj.LOOCV(res_complete)
         if print_out:
-            print("    -> relerror_LOOCV = {}\n".format(eps_gpc))
+            print("    -> relerror_LOOCV = {}".format(eps_gpc))
 
     return regobj, res_complete
 
@@ -1103,11 +1103,11 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
 
     # run simulations on initial grid
     print("Iteration #{} (initial grid)".format(i_iter))
-    print("=============\n")
+    print("=============")
 
     for i_grid in range(i_grid, regobj.grid.coords.shape[0]):
         if print_out:
-            print("   Performing simulation #{}".format(i_grid + 1))
+            print("    Performing simulation #{}".format(i_grid + 1))
 
         if save_res_fn and os.path.exists(save_res_fn):
             try:
@@ -1133,7 +1133,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
         # evaluate function at grid point
         start_time = time.time()
         res = func(x, *(args))
-        print(('    function evaluation: ' + str(time.time() - start_time) + 'sec\n'))
+        print(('        function evaluation: ' + str(time.time() - start_time) + 'sec'))
         # append result to solution matrix (RHS)
         if i_grid == 0:
             res_complete = res
@@ -1168,7 +1168,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
     regobj.LOOCV(res_complete[:, non_nan_mask])
 
     if print_out:
-        print(("    -> relerror_LOOCV = {}\n").format(regobj.relerror_loocv[-1]))
+        print(("    -> relerror_LOOCV = {}").format(regobj.relerror_loocv[-1]))
 
     # main interations (order)
     while (regobj.relerror_loocv[-1] > eps) and order < order_end:
@@ -1177,7 +1177,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
         order = order + 1
 
         print("Iteration #{}".format(i_iter))
-        print("=============\n")
+        print("=============")
 
         # determine new possible polynomials
         poly_idx_all_new = allVL1leq(dim, order)
@@ -1193,7 +1193,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
                 run_subiter:
 
             print("   Subiteration #{}".format(interaction_order_current))
-            print("   =============\n")
+            print("   ================")
 
             interaction_order_list = np.sum(poly_idx_all_new > 0, axis=1)
 
@@ -1222,9 +1222,12 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
                     #                                                       interaction_order_current,
                     #                                                       i_grid + 1,
                     #                                                       regobj.grid.coords.shape[0])
-                    fancy_bar("It/Subit: {}/{} Performing simulation\n".format(i_iter,
-                                                                           interaction_order_current),
-                              i_grid + 1, regobj.grid.coords.shape[0], more_text)
+                    fancy_bar("It/Subit: {}/{} Performing simulation".format(i_iter,
+                                                                             interaction_order_current),
+                              i_grid + 1,
+                              regobj.grid.coords.shape[0],
+                              more_text)
+
                 # try to read from file
                 if save_res_fn:
                     try:
@@ -1287,7 +1290,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
             regobj.LOOCV(res_complete[:, non_nan_mask])
 
             if print_out:
-                print("    -> relerror_LOOCV = {}\n".format(regobj.relerror_loocv[-1]))
+                print("    -> relerror_LOOCV = {}".format(regobj.relerror_loocv[-1]))
             if regobj.relerror_loocv[-1] < eps:
                 run_subiter = False
 
@@ -1783,7 +1786,8 @@ class gpc:
         for i_poly in range(self.N_poly):
             A1 = np.ones(N_x)
             for i_DIM in range(self.DIM):
-                A1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](xi[:, i_DIM])
+                if self.poly_idx[i_poly][i_DIM]:
+                    A1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](xi[:, i_DIM])
             y += np.outer(A1, coeffs[i_poly, output_idx.astype(int)])
         return y  
 
