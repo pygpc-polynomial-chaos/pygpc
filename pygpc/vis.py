@@ -16,7 +16,7 @@ class Visualization:
     #   _dims - size of the newly created window
     #
     def __init__(self, _dims=[10, 10]):
-        self.fig = plt.figure(Visualization.figNo, figsize=(_dims['x'], _dims['y']))
+        self.fig = plt.figure(Visualization.figNo, figsize=(_dims['x'], _dims['y']), facecolor=[1, 1, 1])
         Visualization.figNo += 1
         plt.subplots_adjust(
             hspace=Visualization.horizontalPadding)  # add some horizontal spacing to avoid overlap with labels
