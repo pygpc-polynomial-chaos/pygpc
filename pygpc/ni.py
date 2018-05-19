@@ -1786,8 +1786,8 @@ class gpc:
         for i_poly in range(self.N_poly):
             A1 = np.ones(N_x)
             for i_DIM in range(self.DIM):
-                if self.poly_idx[i_poly][i_DIM]:
-                    A1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](xi[:, i_DIM])
+                #if self.poly_idx[i_poly][i_DIM]:
+                A1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](xi[:, i_DIM])
             y += np.outer(A1, coeffs[i_poly, output_idx.astype(int)])
         return y  
 
