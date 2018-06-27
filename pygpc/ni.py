@@ -522,7 +522,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
     interaction_order_max: int
         define maximum interaction order of parameters (default: all interactions)
     eps : float, optional
-        Relative mean error of leave one out cross validation
+        Relative mean error bound of leave one out cross validation
     print_out : boolean, optional
         Print output of iterations and subiterations (True/False)
     seed : int, optional
@@ -2235,15 +2235,15 @@ class reg(gpc):
             random_vars: list of str [DIM]
                 string labels of the random variables
             pdftype: list of str [DIM]
-                type of pdf 'beta' or 'jacobi'
+                type of pdf 'beta' or 'norm'
             pdfshape: list of list of float
                 shape parameters of pdfs
-                beta-dist:   [[alpha], [beta]    ]
-                normal-dist: [[mean],  [std]]
+                beta-dist:   [[alpha_1, ...], [beta_1, ...]    ]
+                normal-dist: [[mean_1, ...],  [std_1, ...]]
             limits: list of list of float
                 upper and lower bounds of random variables
-                beta-dist:   [[a1 ...], [b1 ...]]
-                normal-dist: [[0 ... ], [0 ... ]] (not used)
+                beta-dist:   [[min_1, ...], [max_1, ...]]
+                normal-dist: [[0, ... ], [0, ... ]] (not used)
             order: list of int [DIM]
                 maximum individual expansion order
                 generates individual polynomials also if maximum expansion order in order_max is exceeded
