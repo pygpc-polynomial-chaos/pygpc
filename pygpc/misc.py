@@ -328,7 +328,7 @@ def fit_betapdf(data, BETATOL=0, PUNI=0, PLOT=0, VISI=1, filename=[], xlabel="$x
         plt.xlabel(xlabel, fontsize=22)
         plt.ylabel(ylabel, fontsize=22)
         ax.set_xlim(a_beta-0.05*(b_beta-a_beta), b_beta+0.05*(b_beta-a_beta))
-        ax.set_ylim(0, 1.1*max([max(n), max(beta_y), max(uni_y)]))
+        ax.set_ylim(0, 1.1*max([max(n), max(beta_y[np.logical_not(beta_y == np.inf)]), max(uni_y)]))
         
         if VISI>0:
             plt.show()
