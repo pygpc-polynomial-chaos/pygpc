@@ -80,7 +80,7 @@ def save_gpcyml(gobj, fname):
                 grid_coords=gobj.grid.coords.tolist(),
                 grid_coords_norm=gobj.grid.coords_norm.tolist(),
                 gpc_kind=gobj.__class__.__name__,
-                grid_kind = gobj.grid.__class__.__name__)
+                grid_kind=gobj.grid.__class__.__name__)
 
     # add grid specific attributes to dictionary
     if gobj.grid.__class__.__name__ == 'randomgrid':
@@ -485,7 +485,7 @@ def pdf_beta(x, p, q, a, b):
             * (b-a)**(p+q-1))**(-1) * (x-a)**(p-1) * (b-x)**(q-1)
 
 
-def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=None,
+def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), fn_gpcobj=None,
                            order_start=0, order_end=10, interaction_order_max=None, eps=1E-3, print_out=False,
                            seed=None, do_mp=False, n_cpu=4, dispy=False, dispy_sched_host='localhost',
                            random_vars='', hdf5_geo_fn=''):
@@ -513,8 +513,8 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
         The objective function to be minimized.
     args : tuple, optional
         Extra arguments passed to func, i.e. f(x,*args).
-    yaml_fn : String, None
-        If yaml_fn exists, regobj will be created from it. If not exist, it is created.
+    fn_gpcobj : String, None
+        If fn_gpcobj exists, regobj will be created from it. If not exist, it is created.
     order_start : int, optional
         Initial gpc expansion order (maximum order)
     order_end : int, optional
@@ -547,6 +547,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
            size: [N_grid x N_out]        
            
     """
+    import sys
     sys.path.append('/data/pt_01756/software/git/pyfempp')
     import pyfempp
     try:
@@ -561,7 +562,15 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
             interaction_order_max = dim
         order = order_start
         run_subiter = True
-        mesh_fn, tensor_fn, results_folder, coil_fn, positions_mean, v = args
+
+        # mesh_fn, tensor_fn, results_folder, coil_fn, positions_mean, v = args
+        fn_cfg, subject, results_folder, _, _, _ = args
+
+        with open(fn_cfg, 'r') as f:
+            config = yaml.load(f)
+
+        mesh_fn = subject.mesh[config['mesh_idx']]['fn_mesh_msh']
+
         save_res_fn = False
         results = None
         setproctitle.setproctitle("run_reg_adaptive_E_gPC_" + results_folder[-5:])
@@ -600,7 +609,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
             assert cluster
 
         # make dummy grid
-        grid_init = randomgrid(pdftype, pdfshape, limits, 1,seed=seed)
+        grid_init = randomgrid(pdftype, pdfshape, limits, 1, seed=seed)
 
         # make initial regobj
         regobj = reg(pdftype,
@@ -618,11 +627,11 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
         # make initial grid
         grid_init = randomgrid(pdftype, pdfshape, limits, np.ceil(1.2 * n_c_init))
 
-        if yaml_fn:
+        if fn_gpcobj:
             # if .yaml does exist: load from yaml
-            if os.path.exists(yaml_fn):
-                print(results_folder + ": Loading regobj from file: " + yaml_fn)
-                regobj = load_gpcyml(yaml_fn)
+            if os.path.exists(fn_gpcobj):
+                print(results_folder + ": Loading regobj from file: " + fn_gpcobj)
+                regobj = load_gpcobj(fn_gpcobj)
 
             # if not: create regobj, save to yaml
             else:
@@ -636,13 +645,14 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
                              order * np.ones(dim),
                              order_max=order,
                              interaction_order=interaction_order_max,
-                             grid=grid_init)
+                             grid=grid_init,
+                             random_vars=random_vars)
 
-                save_gpcyml(regobj, yaml_fn)
+                save_gpcobj(regobj, fn_gpcobj)
 
-                if dispy:
-                    cluster.close()
-                return
+                # if dispy:
+                #     cluster.close()
+                # return
 
         # run simulations on initial grid
         print("Iteration #{} (initial grid)".format(i_iter))
@@ -728,6 +738,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
                 # n_g_added = n_g_new - n_g_old
 
                 # check if coil position of new grid points are valid and do not lie inside head
+                # TODO: adapt this part to 'x' 'y' 'z' 'psi' 'theta' 'phi'...
                 if regobj.grid.coords.shape[1] >= 9:
                     for i in range(n_g_old, n_g_new):
 
@@ -864,9 +875,10 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), yaml_fn=Non
                 pass
             
         # save gPC object
-        save_gpcobj(regobj, results_folder + "obj.pkl")
+        save_gpcobj(regobj, fn_gpcobj)
+
         # save results of forward simulation
-        np.save(results_folder + "res", results)
+        np.save(os.path.splitext(fn_gpcobj) + "_res", results)
 
     except Exception as e:
         if dispy:
