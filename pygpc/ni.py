@@ -878,7 +878,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), fn_gpcobj=N
         save_gpcobj(regobj, fn_gpcobj)
 
         # save results of forward simulation
-        np.save(os.path.splitext(fn_gpcobj) + "_res", results)
+        np.save(os.path.splitext(fn_gpcobj)[0] + "_res", results)
 
     except Exception as e:
         if dispy:
@@ -1071,6 +1071,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
     """
 
     # initialize iterators
+    matrix_ratio = 1.5
     i_grid = 0
     i_iter = 0
     run_subiter = True
@@ -1218,7 +1219,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
             if seed:
                 seed += 1
             # generate new grid-points
-            regobj.enrich_gpc_matrix_samples(1.5, seed=seed)
+            regobj.enrich_gpc_matrix_samples(matrix_ratio, seed=seed)
 
             # run simulations
             print(("   " + str(i_grid) + " to " + str(regobj.grid.coords.shape[0])))
