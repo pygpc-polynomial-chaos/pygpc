@@ -1754,9 +1754,9 @@ class gpc:
         y = self.evaluate(coeffs, xi, output_idx)
         return xi, y
 
-    # TODO: Lucas: Parallelisierung der evaluate Funktion (CPU + GPU) [Matrix A* parallel aufbauen und mit coeffs Matrix multiplizieren]
-    def evaluate(self, coeffs, xi, output_idx=[]):
-        """ Calculate gpc approximation in points with output_idx and normalized parameters xi (interval: [-1, 1])
+    def evaluate_cpu(self, coeffs, xi, output_idx):
+        """ Calculate gpc approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]) on
+            the cpu
 
         y = evaluate(self, coeffs, xi, output_idx)
 
@@ -1770,7 +1770,7 @@ class gpc:
             gpc coefficients
         xi: np.array of float [1 x DIM]
             point in variable space to evaluate local sensitivity in (normalized coordinates!)
-        output_idx (optional): np.array of int [N_out]
+        output_idx (optional): np.array of int [1 x N_out]
             idx of output quantities to consider (Default: all outputs)
 
         Returns:
@@ -1779,36 +1779,130 @@ class gpc:
             gpc approximation at normalized coordinates xi
         """
 
-        output_idx = np.array(output_idx).flatten()
-
         if len(xi.shape) == 1:
             xi = xi[:, np.newaxis]
 
         self.N_out = coeffs.shape[1]
         self.N_poly = self.poly_idx.shape[0]
-        
-        # if output index list is not provided, evaluate over all outputs
-        if output_idx.size == 0:
-            output_idx = np.linspace(0, self.N_out-1, self.N_out)
-            #output_idx = output_idx[np.newaxis,:]
-        
-        N_out_eval = output_idx.shape[0]
+
+        # if point index list is not provided, evaluate over all points
+        if not output_idx:
+            output_idx = np.linspace(0, self.N_out - 1, self.N_out)
+            output_idx = output_idx[np.newaxis, :]
+
+        N_out_eval = output_idx.shape[1]
         N_x = xi.shape[0]
-        
+
         y = np.zeros([N_x, N_out_eval])
         for i_poly in range(self.N_poly):
             A1 = np.ones(N_x)
             for i_DIM in range(self.DIM):
-                #if self.poly_idx[i_poly][i_DIM]:
                 A1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](xi[:, i_DIM])
             y += np.outer(A1, coeffs[i_poly, output_idx.astype(int)])
-        return y  
+        return y
 
+    def evaluate_gpu(self, coeffs, xi, output_idx):
+        """ Calculate gpc approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]) on
+            the gpu
+
+        y = evaluate(self, coeffs, xi, output_idx)
+
+        example: y = evaluate( [[xi_1_p1 ... xi_DIM_p1] ,
+                                [xi_1_p2 ... xi_DIM_p2]],
+                                np.array([[0,5,13]])    )
+
+        Parameters:
+        ----------------------------------
+        coeffs: np.array of float [N_coeffs x N_out]
+            gpc coefficients
+        xi: np.array of float [1 x DIM]
+            point in variable space to evaluate local sensitivity in (normalized coordinates!)
+        output_idx (optional): np.array of int [1 x N_out]
+            idx of output quantities to consider (Default: all outputs)
+
+        Returns:
+        ----------------------------------
+        y: np.array of float [N_xi x N_out]
+            gpc approximation at normalized coordinates xi
+        """
+        # FIXME: is output_idx needed?
+        # initialize matrices # FIXME: Save poly_idx as np.int32
+        polynomial_index = self.poly_idx.astype(np.int32)
+        y = np.zeros([xi.shape[0], coeffs.shape[1]])
+
+        # transform list of lists of polynom objects into np.ndarray # FIXME: save polynom objects as np.ndarray
+        number_of_variables = len(self.poly[0])
+        highest_degree = len(self.poly)
+        number_of_polynomial_coeffs = number_of_variables * (highest_degree + 1) * (highest_degree + 2) / 2
+        polynomial_coeffs = np.empty([number_of_polynomial_coeffs])
+        for degree in range(highest_degree):
+            degree_offset = number_of_variables * degree * (degree + 1) / 2
+            single_degree_coeffs = np.empty([degree + 1, number_of_variables])
+            for var in range(number_of_variables):
+                single_degree_coeffs[:, var] = np.flipud(self.poly[degree][var].c)
+            polynomial_coeffs[degree_offset:degree_offset + single_degree_coeffs.size] = \
+                single_degree_coeffs.flatten(order='C')
+
+        # handle pointer
+        polynomial_coeffs_pointer = polynomial_coeffs.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        polynomial_index_pointer = polynomial_index.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+        xi_pointer = xi.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        sim_result_pointer = y.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        sim_coeffs_pointer = coeffs.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        number_of_xi_size_t = ctypes.c_size_t(xi.shape[0])
+        number_of_variables_size_t = ctypes.c_size_t(number_of_variables)
+        number_of_psi_size_t = ctypes.c_size_t(coeffs.shape[0])
+        highest_degree_size_t = ctypes.c_size_t(highest_degree)
+        number_of_result_vectors_size_t = ctypes.c_size_t(coeffs.shape[1])
+
+        # handle shared object
+        dll = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'pckg', 'pce.so'), mode=ctypes.RTLD_GLOBAL)
+        cuda_pce = dll.polynomial_chaos_matrix
+        cuda_pce.argtypes = [ctypes.POINTER(ctypes.c_double)] + [ctypes.POINTER(ctypes.c_int)] + \
+                            [ctypes.POINTER(ctypes.c_double)] * 3 + [ctypes.c_size_t] * 5
+
+        # evaluate CUDA implementation
+        cuda_pce(polynomial_coeffs_pointer, polynomial_index_pointer, xi_pointer, sim_result_pointer,
+                 sim_coeffs_pointer, number_of_psi_size_t, number_of_result_vectors_size_t, number_of_variables_size_t,
+                 highest_degree_size_t, number_of_xi_size_t)
+        return y
+
+    def evaluate(self, coeffs, xi, output_idx=[], cpu=True):
+        """ WRAPPER
+
+        Wrapper function to calculate gpc approximation in points with output_idx and normalized parameters xi
+        (interval: [-1, 1])
+
+
+        y = evaluate(self, coeffs, xi, output_idx)
+
+        example: y = evaluate( [[xi_1_p1 ... xi_DIM_p1] ,
+                                [xi_1_p2 ... xi_DIM_p2]],
+                                np.array([[0,5,13]])    )
+
+        Parameters:
+        ----------------------------------
+        coeffs: np.array of float [N_coeffs x N_out]
+            gpc coefficients
+        xi: np.array of float [1 x DIM]
+            point in variable space to evaluate local sensitivity in (normalized coordinates!)
+        output_idx (optional): np.array of int [1 x N_out]
+            idx of output quantities to consider (Default: all outputs)
+        cpu (optional): bool
+            Choice if the matrices should be processed on the CPU or GPU (Default: CPU)
+
+        Returns:
+        ----------------------------------
+        y: np.array of float [N_xi x N_out]
+            gpc approximation at normalized coordinates xi
+        """
+        if cpu:
+            return self.evaluate_cpu(coeffs=coeffs, xi=xi, output_idx=output_idx)
+        else:
+            return self.evaluate_gpu(coeffs=coeffs, xi=xi, output_idx=output_idx)
 
     def evaluate2(self, coeffs, xi, output_idx=[]):
-
         a = 1
-
 
     def sobol(self, coeffs, eval=False, fn_plot=None, verbose=True):
         """ Determine the available sobol indices and evaluate results (optional)
