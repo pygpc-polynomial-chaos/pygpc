@@ -1786,11 +1786,11 @@ class gpc:
         self.N_poly = self.poly_idx.shape[0]
 
         # if point index list is not provided, evaluate over all points
-        if not output_idx:
+        if output_idx.size == 0:
             output_idx = np.linspace(0, self.N_out - 1, self.N_out)
             output_idx = output_idx[np.newaxis, :]
 
-        N_out_eval = output_idx.shape[1]
+        N_out_eval = output_idx.shape[0]
         N_x = xi.shape[0]
 
         y = np.zeros([N_x, N_out_eval])
@@ -1900,9 +1900,6 @@ class gpc:
             return self.evaluate_cpu(coeffs=coeffs, xi=xi, output_idx=output_idx)
         else:
             return self.evaluate_gpu(coeffs=coeffs, xi=xi, output_idx=output_idx)
-
-    def evaluate2(self, coeffs, xi, output_idx=[]):
-        a = 1
 
     def sobol(self, coeffs, eval=False, fn_plot=None, verbose=True):
         """ Determine the available sobol indices and evaluate results (optional)
@@ -2414,15 +2411,17 @@ class reg(gpc):
         # Ainv      ... [N_coeffs x N_grid]
         # data      ... [N_grid   x N_points]
 
-        return np.dot(self.Ainv,data)
+        return np.dot(self.Ainv, data)
 
-    def LOOCV(self, data):
-        """ Perform leave one out cross validation of gPC with maximal 100 points and adds result to self.relerror_loocv
+    def LOOCV(self, data, n_loocv_points=50):
+        """ Perform leave one out cross validation of gPC and adds result to self.relerror_loocv
 
         Parameters:
         ----------------------------------
         data: np.array() [N_grid x N_out]
             Results from N_grid simulations with N_out output quantities
+        n_loocv_points: int
+            Number of repetitions in leave one out cross validation to determine stable error
 
         Returns:
         ----------------------------------
@@ -2431,31 +2430,32 @@ class reg(gpc):
         """
 
         # define number of performed cross validations (max 100)
-        N_LOOCV_points = np.min((data.shape[0], 100))
+        n_loocv_points = np.min((data.shape[0], n_loocv_points))
 
         # make list of indices, which are randomly sampled
-        LOOCV_point_idx = random.sample(list(range(data.shape[0])), N_LOOCV_points)
+        loocv_point_idx = random.sample(list(range(data.shape[0])), n_loocv_points)
 
         start = time.time()
-        relerror = np.zeros(N_LOOCV_points)
+        relerror = np.zeros(n_loocv_points)
         # data_temp = np.zeros(data[i,:].shape)
-        for i in range(N_LOOCV_points):
+        for i in range(n_loocv_points):
             # get mask of eliminated row
             # a = time.time()
-            mask = np.arange(data.shape[0]) != LOOCV_point_idx[i]
+            mask = np.arange(data.shape[0]) != loocv_point_idx[i]
 
             # invert reduced gpc matrix
             Ainv_LOO = np.linalg.pinv(self.A[mask, :])
 
             # determine gpc coefficients (this takes a lot of time for large problems)
             coeffs_LOO = np.dot(Ainv_LOO, data[mask, :])
-            data_temp = data[LOOCV_point_idx[i], ]
-            relerror[i] = scipy.linalg.norm(data_temp - np.dot(self.A[LOOCV_point_idx[i], :], coeffs_LOO)) / scipy.linalg.norm(data_temp)
-            fancy_bar("LOOCV", int(i+1), int(N_LOOCV_points))
+            data_temp = data[loocv_point_idx[i], ]
+            relerror[i] = scipy.linalg.norm(data_temp - np.dot(self.A[loocv_point_idx[i], :], coeffs_LOO)) / scipy.linalg.norm(data_temp)
+            fancy_bar("LOOCV", int(i+1), int(n_loocv_points))
 
         # store result in relerror_loocv
         self.relerror_loocv.append(np.mean(relerror))
-        print((" (" + str(time.time()-start) + ")"))
+
+        print(" (" + str(time.time()-start) + ")")
 
         return self.relerror_loocv[-1]
              
