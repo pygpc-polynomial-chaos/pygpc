@@ -690,7 +690,7 @@ def run_reg_adaptive_E_gPC(pdftype, pdfshape, limits, func, args=(), fn_gpcobj=N
         regobj.LOOCV(results)
 
         if print_out:
-            print("    -> relerror_LOOCV = {}".format(regobj.relerror_loocv[-1]))
+            print("    -> relerror_LOOCV = {}\n".format(regobj.relerror_loocv[-1]))
 
         # main interations (order)
         while (regobj.relerror_loocv[-1] > eps) and order < order_end:
@@ -1786,11 +1786,14 @@ class gpc:
         self.N_poly = self.poly_idx.shape[0]
 
         # if point index list is not provided, evaluate over all points
-        if output_idx.size == 0:
+        if np.array(output_idx).size == 0:
             output_idx = np.linspace(0, self.N_out - 1, self.N_out)
+            output_idx = output_idx[np.newaxis, :].astype(int)
+
+        if np.array(output_idx).ndim == 1:
             output_idx = output_idx[np.newaxis, :]
 
-        N_out_eval = output_idx.shape[0]
+        N_out_eval = output_idx.shape[1]
         N_x = xi.shape[0]
 
         y = np.zeros([N_x, N_out_eval])
@@ -1798,7 +1801,7 @@ class gpc:
             A1 = np.ones(N_x)
             for i_DIM in range(self.DIM):
                 A1 *= self.poly[self.poly_idx[i_poly][i_DIM]][i_DIM](xi[:, i_DIM])
-            y += np.outer(A1, coeffs[i_poly, output_idx.astype(int)])
+            y += np.outer(A1, coeffs[i_poly, output_idx])
         return y
 
     def evaluate_gpu(self, coeffs, xi, output_idx):
