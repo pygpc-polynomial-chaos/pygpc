@@ -318,6 +318,7 @@ def read_sobol_idx(fname):
     
     return sobol_idx    
 
+
 def extract_sobol_order(sobol, sobol_idx, order=1):
     """ Extract Sobol indices with specified order from Sobol data
 
@@ -346,14 +347,15 @@ def extract_sobol_order(sobol, sobol_idx, order=1):
 
     # extract from dataset
     sobol_1st = sobol[mask, :]
-    sobol_idx_1st = np.asarray([sobol_idx[mask[i]] for i in range(len(mask))])[:,0]
+    sobol_idx_1st = np.vstack([sobol_idx[i] for i in mask])
 
     # sort sobol indices according to parameter indices in ascending order
-    sort_idx = np.argsort(sobol_idx_1st)
-    sobol_1st = sobol_1st[sort_idx,:]
-    sobol_idx_1st = sobol_idx_1st[sort_idx]
+    sort_idx = np.argsort(sobol_idx_1st, axis=0)[:, 0]
+    sobol_1st = sobol_1st[sort_idx, :]
+    sobol_idx_1st = sobol_idx_1st[sort_idx, :]
 
     return sobol_1st, sobol_idx_1st
+
 
 def wrap_function(function, x, args):
     """ function wrapper to call anonymous function with variable number of arguments (tuple)

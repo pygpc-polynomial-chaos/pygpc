@@ -158,19 +158,17 @@ class TestpygpcMethods(unittest.TestCase):
         print("1. Testing adaptive gPC")
         # Model parameters
         save_res_fn = ''
-        R = [80, 90, 100]  # Radii of spheres in mm
+        R = [80, 90, 100]   # Radii of spheres in mm
         phi_electrode = 15  # Polar angle of electrode location in deg
-        N_points = 201  # Number of grid-points in x- and z-direction
+        N_points = 201      # Number of grid-points in x- and z-direction
 
         # Statistical parameters
         random_vars = ['sigma_1', 'sigma_2', 'sigma_3']
         pdftype = ["beta", "beta", "beta"]
-        DIM = 3  # number of random variables
         a = [0.15, 0.01, 0.4]  # lower bounds of conductivities in S/m
         b = [0.45, 0.02, 0.6]  # upper bounds of conductivities in S/m
         p = [5, 1, 2]  # first shape parameter of pdf
         q = [5, 3, 2]  # second shape parameter of pdf
-        max_order = 0  # maximum order at initialization
 
         eps = 1E-3  # relative error bound
         pdfshape = [p, q]
@@ -202,7 +200,7 @@ class TestpygpcMethods(unittest.TestCase):
                                            interaction_order_max=2,
                                            eps=eps,
                                            print_out=True,
-                                           seed=None,
+                                           seed=1,
                                            save_res_fn=save_res_fn)
 
         ########################################################################################
@@ -214,6 +212,8 @@ class TestpygpcMethods(unittest.TestCase):
         mean = reg.mean(coeffs_phi)
         std = reg.std(coeffs_phi)
         sobol, sobol_idx = reg.sobol(coeffs_phi)
+        sobol_1st, sobol_idx_1st = pygpc.extract_sobol_order(sobol, sobol_idx, order=1)
+        sobol_2nd, sobol_idx_2nd = pygpc.extract_sobol_order(sobol, sobol_idx, order=2)
         globalsens = reg.globalsens(coeffs_phi)
 
         # plot mean and standard deviation, define regular grid and interpolate data on it (on same points)
