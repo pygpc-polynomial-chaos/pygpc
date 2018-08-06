@@ -365,3 +365,31 @@ def mutcoh(A):
     mutual_coherence = np.max(1.0*(T-S)/np.outer(s,s))
     
     return mutual_coherence
+
+def compute_chunks(seq, num):
+    """
+    Calculate a certain number of chunks from a sequence which are of similar size.
+
+    Parameters:
+    -----------
+    seq: list of something [N_ele]
+        List containing data or indices, which is divided into chunks
+    num: int
+        Number of chunks to generate
+
+    Returns:
+    --------
+    out: list of num sublists
+        num sublists of seq with each containing approximately the same number of elements
+    """
+
+    avg = len(seq) / float(num)
+    if avg < 1:
+        raise ValueError("seq/num ration too small: " + str(avg))
+    else:
+        out = []
+        last = 0.0
+        while last < len(seq):
+            out.append(seq[int(last):int(last + avg)])
+            last += avg
+        return out
