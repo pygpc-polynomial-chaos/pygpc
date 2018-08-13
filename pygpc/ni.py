@@ -1326,7 +1326,7 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
 
     return regobj, res_complete
 
-def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, worker_factory, args=(), order_start=0, order_end=10,
+def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, args=(), order_start=0, order_end=10,
                       interaction_order_max=None, eps=1E-3, print_out=False, seed=None,
                       save_res_fn='',n_cpu=1):
     """
@@ -1433,7 +1433,7 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, worker_fa
     n_base_grid  = len(base_grid)
 
     if print_out:
-        print("    Performing simulations #{} to #{}".format(i_grid + 1, n_base_grid))
+        print("    Performing simulations {} to {}".format(i_grid + 1, n_base_grid))
 
     # setting up parallelization
     n_cpu_available = multiprocessing.cpu_count()
@@ -1448,15 +1448,15 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, worker_fa
 
     worker_objs = []
     global_task_counter = process_manager.Value('i', 0)     # global counter used by all threads to keep track of the progress
-    global_lock    = process_manager.Lock()                 # necessary to synchronize read/write access to serialized results
-    task_num = 0
+    global_lock    = process_manager.RLock()                 # necessary to synchronize read/write access to serialized results
+    seq_num = 0
 
     # create worker objects that will evaluate the function
     for val in base_grid:
         # setup context (let the process know which iteration, interaction order etc.)
         context = {
             'global_task_ctr': global_task_counter,
-            'task_number': task_num,
+            'seq_number': seq_num,
             'lock': global_lock,
             'i_iter': i_iter,
             'i_grid': i_grid,
@@ -1464,9 +1464,9 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, worker_fa
             'interaction_order_current': interaction_order_current,
             'save_res_fn': save_res_fn
         }
-        worker_objs.append( worker_factory(val, context, args) )
+        worker_objs.append( Model(val, context, *(args)) )
         i_grid += 1
-        task_num += 1
+        seq_num += 1
 
     # assign the worker objects to the processes; execute them in parallel
     start_time = time.time()
@@ -1475,8 +1475,15 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, worker_fa
 
     print(('        parallel function evaluation: ' + str(time.time() - start_time) + 'sec'))
 
-    res_complete = np.array(res)
+    # initialize the result array with the correct size and set the elements according to their order
+    # (the first element in 'res' might not necessarily be the result of the first Process/i_grid)
+    res_complete = [None]*n_base_grid
+    for result in res:
+        res_complete[ result[0] ] = result[1]
 
+    res_complete = np.array( res_complete )
+
+    # ensure that the grid-counter is forwareded to the first new position
     i_grid = n_base_grid
 
     # perform leave one out cross validation for elements that are never nan
@@ -1546,14 +1553,14 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, worker_fa
             # create worker objects that will evaluate the function
             worker_objs = []
             global_task_counter.value = 0    # since we re-use the  global counter, we need to reset it first
-            task_num = 0
+            seq_num = 0
 
             for val in grid_new:
                 # setup context (let the process know which iteration, interaction order etc.)
                 context = {
                     'global_task_ctr': global_task_counter,
                     'lock': global_lock,
-                    'task_number' : task_num,
+                    'seq_number' : seq_num,
                     'i_iter': i_iter,
                     'i_grid': i_grid,
                     'max_grid' : n_grid_new,
@@ -1561,15 +1568,22 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, worker_fa
                     'save_res_fn': save_res_fn
                 }
 
-                worker_objs.append( worker_factory(val, context, args ) )
+                worker_objs.append( Model(val, context, *(args) ) )
                 i_grid += 1
-                task_num += 1
+                seq_num += 1
 
             # assign the worker objects to the processes; execute them in parallel
             start_time = time.time()
             res_new_list = process_pool.map( PyGPC_Worker.run, worker_objs ) # the map-function deals with chunking the data
 
-            res = res_new_list
+            # initialize the result array with the correct size and set the elements according to their order
+            # (the first element in 'res' might not necessarily be the result of the first Process/i_grid)
+            res = [None] * n_grid_new
+            for result in res_new_list:
+                res[result[0]] = result[1]
+
+            res = np.array(res)
+
 
             print('   parallel function evaluation: ' + str(time.time() - start_time) + ' sec\n')
 
@@ -1593,10 +1607,10 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, worker_fa
                                                                              res_complete.shape[1],
                                                                              nan_ratio_per_elm))
 # DEBUG
-            print res_complete[:, non_nan_mask]
-            flat = res_complete.flatten()
-            print ">>>> MEAN OF CURRENT RESULTS MATRIX"
-            print np.mean(flat)
+#            print res_complete[:, non_nan_mask]
+#            flat = res_complete.flatten()
+#            print ">>>> MEAN OF CURRENT RESULTS MATRIX"
+#            print np.mean(flat)
 # DEBUG END
 
             regobj.LOOCV(res_complete[:, non_nan_mask])

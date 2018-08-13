@@ -8,8 +8,7 @@ on tDCS simulations including information of white matter lesion tissue.
 """
 import pygpc
 
-from pygpc import PyGPC_Worker
-from pygpc.SimulationWrapper import SimulationWrapper
+from MySimulationModel import MyModel
 
 
 class WMLSim:
@@ -44,8 +43,8 @@ class WMLSim:
                                                     pdftype=pdftype,
                                                     pdfshape=pdfshape,
                                                     limits=limits,
-                                                    worker_factory=SimulationWrapper.factory,
-                                                    args=(4,),
+                                                    Model=MyModel,
+                                                    args=(),
                                                     order_start=0,
                                                     order_end=10,
                                                     interaction_order_max=2,
@@ -68,11 +67,11 @@ class WMLSim:
         sobol_2nd, sobol_idx_2nd = pygpc.extract_sobol_order(sobol, sobol_idx, order=2)
         globalsens = reg.globalsens(coeffs_phi)
 
-        SimulationWrapper.write_result_field("ElPot_mean", mean[0])
-        SimulationWrapper.write_result_field("ElPot_stddev", std[0])
-        SimulationWrapper.write_result_field("ElPot_sobol1", sobol_1st[0])
-        SimulationWrapper.write_result_field("ElPot_sobol2", sobol_1st[1])
-        SimulationWrapper.write_result_field("ElPot_sobol3", sobol_1st[2])
+        MyModel.write_result_field("ElPot_mean", mean[0])
+        MyModel.write_result_field("ElPot_stddev", std[0])
+        MyModel.write_result_field("ElPot_sobol1", sobol_1st[0])
+        MyModel.write_result_field("ElPot_sobol2", sobol_1st[1])
+        MyModel.write_result_field("ElPot_sobol3", sobol_1st[2])
         print sobol_idx_1st
         print sobol_idx_2nd
 
