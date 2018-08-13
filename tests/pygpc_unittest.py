@@ -159,7 +159,7 @@ class TestpygpcMethods(unittest.TestCase):
     def test_2_adaptive_gpc(self):
         print("1. Testing adaptive gPC")
         # Model parameters
-        save_res_fn = '/home/kalloch/ram_folder/data'
+        save_res_fn = ''
         R = [80, 90, 100]   # Radii of spheres in mm
         phi_electrode = 15  # Polar angle of electrode location in deg
         N_points = 201      # Number of grid-points in x- and z-direction
