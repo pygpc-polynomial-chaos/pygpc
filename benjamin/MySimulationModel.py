@@ -10,7 +10,7 @@ from pygpc.SimulationModel import AbstractModel
 
 class MyModel(AbstractModel):
     # OF_CASE_DIR = "/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_head"
-    OF_CASE_DIR_BASE = "/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_capacitor"
+    OF_CASE_DIR_BASE = "/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_LI0315593X_WML"
 
     def __init__(self, conductivities, context):
         super(MyModel, self).__init__(context)
@@ -24,6 +24,7 @@ class MyModel(AbstractModel):
         skull_cond = repr(self.conductivities[1])
         gm_cond = repr(self.conductivities[2])
         wm_cond = repr(self.conductivities[3])
+        lesion_cond = repr(self.conductivities[4])
 
         # Step 1: setup the case directory by replacing the conductivities with the ones provided by the PyGPC framework
         rmtree(OF_CASE_DIR + "/0", ignore_errors=True)
@@ -37,6 +38,8 @@ class MyModel(AbstractModel):
         sigma = sigma.replace("%CSF_VAL%", "1.65")
         sigma = sigma.replace("%GM_VAL%", gm_cond)
         sigma = sigma.replace("%WM_VAL%", wm_cond)
+        sigma = sigma.replace("%LESION_VAL%", lesion_cond)
+        sigma = sigma.replace("%AIR_VAL%", "1e-15")
         sigma = sigma.replace("%ELECTRODE_VAL%", "1.4")
 
         with open(OF_CASE_DIR + "/0/sigma", "w") as f:

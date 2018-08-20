@@ -6,6 +6,7 @@
 @author: Benjamin Kalloch
 """
 import time
+import numpy as np
 
 def init(queue):
     """
@@ -46,7 +47,8 @@ def run(obj):
     end_time   = 0
     skip_sim   = True
 
-    if res is None:
+    # skip if there was no data row for that i_grid or if it was prematurely inserted (= all zero)
+    if res is None or not np.any( res ):
         start_time = time.time()
         res = obj.simulate(process_id)
         end_time = time.time()

@@ -81,7 +81,7 @@ class AbstractModel:
                             ds = f['res']
                             # read data from file at current grid_position
                             res  = ds[self.i_grid, :]
-
+                    
                             return res
 
                     except (KeyError, ValueError):
@@ -107,14 +107,15 @@ class AbstractModel:
         if self.save_res_fn:
             self.lock.acquire()
             try:
+                require_size = self.i_grid + 1
                 with h5py.File(self.save_res_fn, 'a') as f:
                     try:
                         ds = f['res']
-                        if ds.shape[0] < self.i_grid + 1:   # check if resize is necessary
-                            ds.resize(self.i_grid + 1, axis=0)
+                        if ds.shape[0] < require_size:   # check if resize is necessary
+                            ds.resize(require_size, axis=0)
+                        ds[self.i_grid, :] = data[np.newaxis, :]
                     except (KeyError,ValueError):
-                        ds = f.create_dataset('res', (self.i_grid + 1,len(data)), maxshape=(None, len(data)))
-                    finally:
+                        ds = f.create_dataset('res', (require_size,len(data)), maxshape=(None, len(data)))
                         ds[self.i_grid, :] = data[np.newaxis, :]
             finally:
                 self.lock.release()

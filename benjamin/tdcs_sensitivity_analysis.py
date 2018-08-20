@@ -16,12 +16,12 @@ class WMLSim:
         # Statistical parameters
 #        """"
         # head case
-        random_vars = ['scalp', 'skull', 'gm', 'wm']
-        pdftype = ["beta", "beta", "beta", "beta"]
-        a = [0.28, 0.0016, 0.22, 0.09]  # lower bounds of conductivities in S/m
-        b = [0.87, 0.033, 0.67, 0.29]  # upper bounds of conductivities in S/m
-        p = [3, 3, 3, 3]  # first shape parameter of pdf
-        q = [3, 3, 3, 3]  # second shape parameter of pdf
+        random_vars = ['scalp', 'skull', 'gm', 'wm', 'lesion']
+        pdftype = ["beta", "beta", "beta", "beta", "beta"]
+        a = [0.28, 0.0016, 0.22, 0.09, 0.04]  # lower bounds of conductivities in S/m
+        b = [0.87, 0.033, 0.67, 0.29, 1.5]  # upper bounds of conductivities in S/m
+        p = [3, 3, 3, 3, 3]  # first shape parameter of pdf
+        q = [3, 3, 3, 3, 3]  # second shape parameter of pdf
  #       """
         """"
         # capacitor case
@@ -46,13 +46,13 @@ class WMLSim:
                                                     Model=MyModel,
                                                     args=(),
                                                     order_start=0,
-                                                    order_end=10,
+                                                    order_end=16,
                                                     interaction_order_max=2,
                                                     eps=eps,
                                                     print_out=True,
                                                     seed=1,
-                                                    save_res_fn='/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_capacitor/pygpc_data/pygpc_foam',
-                                                    n_cpu=4)
+                                                    save_res_fn='/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_LI0315593X_WML/pygpc_data/',
+                                                    n_cpu=8)
 
         ########################################################################################
 
@@ -72,6 +72,12 @@ class WMLSim:
         MyModel.write_result_field("ElPot_sobol1", sobol_1st[0])
         MyModel.write_result_field("ElPot_sobol2", sobol_1st[1])
         MyModel.write_result_field("ElPot_sobol3", sobol_1st[2])
+        MyModel.write_result_field("ElPot_sobol4", sobol_1st[3])
+        MyModel.write_result_field("ElPot_sobol5", sobol_1st[4])
+        MyModel.write_result_field("ElPot_sobol_interact_1", sobol_2nd[0])
+        MyModel.write_result_field("ElPot_sobol_interact_2", sobol_2nd[1])
+        MyModel.write_result_field("ElPot_sobol_interact_3", sobol_2nd[2])
+
         print sobol_idx_1st
         print sobol_idx_2nd
 

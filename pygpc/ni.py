@@ -1593,7 +1593,7 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, ar
             else:
                 res_complete = np.vstack([res_complete, res])
 
-            i_grid = len( regobj.grid.coords )
+            i_grid = regobj.grid.coords.shape[0]
 
             non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
             regobj.nan_elm = np.where(np.any(np.isnan(res_complete), axis=0))[0]
