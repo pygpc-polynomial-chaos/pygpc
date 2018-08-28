@@ -1,2 +1,2 @@
 # pygpc
-python package of the generalized polynomial chaos method
+A python package that provides methods and data structures  of the generalized polynomial chaos method.

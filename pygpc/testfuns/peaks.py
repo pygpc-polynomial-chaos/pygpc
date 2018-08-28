@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
+
 def peaks(x):
     """ 2-dimensional peaks function.
     

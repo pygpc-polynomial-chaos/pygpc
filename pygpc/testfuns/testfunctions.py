@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
+
 def peaks(x):
     """ 2-dimensional peaks function.
     
@@ -9,11 +10,12 @@ def peaks(x):
         Output: 
                 res     ... result [N_input x 1]
     """
-    y = np.array([(3.0*(1-x[:,0])**2.*np.exp(-(x[:,0]**2) - (x[:,1]+1)**2) \
-        - 10.0*(x[:,0]/5.0 - x[:,0]**3 - x[:,1]**5)*np.exp(-x[:,0]**2-x[:,1]**2)\
-        - 1.0/3*np.exp(-(x[:,0]+1)**2 - x[:,1]**2))]).transpose()
-    
+    y = np.array([(3.0 * (1 - x[:, 0]) ** 2. * np.exp(-(x[:, 0] ** 2) - (x[:, 1] + 1) ** 2)
+                   - 10.0 * (x[:, 0] / 5.0 - x[:, 0] ** 3 - x[:, 1] ** 5) * np.exp(-x[:, 0] ** 2 - x[:, 1] ** 2)
+                   - 1.0 / 3 * np.exp(-(x[:, 0] + 1) ** 2 - x[:, 1] ** 2))]).transpose()
+
     return y
+
 
 def lim_2002(x):
     """ 2-dimensional test function of Lim et al.
@@ -37,14 +39,15 @@ def lim_2002(x):
         Output: 
                 y ... result [N_input x 1]
     """
-    
-    y = np.array([(9 + 5.0/2*x[:,0] - 35.0/2*x[:,1] + 5.0/2*x[:,0]*x[:,1] 
-        + 19*x[:,1]**2 - 15.0/2*x[:,0]**3 - 5.0/2*x[:,0]*x[:,1]**2 - 11.0/2*x[:,1]**4 
-        + x[:,0]**3*x[:,1]**2)]).transpose()
-    
+
+    y = np.array([(9 + 5.0 / 2 * x[:, 0] - 35.0 / 2 * x[:, 1] + 5.0 / 2 * x[:, 0] * x[:, 1]
+                   + 19 * x[:, 1] ** 2 - 15.0 / 2 * x[:, 0] ** 3 - 5.0 / 2 * x[:, 0] * x[:, 1] ** 2 - 11.0 / 2 *
+                   x[:, 1] ** 4 + x[:, 0] ** 3 * x[:, 1] ** 2)]).transpose()
+
     return y
-    
-def ishigami(x,a,b):
+
+
+def ishigami(x, a, b):
     """ 3-dimensional test function of Ishigami.
         The Ishigami function of Ishigami & Homma (1990) is used as an example
         for uncertainty and sensitivity analysis methods, because it exhibits
@@ -72,11 +75,12 @@ def ishigami(x,a,b):
         Output: 
                 y   ... result [N_input x 1]
     """
-    y = np.array([(np.sin(x[:,0])+a*np.sin(x[:,1])**2+b*x[:,2]**4*np.sin(x[:,0]))]).transpose()
-    
+    y = np.array([(np.sin(x[:, 0]) + a * np.sin(x[:, 1]) ** 2 + b * x[:, 2] ** 4 * np.sin(x[:, 0]))]).transpose()
+
     return y
-        
-def sphere0_fun(x,a,b):
+
+
+def sphere0_fun(x, a, b):
     """ N-dimensional sphere function with zero mean.
         
         y = sphere0(x,a,b)
@@ -89,19 +93,20 @@ def sphere0_fun(x,a,b):
     """
 
     try:
-        N = x.shape[1]
+        n = x.shape[1]
     except IndexError:
-        N=1
-        x=np.array([x])
+        n = 1
+        x = np.array([x])
 
     # zero mean   
-    c2 = (1.0*N*(b**3-a**3))/(3*(b-a))
-    
+    c2 = (1.0 * n * (b ** 3 - a ** 3)) / (3 * (b - a))
+
     # sphere function
-    y = np.array([(np.sum(np.square(x),axis=1)-c2)]).transpose()
-    
+    y = np.array([(np.sum(np.square(x), axis=1) - c2)]).transpose()
+
     return y
-    
+
+
 def sphere_fun(x):
     """ N-dimensional sphere function with zero mean.
         
@@ -112,13 +117,14 @@ def sphere_fun(x):
         Output: 
                 y ... result [N_input x 1]
     """
-    
-    # sphere function
-    y = np.array([(np.sum(np.square(x),axis=1))]).transpose()
-    
-    return y    
 
-def g_function(x,a):
+    # sphere function
+    y = np.array([(np.sum(np.square(x), axis=1))]).transpose()
+
+    return y
+
+
+def g_function(x, a):
     """ N-dimensional g-function used by Saltelli and Sobol
         this test function is used as an integrand for various numerical 
         estimation methods, including sensitivity analysis methods, because it 
@@ -138,17 +144,18 @@ def g_function(x,a):
         Output: 
                 y ... result [N_input x 1]
     """
-         
+
     try:
         x.shape[1]
     except IndexError:
-        x=np.array([x])
+        x = np.array([x])
 
     # g-function
-    y = np.array([(np.prod((np.abs(4.0*x-2)+a)/(1.0+a),axis=1))]).transpose()
-    
-    return res
-    
+    y = np.array([(np.prod((np.abs(4.0 * x - 2) + a) / (1.0 + a), axis=1))]).transpose()
+
+    return y
+
+
 def oakley_ohagan_2004(x):
     """ 15-dimensional test function of OAKLEY & O'HAGAN (2004)
         
@@ -170,19 +177,20 @@ def oakley_ohagan_2004(x):
         Output: 
                 y ... result [N_input x 1]
     """
-    
+
     # load coefficients
-    M = np.loadtxt('misc/oakley_ohagan_2004_M.txt')
+    m = np.loadtxt('misc/oakley_ohagan_2004_M.txt')
     a1 = np.loadtxt('misc/oakley_ohagan_2004_a1.txt')
     a2 = np.loadtxt('misc/oakley_ohagan_2004_a2.txt')
     a3 = np.loadtxt('misc/oakley_ohagan_2004_a3.txt')
-    
+
     # function
-    y = np.array([(np.dot(x,a1) + np.dot(np.sin(x),a2) + np.dot(np.cos(x),a3) \
-        + np.sum(np.multiply(np.dot(x,M),x),axis=1))]).transpose()
-    
+    y = np.array([(np.dot(x, a1) + np.dot(np.sin(x), a2) + np.dot(np.cos(x), a3)
+                   + np.sum(np.multiply(np.dot(x, m), x), axis=1))]).transpose()
+
     return y
-    
+
+
 def welch_1992(x):
     """ 20-dimensional test function of WELCH (1992)
         
@@ -204,12 +212,13 @@ def welch_1992(x):
         Output: 
                 y ... result [N_input x 1]
     """
-    y = np.array([(5.0*x[:,11]/(1+x[:,0]) + 5*(x[:,3]-x[:,19])**2 + x[:,4] + 40*x[:,18]**3 \
-        + 5*x[:,18] + 0.05*x[:,1] + 0.08*x[:,2] - 0.03*x[:,5] + 0.03*x[:,6] \
-        - 0.09*x[:,8] - 0.01*x[:,9] - 0.07*x[:,10] + 0.25*x[:,12]**2 - 0.04*x[:,13] \
-        + 0.06*x[:,14] - 0.01*x[:,16] - 0.03*x[:,17])]).transpose()
-    
+    y = np.array([(5.0 * x[:, 11] / (1 + x[:, 0]) + 5 * (x[:, 3] - x[:, 19]) ** 2 + x[:, 4] + 40 * x[:, 18] ** 3
+                   + 5 * x[:, 18] + 0.05 * x[:, 1] + 0.08 * x[:, 2] - 0.03 * x[:, 5] + 0.03 * x[:, 6]
+                   - 0.09 * x[:, 8] - 0.01 * x[:, 9] - 0.07 * x[:, 10] + 0.25 * x[:, 12] ** 2 - 0.04 * x[:, 13]
+                   + 0.06 * x[:, 14] - 0.01 * x[:, 16] - 0.03 * x[:, 17])]).transpose()
+
     return y
+
 
 def wing_weight(x):
     """ 10-dimensional test function which models a light aircraft wing
@@ -235,9 +244,9 @@ def wing_weight(x):
         Output: 
                 y ... result [N_input x 1]
     """
-    y = np.array([( 0.036*x[:,0]**0.758 * x[:,1]**0.0035 \
-          * (x[:,2]/np.cos(x[:,3])**2)**0.6 * x[:,4]**0.006 * x[:,5]**0.04 \
-          * (100*x[:,6]/np.cos(x[:,3]))**-0.3 * (x[:,7]*x[:,8])**0.49 \
-          + x[:,0]*x[:,9])]).transpose()
-    
-    return y       
+    y = np.array([(0.036 * x[:, 0] ** 0.758 * x[:, 1] ** 0.0035
+                   * (x[:, 2] / np.cos(x[:, 3]) ** 2) ** 0.6 * x[:, 4] ** 0.006 * x[:, 5] ** 0.04
+                   * (100 * x[:, 6] / np.cos(x[:, 3])) ** -0.3 * (x[:, 7] * x[:, 8]) ** 0.49
+                   + x[:, 0] * x[:, 9])]).transpose()
+
+    return y

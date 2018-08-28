@@ -1,107 +1,195 @@
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+import numpy as np
+import os
 
 
 class Visualization:
+    """
+    Creates a new visualization in a new window. Any added subcharts will be added to this window.
+
+    Parameters:
+    -----------
+    dims: list of int
+        size of the newly created window
+    """
+
+    # class variables
     figNo = 0
     horizontalPadding = 0.4
     fontSizeLabel = 12
     fontSizeTitle = 12
     graphLineWidth = 2
 
-    #
-    # creates a new visualization in a new window
-    #   any added subcharts will be addded to this window
-    #
-    # inputs:
-    #   _dims - size of the newly created window
-    #
-    def __init__(self, _dims=[10, 10]):
-        self.fig = plt.figure(Visualization.figNo, figsize=(_dims['x'], _dims['y']), facecolor=[1, 1, 1])
+    def __init__(self, dims=(10, 10)):
+        self.fig = plt.figure(Visualization.figNo, figsize=(dims[0], dims[0]), facecolor=[1, 1, 1])
         Visualization.figNo += 1
-        plt.subplots_adjust(
-            hspace=Visualization.horizontalPadding)  # add some horizontal spacing to avoid overlap with labels
+        # add some horizontal spacing to avoid overlap with labels
+        plt.subplots_adjust(hspace=Visualization.horizontalPadding)
 
-    def show(self):
-        plt.show()
+    def create_new_chart(self, layout_id=None):
+        """
+        Add a new subplot to the current visualization, so that multiple graphs can be overlaid onto one chart
+        (e.g. scatterplot over heatmap).
 
-    #
-    # adds a new subplot to the current visualization
-    # -> multiple graphs can be overlaid onto one chart (e.g. scatterplot over heatmap)
-    #
-    # inputs:
-    #   _layoutID - 3-digit integer: denoting the position of the graph in figure
-    #               (xyn : 'x'=width, 'y'=height of grid, 'n'=position within grid)
-    #
-    def createNewChart(self, _layoutID=None):
-        self.fig.add_subplot(_layoutID)
+        Parameters:
+        -----------
+        layout_id: int (3-digit)
+            denoting the position of the graph in figure (xyn : 'x'=width, 'y'=height of grid, 'n'=position within grid)
+        """
+        self.fig.add_subplot(layout_id)
 
-    #
-    # helper function with basic commands that are common in every plot
-    # _title      - string: title of the plot
-    # _labels     - dictionary: 'x'(string) name of x-axis, 'y' (string) name of y-axis
-    # _[x|y]Lim   - limits for the function argument|value
-    #
-    def basicSubPlot(self, _title, _labels, _xLim, _yLim):
-        plt.title(_title, fontsize=Visualization.fontSizeTitle)
-        plt.ylabel(_labels['y'], fontsize=Visualization.fontSizeLabel)
-        plt.xlabel(_labels['x'], fontsize=Visualization.fontSizeLabel)
+    def add_line_plot(self, title, labels, data, x_lim=None, y_lim=None):
+        """
+        Draw a 1D line graph into the current figure.
 
-        ax = plt.gca()
-        if _xLim is not None:
-            ax.set_xlim(_xLim[0], _xLim[1])
-        if _yLim is not None:
-            ax.set_ylim(_yLim[0], _yLim[1])
+        Parameters:
+        -----------
+        title: str
+            title of the graph
+        labels: dict {string:string}
+            {'x': name of x-axis, 'y': name of y-axis}
+        x_lim: [2x1] list of float
+            x limits for the function argument or value
+        y_lim: [2x1] list of float
+            y limits for the function argument or value
+        """
+        self.create_sub_plot(title, labels, x_lim=x_lim, y_lim=y_lim)
 
-    #
-    # draw a 1D line graph into the current figure
-    #
-    # inputs:
-    #  _title      - string: title of the graph
-    #  _labels     - dictionary: 'x'(string) name of x-axis, 'y' (string) name of y-axis
-    #  _data       - dictionary: with two arrays of 'pointSets' and their corresponding 'names'
-    #  [x|y]Lim   - 2 x 1 array: limits for the x|y axis, [0]=lower bound, [1]=upper bound
-    #
-    def addLinePlot(self, _title, _labels, _data, xLim=None, yLim=None):
-        self.basicSubPlot(_title, _labels, _xLim=xLim, _yLim=yLim)
-
-        for i in range(len(_data['pointSets'])):
-            plt.plot(_data['pointSets'][i]['x'], _data['pointSets'][i]['y'],
-                     linestyle=_data['linestyle'][i],
-                     color=_data['color'][i],
+        for i in range(len(data['pointSets'])):
+            plt.plot(data['pointSets'][i]['x'], data['pointSets'][i]['y'],
+                     linestyle=data['linestyle'][i],
+                     color=data['color'][i],
                      linewidth=Visualization.graphLineWidth)
 
-        plt.legend(_data['names'], loc="upper left")
+        plt.legend(data['names'], loc="upper left")
         plt.grid()
 
-    #
-    # draw a 2D heatmap into the current figure
-    #
-    # inputs:
-    #  _title      - string: title of the graph
-    #  _labels     - dictionary: 'x'(string) name of x-axis, 'y' (string) name of y-axis
-    #  _gridpoint  - 2 x n array: containing an the arrays of x|y positions of the grid points
-    #  _datapoints - 1D array_ of the data-points that should be positoned into the grid
-    #  [x|y]Lim    - 2 x 1 array: limits for the x|y axis, [0]=lower bound, [1]=upper bound
-    #  vLim        - 2 x 1 array containing the upper[1]|lower[0] bound of the color-scale
-    # cmap         - string: the colormap to use
-    #
-    def addHeatMap(self, _title, _labels, _gridpoints, _datapoints, vLim=[None, None], xLim=None, yLim=None,
-                   colorMap=None):
-        self.basicSubPlot(_title, _labels, _xLim=xLim, _yLim=yLim);
+    def add_heat_map(self, title, labels, grid_points, data_points, v_lim=(None, None),
+                     x_lim=None, y_lim=None, colormap=None):
+        """
+        Draw a 2D heatmap into the current figure.
 
-        plt.pcolormesh(_gridpoints[0], _gridpoints[1], _datapoints, vmin=vLim[0], vmax=vLim[1], cmap=colorMap)
+        Parameters:
+        -----------
+        title. str
+            title of the graph
+        labels: dict {string:string}
+            {'x': name of x-axis, 'y': name of y-axis}
+        grid_points:  - 2 x n array: containing an the arrays of x|y positions of the grid points
+        data_points: - 1D array_ of the data-points that should be positoned into the grid
+        x_lim: [2x1] list of float
+            x limits for the function argument or value
+        y_lim: [2x1] list of float
+            y limits for the function argument or value
+        v_lim: [2x1] list of float
+            limits of the color scale
+        colormap: str
+            the colormap to use
+        """
+        self.create_sub_plot(title, labels, x_lim=x_lim, y_lim=y_lim)
+
+        plt.pcolormesh(grid_points[0], grid_points[1], data_points, vmin=v_lim[0], vmax=v_lim[1], cmap=colormap)
 
         plt.colorbar()
 
-    #
-    # draws a scatterplot onto the current chart
-    #
-    # inputs:
-    #   _shape          - dictionary: 'x'=positions on x-axis, 'y'= positions on y-axis
-    #   _plotSize       - ??
-    #   _colorSequence  - ??
-    #   _colorMap       - string: the colormap to use
-    #  vLim             - 2 x 1 array containing the upper[1]|lower[0] bound of the color-scale
-    #
-    def addScatterPlot(self, _shape, _plotSize, _colorSequence, colorMap=None, vLim=[None, None]):
-        plt.scatter(_shape['x'], _shape['y'], s=_plotSize, c=_colorSequence, vmin=vLim[0], vmax=vLim[1], cmap=colorMap)
+    @staticmethod
+    def add_scatter_plot(shape, plot_size, color_sequence, colormap=None, v_lim=(None, None)):
+        """
+        draws a scatterplot onto the current chart
+
+        Parameters:
+        -----------
+        shape : dict {string, np.ndarray}
+        : 'x'=positions on x-axis, 'y'= positions on y-axis
+        plot_size: ??
+        color_sequence: ??
+        colormap: str
+            the colormap to use
+        v_lim: [2x1] list of float
+            limits of the color scale
+        """
+        plt.scatter(shape['x'], shape['y'], s=plot_size, c=color_sequence, vmin=v_lim[0], vmax=v_lim[1], cmap=colormap)
+
+    @staticmethod
+    def create_sub_plot(title, labels, x_lim, y_lim):
+        """
+        Helper function that sets the title, labels and the axis limits of a plot.
+
+        Parameters:
+        -----------
+        title: str
+            title of the plot
+        labels: dict {string:string}
+            {'x': name of x-axis, 'y': name of y-axis}
+        x_lim: [2x1] list of float
+            x limits for the function argument or value
+        y_lim: [2x1] list of float
+            y limits for the function argument or value
+        """
+        plt.title(title, fontsize=Visualization.fontSizeTitle)
+        plt.ylabel(labels['y'], fontsize=Visualization.fontSizeLabel)
+        plt.xlabel(labels['x'], fontsize=Visualization.fontSizeLabel)
+
+        ax = plt.gca()
+        if x_lim is not None:
+            ax.set_xlim(x_lim[0], x_lim[1])
+        if y_lim is not None:
+            ax.set_ylim(y_lim[0], y_lim[1])
+
+    @staticmethod
+    def show():
+        """
+        Show plots.
+        """
+        plt.show()
+
+
+def plot_sobol_indices(sobol_rel_order_mean, sobol_rel_1st_order_mean, fn_plot, random_vars):
+    # set the global colors
+    mpl.rcParams['text.color'] = '000000'
+    mpl.rcParams['figure.facecolor'] = '111111'
+
+    # set a global style
+    plt.style.use('seaborn-talk')
+
+    cmap = plt.cm.rainbow
+
+    # make bar plot of order ratios
+    labels = ['order=' + str(i) for i in range(1, len(sobol_rel_order_mean) + 1)]
+    mask = np.where(sobol_rel_order_mean >= 0.05)[0]
+    mask_not = np.where(sobol_rel_order_mean < 0.05)[0]
+    labels = [labels[idx] for idx in mask]
+    if mask_not.any():
+        labels.append('misc.')
+        values = np.hstack((sobol_rel_order_mean[mask], np.sum(sobol_rel_order_mean[mask_not])))
+    else:
+        values = sobol_rel_order_mean
+
+    colors = cmap(np.linspace(0.1, 0.9, len(labels)))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, aspect='equal')
+    ax.set_title('Sobol indices (order)')
+    ax.pie(values, labels=labels, colors=colors,
+           autopct='%1.2f%%', shadow=True, explode=[0.1] * len(labels))
+    plt.savefig(os.path.splitext(fn_plot)[0] + '_order.png', facecolor='#ffffff')
+
+    # make bar plot of 1st order parameter ratios
+    mask = np.where(sobol_rel_1st_order_mean >= 0.05)[0]
+    mask_not = np.where(sobol_rel_1st_order_mean < 0.05)[0]
+    labels = [random_vars[idx] for idx in mask]
+    if mask_not.any():
+        labels.append('misc.')
+        values = np.hstack((sobol_rel_1st_order_mean[mask], np.sum(sobol_rel_1st_order_mean[mask_not])))
+    else:
+        values = sobol_rel_1st_order_mean
+
+    colors = cmap(np.linspace(0., 1., len(labels)))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, aspect='equal')
+    ax.set_title('Sobol indices 1st order (parameters)')
+    ax.pie(values, labels=labels, colors=colors,
+           autopct='%1.2f%%', shadow=True, explode=[0.1] * len(labels))
+    plt.savefig(os.path.splitext(fn_plot)[0] + '_parameters.png', facecolor='#ffffff')
