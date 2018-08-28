@@ -47,7 +47,7 @@ class Visualization:
         -----------
         title: str
             title of the graph
-        labels: dict {string:string}
+        labels: {string:string} dict
             {'x': name of x-axis, 'y': name of y-axis}
         x_lim: [2x1] list of float
             x limits for the function argument or value
@@ -74,7 +74,7 @@ class Visualization:
         -----------
         title. str
             title of the graph
-        labels: dict {string:string}
+        labels: {string:string} dict
             {'x': name of x-axis, 'y': name of y-axis}
         grid_points:  - 2 x n array: containing an the arrays of x|y positions of the grid points
         data_points: - 1D array_ of the data-points that should be positoned into the grid
@@ -100,8 +100,8 @@ class Visualization:
 
         Parameters:
         -----------
-        shape : dict {string, np.ndarray}
-        : 'x'=positions on x-axis, 'y'= positions on y-axis
+        shape : {string: np.ndarray} dict
+            {'x': positions on x-axis, 'y': positions on y-axis}
         plot_size: ??
         color_sequence: ??
         colormap: str
@@ -120,7 +120,7 @@ class Visualization:
         -----------
         title: str
             title of the plot
-        labels: dict {string:string}
+        labels: {string:string} dict
             {'x': name of x-axis, 'y': name of y-axis}
         x_lim: [2x1] list of float
             x limits for the function argument or value

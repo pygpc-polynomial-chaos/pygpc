@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e9c8a241-dacc-4779-b865-a33f2b363a9a" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pckg/pce.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pygpc/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pygpc/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pygpc/grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/pygpc/grid.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pygpc/misc.py" beforeDir="false" afterPath="$PROJECT_DIR$/pygpc/misc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pygpc/ni.py" beforeDir="false" afterPath="$PROJECT_DIR$/pygpc/ni.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pygpc/testfuns/peaks.py" beforeDir="false" afterPath="$PROJECT_DIR$/pygpc/testfuns/peaks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pygpc/testfuns/testfunctions.py" beforeDir="false" afterPath="$PROJECT_DIR$/pygpc/testfuns/testfunctions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pygpc/vis.py" beforeDir="false" afterPath="$PROJECT_DIR$/pygpc/vis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -37,11 +25,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vis.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="vis.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pygpc/vis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1515">
-              <caret line="101" column="19" lean-forward="true" selection-start-line="101" selection-start-column="19" selection-end-line="101" selection-end-column="19" />
+            <state relative-caret-position="1830">
+              <caret line="122" column="32" selection-start-line="122" selection-start-column="32" selection-end-line="122" selection-end-column="32" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -49,10 +37,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="grid.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="grid.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pygpc/grid.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
+            <state relative-caret-position="-2070">
               <caret line="3" column="3" selection-end-line="3" selection-end-column="3" />
               <folding>
                 <element signature="e#219#237#0" expanded="true" />
@@ -670,16 +658,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pygpc/vis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1515">
-          <caret line="101" column="19" lean-forward="true" selection-start-line="101" selection-start-column="19" selection-end-line="101" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/doc/tex/head.aux">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -710,6 +688,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pygpc/grid.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2070">
+          <caret line="3" column="3" selection-end-line="3" selection-end-column="3" />
+          <folding>
+            <element signature="e#219#237#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pygpc/postproc.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="675">
@@ -717,12 +705,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pygpc/grid.py">
+    <entry file="file://$PROJECT_DIR$/pygpc/vis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="3" selection-end-line="3" selection-end-column="3" />
+        <state relative-caret-position="1830">
+          <caret line="122" column="32" selection-start-line="122" selection-start-column="32" selection-end-line="122" selection-end-column="32" />
           <folding>
-            <element signature="e#219#237#0" expanded="true" />
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
