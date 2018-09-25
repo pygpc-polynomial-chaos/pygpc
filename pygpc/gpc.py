@@ -2,8 +2,7 @@
 """
 Class that provides general polynomial chaos methods
 """
-
-# TODO: Ask for sobol_idx_bool
+# TODO: transform into meta class
 
 import ctypes
 import scipy
@@ -14,6 +13,72 @@ from .postproc import *
 
 
 class gPC:
+    """
+    General gPC base class
+
+    Attributes
+    ----------
+    N_grid: int
+        number of grid points
+    N_poly: int
+        number of polynomials psi
+    N_samples: int
+        number of samples xi
+    N_out: int
+        number of output coefficients
+    dim: int
+        number of uncertain parameters to process
+    pdf_type: [dim] list of str
+        type of pdf 'beta' or 'norm'
+    pdf_shape: list of list of float
+        shape parameters of pdfs
+        beta-dist:   [[alpha], [beta]    ]
+        normal-dist: [[mean],  [variance]]
+    limits: list of list of float
+        upper and lower bounds of random variables
+        beta-dist:   [[a1 ...], [b1 ...]]
+        normal-dist: [[0 ... ], [0 ... ]] (not used)
+    order: [dim] list of int
+        maximum individual expansion order
+        generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        maximum expansion order (sum of all exponents)
+        the maximum expansion order considers the sum of the orders of combined polynomials only
+    interaction_order: int
+        number of random variables, which can interact with each other
+        all polynomials are ignored, which have an interaction order greater than the specified
+    grid: grid object
+        grid object generated in grid.py including grid.coords and grid.coords_norm
+    random_vars: [dim] list of str
+        string labels of the random variables
+    sobol: [N_sobol x N_out] np.ndarray
+        Sobol indices of N_out output quantities
+    sobol_idx: [N_sobol] list of np.ndarray
+        List of parameter label indices belonging to Sobol indices
+    cpu: bool
+        flag to execute the calculation on the cpu
+    gpu: bool
+        flag to execute the calculation on the gpu
+    verbose: bool
+        flag to print out the progress in the standard output
+    gpc_matrix: [N_samples x N_poly] np.ndarray
+        generalized polynomial chaos matrix
+    gpc_matrix_inv: [N_poly x N_samples] np.ndarray
+        pseudo inverse of the generalized polynomial chaos matrix
+    gpc_coeffs: [N_poly x N_out] np.ndarray
+        coefficient matrix of independent regions of interest for every coefficient
+    poly: [dim x order_span] list of list of np.poly1d:
+        polynomial objects containing the coefficients that are used to build the gpc matrix
+    poly_gpu: np.ndarray
+        polynomial coefficients stored in a np.ndarray that can be processed on a graphic card
+    poly_idx: [N_poly x dim] np.ndarray
+        multi indices to determine the degree of the used sub-polynomials
+    poly_idx_gpu [N_poly x dim] np.ndarray
+        multi indices to determine the degree of the used sub-polynomials stored in a np.ndarray that can be processed
+        on a graphic card
+    poly_der: [dim x order_span] list of list of np.poly1d:
+        derivative of the polynomial objects containing the coefficients that are used to build the gpc matrix
+    """
     def __init__(self):
         self.random_vars = None
         self.gpc_coeffs = None
@@ -23,8 +88,8 @@ class gPC:
         self.poly_gpu = None
         self.poly_idx = None
         self.poly_idx_gpu = None
-        self.poly_norm = None
-        self.poly_norm_basis = None
+        self.poly_norm = None #
+        self.poly_norm_basis = None #
         self.poly_der = None
         self.dim = None
         self.order = None
@@ -32,7 +97,7 @@ class gPC:
         self.grid = None
         self.sobol = None
         self.sobol_idx = None
-        self.sobol_idx_bool = None
+        self.sobol_idx_bool = None #
         self.interaction_order = None
         self.limits = None
         self.N_poly = None

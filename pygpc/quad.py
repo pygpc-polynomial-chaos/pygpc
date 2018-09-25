@@ -4,41 +4,73 @@ Class that provides polynomial chaos quadratur methods
 """
 
 from .gpc import *
+from .misc import get_pdf_beta
 
 
 class Quad(gPC):
-    def __init__(self, pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None):
-        """
-        Quadratur gPC subclass
-        -----------------------
-        Quad(random_vars, pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid)
+    """
+    Quadratur gPC subclass
 
-        Parameters:
-        -----------------------
-            pdf_type: list of str [dim]
-                type of pdf 'beta' or 'norm'
-            pdf_shape: list of list of float
-                shape parameters of pdfs
-                beta-dist:   [[alpha], [beta]    ]
-                normal-dist: [[mean],  [variance]]
-            limits: list of list of float
-                upper and lower bounds of random variables
-                beta-dist:   [[a1 ...], [b1 ...]]
-                normal-dist: [[0 ... ], [0 ... ]] (not used)
-            order: list of int [dim]
-                maximum individual expansion order
-                generates individual polynomials also if maximum expansion order in order_max is exceeded
-            order_max: int
-                maximum expansion order (sum of all exponents)
-                the maximum expansion order considers the sum of the orders of combined polynomials only
-            interaction_order: int
-                number of random variables, which can interact with each other
-                all polynomials are ignored, which have an interaction order greater than the specified
-            grid: object
-                grid object generated in .grid.py including grid.coords and grid.coords_norm
-            random_vars: list of str [dim]
-                string labels of the random variables
-        """
+    Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)
+
+    Parameters
+    ----------
+    pdf_type: [dim] list of str
+        type of pdf 'beta' or 'norm'
+    pdf_shape: list of list of float
+        shape parameters of pdfs
+        beta-dist:   [[alpha], [beta]    ]
+        normal-dist: [[mean],  [variance]]
+    limits: list of list of float
+        upper and lower bounds of random variables
+        beta-dist:   [[a1 ...], [b1 ...]]
+        normal-dist: [[0 ... ], [0 ... ]] (not used)
+    order: [dim] list of int
+        maximum individual expansion order
+        generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        maximum expansion order (sum of all exponents)
+        the maximum expansion order considers the sum of the orders of combined polynomials only
+    interaction_order: int
+        number of random variables, which can interact with each other
+        all polynomials are ignored, which have an interaction order greater than the specified
+    grid: grid object
+        grid object generated in grid.py including grid.coords and grid.coords_norm
+    random_vars: [dim] list of str
+        string labels of the random variables
+
+    Attributes
+    ----------
+    N_grid: int
+        number of grid points
+    dim: int
+        number of uncertain parameters to process
+    pdf_type: [dim] list of str
+        type of pdf 'beta' or 'norm'
+    pdf_shape: list of list of float
+        shape parameters of pdfs
+        beta-dist:   [[alpha], [beta]    ]
+        normal-dist: [[mean],  [variance]]
+    limits: list of list of float
+        upper and lower bounds of random variables
+        beta-dist:   [[a1 ...], [b1 ...]]
+        normal-dist: [[0 ... ], [0 ... ]] (not used)
+    order: [dim] list of int
+        maximum individual expansion order
+        generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        maximum expansion order (sum of all exponents)
+        the maximum expansion order considers the sum of the orders of combined polynomials only
+    interaction_order: int
+        number of random variables, which can interact with each other
+        all polynomials are ignored, which have an interaction order greater than the specified
+    grid: grid object
+        grid object generated in grid.py including grid.coords and grid.coords_norm
+    random_vars: [dim] list of str
+        string labels of the random variables
+    """
+
+    def __init__(self, pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None):
         gPC.__init__(self)
         self.random_vars = random_vars
         self.pdf_type = pdf_type
@@ -66,14 +98,14 @@ class Quad(gPC):
 
         coeffs = get_coeffs_expand(self, sim_results)
 
-        Parameters:
-        ----------------------------------
-        sim_results: np.array of float [N_grid x N_out]
-            results from simulations with N_out output quantities,
+        Parameters
+        ----------
+        sim_results: [N_grid x N_out] np.ndarray of float
+            results from simulations with N_out output quantities
 
-        Returns:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
+        Returns
+        -------
+        coeffs: [N_coeffs x N_out] np.ndarray of float
             gPC coefficients
         """
 
@@ -98,9 +130,9 @@ class Quad(gPC):
 
             for i_dim in range(self.dim):
                 if self.pdf_type[i_dim] == 'beta':
-                    joint_pdf[:, i_dim] = pdf_beta(self.grid.coords_norm[:, i_dim],
-                                                   self.pdf_shape[0][i_dim],
-                                                   self.pdf_shape[1][i_dim], -1, 1)
+                    joint_pdf[:, i_dim] = get_pdf_beta(self.grid.coords_norm[:, i_dim],
+                                                       self.pdf_shape[0][i_dim],
+                                                       self.pdf_shape[1][i_dim], -1, 1)
 
                 if self.pdf_type[i_dim] == 'norm' or self.pdf_type[i_dim] == 'normal':
                     joint_pdf[:, i_dim] = scipy.stats.norm.pdf(self.grid.coords_norm[:, i_dim])

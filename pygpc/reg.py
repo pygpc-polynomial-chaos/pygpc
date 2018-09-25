@@ -11,38 +11,72 @@ from .misc import *
 
 
 class Reg(gPC):
+    """
+    Regression gPC subclass
+
+    Reg(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)
+
+    Parameters
+    ----------
+    pdf_type: [dim] list of str
+        type of pdf 'beta' or 'norm'
+    pdf_shape: list of list of float
+        shape parameters of pdfs
+        beta-dist:   [[alpha], [beta]    ]
+        normal-dist: [[mean],  [variance]]
+    limits: list of list of float
+        upper and lower bounds of random variables
+        beta-dist:   [[a1 ...], [b1 ...]]
+        normal-dist: [[0 ... ], [0 ... ]] (not used)
+    order: [dim] list of int
+        maximum individual expansion order
+        generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        maximum expansion order (sum of all exponents)
+        the maximum expansion order considers the sum of the orders of combined polynomials only
+    interaction_order: int
+        number of random variables, which can interact with each other
+        all polynomials are ignored, which have an interaction order greater than the specified
+    grid: grid object
+        grid object generated in grid.py including grid.coords and grid.coords_norm
+    random_vars: [dim] list of str
+        string labels of the random variables
+
+    Attributes
+    ----------
+    N_grid: int
+        number of grid points
+    dim: int
+        number of uncertain parameters to process
+    pdf_type: [dim] list of str
+        type of pdf 'beta' or 'norm'
+    pdf_shape: list of list of float
+        shape parameters of pdfs
+        beta-dist:   [[alpha], [beta]    ]
+        normal-dist: [[mean],  [variance]]
+    limits: list of list of float
+        upper and lower bounds of random variables
+        beta-dist:   [[a1 ...], [b1 ...]]
+        normal-dist: [[0 ... ], [0 ... ]] (not used)
+    order: [dim] list of int
+        maximum individual expansion order
+        generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        maximum expansion order (sum of all exponents)
+        the maximum expansion order considers the sum of the orders of combined polynomials only
+    interaction_order: int
+        number of random variables, which can interact with each other
+        all polynomials are ignored, which have an interaction order greater than the specified
+    grid: grid object
+        grid object generated in grid.py including grid.coords and grid.coords_norm
+    random_vars: [dim] list of str
+        string labels of the random variables
+    relative_error_loocv: list of float
+        relative error of the leave-one-out-cross-validation
+    nan_elm: list of float
+        which elements were dropped due to NaN
+    """
     def __init__(self, pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None):
-        """
-        Regression gPC subclass
-        -----------------------
-        Reg(self, pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars)
-        
-        Parameters:
-        -----------------------
-            random_vars: list of str [dim]
-                string labels of the random variables
-            pdf_type: list of str [dim]
-                type of pdf 'beta' or 'norm'
-            pdf_shape: list of list of float
-                shape parameters of pdfs
-                beta-dist:   [[alpha_1, ...], [beta_1, ...]    ]
-                normal-dist: [[mean_1, ...],  [std_1, ...]]
-            limits: list of list of float
-                upper and lower bounds of random variables
-                beta-dist:   [[min_1, ...], [max_1, ...]]
-                normal-dist: [[0, ... ], [0, ... ]] (not used)
-            order: list of int [dim]
-                maximum individual expansion order
-                generates individual polynomials also if maximum expansion order in order_max is exceeded
-            order_max: int
-                maximum expansion order (sum of all exponents)
-                the maximum expansion order considers the sum of the orders of combined polynomials only
-            interaction_order: int
-                number of random variables, which can interact with each other
-                all polynomials are ignored, which have an interaction order greater than the specified
-            grid: object
-                grid object generated in .grid.py including grid.coords and grid.coords_norm
-        """
         gPC.__init__(self)
         self.random_vars = random_vars
         self.pdf_type = pdf_type
@@ -55,7 +89,7 @@ class Reg(gPC):
         self.grid = grid
         self.N_grid = grid.coords.shape[0]
         self.relative_error_loocv = []
-        self.nan_elm = []  # which elements were dropped due to NAN
+        self.nan_elm = []
 
         # setup polynomial basis functions
         self.init_polynomial_basis()
@@ -70,16 +104,16 @@ class Reg(gPC):
         """
         Determine the gPC coefficients by the regression method.
 
-        coeffs = get_coeffs_expand(self, sim_results)
+        coeffs = get_coeffs_expand(sim_results)
 
-        Parameters:
-        ----------------------------------
-        sim_results: np.array of float [N_grid x N_out]
+        Parameters
+        ----------
+        sim_results: [N_grid x N_out] np.ndarray of float
             results from simulations with N_out output quantities,
 
-        Returns:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
+        Returns
+        -------
+        coeffs: [N_coeffs x N_out] np.ndarray of float
             gPC coefficients
         """
 
@@ -103,13 +137,15 @@ class Reg(gPC):
         Perform leave one out cross validation of gPC with maximal 100 points
         and add result to self.relative_error_loocv.
 
-        Parameters:
-        ----------------------------------
-        sim_results: np.array() [N_grid x N_out]
+        relative_error_loocv = get_loocv(sim_results)
+
+        Parameters
+        ----------
+        sim_results: np.ndarray [N_grid x N_out]
             Results from N_grid simulations with N_out output quantities
 
-        Returns:
-        ----------------------------------
+        Returns
+        -------
         relative_error_loocv: float
             relative mean error of leave one out cross validation
         """
@@ -134,7 +170,7 @@ class Reg(gPC):
             sim_results_temp = sim_results[loocv_point_idx[i], :]
             relative_error[i] = scipy.linalg.norm(sim_results_temp -np.dot(self.A[loocv_point_idx[i], :], coeffs_loo))\
                                 / scipy.linalg.norm(sim_results_temp)
-            fancy_bar("LOOCV", int(i + 1), int(N_loocv_points))
+            display_fancy_bar("LOOCV", int(i + 1), int(N_loocv_points))
 
         # store result in relative_error_loocv
         self.relative_error_loocv.append(np.mean(relative_error))

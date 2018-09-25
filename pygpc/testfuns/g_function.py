@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
+
 def g_function(x,a):
     """ N-dimensional g-function used by Saltelli and Sobol
         this test function is used as an integrand for various numerical 
