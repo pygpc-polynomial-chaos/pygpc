@@ -5,6 +5,7 @@ Class that provides polynomial chaos regression methods
 
 import time
 import random
+from builtins import range
 
 from .gpc import *
 from .misc import *

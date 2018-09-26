@@ -7,8 +7,9 @@ Created on Wed Sep 14 11:21:45 2016
 import pyfempp
 import os
 import warnings
-
+from builtins import range
 from _functools import partial
+
 from .misc import *
 from .io import *
 from .reg import *
