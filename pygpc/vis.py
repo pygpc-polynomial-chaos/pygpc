@@ -78,6 +78,8 @@ class Visualization:
             x limits for the function argument or value
         y_lim: [2] list of float, optional, default=None
             y limits for the function argument or value
+        data: np.ndarray
+            data that should be plotted
         """
         self.create_sub_plot(title, labels, x_lim=x_lim, y_lim=y_lim)
 

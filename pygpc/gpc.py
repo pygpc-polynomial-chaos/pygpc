@@ -2,17 +2,18 @@
 """
 Class that provides general polynomial chaos methods
 """
-# TODO: transform into meta class
 
 import ctypes
 import scipy
 import os
+
 from .misc import *
 from .grid import *
 from .postproc import *
 
 
 class gPC:
+    # TODO: transform into abstract base class
     """
     General gPC base class
 
@@ -78,7 +79,14 @@ class gPC:
         on a graphic card
     poly_der: [dim x order_span] list of list of np.poly1d:
         derivative of the polynomial objects containing the coefficients that are used to build the gpc matrix
+    poly_norm: [order_span x dim] np.ndarray
+        normalizing scaling factors of the used sub-polynomials
+    poly_norm_basis: [N_poly] np.ndarray
+        normalizing scaling factors of the polynomial basis functions
+    sobol_idx_bool: np.ndarray of bool
+        bool values to determine weather the sobol indices belong to linearly independent rows or not
     """
+
     def __init__(self):
         self.random_vars = None
         self.gpc_coeffs = None
@@ -88,8 +96,8 @@ class gPC:
         self.poly_gpu = None
         self.poly_idx = None
         self.poly_idx_gpu = None
-        self.poly_norm = None #
-        self.poly_norm_basis = None #
+        self.poly_norm = None
+        self.poly_norm_basis = None
         self.poly_der = None
         self.dim = None
         self.order = None
@@ -117,24 +125,28 @@ class gPC:
 
         init_polynomial_coeffs(poly_idx_added)
 
-        Parameters:
-        ----------------------------------
-        oder_begin: int
+        Parameters
+        ----------
+        order_begin: int
             order of polynomials to begin with
         order_end: int
             order of polynomials to end with
+
+        Example
+        -------
+         poly    |     dim_1     dim_2    ...    dim_M
+        -----------------------------------------------
+        Poly_1   |  [coeffs]  [coeffs]   ...  [coeffs]
+        Poly_2   |  [coeffs]  [coeffs]   ...  [coeffs]
+          ...    |  [coeffs]  [coeffs]   ...   [0]
+          ...    |  [coeffs]  [coeffs]   ...   [0]
+          ...    |  [coeffs]  [coeffs]   ...   ...
+        Poly_N   |   [0]      [coeffs]   ...   [0]
+
+        size: [max_individual_order x dim] (includes polynomials also not used)
         """
 
-        #  poly    |     dim_1     dim_2    ...    dim_M
-        # -----------------------------------------------
-        # Poly_1   |  [coeffs]  [coeffs]   ...  [coeffs]
-        # Poly_2   |  [coeffs]  [coeffs]   ...  [coeffs]
-        #   ...    |  [coeffs]  [coeffs]   ...   [0]
-        #   ...    |  [coeffs]  [coeffs]   ...   [0]
-        #   ...    |  [coeffs]  [coeffs]   ...   ...
-        # Poly_N   |   [0]      [coeffs]   ...   [0]
-        #
-        # size: [max_individual_order x dim] (includes polynomials also not used)
+        self.poly_norm = np.zeros([order_end-order_begin, self.dim])
 
         for i_dim in range(self.dim):
 
@@ -667,7 +679,7 @@ class gPC:
 
         # look for unique combinations (i.e. available sobol combinations)
         # size: [N_sobol x dim]
-        sobol_idx_bool = unique_rows(sobol_mask)
+        sobol_idx_bool = get_array_unique_rows(sobol_mask)
 
         # delete the first row where all polys are order 0 (no sensitivity)
         sobol_idx_bool = np.delete(sobol_idx_bool, [0], axis=0)

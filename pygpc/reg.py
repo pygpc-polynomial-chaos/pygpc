@@ -5,6 +5,8 @@ Class that provides polynomial chaos regression methods
 
 import time
 import random
+import numpy as np
+import scipy
 
 from .gpc import *
 from .misc import *
@@ -76,6 +78,7 @@ class Reg(gPC):
     nan_elm: list of float
         which elements were dropped due to NaN
     """
+
     def __init__(self, pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None):
         gPC.__init__(self)
         self.random_vars = random_vars

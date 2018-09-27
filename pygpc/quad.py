@@ -125,7 +125,7 @@ class Quad(gPC):
                     break
 
         # if not, calculate joint pdf
-        if not (grid_pdf_fit):
+        if not grid_pdf_fit:
             joint_pdf = np.ones(self.grid.coords_norm.shape)
 
             for i_dim in range(self.dim):
