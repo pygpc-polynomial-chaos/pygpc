@@ -7,6 +7,7 @@ import time
 import random
 import numpy as np
 import scipy
+from builtins import range
 
 from .gpc import *
 from .misc import *

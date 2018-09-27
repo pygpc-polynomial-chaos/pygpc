@@ -9,6 +9,7 @@ import multiprocessing
 import os
 import sys
 import math
+from builtins import range
 
 from .reg import *
 from .io import *
@@ -676,7 +677,6 @@ def get_pdf_beta(x, p, q, a, b):
             * (b - a) ** (p + q - 1)) ** (-1) * (x - a) ** (p - 1) * (b - x) ** (q - 1)
 
 
-# TODO:neccessary?
 def get_reg_obj(fname, results_folder):
     # if .yaml does exist: load from .yaml file
     if os.path.exists(fname):

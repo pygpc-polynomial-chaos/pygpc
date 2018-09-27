@@ -6,6 +6,7 @@ Class that provides general polynomial chaos methods
 import ctypes
 import scipy
 import os
+from builtins import range
 
 from .misc import *
 from .grid import *

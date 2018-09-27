@@ -6,6 +6,8 @@ Functions and classes that provide data and methods for the generation and proce
 # TODO: Function Variables lowercase?
 
 import numpy as np
+from builtins import range
+
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
 from .misc import get_multi_indices
@@ -368,7 +370,7 @@ def norm(coords, pdf_type, grid_shape, limits):
     return coords_norm
 
 
-class TensGrid:
+class TensorGrid:
     """
     Generate TensorGrid object instance.
 
@@ -684,10 +686,8 @@ class RandomGrid:
         """
         Generate RandomGrid object instance
 
-        __init__(self, pdf_type, grid_shape, limits, N, seed=None):
-
-        Parameters:
-        -----------
+        Parameters
+        ----------
         pdf_type: list of str [N_vars]
             variable specific type of pdf ("beta", "normal")
         grid_shape: list of list of float [2 x N_vars]
