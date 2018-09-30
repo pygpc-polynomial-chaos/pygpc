@@ -13,8 +13,8 @@ from .grid import *
 from .postproc import *
 
 
+# TODO: transform into abstract base class
 class gPC:
-    # TODO: transform into abstract base class
     """
     General gPC base class
 
@@ -62,7 +62,7 @@ class gPC:
     gpu: bool
         flag to execute the calculation on the gpu
     verbose: bool
-        flag to print out the progress in the standard output
+        boolean value to determine if to print out the progress into the standard output
     gpc_matrix: [N_samples x N_poly] np.ndarray
         generalized polynomial chaos matrix
     gpc_matrix_inv: [N_poly x N_samples] np.ndarray
@@ -84,8 +84,8 @@ class gPC:
         normalizing scaling factors of the used sub-polynomials
     poly_norm_basis: [N_poly] np.ndarray
         normalizing scaling factors of the polynomial basis functions
-    sobol_idx_bool: np.ndarray of bool
-        bool values to determine weather the sobol indices belong to linearly independent rows or not
+    sobol_idx_bool: list of np.ndarray of bool
+            boolean mask that determines which multi indices are unique
     """
 
     def __init__(self):
@@ -181,7 +181,11 @@ class gPC:
                         self.poly_norm[i_order, i_dim])
 
     def init_polynomial_basis(self):
-        """Initialize polynomial basis functions for a maximum order expansion."""
+        """
+        Initialize polynomial basis functions for a maximum order expansion.
+
+        init_polynomial_basis()
+        """
 
         # calculate maximum order of polynomials
         N_max = int(np.max(self.order))
@@ -197,7 +201,10 @@ class gPC:
     def init_polynomial_basis_gpu(self):
         """
         Initialized polynomial basis coefficients for graphic card. Converts list of lists of self.polynomial_bases
-        into np.ndarray that can be processed on a graphic card."""
+        into np.ndarray that can be processed on a graphic card.
+
+        init_polynomial_basis_gpu()
+        """
 
         # transform list of lists of polynom objects into np.ndarray
         number_of_variables = len(self.poly[0])
@@ -213,23 +220,26 @@ class gPC:
                 order='C')
 
     def init_polynomial_index(self):
-        """Initialize polynomial multi indices."""
+        """
+        Initialize polynomial multi indices. Determine 2D multi-index array (order) of basis functions and
+        generate multi-index list up to maximum order.
 
-        # Determine 2D multi-index array (order) of basis functions w.r.t. 2D array
-        # of polynomials self.poly
-        #
-        # poly_idx |     dim_1       dim_2       ...    dim_M
-        # -------------------------------------------------------
-        # basis_1  |  [order_D1]  [order_D2]     ...  [order_DM]    
-        # basis_2  |  [order_D1]  [order_D2]     ...  [order_DM]
-        #  ...     |  [order_D1]  [order_D2]     ...  [order_DM]
-        #  ...     |  [order_D1]  [order_D2]     ...  [order_DM]
-        #  ...     |  [order_D1]  [order_D2]     ...  [order_DM]
-        # basis_Nb |  [order_D1]  [order_D2]     ...  [order_DM]
-        #
-        # size: [No. of basis functions x dim]
+        init_polynomial_index()
 
-        # generate multi-index list up to maximum order
+        Example
+        -------
+        poly_idx |     dim_1       dim_2       ...    dim_M
+        -------------------------------------------------------
+        basis_1  |  [order_D1]  [order_D2]     ...  [order_DM]
+        basis_2  |  [order_D1]  [order_D2]     ...  [order_DM]
+         ...     |  [order_D1]  [order_D2]     ...  [order_DM]
+         ...     |  [order_D1]  [order_D2]     ...  [order_DM]
+         ...     |  [order_D1]  [order_D2]     ...  [order_DM]
+        basis_Nb |  [order_D1]  [order_D2]     ...  [order_DM]
+
+        size: [No. of basis functions x dim]
+        """
+
         if self.dim == 1:
             self.poly_idx = np.linspace(0, self.order_max, self.order_max + 1, dtype=int)[:, np.newaxis]
         else:
@@ -270,9 +280,9 @@ class gPC:
 
         extend_polynomial_basis(poly_idx_added)
 
-        Parameters:
-        ----------------------------------
-        poly_idx_added: np.array of int [N_poly_added x dim]
+        Parameters
+        ----------
+        poly_idx_added: [N_poly_added x dim] np.ndarray
             array of added polynomials (order)
         """
 
@@ -299,7 +309,7 @@ class gPC:
         order_max_current = len(self.poly) - 1
 
         # preallocate new rows to polynomial lists
-        for i in range(order_max_added - order_max_current):
+        for _ in range(order_max_added - order_max_current):
             self.poly.append([0 for _ in range(self.dim)])
             self.poly_norm = np.vstack([self.poly_norm, np.zeros(self.dim)])
 
@@ -337,15 +347,15 @@ class gPC:
     def extend_gpc_matrix_samples(self, samples_poly_ratio, seed=None):
         """
         Add sample points according to input pdfs to grid and extend the gpc matrix such that the ratio of
-        rows/columns is samples_poly_ratio.
+        rows/columns equals samples_poly_ratio.
 
         extend_gpc_matrix_samples(samples_poly_ratio, seed=None):
 
-        Parameters:
-        ----------------------------------
+        Parameters
+        ----------
         samples_poly_ratio: float
             ratio between number of samples and number of polynomials the matrix will be extended until
-        seed (optional): float
+        seed: float, optional, default=None
             random seeding point
         """
 
@@ -379,13 +389,13 @@ class gPC:
 
         replace_gpc_matrix_samples(idx, seed=None)
 
-        Parameters:
-        ----------------------------------
-        idx: np.array of int
+        Parameters
+        ----------
+        idx: np.ndarray
             array of grid indices of obj.grid.coords[idx,:] which are going to be replaced
             (rows of gPC matrix will be replaced by new ones)
-        seed (optional): float
-            Random seeding point
+        seed: float, optional, default=None
+            random seeding point
         """
 
         # Generate new grid points
@@ -410,8 +420,9 @@ class gPC:
 
     def init_gpc_matrix(self):
         """
-        Construct the gpc matrix self.gpc_matrix [self.grid.coords.shape[0] x N_poly] and invert it using the
-        Moore Penrose pseudo inverse self.gpc_matrix_inv.
+        Construct the gPC matrix and  the Moore-Penrose-pseudo-inverse.
+
+        init_gpc_matrix()
         """
 
         vprint('Constructing gPC matrix ...', verbose=self.verbose)
@@ -420,7 +431,8 @@ class gPC:
         def cpu(self, gpc_matrix):
             for i_poly in range(self.N_poly):
                 for i_dim in range(self.dim):
-                    gpc_matrix[:, i_poly] *= self.poly[self.poly_idx[i_poly][i_dim]][i_dim](self.grid.coords_norm[:, i_dim])
+                    gpc_matrix[:, i_poly] *= \
+                        self.poly[self.poly_idx[i_poly][i_dim]][i_dim](self.grid.coords_norm[:, i_dim])
             self.gpc_matrix = gpc_matrix
 
         def gpu(self, gpc_matrix):
@@ -460,82 +472,76 @@ class gPC:
         # invert gpc matrix gpc_matrix_inv [N_basis x self.grid.coords.shape[0]]
         self.gpc_matrix_inv = np.linalg.pinv(gpc_matrix)
 
-    def get_mean(self, coeffs):
+    @staticmethod
+    def get_mean_value(coeffs):
         """
-        Calculate the expected value.
+        Calculate the expected mean value.
 
-        mean = mean(coeffs)
+        mean = get_mean_value(coeffs)
 
-        Parameters:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
+        Parameters
+        ----------
+        coeffs: [N_coeffs x N_out] np.ndarray
             gpc coefficients
 
-        Returns:
-        ----------------------------------
-        mean: np.array of float [1 x N_out]
-            mean
+        Returns
+        -------
+        mean: [1 x N_out] np.ndarray
+            expected mean value
         """
 
         mean = coeffs[0, :]
         mean = mean[np.newaxis, :]
         return mean
 
-    def get_std(self, coeffs):
+    @staticmethod
+    def get_standard_deviation(coeffs):
         """
         Calculate the standard deviation.
 
-        std = std(coeffs)
+        std = get_standard_deviation(coeffs)
 
-        Parameters:
-        ----------------------------------
+        Parameters
+        ----------
         coeffs: np.array of float [N_coeffs x N_out]
             gpc coefficients
 
-        Returns:
-        ----------------------------------
-        std: np.array of float [1 x N_out]
+        Returns
+        -------
+        std: [1 x N_out] np.ndarray
             standard deviation
         """
 
-        # return np.sqrt(np.sum(np.multiply(np.square(self.coeffs[1:,:]),self.poly_norm_basis[1:,:]),axis=0))
         std = np.sqrt(np.sum(np.square(coeffs[1:, :]), axis=0))
         std = std[np.newaxis, :]
         return std
 
-    def get_pdf_mc(self, N_samples, coeffs=None, output_idx=None):
+    def get_pdf_monte_carlo(self, N_samples, coeffs=None, output_idx=None):
         """
-        Randomly sample the gpc expansion to determine output pdfs in specific points.
+        Randomly sample the gPC expansion to determine output pdfs in specific points.
 
-        xi, y = MC_sampling(coeffs, N_samples, output_idx=None)
+        xi = get_pdf_mc(N_samples, coeffs=None, output_idx=None)
 
-        Parameters:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
-            gpc coefficients
+        Parameters
+        ----------
         N_samples: int
             number of random samples drawn from the respective input pdfs
-        output_idx (optional): np.array of int [1 x N_out]
-            idx of output quantities to consider (Default: all outputs)
+        output_idx: [1 x N_out] np.ndarray, optional, default=None
+            idx of output quantities to consider
+        coeffs: [N_coeffs x N_out] np.ndarray, optional, default=None
+            gPC coefficients
 
-        Returns:
-        ----------------------------------
-        xi: np.array of float [N_samples x dim]
+        Returns
+        -------
+        xi: [N_samples x dim] np.ndarray
             generated samples in normalized coordinates
-        y: np.array of float [N_samples x N_out]
-            gpc solutions
         """
 
         # handle input parameters
         if not coeffs:
-            coeffs=self.gpc_coeffs
+            coeffs = self.gpc_coeffs
 
         self.N_out = coeffs.shape[1]
-
-        # if output index list is not provided, sample all gpc outputs
-        if not output_idx:
-            output_idx = np.linspace(0, self.N_out - 1, self.N_out)
-            output_idx = output_idx[np.newaxis, :]
 
         # seed the random numbers generator
         np.random.seed()
@@ -550,6 +556,10 @@ class gPC:
                 xi[:, i_dim] = (np.random.normal(0, 1, [N_samples, 1]))[:, 0]
 
         # TODO: pce necessary?
+        # if output index list is not provided, sample all gpc outputs
+        # if not output_idx:
+            # output_idx = np.linspace(0, self.N_out - 1, self.N_out)
+            # output_idx = output_idx[np.newaxis, :]
         # pce = self.evaluate(coeffs, xi, output_idx)
         # return xi, pce
 
@@ -557,44 +567,41 @@ class gPC:
 
     def get_pce(self, coeffs=None, xi=None, output_idx=None):
         """
-        Calculates the gpc approximation in points with output_idx and normalized parameters xi
-        (interval: [-1, 1])
+        Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).
 
-        y = evaluate(self, coeffs, xi, output_idx)
+        pce = get_pce(coeffs=None, xi=None, output_idx=None)
 
-        example: y = evaluate( [[xi_1_p1 ... xi_dim_p1] ,
-                                [xi_1_p2 ... xi_dim_p2]],
-                                np.array([[0,5,13]])    )
-
-        Parameters:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
+        Parameters
+        ----------
+        coeffs: [N_coeffs x N_out] np.ndarray, optional, default=None
             gpc coefficients
-        xi: np.array of float [1 x dim]
-            point in variable space to evaluate local sensitivity in (normalized coordinates!)
-        output_idx (optional): np.array of int [1 x N_out]
+        xi: [1 x dim] np.ndarray, optional, default=None
+            point in variable space to evaluate local sensitivity in normalized coordinates
+        output_idx: [1 x N_out] np.ndarray, optional, default=None
             idx of output quantities to consider (Default: all outputs)
-        cpu (optional): bool
-            Choice if the matrices should be processed on the CPU or GPU (Default: CPU)
 
-        Returns:
-        ----------------------------------
-        y: np.array of float [N_xi x N_out]
+        Returns
+        -------
+        pce: [N_xi x N_out] np.ndarray
             gpc approximation at normalized coordinates xi
+
+        Example
+        -------
+        pce = get_pce([[xi_1_p1 ... xi_dim_p1] ,[xi_1_p2 ... xi_dim_p2]], np.array([[0,5,13]]))
         """
 
         def cpu():
-            y = np.zeros([xi.shape[0], coeffs.shape[1]])
+            pce = np.zeros([xi.shape[0], coeffs.shape[1]])
             for i_poly in range(self.N_poly):
                 gpc_matrix_new_row = np.ones(xi.shape[0])
                 for i_dim in range(self.dim):
                     gpc_matrix_new_row *= self.poly[self.poly_idx[i_poly][i_dim]][i_dim](xi[:, i_dim])
-                y += np.outer(gpc_matrix_new_row, coeffs[i_poly, :])
-            return y
+                pce += np.outer(gpc_matrix_new_row, coeffs[i_poly, :])
+            return pce
 
         def gpu():
             # initialize matrices and parameters
-            y = np.zeros([xi.shape[0], coeffs.shape[1]])
+            pce = np.zeros([xi.shape[0], coeffs.shape[1]])
             number_of_variables = len(self.poly[0])
             highest_degree = len(self.poly)
 
@@ -602,7 +609,7 @@ class gPC:
             polynomial_coeffs_pointer = self.poly_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
             polynomial_index_pointer = self.poly_idx_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
             xi_pointer = xi.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            sim_result_pointer = y.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+            sim_result_pointer = pce.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
             sim_coeffs_pointer = coeffs.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
             number_of_xi_size_t = ctypes.c_size_t(xi.shape[0])
             number_of_variables_size_t = ctypes.c_size_t(number_of_variables)
@@ -621,7 +628,7 @@ class gPC:
                      sim_coeffs_pointer, number_of_psi_size_t, number_of_result_vectors_size_t,
                      number_of_variables_size_t,
                      highest_degree_size_t, number_of_xi_size_t)
-            return y
+            return pce
 
         # handle input parameters
         self.N_out = coeffs.shape[1]
@@ -647,21 +654,21 @@ class gPC:
         """
         Determine the available sobol indices.
 
-        sobol, sobol_idx = get_sobol_indices(self, coeffs)
+        sobol, sobol_idx = get_sobol_indices(coeffs=None)
 
-        Parameters:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
+        Parameters
+        ----------
+        coeffs: [N_coeffs x N_out] np.ndarray, optional, default=None
             gpc coefficients
 
-        Returns:
-        ----------------------------------
-        sobol: np.array of float [N_sobol x N_out]
-            Not normalized sobol_indices
-        sobol_idx: list of np.array of int [N_sobol x dim]
-            List containing the parameter combinations in rows of sobol
-        sobol_idx_bool: list of np.array of bool
-
+        Returns
+        -------
+        sobol: [N_sobol x N_out] np.ndarray
+            unnormalized sobol_indices
+        sobol_idx: list of [N_sobol x dim] np.ndarray
+            list containing the parameter combinations in rows of sobol
+        sobol_idx_bool: list of np.ndarray of bool
+            boolean mask that determines which multi indices are unique
         """
 
         vprint("Determining Sobol indices", verbose=self.verbose)
@@ -669,7 +676,6 @@ class gPC:
         # handle input parameters
         if not coeffs:
             coeffs = self.gpc_coeffs
-        N_sobol_theoretical = 2 ** self.dim - 1
         N_coeffs = coeffs.shape[0]
         if N_coeffs == 1:
             raise Exception('Number of coefficients is 1 ... no sobol indices to calculate ...')
@@ -699,9 +705,6 @@ class gPC:
         sobol = np.zeros([N_sobol_available, coeffs.shape[1]])
         for i_sobol in range(N_sobol_available):
             sobol[i_sobol, :] = np.sum(np.square(coeffs[sobol_poly_idx[:, i_sobol] == 1, :]), axis=0)
-            # not normalized polynomials:             
-            # sobol[i_sobol, :] = np.sum(np.multiply(np.square(coeffs[sobol_poly_idx[:, i_sobol] == 1, :]),
-                                                   # self.poly_norm_basis[sobol_poly_idx[:, i_sobol] == 1, :]), axis=0)
 
         # sort sobol coefficients in descending order (w.r.t. first output only ...)
         idx_sort_descend_1st = np.argsort(sobol[:, 0], axis=0)[::-1]
@@ -709,15 +712,31 @@ class gPC:
         sobol_idx_bool = sobol_idx_bool[idx_sort_descend_1st]
 
         # get list of sobol indices
-        sobol_idx = [0 for x in range(sobol_idx_bool.shape[0])]
+        sobol_idx = [0 for _ in range(sobol_idx_bool.shape[0])]
         for i_sobol in range(sobol_idx_bool.shape[0]):
             sobol_idx[i_sobol] = np.array([i for i, x in enumerate(sobol_idx_bool[i_sobol, :]) if x])
 
         return sobol, sobol_idx, sobol_idx_bool
 
-    def write_log_sobol(self, path, sobol_rel_order_mean, sobol_rel_1st_order_mean, sobol_extracted_idx_1st):
+    def write_log_sobol(self, fname, sobol_rel_order_mean, sobol_rel_1st_order_mean, sobol_extracted_idx_1st):
+        """
+        Write sobol indices into logfile.
+
+        Parameters
+        ----------
+        fname: str
+            path to output file
+        sobol_rel_order_mean: np.ndarray
+            average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,)
+            over all output quantities
+        sobol_rel_1st_order_mean: np.ndarray
+            average proportion of the random variables of the 1st order Sobol indices to the total variance over all
+            output quantities
+        #TODO: add description
+        sobol_extracted_idx_1st:
+        """
         # start log
-        log = open(os.path.splitext(path)[0] + '.txt', 'w')
+        log = open(os.path.splitext(fname)[0] + '.txt', 'w')
         log.write("Sobol indices:\n")
         log.write("==============\n")
         log.write("\n")
@@ -745,47 +764,37 @@ class gPC:
 
         log.close()
 
-    def get_sobol_order(self, coeffs=None, sobol=None, sobol_idx=None, sobol_idx_bool=None):
+    def get_sobol_order(self, sobol=None, sobol_idx=None, sobol_idx_bool=None):
         """
         Evaluate order of determined sobol indices.
 
         sobol, sobol_idx, sobol_rel_order_mean, sobol_rel_order_std, sobol_rel_1st_order_mean, sobol_rel_1st_order_std
-        = get_sobol_order(self, coeffs=None, sobol=None, sobol_idx=None, sobol_idx_bool=None)
+        = get_sobol_order(coeffs=None, sobol=None, sobol_idx=None, sobol_idx_bool=None)
 
-        Parameters:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
-            gpc coefficients
+        Parameters
+        ----------
+        sobol: [N_sobol x N_out] np.ndarray
+            unnormalized sobol_indices
+        sobol_idx: list of [N_sobol x dim] np.ndarray
+            list containing the parameter combinations in rows of sobol
+        sobol_idx_bool: list of np.ndarray of bool
+            boolean mask that determines which multi indices are unique
 
-        Returns:
-        ----------------------------------
-        sobol: np.array of float [N_sobol x N_out]
-            Not normalized sobol_indices
-        sobol_idx: list of np.array of int [N_sobol x dim]
-            List containing the parameter combinations in rows of sobol
-        sobol_rel_order_mean: nparray of float
-            Average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,)
+        Returns
+        -------
+        sobol_rel_order_mean: np.ndarray
+            average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,)
             over all output quantities
-        sobol_rel_order_std: nparray of float
-            Standard deviation of the proportion of the Sobol indices of the different order to the total variance
+        sobol_rel_order_std: np.ndarray
+            standard deviation of the proportion of the Sobol indices of the different order to the total variance
             (1st, 2nd, etc..,) over all output quantities
-        sobol_rel_1st_order_mean: nparray of float
-            Average proportion of the random variables of the 1st order Sobol indices to the total variance over all
+        sobol_rel_1st_order_mean: np.ndarray
+            average proportion of the random variables of the 1st order Sobol indices to the total variance over all
             output quantities
-        sobol_rel_1st_order_std: nparray of float
-            Standard deviation of the proportion of the random variables of the 1st order Sobol indices to the total
+        sobol_rel_1st_order_std: np.ndarray
+            standard deviation of the proportion of the random variables of the 1st order Sobol indices to the total
             variance over all output quantities
         """
-
-        # handle input parameters
-        if not coeffs:
-            coeffs = self.gpc_coeffs
-        if not(sobol and sobol_idx and sobol_idx_bool):
-            if sobol or sobol_idx or sobol_idx_bool:
-                print('Please put in sobol, sobol_idx and sobol_idx_bool or none of them')
-                return
-            else:
-                sobol, sobol_idx, sobol_idx_bool = self.get_sobol_indices(coeffs)
 
         # get max order
         order_max = np.max(np.sum(sobol_idx_bool, axis=1))
@@ -839,8 +848,8 @@ class gPC:
             for j in range(len(str_out)):
                 print(str_out[j])
 
-        return sobol, sobol_idx, sobol_rel_order_mean, sobol_rel_order_std,\
-               sobol_rel_1st_order_mean, sobol_rel_1st_order_std
+        return sobol, sobol_idx, sobol_rel_order_mean, sobol_rel_order_std, sobol_rel_1st_order_mean,\
+               sobol_rel_1st_order_std
 
     def get_global_sens(self, coeffs):
         """
@@ -852,14 +861,14 @@ class gPC:
 
         get_global_sens = calc_globalsens(coeffs)
 
-        Parameters:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
+        Parameters
+        ----------
+        coeffs: [N_coeffs x N_out] np.ndarray
             gpc coefficients
 
-        Returns:
-        ----------------------------------
-        get_global_sens: np.array of float [dim x N_out]
+        Returns
+        -------
+        get_global_sens: [dim x N_out] np.ndarray
             global derivative based sensitivity coefficients
         """
 
@@ -876,11 +885,11 @@ class gPC:
 
         for i_dim in range(self.dim):
             if self.pdf_type[i_dim] == 'beta':  # Jacobi polynomials
-                knots_list_1d[i_dim], weights_list_1d[i_dim] = quadrature_jacobi_1d(2 * N_max,
+                knots_list_1d[i_dim], weights_list_1d[i_dim] = get_quadrature_jacobi_1d(2 * N_max,
                                                                                     self.pdf_shape[0][i_dim] - 1,
                                                                                     self.pdf_shape[1][i_dim] - 1)
             if self.pdf_type[i_dim] == 'norm' or self.pdf_type[i_dim] == "normal":  # Hermite polynomials
-                knots_list_1d[i_dim], weights_list_1d[i_dim] = quadrature_hermite_1d(2 * N_max)
+                knots_list_1d[i_dim], weights_list_1d[i_dim] = get_quadrature_hermite_1d(2 * N_max)
 
         # pre-process polynomials
         for i_dim in range(self.dim):
@@ -923,16 +932,16 @@ class gPC:
 
         get_local_sens = calc_localsens(coeffs, xi)
 
-        Parameters:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
+        Parameters
+        ----------
+        coeffs: [N_coeffs x N_out] np.ndarray
             gpc coefficients
-        xi: np.array of float [1 x dim]
+        xi: [N_coeffs x N_out] np.ndarray
             point in variable space to evaluate local sensitivity in (normalized coordinates!)
 
-        Returns:
-        ----------------------------------
-        get_local_sens: np.array of float [dim x N_out]
+        Returns
+        -------
+        get_local_sens: [dim x N_out] np.ndarray
             local sensitivity
         """
 
@@ -974,23 +983,24 @@ class gPC:
     def get_pdf(self, coeffs, N_samples, output_idx=None):
         """ Determine the estimated pdfs of the output quantities
 
-        get_pdf = pdf(coeffs, N_samples, output_idx)
+        pdf_x, pdf_y = get_pdf(coeffs, N_samples, output_idx=None)
 
-        Parameters:
-        ----------------------------------
-        coeffs: np.array of float [N_coeffs x N_out]
+        Parameters
+        ----------
+        coeffs: [N_coeffs x N_out] np.ndarray
             gpc coefficients
         N_samples: int
-            Number of samples used to estimate output pdf
-        output_idx (optional): np.array of int [1 x N_out]
-            idx of output quantities to consider (Default: all outputs)
+            number of samples used to estimate output pdf
+        output_idx: [1 x N_out] np.ndarray, optional, default=None
+            idx of output quantities to consider
+            if output_idx=None, all output quantities are considered
 
-        Returns:
-        ----------------------------------
-            pdf_x: nparray [100 x N_out]
-                x-coordinates of output pdf (output quantity),
-            pdf_y: nparray [100 x N_out]
-                y-coordinates of output pdf (probability density of output quantity)
+        Returns
+        -------
+        pdf_x: [100 x N_out] np.ndarray
+            x-coordinates of output pdf (output quantity),
+        pdf_y: [100 x N_out] np.ndarray
+            y-coordinates of output pdf (probability density of output quantity)
         """
 
         self.N_out = coeffs.shape[1]
@@ -1018,10 +1028,10 @@ class gPC:
         """
         Determine the average values of the input random variables from their pdfs.
 
-        Returns:
-        --------
-        mean_random_vars: nparray of float [N_random_vars]
-            Average values of the input random variables
+        Returns
+        -------
+        mean_random_vars: [N_random_vars] np.ndarray
+            average values of the input random variables
         """
         mean_random_vars = np.zeros(self.dim)
 

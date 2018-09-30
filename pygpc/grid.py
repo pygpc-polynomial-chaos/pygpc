@@ -2,8 +2,6 @@
 """
 Functions and classes that provide data and methods for the generation and processing of numerical grids
 """
-# TODO: Add and edit function descriptions
-# TODO: Function Variables lowercase?
 
 import numpy as np
 from builtins import range
@@ -14,10 +12,30 @@ from .misc import get_multi_indices
 from .misc import vprint
 
 
-def quadrature_jacobi_1d(N, b, a):
-    """Get knots and weights of Jacobi polynomials (beta distribution)."""
+def get_quadrature_jacobi_1d(N, b, a):
+    """
+    Get knots and weights of Jacobi polynomials (beta distribution).
+
+    knots, weights = get_quadrature_jacobi_1d(N, b, a)
+
+    Parameter
+    ---------
+    N: int
+        number of knots
+    a: float
+        lower limit of quadrature coefficients
+    b: float
+        upper limit of quadrature coefficients
+
+    Returns
+    -------
+    knots: np.ndarray
+        knots of the quadratur grid
+    weights: np.ndarray
+        weights of the quadratur grid
+    """
     # make array to count N: 0, 1, ..., N-1
-    N_arr = np.array(list(range(1, np.int(N), 1)))
+    N_arr = np.arange(N)
 
     # compose diagonals for companion matrix
     t01 = 1.0 * (b - a) / (2 + a + b)
@@ -42,8 +60,24 @@ def quadrature_jacobi_1d(N, b, a):
     return knots, weights
 
 
-def quadrature_hermite_1d(N):
-    """Get knots and weights of prob. Hermite polynomials (normal distribution)."""
+def get_quadrature_hermite_1d(N):
+    """
+    Get knots and weights of Hermite polynomials (normal distribution).
+
+    knots, weights = get_quadrature_hermite_1d(N)
+
+    Parameter
+    ---------
+    N: int
+        number of knots
+
+    Returns
+    -------
+    knots: np.ndarray
+        knots of the quadratur grid
+    weights: np.ndarray
+        weights of the quadratur grid
+    """
     N = np.int(N)
     knots, weights = np.polynomial.hermite_e.hermegauss(N)
     weights = np.array(list(2.0 * weights / np.sum(weights)))
@@ -51,9 +85,26 @@ def quadrature_hermite_1d(N):
     return knots, weights
 
 
-def quadrature_cc_1d(N):
-    """Computes the Clenshaw Curtis nodes and weights."""
+def get_quadrature_clenshaw_curtis_1d(N):
+    """
+    Get the Clenshaw Curtis nodes and weights.
+
+    knots, weights = get_quadrature_clenshaw_curtis_1d(N)
+
+    Parameter
+    ---------
+    N: int
+        number of knots
+
+    Returns
+    -------
+    knots: np.ndarray
+        knots of the clenshaw_curtis grid
+    weights: np.ndarray
+        weights of the clenshaw_curtis grid
+    """
     N = np.int(N)
+
     if N == 1:
         knots = 0
         weights = 2
@@ -71,29 +122,44 @@ def quadrature_cc_1d(N):
     return knots, weights
 
 
-def quadrature_fejer1_1d(N):
-    """ Computes the Fejer type 1 nodes and weights.
+def get_quadrature_fejer1_1d(N):
+    """
+    Computes the Fejer type 1 nodes and weights.
     
-        This method uses a direct approach.  The paper by Waldvogel
-        exhibits a more efficient approach using Fourier transforms.
-     
-        Reference:
-        Philip Davis, Philip Rabinowitz,
-        Methods of Numerical Integration,
-        Second Edition,
-        Dover, 2007,
-        ISBN: 0486453391 Titel anhand dieser ISBN in Citavi-Projekt übernehmen,
-        LC: QA299.3.D28.
+    This method uses a direct approach. The paper by Waldvogel
+    exhibits a more efficient approach using Fourier transforms.
 
-        Walter Gautschi,
-        Numerical Quadrature in the Presence of a Singularity,
-        SIAM Journal on Numerical Analysis,
-        Volume 4, Number 3, 1967, pages 357-362.
+    Reference:
+    Philip Davis, Philip Rabinowitz,
+    Methods of Numerical Integration,
+    Second Edition,
+    Dover, 2007,
+    ISBN: 0486453391 Titel anhand dieser ISBN in Citavi-Projekt übernehmen,
+    LC: QA299.3.D28.
 
-        Joerg Waldvogel,
-        Fast Construction of the Fejer and Clenshaw-Curtis Quadrature Rules,
-        BIT Numerical Mathematics,
-        Volume 43, Number 1, 2003, pages 1-18.
+    Walter Gautschi,
+    Numerical Quadrature in the Presence of a Singularity,
+    SIAM Journal on Numerical Analysis,
+    Volume 4, Number 3, 1967, pages 357-362.
+
+    Joerg Waldvogel,
+    Fast Construction of the Fejer and Clenshaw-Curtis Quadrature Rules,
+    BIT Numerical Mathematics,
+    Volume 43, Number 1, 2003, pages 1-18.
+
+    knots, weights = get_quadrature_fejer1_1d(N)
+
+    Parameter
+    ---------
+    N: int
+        number of knots
+
+    Returns
+    -------
+    knots: np.ndarray
+        knots of the clenshaw_curtis grid
+    weights: np.ndarray
+        weights of the clenshaw_curtis grid
    """
     N = np.int(N)
 
@@ -122,29 +188,44 @@ def quadrature_fejer1_1d(N):
     return knots, weights
 
 
-def quadrature_fejer2_1d(N):
-    """ Computes the Fejer type 2 nodes and weights (Clenshaw Curtis without boundary nodes).
+def get_quadrature_fejer2_1d(N):
+    """
+    Computes the Fejer type 2 nodes and weights (Clenshaw Curtis without boundary nodes).
         
-        This method uses a direct approach.  The paper by Waldvogel
-        exhibits a more efficient approach using Fourier transforms.
-        
-        Reference:
-        Philip Davis, Philip Rabinowitz,
-        Methods of Numerical Integration,
-        Second Edition,
-        Dover, 2007,
-        ISBN: 0486453391 Titel anhand dieser ISBN in Citavi-Projekt übernehmen,
-        LC: QA299.3.D28.
+    This method uses a direct approach. The paper by Waldvogel
+    exhibits a more efficient approach using Fourier transforms.
 
-        Walter Gautschi,
-        Numerical Quadrature in the Presence of a Singularity,
-        SIAM Journal on Numerical Analysis,
-        Volume 4, Number 3, 1967, pages 357-362.
+    Reference:
+    Philip Davis, Philip Rabinowitz,
+    Methods of Numerical Integration,
+    Second Edition,
+    Dover, 2007,
+    ISBN: 0486453391 Titel anhand dieser ISBN in Citavi-Projekt übernehmen,
+    LC: QA299.3.D28.
 
-        Joerg Waldvogel,
-        Fast Construction of the Fejer and Clenshaw-Curtis Quadrature Rules,
-        BIT Numerical Mathematics,
-        Volume 43, Number 1, 2003, pages 1-18.
+    Walter Gautschi,
+    Numerical Quadrature in the Presence of a Singularity,
+    SIAM Journal on Numerical Analysis,
+    Volume 4, Number 3, 1967, pages 357-362.
+
+    Joerg Waldvogel,
+    Fast Construction of the Fejer and Clenshaw-Curtis Quadrature Rules,
+    BIT Numerical Mathematics,
+    Volume 43, Number 1, 2003, pages 1-18.
+
+    knots, weights = get_quadrature_fejer2_1d(N)
+
+    Parameter
+    ---------
+    N: int
+        number of knots
+
+    Returns
+    -------
+    knots: np.ndarray
+        knots of the clenshaw_curtis grid
+    weights: np.ndarray
+        weights of the clenshaw_curtis grid
     """
     N = np.int(N)
 
@@ -190,8 +271,25 @@ def quadrature_fejer2_1d(N):
     return knots, weights
 
 
-def quadrature_patterson_1d(N):
-    """Computes the nested Gauss-Patterson nodes and weights for N = 1,3,7,15,31."""
+def get_quadrature_patterson_1d(N):
+    """
+    Computes the nested Gauss-Patterson nodes and weights for N = 1,3,7,15,31.
+
+    knots, weights = get_quadrature_patterson_1d(N)
+
+    Parameter
+    ---------
+    N: int
+        number of knots
+        possible values: 1, 3, 7, 15, 31
+
+    Returns
+    -------
+    knots: np.ndarray
+        knots of the clenshaw_curtis grid
+    weights: np.ndarray
+        weights of the clenshaw_curtis grid
+    """
     x = np.zeros(N)
     w = np.zeros(N)
 
@@ -331,12 +429,38 @@ def quadrature_patterson_1d(N):
     else:
         print("Number of points does not match Gauss-Patterson quadrature rule.")
 
-    return x, w
+    knots = x
+    weights = w
+
+    return knots, weights
 
 
-# TODO: Distinguish between different grid types
-def denorm(coords_norm, pdf_type, grid_shape, limits):
-    """Denormalize grid from standardized ([-1, 1] except hermite) to original parameter space for simulations."""
+def get_denormalized_coordinates(coords_norm, pdf_type, grid_shape, limits):
+    """
+    Denormalize grid from standardized ([-1, 1] except hermite) to original parameter space for simulations.
+
+    coords = get_denormalized_coordinates(coords_norm, pdf_type, grid_shape, limits)
+
+    Parameters
+    ----------
+    pdf_type: [dim] list of str
+        type of pdf 'beta' or 'norm'
+    grid_shape: [2 x N_vars] list of list of float
+        shape parameters of PDF
+        beta (jacobi):  [alpha, beta]
+        norm (hermite): [mean, std]
+    limits: [2 x N_vars] list of list of float
+        upper and lower bounds of PDF
+        beta (jacobi):  [min, max]
+        norm (hermite): [0, 0] (unused)
+    coords_norm: [N_samples x dim] np.ndarray
+        normalized [-1, 1] coordinates xi
+
+    Returns
+    -------
+    coords: [N_samples x dim] np.ndarray
+        denormalized coordinates xi
+    """
     coords = np.zeros(coords_norm.shape)
 
     for i_dim in range(coords_norm.shape[1]):
@@ -352,8 +476,32 @@ def denorm(coords_norm, pdf_type, grid_shape, limits):
     return coords
 
 
-def norm(coords, pdf_type, grid_shape, limits):
-    """Normalize grid from original parameter (except hermite) to standardized ([-1, 1] space for simulations."""
+def get_normalized_coordinates(coords, pdf_type, grid_shape, limits):
+    """
+    Normalize grid from original parameter (except hermite) to standardized ([-1, 1] space for simulations.
+
+    coords_norm = get_normalized_coordinates(coords, pdf_type, grid_shape, limits)
+
+    Parameters
+    ----------
+    pdf_type: [dim] list of str
+        type of pdf 'beta' or 'norm'
+    grid_shape: [2 x N_vars] list of list of float
+        shape parameters of PDF
+        beta (jacobi):  [alpha, beta]
+        norm (hermite): [mean, std]
+    limits: [2 x N_vars] list of list of float
+        upper and lower bounds of PDF
+        beta (jacobi):  [min, max]
+        norm (hermite): [0, 0] (unused)
+    coords: [N_samples x dim] np.ndarray
+        denormalized coordinates xi
+
+    Returns
+    -------
+    coords_norm: [N_samples x dim] np.ndarray
+        normalized [-1, 1] coordinates xi
+    """
     coords_norm = np.zeros(coords.shape)
 
     for i_dim in range(coords.shape[1]):
@@ -374,23 +522,25 @@ class TensorGrid:
     """
     Generate TensorGrid object instance.
 
-    __init__(self, pdf_type, grid_type, grid_shape, limits, N):
+    Initialisation
+    --------------
+    TensorGrid(pdf_type, grid_type, grid_shape, limits, N):
 
-    Parameters:
-    -----------
-    pdf_type: list of str [N_vars]
+    Parameters
+    ----------
+    pdf_type: [N_vars] list of str
         variable specific type of PDF ("beta", "normal")
-    grid_type: list of str [N_vars]
+    grid_type: [N_vars] list of str
         specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
-    grid_shape: list of list of float [2 x N_vars]
+    grid_shape: [2 x N_vars] list of list of float
         shape parameters of PDF
         beta (jacobi):  [alpha, beta]
         norm (hermite): [mean, std]
-    limits: list of list of float [2 x N_vars]
+    limits: [2 x N_vars] list of list of float
         upper and lower bounds of PDF
         beta (jacobi):  [min, max]
         norm (hermite): [0, 0] (unused)
-    N: list of int [N_vars]
+    N: [N_vars] list of int
         number of nodes in each dimension
     """
 
@@ -410,16 +560,16 @@ class TensorGrid:
         for i_dim in range(self.dim):
             
             if self.grid_type[i_dim] == 'jacobi':  # jacobi polynomials
-                knots_temp, weights_temp = quadrature_jacobi_1d(self.N[i_dim], self.grid_shape[0][i_dim] - 1,
+                knots_temp, weights_temp = get_quadrature_jacobi_1d(self.N[i_dim], self.grid_shape[0][i_dim] - 1,
                                                                 self.grid_shape[1][i_dim] - 1)
             if self.grid_type[i_dim] == 'hermite':  # hermite polynomials
-                knots_temp, weights_temp = quadrature_hermite_1d(self.N[i_dim])
+                knots_temp, weights_temp = get_quadrature_hermite_1d(self.N[i_dim])
             if self.grid_type[i_dim] == 'cc':  # Clenshaw Curtis
-                knots_temp, weights_temp = quadrature_cc_1d(self.N[i_dim])
+                knots_temp, weights_temp = get_quadrature_clenshaw_curtis_1d(self.N[i_dim])
             if self.grid_type[i_dim] == 'fejer2':  # Fejer type 2 (Clenshaw Curtis without boundary nodes)
-                knots_temp, weights_temp = quadrature_fejer2_1d(self.N[i_dim])
+                knots_temp, weights_temp = get_quadrature_fejer2_1d(self.N[i_dim])
             if self.grid_type[i_dim] == 'patterson':  # Gauss-Patterson (Nested Legendre rule)
-                knots_temp, weights_temp = quadrature_patterson_1d(self.N[i_dim])
+                knots_temp, weights_temp = get_quadrature_patterson_1d(self.N[i_dim])
 
             self.knots_dim.append(knots_temp)
             self.weights_dim.append(weights_temp)
@@ -442,32 +592,34 @@ class TensorGrid:
         self.weights = np.prod(cartesian(self.weights_dim), axis=1) / (2.0 ** self.dim)
 
         # denormalize grid to original parameter space
-        self.coords = denorm(self.coords_norm, self.pdf_type, self.grid_shape, self.limits)
+        self.coords = get_denormalized_coordinates(self.coords_norm, self.pdf_type, self.grid_shape, self.limits)
 
 
-# TODO: grid_shape[1] of norm is now STD!!! check if code changes in sparse grid
+# TODO: grid_shape[1] of norm is now STD. Check if code changes in sparse.
 class SparseGrid:
     """
     Generate SparseGrid object instance.
 
-    __init__(self, pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order,
-             order_sequence_type, make_grid=True):
+    Initialisation
+    --------------
+    SparseGrid(pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order,
+               order_sequence_type, make_grid=True, verbose=True)
 
     Parameters:
     -----------
-    pdf_type: list of str [N_vars]
+    pdf_type: [N_vars] list of str
         variable specific type of PDF ("beta", "normal")
-    grid_type: list of str [N_vars]
+    grid_type: [N_vars] list of str
         specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
-    grid_shape: list of list of float [2 x N_vars]
+    grid_shape: [2 x N_vars] list of list of float
         shape parameters of PDF
         beta (jacobi):  [alpha, beta]
         norm (hermite): [mean, std]
-    limits: list of list of float [2 x N_vars]
+    limits: [2 x N_vars] list of list of float
         upper and lower bounds of PDF
         beta (jacobi):  [min, max]
         norm (hermite): [0, 0] (unused)
-    level: list of int [N_vars]
+    level: [N_vars] list of int
         number of levels in each dimension
     level_max: int
         global combined level maximum
@@ -476,7 +628,9 @@ class SparseGrid:
     order_sequence_type: str
         type of order sequence ('lin', 'exp') common: 'exp'
     make_grid: boolean
-        Generate grid during initialization (TRUE / FALSE)
+        boolean value to determine if to generate grid during initialization
+    verbose: bool
+        boolean value to determine if to print out the progress into the standard output
     """
 
     def __init__(self, pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order,
@@ -505,6 +659,9 @@ class SparseGrid:
             print('Sparse grid initialized but not generated. Please add coords / coords_norm and weights manually.')
 
     def calc_multi_index_lst(self):
+        """
+        Calculate the multi index list needed for the calculation of the SparseGrid.
+        """
         for i_dim in range(self.dim):
             
             if self.grid_type[i_dim] == 'fejer2':
@@ -534,6 +691,14 @@ class SparseGrid:
                     self.order_sequence.append(np.linspace(1, self.level[i_dim] + 1, self.level[i_dim] + 1).tolist())
 
     def calc_l_level(self):
+        """
+        Calculate the l level needed for the Fejer grid type 2.
+
+        Returns
+        -------
+        l_level: np.ndarray
+            l level values
+        """
         if "fejer2" in self.grid_type:
             if self.dim == 1:
                 l_level = np.array([np.linspace(1, self.level_max, self.level_max)]).transpose()
@@ -571,28 +736,28 @@ class SparseGrid:
             for i_level in self.level_sequence[i_dim]:
 
                 if self.grid_type[i_dim] == 'jacobi':  # Jacobi polynomials
-                    knots_l, weights_l = quadrature_jacobi_1d(self.order_sequence[i_dim][i_level],
+                    knots_l, weights_l = get_quadrature_jacobi_1d(self.order_sequence[i_dim][i_level],
                                                               self.grid_shape[0][i_dim] - 1,
                                                               self.grid_shape[1][i_dim] - 1)
-                    knots_l_1, weights_l_1 = quadrature_jacobi_1d(self.order_sequence[i_dim][i_level - 1],
+                    knots_l_1, weights_l_1 = get_quadrature_jacobi_1d(self.order_sequence[i_dim][i_level - 1],
                                                                   self.grid_shape[0][i_dim] - 1,
                                                                   self.grid_shape[1][i_dim] - 1)
 
                 if self.grid_type[i_dim] == 'hermite':  # Hermite polynomials
-                    knots_l, weights_l = quadrature_hermite_1d(self.order_sequence[i_dim][i_level])
-                    knots_l_1, weights_l_1 = quadrature_hermite_1d(self.order_sequence[i_dim][i_level - 1])
+                    knots_l, weights_l = get_quadrature_hermite_1d(self.order_sequence[i_dim][i_level])
+                    knots_l_1, weights_l_1 = get_quadrature_hermite_1d(self.order_sequence[i_dim][i_level - 1])
 
                 if self.grid_type[i_dim] == 'patterson':  # Gauss-Patterson
-                    knots_l, weights_l = quadrature_patterson_1d(self.order_sequence[i_dim][i_level])
-                    knots_l_1, weights_l_1 = quadrature_patterson_1d(self.order_sequence[i_dim][i_level - 1])
+                    knots_l, weights_l = get_quadrature_patterson_1d(self.order_sequence[i_dim][i_level])
+                    knots_l_1, weights_l_1 = get_quadrature_patterson_1d(self.order_sequence[i_dim][i_level - 1])
 
                 if self.grid_type[i_dim] == 'cc':  # Clenshaw Curtis
-                    knots_l, weights_l = quadrature_cc_1d(self.order_sequence[i_dim][i_level])
-                    knots_l_1, weights_l_1 = quadrature_cc_1d(self.order_sequence[i_dim][i_level - 1])
+                    knots_l, weights_l = get_quadrature_clenshaw_curtis_1d(self.order_sequence[i_dim][i_level])
+                    knots_l_1, weights_l_1 = get_quadrature_clenshaw_curtis_1d(self.order_sequence[i_dim][i_level - 1])
 
                 if self.grid_type[i_dim] == 'fejer2':  # Fejer type 2
-                    knots_l, weights_l = quadrature_fejer2_1d(self.order_sequence[i_dim][i_level - 1])
-                    knots_l_1, weights_l_1 = quadrature_fejer2_1d(self.order_sequence[i_dim][i_level - 2])
+                    knots_l, weights_l = get_quadrature_fejer2_1d(self.order_sequence[i_dim][i_level - 1])
+                    knots_l_1, weights_l_1 = get_quadrature_fejer2_1d(self.order_sequence[i_dim][i_level - 2])
 
                 if (i_level == 0 and not self.grid_type[i_dim] == 'fejer2') or \
                    (i_level == 1 and (self.grid_type[i_dim] == 'fejer2')):
@@ -678,7 +843,7 @@ class SparseGrid:
         # denormalize grid to original parameter space
         vprint("    Denormalizing grid for computations ...", verbose=self.verbose)
         self.coords_norm = coords_norm
-        self.coords = denorm(coords_norm, self.pdf_type, self.grid_shape, self.limits)
+        self.coords = get_denormalized_coordinates(coords_norm, self.pdf_type, self.grid_shape, self.limits)
 
 
 class RandomGrid:
