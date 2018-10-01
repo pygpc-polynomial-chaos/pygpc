@@ -137,12 +137,12 @@ class gPC:
         -------
          poly    |     dim_1     dim_2    ...    dim_M
         -----------------------------------------------
-        Poly_1   |  [coeffs]  [coeffs]   ...  [coeffs]
-        Poly_2   |  [coeffs]  [coeffs]   ...  [coeffs]
-          ...    |  [coeffs]  [coeffs]   ...   [0]
-          ...    |  [coeffs]  [coeffs]   ...   [0]
-          ...    |  [coeffs]  [coeffs]   ...   ...
-        Poly_N   |   [0]      [coeffs]   ...   [0]
+        Poly_1   |   [coeffs]   [coeffs]   ...  [coeffs]
+        Poly_2   |   [coeffs]   [coeffs]   ...  [coeffs]
+          ...    |   [coeffs]   [coeffs]   ...   [0]
+          ...    |   [coeffs]   [coeffs]   ...   [0]
+          ...    |   [coeffs]   [coeffs]   ...   ...
+        Poly_N   |     [0]      [coeffs]   ...   [0]
 
         size: [max_individual_order x dim] (includes polynomials also not used)
         """
