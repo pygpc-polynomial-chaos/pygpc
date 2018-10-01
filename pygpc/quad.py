@@ -13,33 +13,9 @@ class Quad(gPC):
     """
     Quadratur gPC subclass
 
+    Initialisation
+    --------------
     Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)
-
-    Parameters
-    ----------
-    pdf_type: [dim] list of str
-        type of pdf 'beta' or 'norm'
-    pdf_shape: list of list of float
-        shape parameters of pdfs
-        beta-dist:   [[alpha], [beta]    ]
-        normal-dist: [[mean],  [variance]]
-    limits: list of list of float
-        upper and lower bounds of random variables
-        beta-dist:   [[a1 ...], [b1 ...]]
-        normal-dist: [[0 ... ], [0 ... ]] (not used)
-    order: [dim] list of int
-        maximum individual expansion order
-        generates individual polynomials also if maximum expansion order in order_max is exceeded
-    order_max: int
-        maximum expansion order (sum of all exponents)
-        the maximum expansion order considers the sum of the orders of combined polynomials only
-    interaction_order: int
-        number of random variables, which can interact with each other
-        all polynomials are ignored, which have an interaction order greater than the specified
-    grid: grid object
-        grid object generated in grid.py including grid.coords and grid.coords_norm
-    random_vars: [dim] list of str
-        string labels of the random variables
 
     Attributes
     ----------
@@ -69,6 +45,32 @@ class Quad(gPC):
     grid: grid object
         grid object generated in grid.py including grid.coords and grid.coords_norm
     random_vars: [dim] list of str
+        string labels of the random variables
+
+    Parameters
+    ----------
+    pdf_type: [dim] list of str
+        type of pdf 'beta' or 'norm'
+    pdf_shape: list of list of float
+        shape parameters of pdfs
+        beta-dist:   [[alpha], [beta]    ]
+        normal-dist: [[mean],  [variance]]
+    limits: list of list of float
+        upper and lower bounds of random variables
+        beta-dist:   [[a1 ...], [b1 ...]]
+        normal-dist: [[0 ... ], [0 ... ]] (not used)
+    order: [dim] list of int
+        maximum individual expansion order
+        generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        maximum expansion order (sum of all exponents)
+        the maximum expansion order considers the sum of the orders of combined polynomials only
+    interaction_order: int
+        number of random variables, which can interact with each other
+        all polynomials are ignored, which have an interaction order greater than the specified
+    grid: grid object
+        grid object generated in grid.py including grid.coords and grid.coords_norm
+    random_vars: [dim] list of str, optional, default=None
         string labels of the random variables
     """
 

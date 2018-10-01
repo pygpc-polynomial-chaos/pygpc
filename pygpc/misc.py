@@ -2,6 +2,7 @@
 """
 Functions and classes that provide data and methods with general usage in the pygpc package
 """
+
 import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt
@@ -17,7 +18,8 @@ from .io import *
 
 class NoDaemonProcess(multiprocessing.Process):
     """
-    from https://stackoverflow.com/questions/6974695/python-process-pool-non-daemonic
+    Helper class to create a non daemonic process.
+    From https://stackoverflow.com/questions/6974695/python-process-pool-non-daemonic
         make 'daemon' attribute always return False
     """
 
@@ -32,6 +34,7 @@ class NoDaemonProcess(multiprocessing.Process):
 
 class NonDaemonicPool(multiprocessing.pool.Pool):
     """
+    Helper class to create a non daemonic pool.
     We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool
     because the latter is only a wrapper function, not a proper class.
     """
@@ -41,28 +44,28 @@ class NonDaemonicPool(multiprocessing.pool.Pool):
 
 def display_fancy_bar(text, i, n_i, more_text=None):
     """
-    Displays a simple progess bar. Call for each iteration and start with i=1
+    Display a simple progess bar.
+    Call for each iteration and start with i=1.
 
     Parameters
-    ---------------------------------
+    ----------
     text: str
-       Text to display in front of actual iteration
-    i: str | int
-       Actual iteration
+       text to display in front of actual iteration
+    i: str or int
+       actual iteration
     n_i: int
-       Number of iterations
-    more_text: str, optional
-       If given, this is displayed at an extra line.
+       number of iterations
+    more_text: str, optional, default=None
+       text that displayed at an extra line.
 
     Examples
-    ---------------------------------
+    --------
     fancy_bar('Run',7,10):
     Run 07 from 10 [================================        ] 70%
 
     fancy_bar(Run,9,10,'Some more text'):
-    some more text
+    Some more text
     Run 09 from 10 [======================================= ] 90%
-
     """
 
     if not isinstance(i, str):
@@ -96,28 +99,29 @@ def display_fancy_bar(text, i, n_i, more_text=None):
         print("")
 
 
-def get_cartesian_product(array_lst, out=None):
+def get_cartesian_product(array_list, cartesian_product=None):
     """
     Generate a cartesian product of input arrays.
 
-    out = get_cartesian_product(arrays, out=None)
+    cartesian_product = get_cartesian_product(array_list, cartesian_product=None)
 
     Parameters
     ----------
-    array_lst : list of array-like
-        1-D arrays to form the cartesian product of.
-    out : ndarray
-        Array to place the cartesian product in.
+    array_list : list of np.ndarray
+        arrays to form the cartesian product with
+    cartesian_product : np.ndarray
+        array to write the cartesian product
 
     Returns
     -------
-    out : ndarray
-        2-D array of shape (M, len(arrays)) containing cartesian products
-        formed of input arrays.
+    cartesian_product : np.ndarray
+        array to write the cartesian product
+        (M, len(arrays))
 
     Examples
     --------
-    cartesian(([1, 2, 3], [4, 5], [6, 7]))
+    cartesian(([1, 2, 3], [4, 5], [6, 7])) =
+
     array([[1, 4, 6],
            [1, 4, 7],
            [1, 5, 6],
@@ -130,30 +134,29 @@ def get_cartesian_product(array_lst, out=None):
            [3, 4, 7],
            [3, 5, 6],
            [3, 5, 7]])
-
     """
 
-    array_lst = [np.asarray(x) for x in array_lst]
-    dtype = array_lst[0].dtype
+    array_list = [np.asarray(x) for x in array_list]
+    dtype = array_list[0].dtype
 
-    n = np.prod([x.size for x in array_lst])
-    if out is None:
-        out = np.zeros([n, len(array_lst)], dtype=dtype)
+    n = np.prod([x.size for x in array_list])
+    if cartesian_product is None:
+        cartesian_product = np.zeros([n, len(array_list)], dtype=dtype)
 
-    m = n / array_lst[0].size
-    out[:, 0] = np.repeat(array_lst[0], m)
-    if array_lst[1:]:
-        cartesian(array_lst[1:], out=out[0:m, 1:])
-        for j in xrange(1, array_lst[0].size):
-            out[j * m:(j + 1) * m, 1:] = out[0:m, 1:]
-    return out
+    m = n / array_list[0].size
+    cartesian_product[:, 0] = np.repeat(array_list[0], m)
+    if array_list[1:]:
+        cartesian(array_list[1:], cartesian_product=cartesian_product[0:m, 1:])
+        for j in range(1, array_list[0].size):
+            cartesian_product[j * m:(j + 1) * m, 1:] = cartesian_product[0:m, 1:]
+    return cartesian_product
 
 
 def get_rotation_matrix(theta):
     """
     Generate rotation matrix from euler angles.
 
-    r = get_rotation_matrix(theta)
+    rotation_matrix = get_rotation_matrix(theta)
 
     Parameters
     ----------
@@ -162,8 +165,8 @@ def get_rotation_matrix(theta):
 
     Returns
     -------
-    out : ndarray
-        (3,3) ndarray rotation matrix computed from euler angles
+    rotation_matrix : [3,3] np.ndarray
+        rotation matrix computed from euler angles
     """
 
     r_x = np.array([[1, 0, 0],
@@ -181,116 +184,117 @@ def get_rotation_matrix(theta):
                     [0, 0, 1]
                     ])
 
-    r = np.dot(r_z, np.dot(r_y, r_x))
+    rotation_matrix = np.dot(r_z, np.dot(r_y, r_x))
 
-    return r
+    return rotation_matrix
 
     
-def get_list_multi_delete(lst, idx):
+def get_list_multi_delete(input_list, index):
     """
     Delete multiple entries from list.
 
-    lst = multi_delete(lst, idx)
+    input_list = get_list_multi_delete(input_list, index)
 
     Parameters
     ----------
-    lst : list
+    input_list : list
         simple list
-    idx : list of integer
+    index : list of integer
         list of indices to delete
 
     Returns
     -------
-    lst : list
-        list without entries specified in idx
+    input_list : list
+        input list without entries specified in index
     """
 
-    indices = sorted(idx, reverse=True)
-    for index in indices:
-        del lst[index]
-    return lst
+    indices = sorted(index, reverse=True)
+    for list_index in indices:
+        del input_list[list_index]
+    return input_list
 
 
-def get_array_unique_rows(data):
+def get_array_unique_rows(array):
     """
     Compute unique rows of array and delete rows that are linearly dependent.
 
-    array = get_array_unique_rows(data)
+    unique = get_array_unique_rows(array)
 
     Parameters
     ----------
-    data : [MxN] np.ndarray
+    array: np.ndarray
         matrix with k linearly dependent rows
 
     Returns
     -------
-    array : [M-k,N] np.ndarray
+    unique: np.ndarray
         matrix without k linearly dependent rows
     """
 
-    unique, idx = np.unique(data.view(data.dtype.descr * data.shape[1]), return_index=True)
-    return unique[np.argsort(idx)].view(data.dtype).reshape(-1, data.shape[1])
+    unique, idx = np.unique(array.view(array.dtype.descr * array.shape[1]), return_index=True)
+    return unique[np.argsort(idx)].view(array.dtype).reshape(-1, array.shape[1])
 
 
-def get_set_combinations(v, k):
+def get_set_combinations(array, number_elements):
     """
     Computes all k-tuples (e_1, e_2, ..., e_k) of combinations of the set of elements of the first row of the
     input matrix where e_n+1 > e_n
 
-    y = get_set_combinations(v, k)
+    combination_vectors = get_set_combinations(array, number_elements)
 
     Parameters
     ----------
-    v : [1xn_v] np.ndarray
+    array: np.ndarray
         matrix containing a first row of input elements
-    k : int
+    number_elements: int
         number of elements in tuple
 
     Returns
     -------
-    y : np.ndarray
+    combination_vectors : np.ndarray
         matrix of combination vectors
     """
 
-    # v is numpy array [1 x nv]
-    # k is scalar
-    nv = v.shape[1]
-    if nv == k:
-        return v
-    if nv < k:
+    # array is numpy array [1 x nv]
+    # number_elements is scalar
+    nv = array.shape[1]
+    if nv == number_elements:
+        return array
+    if nv < number_elements:
         return []
 
-    d = nv - k
+    d = nv - number_elements
     ny = d + 1
 
-    for i in range(2, k + 1):
+    for i in range(2, number_elements + 1):
         ny = ny + (1.0 * ny * d) / i
 
-    y = np.zeros([int(ny), int(k)])
+    combination_vectors = np.zeros([int(ny), int(number_elements)])
 
-    index = np.linspace(1, k, k).astype(int)
-    limit = np.append(np.linspace(nv - k + 1, nv - 1, k - 1), 0)
+    index = np.linspace(1, number_elements, number_elements).astype(int)
+    limit = np.append(np.linspace(nv - number_elements + 1, nv - 1, number_elements - 1), 0)
     a = int(1)
 
     while 1:
-        b = int(a + nv - index[k - 1])  # Write index for last column
-        for i in range(1, k):  # Write the left K-1 columns
-            y[(a - 1):b, i - 1] = v[0, index[i - 1] - 1]
+        b = int(a + nv - index[number_elements - 1])  # Write index for last column
+        for i in range(1, number_elements):  # Write the left number_elements-1 columns
+            combination_vectors[(a - 1):b, i - 1] = array[0, index[i - 1] - 1]
 
-        y[(a - 1):b, k - 1] = v[0, index[k - 1] - 1:nv]  # Write the K.th column
+        # Write the number_elements.th column
+        combination_vectors[(a - 1):b, number_elements - 1] = array[0, index[number_elements - 1] - 1:nv]
         a = b + 1  # Move the write pointer
 
         new_loop = np.sum(index < limit)
         if new_loop == 0:  # All columns are filled:
             break  # Ready!
-        index[(new_loop - 1):k] = index[new_loop - 1] + np.linspace(1, k - new_loop + 1, k - new_loop + 1)
-
-    return y
+        index[(new_loop - 1):number_elements] = index[new_loop - 1] + np.linspace(1, number_elements - new_loop + 1,
+                                                                                     number_elements - new_loop + 1)
+    return combination_vectors
 
 
 def get_multi_indices(length, max_order):
     """
-    Computes all multi-indices with a maximum overall order of max_order
+    Computes all multi-indices with a maximum overall order of max_order.
 
     multi_indices = get_multi_indices(length, max_order)
 
@@ -304,10 +308,10 @@ def get_multi_indices(length, max_order):
     Returns
     -------
     multi_indices : np.ndarray
-        matrix multi-indices
+        matrix of multi-indices
     """
 
-    res = []
+    multi_indices = []
     for i_max_order in range(max_order + 1):
         # Chose (length-1) the splitting points of the array [0:(length+max_order)]
         # 1:length+max_order-1
@@ -323,28 +327,31 @@ def get_multi_indices(length, max_order):
         v = v - 1
 
         if i_max_order == 0:
-            res = v
+            multi_indices = v
         else:
-            res = np.vstack([res, v])
+            multi_indices = np.vstack([multi_indices, v])
 
-    return res.astype(int)
+    return multi_indices.astype(int)
 
 
 def get_normalized_rms(array, ref):
     """
-    Determine normalized root mean square deviation between input data and
-    reference data in [%].
+    Determine the normalized root mean square deviation between input data and reference data in [%].
 
-    Parameters:
+    normalized_rms = get_normalized_rms(array, ref)
+
+    Parameters
     ----------
-    array: np.array of test data
-        [ (x), y0, y1, y2 ... ]
-    ref: 1D/2D np.array of reference data [ (xref), yref ]
-         if ref is 1D, all sizes have to match
+    array: np.ndarray
+        input data [ (x), y0, y1, y2 ... ]
+    ref: np.ndarray
+        reference data [ (xref), yref ]
+        if ref is 1D, all sizes have to match
 
-    Returns:
-    ---------
-        normalized_rms: normalized root mean square deviation
+    Returns
+    -------
+    normalized_rms: float
+        normalized root mean square deviation
     """
 
     N_points = array.shape[0]
@@ -374,7 +381,8 @@ def get_normalized_rms(array, ref):
         delta = max(data_ref) - min(data_ref)
     
     # determine normalized rms deviation and return
-    return 100 * np.sqrt(1.0/N_points * np.sum((data - data_ref)**2, axis=0)) / delta
+    normalized_rms = 100 * np.sqrt(1.0/N_points * np.sum((data - data_ref)**2, axis=0)) / delta
+    return normalized_rms
 
 
 def get_betapdf_fit(data, beta_tolerance=0, uni_intervall=0):
@@ -383,26 +391,30 @@ def get_betapdf_fit(data, beta_tolerance=0, uni_intervall=0):
 
     beta_parameters, moments, p_value, uni_parameters = get_betapdf_fit(data, beta_tolerance=0, uni_intervall=0)
 
-    Parameters:
-    ------------
-        data: np.ndarray
-            data to fit
-        beta_tolerance: float
-            tolerance interval to calculate the bounds of beta distribution
-            from observed data, e.g. 0.2 (+-20% tolerance)
-        uni_intervall: float [0...1]
-            uniform distribution interval defined as fraction of
-            beta distribution interval, e.g. 0.90 (90%) (default = 0)
+    Parameters
+    ----------
+    data: np.ndarray
+        data to fit
+    beta_tolerance: float, optional, default=0
+        tolerance interval to calculate the bounds of beta distribution
+        from observed data, e.g. 0.2 (+-20% tolerance)
+    uni_intervall: float, optional, default=0
+        uniform distribution interval defined as fraction of
+        beta distribution interval
+        range: [0...1], e.g. 0.90 (90%)
     
-    Returns:
-    -----------
-        beta_parameters: [p, q, a, b] list of float
-            2 shape parameters and limits
-        moments: [data_mean, data_std, beta_mean, beta_std] list of float
-        p_value: float
-            p-value of the Kolmogorov Smirnov test
-        uni_parameters: [a, b] list of float
-            limits a and b
+    Returns
+    -------
+    beta_parameters: [4] list of float
+        2 shape parameters and limits
+        [p, q, a, b]
+    moments: [4] list of float
+        [data_mean, data_std, beta_mean, beta_std]
+    p_value: float
+        p-value of the Kolmogorov Smirnov test
+    uni_parameters: [2] list of float
+        limits a and b
+        [a, b]
     """
     
     data_mean = np.mean(data)
@@ -447,77 +459,24 @@ def get_betapdf_fit(data, beta_tolerance=0, uni_intervall=0):
     return beta_parameters, moments, p_value, uni_parameters
 
 
-# TODO:Refactor
-def plot(interactive=True, filename=None, xlabel="$x$", ylabel="$p(x)$"):
-    if not interactive:
-        plt.ioff()
-    else:
-        plt.ion()
-
-    plt.figure(1)
-    plt.clf()
-    plt.rc('text', usetex=True)
-    plt.rc('font', size=18)
-    ax = plt.gca()
-    # legendtext = [r"e-pdf", r"$\beta$-pdf"]
-    legendtext = [r"$\beta$-pdf"]
-
-    # plot histogram of data
-    n, bins, patches = plt.hist(data, bins=16, normed=1, color=[1, 1, 0.6], alpha=0.5)
-
-    # plot beta pdf (kernel density estimate)
-    # plt.plot(kde_x, kde_y, 'r--', linewidth=2)
-
-    # plot beta pdf (fitted)
-    beta_x = np.linspace(a_beta, b_beta, 100)
-    beta_y = scipy.stats.beta.pdf(beta_x, p_beta, q_beta, loc=a_beta, scale=b_beta - a_beta)
-
-    plt.plot(beta_x, beta_y, linewidth=2, color=[0, 0, 1])
-
-    # plot uniform pdf
-    uni_y = 0
-    if uni_intervall > 0:
-        uni_x = np.hstack([a_beta, a_uni - 1E-6 * (b_uni - a_uni),
-                           np.linspace(a_uni, b_uni, 100), b_uni + 1E-6 * (b_uni - a_uni), b_beta])
-        uni_y = np.hstack([0, 0, 1.0 / (b_uni - a_uni) * np.ones(100), 0, 0])
-        plt.plot(uni_x, uni_y, linewidth=2, color='r')
-        legendtext.append("u-pdf")
-
-        # configure plot
-    plt.legend(legendtext, fontsize=18, loc="upper left")
-    plt.grid(True)
-    plt.xlabel(xlabel, fontsize=22)
-    plt.ylabel(ylabel, fontsize=22)
-    ax.set_xlim(a_beta - 0.05 * (b_beta - a_beta), b_beta + 0.05 * (b_beta - a_beta))
-    ax.set_ylim(0, 1.1 * max([max(n), max(beta_y[np.logical_not(beta_y == np.inf)]), max(uni_y)]))
-
-    if interactive > 0:
-        plt.show()
-
-    # save plot
-    if filename:
-        plt.savefig(filename + ".pdf", format='pdf', bbox_inches='tight', pad_inches=0.01 * 4)
-        plt.savefig(filename + ".png", format='png', bbox_inches='tight', pad_inches=0.01 * 4, dpi=600)
-
-
-def mutcoh(a):
+def mutcoh(array):
     """
-    Calculate the mutual coherence of a matrix A, i.e. the cosine
+    Calculate the mutual coherence of a matrix A. It can also be referred as the cosine
     of the smallest angle between two columns.
       
-    mutual_coherence = mutcoh(a)
+    mutual_coherence = mutcoh(array)
  
-    Parameters:
-    ------------
-        a: [m x n] np.ndarray
-            input matrix
+    Parameters
+    ----------
+    array: np.ndarray
+        input matrix
 
-    Returns:
-    -----------
-        mutual_coherence: float
+    Returns
+    -------
+    mutual_coherence: float
     """
 
-    t = np.dot(a.conj().T, a)
+    t = np.dot(array.conj().T, array)
     s = np.sqrt(np.diag(t))
     s_sqrt = np.diag(s)
     mutual_coherence = np.max(1.0*(t-s_sqrt)/np.outer(s, s))
@@ -531,17 +490,17 @@ def wrap_function(fn, x, args):
 
     wrap_function(fn, x, args)
 
-    Parameters:
-    ---------------------------
+    Parameters
+    ----------
     fn: function
         anonymous function to call
-    x: parameters
+    x: tuple
         parameters of function
-    args: arguments
+    args: tuple
         arguments of function
 
-    Returns:
-    ---------------------------
+    Returns
+    -------
     function_wrapper: function
         wrapped function
     """
@@ -558,11 +517,11 @@ def vprint(message, verbose=True):
 
     vprint(message, verbose=True)
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     message: string
         string to print in standard output
-    verbose: bool
+    verbose: bool, optional, default=True
         determines if string is printed out
     """
     if verbose:
@@ -575,19 +534,19 @@ def get_num_coeffs(order, dim):
 
     num_coeffs = (order+dim)! / (order! * dim!)
 
-    num_coeffs = get_num_coeffs(order , dim )
+    num_coeffs = get_num_coeffs(order , dim)
 
-    Parameters:
-    ---------------------------
+    Parameters
+    ----------
     order: int
-        Global order of expansion
+        global order of expansion
     dim: int
-        Number of random variables
+        number of random variables
 
-    Returns:
-    ---------------------------
+    Returns
+    -------
     num_coeffs: int
-        Number of coefficients and polynomials
+        number of coefficients and polynomials
     """
 
     return scipy.special.factorial(order + dim) / (scipy.special.factorial(order) * scipy.special.factorial(dim))
@@ -600,21 +559,21 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim):
 
     num_coeffs_sparse = get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim)
 
-    Parameters:
-    ---------------------------
-    order_dim_max: int or np.array of int
-        Maximum order in each dimension
+    Parameters
+    ----------
+    order_dim_max: int or np.ndarray
+        maximum order in each dimension
     order_glob_max: int
-        Maximum global order of interacting polynomials
+        maximum global order of interacting polynomials
     order_inter_max: int
-        Interaction order
+        interaction order
     dim: int
-        Number of random variables
+        number of random variables
 
-    Returns:
-    ---------------------------
+    Returns
+    -------
     num_coeffs_sparse: int
-        Number of coefficients and polynomials
+        number of coefficients and polynomials
     """
 
     order_dim_max = np.array(order_dim_max)
@@ -653,48 +612,99 @@ def get_pdf_beta(x, p, q, a, b):
     pdf = (gamma(p)*gamma(q)/gamma(p+q).*(b-a)**(p+q-1))**(-1) *
               (x-a)**(p-1) * (b-x)**(q-1);
 
-    pdf = get_pdf_beta( x , p , q , a , b )
+    pdf = get_pdf_beta(x, p, q, a, b)
 
-    Parameters:
-    ---------------------------
-    x: np.array of float
-        Values of random variable
+    Parameters
+    ----------
+    x: np.ndarray
+        values of random variable
     a: float
-        MIN boundary
+        min boundary
     b: float
-        MAX boundary
+        max boundary
     p: float
-        Parameter defining the distribution shape
+        parameter defining the distribution shape
     q: float
-        Parameter defining the distribution shape
+        parameter defining the distribution shape
 
-    Returns:
-    ---------------------------
-    pdf: np.array of float
-        Probability density
+    Returns
+    -------
+    pdf: np.ndarray
+        probability density
     """
     return (scipy.special.gamma(p) * scipy.special.gamma(q) / scipy.special.gamma(p + q)
             * (b - a) ** (p + q - 1)) ** (-1) * (x - a) ** (p - 1) * (b - x) ** (q - 1)
 
+# TODO:Refactor
+# def get_reg_obj(fname, results_folder):
+#     # if .yaml does exist: load from .yaml file
+#     if os.path.exists(fname):
+#         print(results_folder + ": Loading reg_obj from file: " + fname)
+#         reg_obj = read_gpc_obj(fname)
+#
+#     # if not: create reg_obj, save to .yaml file
+#     else:
+#         # re-initialize reg object with appropriate number of grid-points
+#         reg_obj = Reg(pdf_type,
+#                       pdf_shape,
+#                       limits,
+#                       order * np.ones(dim),
+#                       order_max=order,
+#                       interaction_order=interaction_order_max,
+#                       grid=grid_init,
+#                       random_vars=random_vars)
+#
+#         write_gpc_obj(reg_obj, fname)
+#
+#     return reg_obj
 
-def get_reg_obj(fname, results_folder):
-    # if .yaml does exist: load from .yaml file
-    if os.path.exists(fname):
-        print(results_folder + ": Loading reg_obj from file: " + fname)
-        reg_obj = read_gpc_obj(fname)
-
-    # if not: create reg_obj, save to .yaml file
-    else:
-        # re-initialize reg object with appropriate number of grid-points
-        reg_obj = Reg(pdf_type,
-                      pdf_shape,
-                      limits,
-                      order * np.ones(dim),
-                      order_max=order,
-                      interaction_order=interaction_order_max,
-                      grid=grid_init,
-                      random_vars=random_vars)
-
-        write_gpc_obj(reg_obj, fname)
-
-    return reg_obj
+# def plot(interactive=True, filename=None, xlabel="$x$", ylabel="$p(x)$"):
+#     if not interactive:
+#         plt.ioff()
+#     else:
+#         plt.ion()
+#
+#     plt.figure(1)
+#     plt.clf()
+#     plt.rc('text', usetex=True)
+#     plt.rc('font', size=18)
+#     ax = plt.gca()
+#     # legendtext = [r"e-pdf", r"$\beta$-pdf"]
+#     legendtext = [r"$\beta$-pdf"]
+#
+#     # plot histogram of data
+#     n, bins, patches = plt.hist(data, bins=16, normed=1, color=[1, 1, 0.6], alpha=0.5)
+#
+#     # plot beta pdf (kernel density estimate)
+#     # plt.plot(kde_x, kde_y, 'r--', linewidth=2)
+#
+#     # plot beta pdf (fitted)
+#     beta_x = np.linspace(a_beta, b_beta, 100)
+#     beta_y = scipy.stats.beta.pdf(beta_x, p_beta, q_beta, loc=a_beta, scale=b_beta - a_beta)
+#
+#     plt.plot(beta_x, beta_y, linewidth=2, color=[0, 0, 1])
+#
+#     # plot uniform pdf
+#     uni_y = 0
+#     if uni_intervall > 0:
+#         uni_x = np.hstack([a_beta, a_uni - 1E-6 * (b_uni - a_uni),
+#                            np.linspace(a_uni, b_uni, 100), b_uni + 1E-6 * (b_uni - a_uni), b_beta])
+#         uni_y = np.hstack([0, 0, 1.0 / (b_uni - a_uni) * np.ones(100), 0, 0])
+#         plt.plot(uni_x, uni_y, linewidth=2, color='r')
+#         legendtext.append("u-pdf")
+#
+#         # configure plot
+#     plt.legend(legendtext, fontsize=18, loc="upper left")
+#     plt.grid(True)
+#     plt.xlabel(xlabel, fontsize=22)
+#     plt.ylabel(ylabel, fontsize=22)
+#     ax.set_xlim(a_beta - 0.05 * (b_beta - a_beta), b_beta + 0.05 * (b_beta - a_beta))
+#     ax.set_ylim(0, 1.1 * max([max(n), max(beta_y[np.logical_not(beta_y == np.inf)]), max(uni_y)]))
+#
+#     if interactive > 0:
+#         plt.show()
+#
+#     # save plot
+#     if filename:
+#         plt.savefig(filename + ".pdf", format='pdf', bbox_inches='tight', pad_inches=0.01 * 4)
+#         plt.savefig(filename + ".png", format='png', bbox_inches='tight', pad_inches=0.01 * 4, dpi=600)

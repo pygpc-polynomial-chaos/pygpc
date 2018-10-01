@@ -14,12 +14,9 @@ class Visualization:
     """
     Creates a new visualization in a new window. Any added subcharts will be added to this window.
 
+    Initialisation
+    --------------
     Visualisation(dims=(10, 10))
-
-    Parameters
-    ----------
-    dims: list of int, optional, default=(10,10)
-        size of the newly created window
 
     Attributes
     ----------
@@ -35,6 +32,11 @@ class Visualization:
         line width of graph
     fig: mpl.figure
         handle of figure created by matplotlib.pyplot
+
+    Parameters
+    ----------
+    dims: list of int, optional, default=(10,10)
+        size of the newly created window
     """
 
     figure_number = 0
@@ -198,7 +200,7 @@ def plot_sobol_indices(sobol_rel_order_mean, sobol_rel_1st_order_mean, fn_plot, 
         output quantities
     fn_plot: str
         filename of plot
-    random_vars: list of str [dim]
+    random_vars: [dim] list of str
         string labels of the random variables
     """
 

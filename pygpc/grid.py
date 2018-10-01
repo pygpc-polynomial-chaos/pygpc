@@ -30,9 +30,9 @@ def get_quadrature_jacobi_1d(N, b, a):
     Returns
     -------
     knots: np.ndarray
-        knots of the quadratur grid
+        knots of the grid
     weights: np.ndarray
-        weights of the quadratur grid
+        weights of the grid
     """
     # make array to count N: 0, 1, ..., N-1
     N_arr = np.arange(N)
@@ -74,9 +74,9 @@ def get_quadrature_hermite_1d(N):
     Returns
     -------
     knots: np.ndarray
-        knots of the quadratur grid
+        knots of the grid
     weights: np.ndarray
-        weights of the quadratur grid
+        weights of the grid
     """
     N = np.int(N)
     knots, weights = np.polynomial.hermite_e.hermegauss(N)
@@ -99,9 +99,9 @@ def get_quadrature_clenshaw_curtis_1d(N):
     Returns
     -------
     knots: np.ndarray
-        knots of the clenshaw_curtis grid
+        knots of the grid
     weights: np.ndarray
-        weights of the clenshaw_curtis grid
+        weights of the grid
     """
     N = np.int(N)
 
@@ -157,9 +157,9 @@ def get_quadrature_fejer1_1d(N):
     Returns
     -------
     knots: np.ndarray
-        knots of the clenshaw_curtis grid
+        knots of the grid
     weights: np.ndarray
-        weights of the clenshaw_curtis grid
+        weights of the grid
    """
     N = np.int(N)
 
@@ -223,9 +223,9 @@ def get_quadrature_fejer2_1d(N):
     Returns
     -------
     knots: np.ndarray
-        knots of the clenshaw_curtis grid
+        knots of the grid
     weights: np.ndarray
-        weights of the clenshaw_curtis grid
+        weights of the grid
     """
     N = np.int(N)
 
@@ -286,9 +286,9 @@ def get_quadrature_patterson_1d(N):
     Returns
     -------
     knots: np.ndarray
-        knots of the clenshaw_curtis grid
+        knots of the grid
     weights: np.ndarray
-        weights of the clenshaw_curtis grid
+        weights of the grid
     """
     x = np.zeros(N)
     w = np.zeros(N)
@@ -428,6 +428,7 @@ def get_quadrature_patterson_1d(N):
         w[30] = 0.00254478079156187441540
     else:
         print("Number of points does not match Gauss-Patterson quadrature rule.")
+        raise NotImplementedError
 
     knots = x
     weights = w
@@ -526,6 +527,35 @@ class TensorGrid:
     --------------
     TensorGrid(pdf_type, grid_type, grid_shape, limits, N):
 
+    Attributes
+    ----------
+    pdf_type: [N_vars] list of str
+        variable specific type of PDF ("beta", "normal")
+    grid_type: [N_vars] list of str
+        specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
+    grid_shape: [2 x N_vars] list of list of float
+        shape parameters of PDF
+        beta (jacobi):  [alpha, beta]
+        norm (hermite): [mean, std]
+    limits: [2 x N_vars] list of list of float
+        upper and lower bounds of PDF
+        beta (jacobi):  [min, max]
+        norm (hermite): [0, 0] (unused)
+    N: [N_vars] list of int
+        number of nodes in each dimension
+    dim: int
+        number of uncertain parameters to process
+    knots_dim_list: [dim] list of np.ndarray
+        knots of grid in each dimension
+    weights_dim_list: [dim] list of np.ndarray
+        weights of grid in each dimension
+    coords_norm: [N_samples x dim] np.ndarray
+        normalized [-1, 1] coordinates xi
+    weights: np.ndarray
+        weights of the grid
+    coords: [N_samples x dim] np.ndarray
+        denormalized coordinates xi
+    
     Parameters
     ----------
     pdf_type: [N_vars] list of str
@@ -553,29 +583,27 @@ class TensorGrid:
         self.dim = len(self.N)  # number of dimension
 
         # get knots and weights of polynomials in each dimension
-        self.knots_dim = []
-        self.weights_dim = []
-        knots_temp = 0
-        weights_temp = 0
+        self.knots_dim_list = []
+        self.weights_dim_list = []
         for i_dim in range(self.dim):
             
             if self.grid_type[i_dim] == 'jacobi':  # jacobi polynomials
-                knots_temp, weights_temp = get_quadrature_jacobi_1d(self.N[i_dim], self.grid_shape[0][i_dim] - 1,
-                                                                self.grid_shape[1][i_dim] - 1)
+                knots, weights = get_quadrature_jacobi_1d(self.N[i_dim], self.grid_shape[0][i_dim] - 1,
+                                                                    self.grid_shape[1][i_dim] - 1)
             if self.grid_type[i_dim] == 'hermite':  # hermite polynomials
-                knots_temp, weights_temp = get_quadrature_hermite_1d(self.N[i_dim])
-            if self.grid_type[i_dim] == 'cc':  # Clenshaw Curtis
-                knots_temp, weights_temp = get_quadrature_clenshaw_curtis_1d(self.N[i_dim])
+                knots, weights = get_quadrature_hermite_1d(self.N[i_dim])
+            if self.grid_type[i_dim] == 'clenshaw_curtis':  # Clenshaw Curtis
+                knots, weights = get_quadrature_clenshaw_curtis_1d(self.N[i_dim])
             if self.grid_type[i_dim] == 'fejer2':  # Fejer type 2 (Clenshaw Curtis without boundary nodes)
-                knots_temp, weights_temp = get_quadrature_fejer2_1d(self.N[i_dim])
+                knots, weights = get_quadrature_fejer2_1d(self.N[i_dim])
             if self.grid_type[i_dim] == 'patterson':  # Gauss-Patterson (Nested Legendre rule)
-                knots_temp, weights_temp = get_quadrature_patterson_1d(self.N[i_dim])
+                knots, weights = get_quadrature_patterson_1d(self.N[i_dim])
 
-            self.knots_dim.append(knots_temp)
-            self.weights_dim.append(weights_temp)
+            self.knots_dim_list.append(knots)
+            self.weights_dim_list.append(weights)
 
         # combine coordinates to full tensored grid (all combinations)
-        self.coords_norm = cartesian(self.knots_dim)
+        self.coords_norm = cartesian(self.knots_dim_list)
 
         # rescale normalized coordinates in case of normal distributions and "fejer2" or "cc" grids
         # +- 0.675 * sigma -> 50%
@@ -589,7 +617,7 @@ class TensorGrid:
                 self.coords_norm[:, i_dim] = self.coords_norm[:, i_dim] * 1.960
 
         # determine combined weights of Gauss quadrature
-        self.weights = np.prod(cartesian(self.weights_dim), axis=1) / (2.0 ** self.dim)
+        self.weights = np.prod(cartesian(self.weights_dim_list), axis=1) / (2.0 ** self.dim)
 
         # denormalize grid to original parameter space
         self.coords = get_denormalized_coordinates(self.coords_norm, self.pdf_type, self.grid_shape, self.limits)
@@ -605,8 +633,8 @@ class SparseGrid:
     SparseGrid(pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order,
                order_sequence_type, make_grid=True, verbose=True)
 
-    Parameters:
-    -----------
+    Attributes
+    ----------
     pdf_type: [N_vars] list of str
         variable specific type of PDF ("beta", "normal")
     grid_type: [N_vars] list of str
@@ -630,6 +658,45 @@ class SparseGrid:
     make_grid: boolean
         boolean value to determine if to generate grid during initialization
     verbose: bool
+        boolean value to determine if to print out the progress into the standard output
+    coords_norm: [N_samples x dim] np.ndarray
+        normalized [-1, 1] coordinates xi
+    weights: np.ndarray
+        weights of the grid
+    coords: [N_samples x dim] np.ndarray
+        denormalized coordinates xi
+    level_sequence: list of int
+        list containing the levels
+    order_sequence: list of int
+        list containing the polynomial order of the levels
+    dim: int
+        number of uncertain parameters to process
+
+    Parameters
+    ----------
+    pdf_type: [N_vars] list of str
+        variable specific type of PDF ("beta", "normal")
+    grid_type: [N_vars] list of str
+        specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
+    grid_shape: [2 x N_vars] list of list of float
+        shape parameters of PDF
+        beta (jacobi):  [alpha, beta]
+        norm (hermite): [mean, std]
+    limits: [2 x N_vars] list of list of float
+        upper and lower bounds of PDF
+        beta (jacobi):  [min, max]
+        norm (hermite): [0, 0] (unused)
+    level: [N_vars] list of int
+        number of levels in each dimension
+    level_max: int
+        global combined level maximum
+    interaction_order: int
+        interaction order of parameters and grid, i.e. the grid points are lying between this number of dimensions
+    order_sequence_type: str
+        type of order sequence ('lin', 'exp') common: 'exp'
+    make_grid: boolean, optional, default=True
+        boolean value to determine if to generate grid during initialization
+    verbose: bool, optional, default=True
         boolean value to determine if to print out the progress into the standard output
     """
 
@@ -692,12 +759,14 @@ class SparseGrid:
 
     def calc_l_level(self):
         """
-        Calculate the l level needed for the Fejer grid type 2.
+        Calculate the l-level needed for the Fejer grid type 2.
+
+        l_level = calc_l_level()
 
         Returns
         -------
         l_level: np.ndarray
-            l level values
+            multi indices filtered by level capacity and interaction order
         """
         if "fejer2" in self.grid_type:
             if self.dim == 1:
@@ -725,6 +794,18 @@ class SparseGrid:
         return l_level
 
     def calc_grid(self):
+        """
+        Calculate a cubature lookup table for knots and weights.
+
+        dl_k, dl_w = calc_grid()
+
+        Returns
+        -------
+        dl_k: list of list of float
+            cubature lookup table for knots
+        dl_w: list of list of float
+            cubature lookup table for weights
+        """
         # make cubature lookup table for knots (dl_k) and weights (dl_w) [max(l) x dim]
         vprint("    Generating difference grids...", verbose=self.verbose)
         dl_k = [[0 for _ in range(self.dim)] for _ in range(int(np.amax(self.level) + 1))]
@@ -770,6 +851,18 @@ class SparseGrid:
         return dl_k, dl_w
 
     def calc_tensor_products(self):
+        """
+        Calculate the tensor products of the knots and the weights.
+
+        dL_k, dL_w = calc_tensor_products()
+
+        Returns
+        -------
+        dL_k: np.ndarray
+            tensor product of knots
+        dL_w: np.ndarray
+            tensor product of weights
+        """
         # make list of all tensor products according to multiindex list "l"
         vprint("    Generating subgrids ...", verbose=self.verbose)
         dl_k, dl_w = self.calc_grid()
@@ -779,24 +872,28 @@ class SparseGrid:
 
         for i_l_level in range(l_level.shape[0]):
 
-            knots_temp = []
-            weights_temp = []
+            knots = []
+            weights = []
 
             for i_dim in range(self.dim):
-                knots_temp.append(np.asarray(dl_k[np.int(l_level[i_l_level, i_dim])][i_dim], dtype=float))
-                weights_temp.append(np.asarray(dl_w[np.int(l_level[i_l_level, i_dim])][i_dim], dtype=float))
+                knots.append(np.asarray(dl_k[np.int(l_level[i_l_level, i_dim])][i_dim], dtype=float))
+                weights.append(np.asarray(dl_w[np.int(l_level[i_l_level, i_dim])][i_dim], dtype=float))
 
             # tensor product of knots
-            dL_k.append(cartesian(knots_temp))
+            dL_k.append(cartesian(knots))
 
             # tensor product of weights
-            dL_w.append(np.prod(cartesian(weights_temp), axis=1))
+            dL_w.append(np.prod(cartesian(weights), axis=1))
 
-        # dL_w = np.hstack(dL_w)
-        # dL_k = np.vstack(dL_k)
-        return np.hstack(dL_k), np.vstack(dL_w)
+        dL_w = np.vstack(dL_w)
+        dL_k = np.hstack(dL_k)
+
+        return dL_k, dL_w
 
     def calc_coords_weights(self):
+        """
+        Find similar points in grid and formulate calculate a list containing these points.
+        """
         # find similar points in grid and formulate Point list
         vprint("    Merging subgrids ...", verbose=self.verbose)
         dL_w, dL_k = self.calc_tensor_products()
@@ -847,28 +944,55 @@ class SparseGrid:
 
 
 class RandomGrid:
+    """
+    Generate RandomGrid object instance.
+
+    Initialisation
+    --------------
+    RandomGrid(pdf_type, grid_shape, limits, N, seed=None)
+
+    Attributes
+    ----------
+    pdf_type: [N_vars] list of str
+        variable specific type of pdf ("beta", "normal")
+    grid_shape: [2 x N_vars] list of list of float
+        shape parameters of PDF
+        beta (jacobi):  [alpha, beta]
+        norm (hermite): [mean, std]
+    limits: [2 x N_vars] list of list of float
+        Upper and lower bounds of PDF
+        beta (jacobi):  [min, max]
+        norm (hermite): [0, 0] (unused)
+    N: int
+        number of random samples to generate
+    seed: float
+        seeding point to replicate random grids
+    dim: int
+        number of uncertain parameters to process
+    coords: [N_samples x dim] np.ndarray
+        denormalized coordinates xi
+    coords_norm: [N_samples x dim] np.ndarray
+        normalized [-1, 1] coordinates xi
+
+    Parameters
+    ----------
+    pdf_type: [N_vars] list of str
+        variable specific type of pdf ("beta", "normal")
+    grid_shape: [2 x N_vars] list of list of float
+        shape parameters of PDF
+        beta (jacobi):  [alpha, beta]
+        norm (hermite): [mean, std]
+    limits: [2 x N_vars] list of list of float
+        Upper and lower bounds of PDF
+        beta (jacobi):  [min, max]
+        norm (hermite): [0, 0] (unused)
+    N: int
+        number of random samples to generate
+    seed: float, optional, default=None
+        seeding point to replicate random grids
+    """
+
     def __init__(self, pdf_type, grid_shape, limits, N, seed=None):
-        """
-        Generate RandomGrid object instance
-
-        Parameters
-        ----------
-        pdf_type: list of str [N_vars]
-            variable specific type of pdf ("beta", "normal")
-        grid_shape: list of list of float [2 x N_vars]
-            shape parameters of PDF
-            beta (jacobi):  [alpha, beta]
-            norm (hermite): [mean, std]
-        limits: list of list of float [2 x N_vars]
-            Upper and lower bounds of PDF
-            beta (jacobi):  [min, max]
-            norm (hermite): [0, 0] (unused)
-        N: int
-            number of random samples to generate
-        seed: float
-            seeding point to replicate random grids
-        """
-
         self.pdf_type = pdf_type  # pdf_type: "beta", "normal" [1 x dim]
         self.grid_shape = grid_shape  # pdf_shape: jacobi:->[alpha and beta] hermite:->[mean, variance] list [2 x dim]
         self.limits = limits  # limits: [min, max]  list [2 x dim]
@@ -888,4 +1012,4 @@ class RandomGrid:
                 self.coords_norm[:, i_dim] = (np.random.normal(0, 1, [self.N, 1]))[:, 0]
 
         # denormalize grid to original parameter space
-        self.coords = denorm(self.coords_norm, self.pdf_type, self.grid_shape, self.limits)
+        self.coords = get_denormalized_coordinates(self.coords_norm, self.pdf_type, self.grid_shape, self.limits)

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Sep 14 11:21:45 2016
-
-@author: Konstantin Weise
+Functions that provide adaptive regression approches to perform uncertainty analysis on dynamic systems.
 """
+
 import pyfempp
 import os
 import warnings
@@ -16,77 +15,70 @@ from .reg import *
 from .misc import *
 
 
+# TODO:Refactor
 def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=None,
                            order_start=0, order_end=10, interaction_order_max=None, eps=1E-3, print_out=False,
                            seed=None, do_mp=False, n_cpu=4, dispy=False, dispy_sched_host='localhost',
                            random_vars='', hdf5_geo_fn=''):
     """  
-    Adaptive regression approach based on leave one out cross validation error estimation
+    Perform adaptive regression approach based on leave one out cross validation error estimation.
     
     Parameters
-    ---------------------------
-    
-    # pdf object
-    random_vars : list of str
+    ----------
+    random_vars: list of str
         string labels of the random variables
-    pdf_type : list
-        Type of probability density functions of input parameters,
+    pdf_type: list
+        type of probability density functions of input parameters,
         i.e. ["beta", "norm",...]
-    pdf_shape : list of lists
-        Shape parameters of probability density functions
+    pdf_shape: list of lists
+        shape parameters of probability density functions
         s1=[...] "beta": p, "norm": mean
         s2=[...] "beta": q, "norm": std
         pdf_shape = [s1,s2]
-    limits : list of lists
-        Upper and lower bounds of random variables (only "beta")
+    limits: list of lists
+        upper and lower bounds of random variables (only "beta")
         a=[...] "beta": lower bound, "norm": n/a define 0
         b=[...] "beta": upper bound, "norm": n/a define 0
         limits = [a,b]
-    # pdf object
-
-    # sys object
-    func : callable func(x,*args)
-        The objective function to be minimized.
-    args : tuple, optional
-        Extra arguments passed to func, i.e. f(x,*args)
-    # sys object
-
-    # new gpc object
-    fname : String, None
-        If fname exists, reg_obj will be created from it. If not exist, it is created.
-    order_start : int, optional
-        Initial gpc expansion order (maximum order)
-    order_end : int, optional
-        Maximum gpc expansion order to expand to
-    interaction_order_max: int
-        define maximum interaction order of parameters (default: all interactions)
-    eps : float, optional
-        Relative mean error bound of leave one out cross validation
-    print_out : boolean, optional
-        Print output of iterations and subiterations (True/False)
-    seed : int, optional
-        Set np.random.seed(seed) in random_grid()
-    do_mp : boolean, optional
-        Do each func(x, *(args)) in each iteration with parmap.starmap(func)
-    n_cpu : int, 4, optional
-        If (multiprocessing), utilize n_cpu cores
-    dispy : boolean, False
-        Compute func(x) in with dispy cluster
-    dispy_sched_host : String, localhost
-        Host name where dispyscheduler is run. None = localhost
-    hdf5_geo_fn: String, ''
+    func: function
+        the objective function to be minimized
+        func(x,*args)
+    args: tuple, optional, default=()
+        extra arguments passed to function
+        i.e. f(x,*args)
+    fname : str, optional, default=None
+        if fname exists, reg_obj will be created from it
+        if not exist, it will be created
+    order_start : int, optional, default=0
+        initial gpc expansion order
+    order_end : int, optional, default=10
+        maximum gpc expansion order
+    interaction_order_max: int, optional, defailt=None
+        define maximum interaction order of parameters
+        if None, perform all interactions
+    eps : float, optional, default=1E-3
+        relative mean error bound of leave one out cross validation
+    print_out : boolean, optional, default=False
+        boolean value that determines if to print output the iterations and subiterations
+    seed : int, optional, default=None
+        seeding point to replicate random grids
+    do_mp : boolean, optional, default=False
+        boolean value that determines if to do each func(x, *(args)) in each iteration with parmap.starmap(func)
+    n_cpu : int, optional, default=4
+        if multiprocessing is enabled, utilize n_cpu cores
+    dispy : boolean, optional, default=False
+        boolean value that determines if to compute function with dispy cluster
+    dispy_sched_host : str, optional, default='localhost'
+        host name where dispyscheduler will be running
+    hdf5_geo_fn: str, optional, default=''
         hdf5 filename with spatial information: /mesh/elm/*
-    # new gpc object
-
 
     Returns
-    ---------------------------
-    gobj : object
-           gpc object
-    res  : ndarray
-           Funtion values at grid points of the N_out output variables
-           size: [N_grid x N_out]
-
+    -------
+    gobj: gpc object
+        gpc object
+    res: [N_grid x N_out] np.ndarray
+        function values at grid points of the N_out output variables
     """
     try:
         import setproctitle
@@ -426,52 +418,53 @@ def run_reg_adaptive2(random_vars, pdf_type, pdf_shape, limits, func, args=(), o
                       interaction_order_max=None, eps=1E-3, print_out=False, seed=None,
                       save_res_fn=''):
     """
-    Adaptive regression approach based on leave one out cross validation error
-    estimation
+    Perform adaptive regression approach based on leave one out cross validation error estimation.
 
     Parameters
     ----------
-    random_vars : list of str
+    random_vars: list of str
         string labels of the random variables
-    pdf_type : list
-              Type of probability density functions of input parameters,
-              i.e. ["beta", "norm",...]
-    pdf_shape : list of lists
-               Shape parameters of probability density functions
-               s1=[...] "beta": p, "norm": mean
-               s2=[...] "beta": q, "norm": std
-               pdf_shape = [s1,s2]
-    limits : list of lists
-             Upper and lower bounds of random variables (only "beta")
-             a=[...] "beta": lower bound, "norm": n/a define 0
-             b=[...] "beta": upper bound, "norm": n/a define 0
-             limits = [a,b]
-    func : callable func(x,*args)
-           The objective function to be minimized.
-    args : tuple, optional
-           Extra arguments passed to func, i.e. f(x,*args).
-    order_start : int, optional
-                  Initial gpc expansion order (maximum order)
-    order_end : int, optional
-                Maximum gpc expansion order to expand to
-    interaction_order_max: int
-        define maximum interaction order of parameters (default: all interactions)
-    eps : float, optional
-          Relative mean error of leave one out cross validation
-    print_out : boolean, optional
-          Print output of iterations and subiterations (True/False)
-    seed : int, optional
-        Set np.random.seed(seed) in random_grid()
-    save_res_fn : string, optional
-          If provided, results are saved in hdf5 file
+    pdf_type: list
+        type of probability density functions of input parameters,
+        i.e. ["beta", "norm",...]
+    pdf_shape: list of lists
+        shape parameters of probability density functions
+        s1=[...] "beta": p, "norm": mean
+        s2=[...] "beta": q, "norm": std
+        pdf_shape = [s1,s2]
+    limits: list of lists
+        upper and lower bounds of random variables (only "beta")
+        a=[...] "beta": lower bound, "norm": n/a define 0
+        b=[...] "beta": upper bound, "norm": n/a define 0
+        limits = [a,b]
+    func: function
+        the objective function to be minimized
+        func(x,*args)
+    args: tuple, optional, default=()
+        extra arguments passed to function
+        i.e. f(x,*args)
+    order_start: int, optional, default=0
+        initial gpc expansion order
+    order_end: int, optional, default=10
+        maximum gpc expansion order
+    interaction_order_max: int, optional, defailt=None
+        define maximum interaction order of parameters
+        if None, perform all interactions
+    eps: float, optional, default=1E-3
+        relative mean error bound of leave one out cross validation
+    print_out: boolean, optional, default=False
+        boolean value that determines if to print output the iterations and subiterations
+    seed: int, optional, default=None
+        seeding point to replicate random grids
+    save_res_fn: str, optional, default
+        hdf5 filename where the output data should be saved
 
     Returns
     -------
-    gobj : object
-           gpc object
-    res  : ndarray
-           Funtion values at grid points of the N_out output variables
-           size: [N_grid x N_out]
+    gobj: gpc object
+        gpc object
+    res: [N_grid x N_out] np.ndarray
+        function values at grid points of the N_out output variables
     """
 
     # initialize iterators
