@@ -5,9 +5,6 @@ Class that provides polynomial chaos quadratur methods
 
 from builtins import range
 
-from .gpc import *
-from .misc import get_pdf_beta
-
 
 class Quad(gPC):
     """

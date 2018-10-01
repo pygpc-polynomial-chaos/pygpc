@@ -1,0 +1,521 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygpc.misc module &#8212; pygpc 2018 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pygpc.misc">
+<span id="pygpc-misc-module"></span><h1>pygpc.misc module<a class="headerlink" href="#module-pygpc.misc" title="Permalink to this headline">¶</a></h1>
+<p>Functions and classes that provide data and methods with general usage in the pygpc package</p>
+<dl class="class">
+<dt id="pygpc.misc.NoDaemonProcess">
+<em class="property">class </em><code class="descclassname">pygpc.misc.</code><code class="descname">NoDaemonProcess</code><span class="sig-paren">(</span><em>group=None</em>, <em>target=None</em>, <em>name=None</em>, <em>args=()</em>, <em>kwargs={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#NoDaemonProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.NoDaemonProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.process.Process</span></code></p>
+<p>Helper class to create a non daemonic process.
+From <a class="reference external" href="https://stackoverflow.com/questions/6974695/python-process-pool-non-daemonic">https://stackoverflow.com/questions/6974695/python-process-pool-non-daemonic</a></p>
+<blockquote>
+<div>make ‘daemon’ attribute always return False</div></blockquote>
+<dl class="attribute">
+<dt id="pygpc.misc.NoDaemonProcess.daemon">
+<code class="descname">daemon</code><a class="headerlink" href="#pygpc.misc.NoDaemonProcess.daemon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pygpc.misc.NonDaemonicPool">
+<em class="property">class </em><code class="descclassname">pygpc.misc.</code><code class="descname">NonDaemonicPool</code><span class="sig-paren">(</span><em>processes=None</em>, <em>initializer=None</em>, <em>initargs=()</em>, <em>maxtasksperchild=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#NonDaemonicPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.NonDaemonicPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.pool.Pool</span></code></a></p>
+<p>Helper class to create a non daemonic pool.
+We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool
+because the latter is only a wrapper function, not a proper class.</p>
+<dl class="attribute">
+<dt id="pygpc.misc.NonDaemonicPool.Process">
+<code class="descname">Process</code><a class="headerlink" href="#pygpc.misc.NonDaemonicPool.Process" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#pygpc.misc.NoDaemonProcess" title="pygpc.misc.NoDaemonProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">NoDaemonProcess</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.display_fancy_bar">
+<code class="descclassname">pygpc.misc.</code><code class="descname">display_fancy_bar</code><span class="sig-paren">(</span><em>text</em>, <em>i</em>, <em>n_i</em>, <em>more_text=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#display_fancy_bar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.display_fancy_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a simple progess bar.
+Call for each iteration and start with i=1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – text to display in front of actual iteration</li>
+<li><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – actual iteration</li>
+<li><strong>n_i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of iterations</li>
+<li><strong>more_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – text that displayed at an extra line.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>fancy_bar(‘Run’,7,10):
+Run 07 from 10 [================================        ] 70%</p>
+<p>fancy_bar(Run,9,10,’Some more text’):
+Some more text
+Run 09 from 10 [======================================= ] 90%</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_array_unique_rows">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_array_unique_rows</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_array_unique_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_array_unique_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute unique rows of array and delete rows that are linearly dependent.</p>
+<p>unique = get_array_unique_rows(array)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array</strong> (<em>np.ndarray</em>) – matrix with k linearly dependent rows</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>unique</strong> – matrix without k linearly dependent rows</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_betapdf_fit">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_betapdf_fit</code><span class="sig-paren">(</span><em>data</em>, <em>beta_tolerance=0</em>, <em>uni_intervall=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_betapdf_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_betapdf_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit data to a beta distribution in the interval [a, b].</p>
+<p>beta_parameters, moments, p_value, uni_parameters = get_betapdf_fit(data, beta_tolerance=0, uni_intervall=0)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>np.ndarray</em>) – data to fit</li>
+<li><strong>beta_tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – tolerance interval to calculate the bounds of beta distribution
+from observed data, e.g. 0.2 (+-20% tolerance)</li>
+<li><strong>uni_intervall</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – uniform distribution interval defined as fraction of
+beta distribution interval
+range: [0…1], e.g. 0.90 (90%)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>beta_parameters</strong> (<em>[4] list of float</em>) – 2 shape parameters and limits
+[p, q, a, b]</li>
+<li><strong>moments</strong> (<em>[4] list of float</em>) – [data_mean, data_std, beta_mean, beta_std]</li>
+<li><strong>p_value</strong> (<em>float</em>) – p-value of the Kolmogorov Smirnov test</li>
+<li><strong>uni_parameters</strong> (<em>[2] list of float</em>) – limits a and b
+[a, b]</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_cartesian_product">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_cartesian_product</code><span class="sig-paren">(</span><em>array_list</em>, <em>cartesian_product=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_cartesian_product"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_cartesian_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a cartesian product of input arrays.</p>
+<p>cartesian_product = get_cartesian_product(array_list, cartesian_product=None)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array_list</strong> (<em>list of np.ndarray</em>) – arrays to form the cartesian product with</li>
+<li><strong>cartesian_product</strong> (<em>np.ndarray</em>) – array to write the cartesian product</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cartesian_product</strong> – array to write the cartesian product
+(M, len(arrays))</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>cartesian(([1, 2, 3], [4, 5], [6, 7])) =</p>
+<dl class="docutils">
+<dt>array([[1, 4, 6],</dt>
+<dd>[1, 4, 7],
+[1, 5, 6],
+[1, 5, 7],
+[2, 4, 6],
+[2, 4, 7],
+[2, 5, 6],
+[2, 5, 7],
+[3, 4, 6],
+[3, 4, 7],
+[3, 5, 6],
+[3, 5, 7]])</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_list_multi_delete">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_list_multi_delete</code><span class="sig-paren">(</span><em>input_list</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_list_multi_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_list_multi_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete multiple entries from list.</p>
+<p>input_list = get_list_multi_delete(input_list, index)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – simple list</li>
+<li><strong>index</strong> (<em>list of integer</em>) – list of indices to delete</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>input_list</strong> – input list without entries specified in index</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_multi_indices">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_multi_indices</code><span class="sig-paren">(</span><em>length</em>, <em>max_order</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_multi_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_multi_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes all multi-indices with a maximum overall order of max_order.</p>
+<p>multi_indices = get_multi_indices(length, max_order)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – length of multi-index tuples</li>
+<li><strong>max_order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – maximum overall interaction order</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>multi_indices</strong> – matrix of multi-indices</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_normalized_rms">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_normalized_rms</code><span class="sig-paren">(</span><em>array</em>, <em>ref</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_normalized_rms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_normalized_rms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the normalized root mean square deviation between input data and reference data in [%].</p>
+<p>normalized_rms = get_normalized_rms(array, ref)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>np.ndarray</em>) – input data [ (x), y0, y1, y2 … ]</li>
+<li><strong>ref</strong> (<em>np.ndarray</em>) – reference data [ (xref), yref ]
+if ref is 1D, all sizes have to match</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>normalized_rms</strong> – normalized root mean square deviation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_num_coeffs">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_num_coeffs</code><span class="sig-paren">(</span><em>order</em>, <em>dim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_num_coeffs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_num_coeffs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the number of PCE coefficients by the used order and dimension.</p>
+<p>num_coeffs = (order+dim)! / (order! * dim!)</p>
+<p>num_coeffs = get_num_coeffs(order , dim)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – global order of expansion</li>
+<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of random variables</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>num_coeffs</strong> – number of coefficients and polynomials</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_num_coeffs_sparse">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_num_coeffs_sparse</code><span class="sig-paren">(</span><em>order_dim_max</em>, <em>order_glob_max</em>, <em>order_inter_max</em>, <em>dim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_num_coeffs_sparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_num_coeffs_sparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the number of PCE coefficients for a specific maximum order in each dimension order_dim_max,
+maximum order of interacting polynomials order_glob_max and the interaction order order_inter_max.</p>
+<p>num_coeffs_sparse = get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>order_dim_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em> or </em><em>np.ndarray</em>) – maximum order in each dimension</li>
+<li><strong>order_glob_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – maximum global order of interacting polynomials</li>
+<li><strong>order_inter_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – interaction order</li>
+<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of random variables</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>num_coeffs_sparse</strong> – number of coefficients and polynomials</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_pdf_beta">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_pdf_beta</code><span class="sig-paren">(</span><em>x</em>, <em>p</em>, <em>q</em>, <em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_pdf_beta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_pdf_beta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the probability density function of the beta distribution in the interval [a,b].</p>
+<dl class="docutils">
+<dt>pdf = (gamma(p)*gamma(q)/gamma(p+q).*(b-a)**(p+q-1))**(-1) *</dt>
+<dd>(x-a)**(p-1) * (b-x)**(q-1);</dd>
+</dl>
+<p>pdf = get_pdf_beta(x, p, q, a, b)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>np.ndarray</em>) – values of random variable</li>
+<li><strong>a</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – min boundary</li>
+<li><strong>b</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – max boundary</li>
+<li><strong>p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – parameter defining the distribution shape</li>
+<li><strong>q</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – parameter defining the distribution shape</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pdf</strong> – probability density</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_rotation_matrix">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_rotation_matrix</code><span class="sig-paren">(</span><em>theta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_rotation_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_rotation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate rotation matrix from euler angles.</p>
+<p>rotation_matrix = get_rotation_matrix(theta)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theta</strong> (<em>list of float</em>) – list of euler angles</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>rotation_matrix</strong> – rotation matrix computed from euler angles</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[3,3] np.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_set_combinations">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_set_combinations</code><span class="sig-paren">(</span><em>array</em>, <em>number_elements</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_set_combinations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_set_combinations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes all k-tuples (e_1, e_2, …, e_k) of combinations of the set of elements of the first row of the
+input matrix where e_n+1 &gt; e_n</p>
+<p>combination_vectors = get_set_combinations(array, number_elements)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>np.ndarray</em>) – matrix containing a first row of input elements</li>
+<li><strong>number_elements</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of elements in tuple</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>combination_vectors</strong> – matrix of combination vectors</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.mutcoh">
+<code class="descclassname">pygpc.misc.</code><code class="descname">mutcoh</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#mutcoh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.mutcoh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the mutual coherence of a matrix A. It can also be referred as the cosine
+of the smallest angle between two columns.</p>
+<p>mutual_coherence = mutcoh(array)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array</strong> (<em>np.ndarray</em>) – input matrix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>mutual_coherence</strong></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.vprint">
+<code class="descclassname">pygpc.misc.</code><code class="descname">vprint</code><span class="sig-paren">(</span><em>message</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#vprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.vprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that prints out a message if verbose argument is true.</p>
+<p>vprint(message, verbose=True)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>message</strong> (<em>string</em>) – string to print in standard output</li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default=True</em>) – determines if string is printed out</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.wrap_function">
+<code class="descclassname">pygpc.misc.</code><code class="descname">wrap_function</code><span class="sig-paren">(</span><em>fn</em>, <em>x</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#wrap_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.wrap_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function wrapper to call anonymous function with variable number of arguments (tuple).</p>
+<p>wrap_function(fn, x, args)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fn</strong> (<em>function</em>) – anonymous function to call</li>
+<li><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – parameters of function</li>
+<li><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – arguments of function</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>function_wrapper</strong> – wrapped function</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">function</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pygpc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Konstantin Weise.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/pygpc.misc.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,356 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygpc.vis module &#8212; pygpc 2018 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pygpc.vis">
+<span id="pygpc-vis-module"></span><h1>pygpc.vis module<a class="headerlink" href="#module-pygpc.vis" title="Permalink to this headline">¶</a></h1>
+<p>Functions and classes that provide visualisation functionalities</p>
+<dl class="class">
+<dt id="pygpc.vis.Visualization">
+<em class="property">class </em><code class="descclassname">pygpc.vis.</code><code class="descname">Visualization</code><span class="sig-paren">(</span><em>dims=(10</em>, <em>10)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/vis.html#Visualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.vis.Visualization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new visualization in a new window. Any added subcharts will be added to this window.</p>
+<p>Visualisation(dims=(10, 10))</p>
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.Visualisation.figure_number">
+<code class="descclassname">Visualisation.</code><code class="descname">figure_number</code><a class="headerlink" href="#pygpc.vis.Visualization.Visualisation.figure_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of figures that have been created</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, begin=0</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.Visualisation.horizontal_padding">
+<code class="descclassname">Visualisation.</code><code class="descname">horizontal_padding</code><a class="headerlink" href="#pygpc.vis.Visualization.Visualisation.horizontal_padding" title="Permalink to this definition">¶</a></dt>
+<dd><p>horizontal padding of plot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>, default=0.4</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.Visualisation.font_size_label">
+<code class="descclassname">Visualisation.</code><code class="descname">font_size_label</code><a class="headerlink" href="#pygpc.vis.Visualization.Visualisation.font_size_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>font size of title</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, default=12</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descclassname">Visualisation.</code><code class="descname">font_size_label</code></dt>
+<dd><p>font size of label</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, default=12</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.Visualisation.graph_lind_width">
+<code class="descclassname">Visualisation.</code><code class="descname">graph_lind_width</code><a class="headerlink" href="#pygpc.vis.Visualization.Visualisation.graph_lind_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>line width of graph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, default 2</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.fig">
+<code class="descname">fig</code><a class="headerlink" href="#pygpc.vis.Visualization.fig" title="Permalink to this definition">¶</a></dt>
+<dd><p>handle of figure created by matplotlib.pyplot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">mpl.figure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dims</strong> (<em>list of int</em><em>, </em><em>optional</em><em>, </em><em>default=</em><em>(</em><em>10</em><em>,</em><em>10</em><em>)</em>) – size of the newly created window</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pygpc.vis.Visualization.add_heat_map">
+<code class="descname">add_heat_map</code><span class="sig-paren">(</span><em>title</em>, <em>labels</em>, <em>grid_points</em>, <em>data_points</em>, <em>v_lim=(None</em>, <em>None)</em>, <em>x_lim=None</em>, <em>y_lim=None</em>, <em>colormap=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/vis.html#Visualization.add_heat_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.vis.Visualization.add_heat_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a 2D heatmap into the current figure.</p>
+<p>add_heat_map(title, labels, grid_points, data_points, v_lim=(None, None), x_lim=None, y_lim=None, colormap=None)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – title of the graph</li>
+<li><strong>labels</strong> (<em>{str:str} dict</em>) – {‘x’: name of x-axis, ‘y’: name of y-axis}</li>
+<li><strong>grid_points</strong> (<em>[</em><em>2</em><em>] </em><em>list of np.ndarray</em>) – arrays of the x and y positions of the grid points</li>
+<li><strong>data_points</strong> (<em>np.ndarray of the data points that are placed into the grid</em>) – </li>
+<li><strong>x_lim</strong> (<em>[</em><em>2</em><em>] </em><em>list of float</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – x limits for the function argument or value</li>
+<li><strong>y_lim</strong> (<em>[</em><em>2</em><em>] </em><em>list of float</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – y limits for the function argument or value</li>
+<li><strong>v_lim</strong> (<em>[</em><em>2</em><em>] </em><em>list of float</em><em>, </em><em>optional</em><em>, </em><em>default=</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a><em>,</em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a><em>)</em>) – limits of the color scale</li>
+<li><strong>colormap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – the colormap to use</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygpc.vis.Visualization.add_line_plot">
+<code class="descname">add_line_plot</code><span class="sig-paren">(</span><em>title</em>, <em>labels</em>, <em>data</em>, <em>x_lim=None</em>, <em>y_lim=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/vis.html#Visualization.add_line_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.vis.Visualization.add_line_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a 1D line graph into the current figure.</p>
+<p>add_line_plot(title, labels, data, x_lim=None, y_lim=None)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – title of the graph</li>
+<li><strong>labels</strong> (<em>{str:str} dict</em>) – {‘x’: name of x-axis, ‘y’: name of y-axis}</li>
+<li><strong>x_lim</strong> (<em>[</em><em>2</em><em>] </em><em>list of float</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – x limits for the function argument or value</li>
+<li><strong>y_lim</strong> (<em>[</em><em>2</em><em>] </em><em>list of float</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – y limits for the function argument or value</li>
+<li><strong>data</strong> (<em>np.ndarray</em>) – data that should be plotted</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pygpc.vis.Visualization.add_scatter_plot">
+<em class="property">static </em><code class="descname">add_scatter_plot</code><span class="sig-paren">(</span><em>shape</em>, <em>plot_size</em>, <em>color_sequence</em>, <em>colormap=None</em>, <em>v_lim=(None</em>, <em>None)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/vis.html#Visualization.add_scatter_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.vis.Visualization.add_scatter_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a scatter plot onto the current chart.</p>
+<p>add_scatter_plot(shape, plot_size, color_sequence, colormap=None, v_lim=(None, None))</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>shape</strong> (<em>{str: np.ndarray} dict</em>) – {‘x’: positions on x-axis, ‘y’: positions on y-axis}</li>
+<li><strong>plot_size</strong> (<em>np.ndarray</em>) – the marker size in the squared number of points</li>
+<li><strong>color_sequence</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – marker colors</li>
+<li><strong>colormap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – the colormap to use</li>
+<li><strong>v_lim</strong> (<em>[</em><em>2</em><em>] </em><em>list of float</em><em>, </em><em>optional</em><em>, </em><em>default=</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a><em>,</em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a><em>)</em>) – limits of the color scale</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygpc.vis.Visualization.create_new_chart">
+<code class="descname">create_new_chart</code><span class="sig-paren">(</span><em>layout_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/vis.html#Visualization.create_new_chart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.vis.Visualization.create_new_chart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new subplot to the current visualization, so that multiple graphs can be overlaid onto one chart
+(e.g. scatterplot over heatmap).</p>
+<p>create_new_chart(layout_id=None)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>layout_id</strong> (<em>(</em><em>3-digit</em><em>) </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – denoting the position of the graph in figure (xyn : ‘x’=width, ‘y’=height of grid, ‘n’=position within grid)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pygpc.vis.Visualization.create_sub_plot">
+<em class="property">static </em><code class="descname">create_sub_plot</code><span class="sig-paren">(</span><em>title</em>, <em>labels</em>, <em>x_lim</em>, <em>y_lim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/vis.html#Visualization.create_sub_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.vis.Visualization.create_sub_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the title, labels and the axis limits of a plot.</p>
+<p>create_sub_plot(title, labels, x_lim, y_lim)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – title of the plot</li>
+<li><strong>labels</strong> (<em>{str:str} dict</em>) – {‘x’: name of x-axis, ‘y’: name of y-axis}</li>
+<li><strong>x_lim</strong> (<em>[</em><em>2</em><em>] </em><em>list of float</em>) – x limits for the function argument or value</li>
+<li><strong>y_lim</strong> (<em>[</em><em>2</em><em>] </em><em>list of float</em>) – y limits for the function argument or value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.figure_number">
+<code class="descname">figure_number</code><em class="property"> = 0</em><a class="headerlink" href="#pygpc.vis.Visualization.figure_number" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.font_size_label">
+<code class="descname">font_size_label</code><em class="property"> = 12</em><a class="headerlink" href="#pygpc.vis.Visualization.font_size_label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.font_size_title">
+<code class="descname">font_size_title</code><em class="property"> = 12</em><a class="headerlink" href="#pygpc.vis.Visualization.font_size_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.graph_line_width">
+<code class="descname">graph_line_width</code><em class="property"> = 2</em><a class="headerlink" href="#pygpc.vis.Visualization.graph_line_width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.vis.Visualization.horizontal_padding">
+<code class="descname">horizontal_padding</code><em class="property"> = 0.4</em><a class="headerlink" href="#pygpc.vis.Visualization.horizontal_padding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pygpc.vis.Visualization.show">
+<em class="property">static </em><code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/vis.html#Visualization.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.vis.Visualization.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show plots.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.vis.plot_sobol_indices">
+<code class="descclassname">pygpc.vis.</code><code class="descname">plot_sobol_indices</code><span class="sig-paren">(</span><em>sobol_rel_order_mean</em>, <em>sobol_rel_1st_order_mean</em>, <em>fn_plot</em>, <em>random_vars</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/vis.html#plot_sobol_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.vis.plot_sobol_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the Sobol indices into different sub-plots.</p>
+<p>plot_sobol_indices(sobol_rel_order_mean, sobol_rel_1st_order_mean, fn_plot, random_vars)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sobol_rel_order_mean</strong> (<em>np.ndarray</em>) – average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,)
+over all output quantities</li>
+<li><strong>sobol_rel_1st_order_mean</strong> (<em>np.ndarray</em>) – average proportion of the random variables of the 1st order Sobol indices to the total variance over all
+output quantities</li>
+<li><strong>fn_plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename of plot</li>
+<li><strong>random_vars</strong> (<em>[</em><em>dim</em><em>] </em><em>list of str</em>) – string labels of the random variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pygpc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Konstantin Weise.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/pygpc.vis.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

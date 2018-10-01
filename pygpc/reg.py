@@ -9,8 +9,8 @@ import numpy as np
 import scipy
 from builtins import range
 
-from .gpc import *
-from .misc import *
+from .misc import vprint, display_fancy_bar
+from .gpc import gPC
 
 
 class Reg(gPC):

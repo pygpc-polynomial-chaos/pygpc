@@ -6,11 +6,12 @@ Class that provides general polynomial chaos methods
 import ctypes
 import scipy
 import os
+import numpy as np
 from builtins import range
 
 from .misc import *
 from .grid import *
-from .postproc import *
+from .postproc import get_extracted_sobol_order
 
 
 # TODO: transform into abstract base class

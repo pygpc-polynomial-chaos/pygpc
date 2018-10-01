@@ -6,14 +6,12 @@ Functions and classes that provide data and methods with general usage in the py
 import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt
-import multiprocessing
 import os
 import sys
 import math
+import multiprocessing
 from builtins import range
-
-from .reg import *
-from .io import *
+from multiprocessing import pool
 
 
 class NoDaemonProcess(multiprocessing.Process):
@@ -32,7 +30,7 @@ class NoDaemonProcess(multiprocessing.Process):
     daemon = property(_get_daemon, _set_daemon)
 
 
-class NonDaemonicPool(multiprocessing.pool.Pool):
+class NonDaemonicPool(pool.Pool):
     """
     Helper class to create a non daemonic pool.
     We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool

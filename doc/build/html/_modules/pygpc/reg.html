@@ -1,0 +1,278 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygpc.reg &#8212; pygpc 2018 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pygpc.reg</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Class that provides polynomial chaos regression methods</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">range</span>
+
+<span class="kn">from</span> <span class="nn">.gpc</span> <span class="k">import</span> <span class="n">gPC</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="k">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="Reg"><a class="viewcode-back" href="../../pygpc.reg.html#pygpc.reg.Reg">[docs]</a><span class="k">class</span> <span class="nc">Reg</span><span class="p">(</span><span class="n">gPC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Regression gPC subclass</span>
+
+<span class="sd">    Initialisation</span>
+<span class="sd">    --------------</span>
+<span class="sd">    Reg(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    N_grid: int</span>
+<span class="sd">        number of grid points</span>
+<span class="sd">    dim: int</span>
+<span class="sd">        number of uncertain parameters to process</span>
+<span class="sd">    pdf_type: [dim] list of str</span>
+<span class="sd">        type of pdf &#39;beta&#39; or &#39;norm&#39;</span>
+<span class="sd">    pdf_shape: list of list of float</span>
+<span class="sd">        shape parameters of pdfs</span>
+<span class="sd">        beta-dist:   [[alpha], [beta]    ]</span>
+<span class="sd">        normal-dist: [[mean],  [variance]]</span>
+<span class="sd">    limits: list of list of float</span>
+<span class="sd">        upper and lower bounds of random variables</span>
+<span class="sd">        beta-dist:   [[a1 ...], [b1 ...]]</span>
+<span class="sd">        normal-dist: [[0 ... ], [0 ... ]] (not used)</span>
+<span class="sd">    order: [dim] list of int</span>
+<span class="sd">        maximum individual expansion order</span>
+<span class="sd">        generates individual polynomials also if maximum expansion order in order_max is exceeded</span>
+<span class="sd">    order_max: int</span>
+<span class="sd">        maximum expansion order (sum of all exponents)</span>
+<span class="sd">        the maximum expansion order considers the sum of the orders of combined polynomials only</span>
+<span class="sd">    interaction_order: int</span>
+<span class="sd">        number of random variables, which can interact with each other</span>
+<span class="sd">        all polynomials are ignored, which have an interaction order greater than the specified</span>
+<span class="sd">    grid: grid object</span>
+<span class="sd">        grid object generated in grid.py including grid.coords and grid.coords_norm</span>
+<span class="sd">    random_vars: [dim] list of str</span>
+<span class="sd">        string labels of the random variables</span>
+<span class="sd">    relative_error_loocv: list of float</span>
+<span class="sd">        relative error of the leave-one-out-cross-validation</span>
+<span class="sd">    nan_elm: list of float</span>
+<span class="sd">        which elements were dropped due to NaN</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pdf_type: [dim] list of str</span>
+<span class="sd">        type of pdf &#39;beta&#39; or &#39;norm&#39;</span>
+<span class="sd">    pdf_shape: list of list of float</span>
+<span class="sd">        shape parameters of pdfs</span>
+<span class="sd">        beta-dist:   [[alpha], [beta]    ]</span>
+<span class="sd">        normal-dist: [[mean],  [variance]]</span>
+<span class="sd">    limits: list of list of float</span>
+<span class="sd">        upper and lower bounds of random variables</span>
+<span class="sd">        beta-dist:   [[a1 ...], [b1 ...]]</span>
+<span class="sd">        normal-dist: [[0 ... ], [0 ... ]] (not used)</span>
+<span class="sd">    order: [dim] list of int</span>
+<span class="sd">        maximum individual expansion order</span>
+<span class="sd">        generates individual polynomials also if maximum expansion order in order_max is exceeded</span>
+<span class="sd">    order_max: int</span>
+<span class="sd">        maximum expansion order (sum of all exponents)</span>
+<span class="sd">        the maximum expansion order considers the sum of the orders of combined polynomials only</span>
+<span class="sd">    interaction_order: int</span>
+<span class="sd">        number of random variables, which can interact with each other</span>
+<span class="sd">        all polynomials are ignored, which have an interaction order greater than the specified</span>
+<span class="sd">    grid: grid object</span>
+<span class="sd">        grid object generated in grid.py including grid.coords and grid.coords_norm</span>
+<span class="sd">    random_vars: [dim] list of str, optional, default=None</span>
+<span class="sd">        string labels of the random variables</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf_type</span><span class="p">,</span> <span class="n">pdf_shape</span><span class="p">,</span> <span class="n">limits</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">order_max</span><span class="p">,</span> <span class="n">interaction_order</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">random_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">gPC</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_vars</span> <span class="o">=</span> <span class="n">random_vars</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdf_type</span> <span class="o">=</span> <span class="n">pdf_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdf_shape</span> <span class="o">=</span> <span class="n">pdf_shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limits</span> <span class="o">=</span> <span class="n">limits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_max</span> <span class="o">=</span> <span class="n">order_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interaction_order</span> <span class="o">=</span> <span class="n">interaction_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdf_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_error_loocv</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nan_elm</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># setup polynomial basis functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_polynomial_basis</span><span class="p">()</span>
+
+        <span class="c1"># construct gpc matrix [Ngrid x Npolybasis]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_gpc_matrix</span><span class="p">()</span>
+
+        <span class="c1"># get mean values of input random variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_random_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mean_random_vars</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Reg.get_coeffs_expand"><a class="viewcode-back" href="../../pygpc.reg.html#pygpc.reg.Reg.get_coeffs_expand">[docs]</a>    <span class="k">def</span> <span class="nf">get_coeffs_expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_results</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the gPC coefficients by the regression method.</span>
+
+<span class="sd">        coeffs = get_coeffs_expand(sim_results)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sim_results: [N_grid x N_out] np.ndarray of float</span>
+<span class="sd">            results from simulations with N_out output quantities,</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        coeffs: [N_coeffs x N_out] np.ndarray of float</span>
+<span class="sd">            gPC coefficients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># coeffs    ... [N_coeffs x N_points]</span>
+        <span class="c1"># gpc_matrix_inv      ... [N_coeffs x N_grid]</span>
+        <span class="c1"># sim_results      ... [N_grid   x N_points]</span>
+
+        <span class="n">vprint</span><span class="p">(</span><span class="s1">&#39;Determine gPC coefficients ...&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_out</span> <span class="o">=</span> <span class="n">sim_results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">sim_results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc_matrix_inv</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> \
+           <span class="n">sim_results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc_matrix_inv</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please check format of input sim_results: matrix [N_grid x N_out] !&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sim_results</span> <span class="o">=</span> <span class="n">sim_results</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpc_matrix_inv</span><span class="p">,</span> <span class="n">sim_results</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Reg.get_loocv"><a class="viewcode-back" href="../../pygpc.reg.html#pygpc.reg.Reg.get_loocv">[docs]</a>    <span class="k">def</span> <span class="nf">get_loocv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_results</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform leave one out cross validation of gPC with maximal 100 points</span>
+<span class="sd">        and add result to self.relative_error_loocv.</span>
+
+<span class="sd">        relative_error_loocv = get_loocv(sim_results)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sim_results: [N_grid x N_out] np.ndarray</span>
+<span class="sd">            Results from N_grid simulations with N_out output quantities</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        relative_error_loocv: float</span>
+<span class="sd">            relative mean error of leave one out cross validation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># define number of performed cross validations (max 100)</span>
+        <span class="n">N_loocv_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">sim_results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">100</span><span class="p">))</span>
+
+        <span class="c1"># make list of indices, which are randomly sampled</span>
+        <span class="n">loocv_point_idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">sim_results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">N_loocv_points</span><span class="p">)</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">relative_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N_loocv_points</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_loocv_points</span><span class="p">):</span>
+            <span class="c1"># get mask of eliminated row</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">sim_results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">loocv_point_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="c1"># invert reduced gpc matrix</span>
+            <span class="n">gpc_matrix_inv_loo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpc_matrix</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:])</span>
+
+            <span class="c1"># determine gpc coefficients (this takes a lot of time for large problems)</span>
+            <span class="n">coeffs_loo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gpc_matrix_inv_loo</span><span class="p">,</span> <span class="n">sim_results</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="n">sim_results_temp</span> <span class="o">=</span> <span class="n">sim_results</span><span class="p">[</span><span class="n">loocv_point_idx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">:]</span>
+            <span class="n">relative_error</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sim_results_temp</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">loocv_point_idx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">:],</span> <span class="n">coeffs_loo</span><span class="p">))</span>\
+                                <span class="o">/</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sim_results_temp</span><span class="p">)</span>
+            <span class="n">display_fancy_bar</span><span class="p">(</span><span class="s2">&quot;LOOCV&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">N_loocv_points</span><span class="p">))</span>
+
+        <span class="c1"># store result in relative_error_loocv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_error_loocv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">relative_error</span><span class="p">))</span>
+        <span class="n">vprint</span><span class="p">(</span><span class="s2">&quot; (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_error_loocv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pygpc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Konstantin Weise.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

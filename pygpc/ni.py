@@ -9,11 +9,6 @@ import warnings
 from builtins import range
 from _functools import partial
 
-from .misc import *
-from .io import *
-from .reg import *
-from .misc import *
-
 
 # TODO:Refactor
 def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=None,
@@ -481,7 +476,7 @@ def run_reg_adaptive2(random_vars, pdf_type, pdf_shape, limits, func, args=(), o
     order = order_start
     res_complete = None
     if save_res_fn and n_cpu:
-        save_res_fn += 'n_cpu
+        save_res_fn += 'n_cpu'
 
     # make dummy grid
     grid_init = randomgrn_cpu, seed=seed)

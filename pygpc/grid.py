@@ -5,11 +5,10 @@ Functions and classes that provide data and methods for the generation and proce
 
 import numpy as np
 from builtins import range
-
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
-from .misc import get_multi_indices
-from .misc import vprint
+
+from .misc import vprint, get_multi_indices
 
 
 def get_quadrature_jacobi_1d(N, b, a):

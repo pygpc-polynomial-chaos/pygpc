@@ -8,8 +8,6 @@ import h5py
 import yaml
 from builtins import range
 
-from .grid import *
-
 
 def write_gpc_yml(obj, fname):
     """
