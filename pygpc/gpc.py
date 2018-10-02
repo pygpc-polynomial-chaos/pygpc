@@ -11,7 +11,7 @@ from builtins import range
 
 from .misc import *
 from .grid import *
-from .postproc import get_extracted_sobol_order
+from .postproc import *
 
 
 # TODO: transform into abstract base class
@@ -86,7 +86,7 @@ class gPC:
     poly_norm_basis: [N_poly] np.ndarray
         normalizing scaling factors of the polynomial basis functions
     sobol_idx_bool: list of np.ndarray of bool
-            boolean mask that determines which multi indices are unique
+        boolean mask that determines which multi indices are unique
     """
 
     def __init__(self):
@@ -124,6 +124,18 @@ class gPC:
     def init_polynomial_coeffs(self, order_begin, order_end):
         """
         Calculate polynomial basis functions of a given order range and add it to the polynomial lookup tables.
+        The size, including the polynomials that won't be used, is [max_individual_order x dim].
+
+        .. math::
+           \\begin{tabular}{l*{4}{c}}
+            Polynomial          & Dimension 1 & Dimension 2 & ... & Dimension M \\\\
+           \\hline
+            Polynomial 1        & [Coefficients] & [Coefficients] & \\vdots & [Coefficients] \\\\
+            Polynomial 2        & 0 & [Coefficients] & \\vdots & [Coefficients] \\\\
+           \\vdots              & \\vdots & \\vdots & \\vdots & \\vdots \\\\
+            Polynomial N        & [Coefficients] & [Coefficients] & 0 & [Coefficients] \\\\
+           \\end{tabular}
+
 
         init_polynomial_coeffs(poly_idx_added)
 
@@ -133,19 +145,6 @@ class gPC:
             order of polynomials to begin with
         order_end: int
             order of polynomials to end with
-
-        Example
-        -------
-         poly    |     dim_1     dim_2    ...    dim_M
-        -----------------------------------------------
-        Poly_1   |   [coeffs]   [coeffs]   ...  [coeffs]
-        Poly_2   |   [coeffs]   [coeffs]   ...  [coeffs]
-          ...    |   [coeffs]   [coeffs]   ...   [0]
-          ...    |   [coeffs]   [coeffs]   ...   [0]
-          ...    |   [coeffs]   [coeffs]   ...   ...
-        Poly_N   |     [0]      [coeffs]   ...   [0]
-
-        size: [max_individual_order x dim] (includes polynomials also not used)
         """
 
         self.poly_norm = np.zeros([order_end-order_begin, self.dim])
@@ -223,22 +222,19 @@ class gPC:
     def init_polynomial_index(self):
         """
         Initialize polynomial multi indices. Determine 2D multi-index array (order) of basis functions and
-        generate multi-index list up to maximum order.
+        generate multi-index list up to maximum order. The size is [No. of basis functions x dim].
+
+        .. math::
+           \\begin{tabular}{l*{4}{c}}
+            Polynomial Index    & Dimension 1 & Dimension 2 & ... & Dimension M \\\\
+           \\hline
+            Basis 1             & [Order D1] & [Order D2] & \\vdots & [Order M] \\\\
+            Basis 2             & [Order D1] & [Order D2] & \\vdots & [Order M] \\\\
+           \\vdots              & [Order D1] & [Order D2] & \\vdots  & [Order M] \\\\
+            Basis N           & [Order D1] & [Order D2] & \\vdots & [Order M] \\\\
+           \\end{tabular}
 
         init_polynomial_index()
-
-        Example
-        -------
-        poly_idx |     dim_1       dim_2       ...    dim_M
-        -------------------------------------------------------
-        basis_1  |  [order_D1]  [order_D2]     ...  [order_DM]
-        basis_2  |  [order_D1]  [order_D2]     ...  [order_DM]
-         ...     |  [order_D1]  [order_D2]     ...  [order_DM]
-         ...     |  [order_D1]  [order_D2]     ...  [order_DM]
-         ...     |  [order_D1]  [order_D2]     ...  [order_DM]
-        basis_Nb |  [order_D1]  [order_D2]     ...  [order_DM]
-
-        size: [No. of basis functions x dim]
         """
 
         if self.dim == 1:

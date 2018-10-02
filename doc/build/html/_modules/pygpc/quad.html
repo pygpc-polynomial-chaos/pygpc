@@ -40,16 +40,14 @@
 
 <span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">range</span>
 
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.gpc</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.misc</span> <span class="k">import</span> <span class="n">get_pdf_beta</span>
 
 
 <div class="viewcode-block" id="Quad"><a class="viewcode-back" href="../../pygpc.quad.html#pygpc.quad.Quad">[docs]</a><span class="k">class</span> <span class="nc">Quad</span><span class="p">(</span><span class="n">gPC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Quadratur gPC subclass</span>
 
-<span class="sd">    Initialisation</span>
-<span class="sd">    --------------</span>
 <span class="sd">    Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)</span>
 
 <span class="sd">    Attributes</span>
@@ -231,7 +229,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, Konstantin Weise.
+      &copy;2018, Konstantin Weise, Benjamin Kalloch, Lucas Possner.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>

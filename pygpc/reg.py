@@ -9,16 +9,14 @@ import numpy as np
 import scipy
 from builtins import range
 
-from .misc import vprint, display_fancy_bar
-from .gpc import gPC
+from .misc import *
+from .gpc import *
 
 
 class Reg(gPC):
     """
     Regression gPC subclass
 
-    Initialisation
-    --------------
     Reg(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)
 
     Attributes

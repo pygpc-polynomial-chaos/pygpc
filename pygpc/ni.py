@@ -41,29 +41,29 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
     args: tuple, optional, default=()
         extra arguments passed to function
         i.e. f(x,*args)
-    fname : str, optional, default=None
+    fname: str, optional, default=None
         if fname exists, reg_obj will be created from it
         if not exist, it will be created
-    order_start : int, optional, default=0
+    order_start: int, optional, default=0
         initial gpc expansion order
-    order_end : int, optional, default=10
+    order_end: int, optional, default=10
         maximum gpc expansion order
     interaction_order_max: int, optional, defailt=None
         define maximum interaction order of parameters
         if None, perform all interactions
-    eps : float, optional, default=1E-3
+    eps: float, optional, default=1E-3
         relative mean error bound of leave one out cross validation
-    print_out : boolean, optional, default=False
+    print_out: boolean, optional, default=False
         boolean value that determines if to print output the iterations and subiterations
-    seed : int, optional, default=None
+    seed: int, optional, default=None
         seeding point to replicate random grids
-    do_mp : boolean, optional, default=False
-        boolean value that determines if to do each func(x, *(args)) in each iteration with parmap.starmap(func)
-    n_cpu : int, optional, default=4
+    do_mp: boolean, optional, default=False
+        boolean value that determines if to do each func(x,*args) in each iteration with parmap.starmap(func)
+    n_cpu: int, optional, default=4
         if multiprocessing is enabled, utilize n_cpu cores
-    dispy : boolean, optional, default=False
+    dispy: boolean, optional, default=False
         boolean value that determines if to compute function with dispy cluster
-    dispy_sched_host : str, optional, default='localhost'
+    dispy_sched_host: str, optional, default='localhost'
         host name where dispyscheduler will be running
     hdf5_geo_fn: str, optional, default=''
         hdf5 filename with spatial information: /mesh/elm/*
@@ -479,12 +479,12 @@ def run_reg_adaptive2(random_vars, pdf_type, pdf_shape, limits, func, args=(), o
         save_res_fn += 'n_cpu'
 
     # make dummy grid
-    grid_init = randomgrn_cpu, seed=seed)
+    grid_init = RandomGrid(n_cpu, seed=seed)
 
     # make initial regobn_cpu
-    reg_obj = reg(pdf_typen_cpu
-                 pdfshapn_cpu
-                 limits,n_cpu
+    reg_obj = reg(pdf_typen_cpu,
+                 pdfshapn_cpu,
+                 limits,n_cpu,
                  order * np.ones(dim),
                  order_max=order,
                  interaction_order=interaction_order_max,

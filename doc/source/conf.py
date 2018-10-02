@@ -20,8 +20,8 @@
 # -- Project information -----------------------------------------------------
 
 project = u'pygpc'
-copyright = u'2018, Konstantin Weise'
-author = u'Konstantin Weise'
+copyright = u'2018, Konstantin Weise, Benjamin Kalloch, Lucas Possner'
+author = u'Konstantin Weise, Benjamin Kalloch, Lucas Possner'
 
 # The short X.Y version
 version = u''
@@ -41,10 +41,10 @@ release = u'2018'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.imgmath'
 ]
 
 # Napoleon settings
@@ -60,7 +60,7 @@ napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
 
-#Templates here, relative to this directory.
+# Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
@@ -148,7 +148,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'pygpc.tex', u'pygpc Documentation',
-     u'Konstantin Weise', 'manual'),
+     u'Konstantin Weise, Benjamin Kalloch, Lucas Possner', 'manual'),
 ]
 
 

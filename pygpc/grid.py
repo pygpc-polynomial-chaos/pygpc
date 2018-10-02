@@ -17,8 +17,8 @@ def get_quadrature_jacobi_1d(N, b, a):
 
     knots, weights = get_quadrature_jacobi_1d(N, b, a)
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     N: int
         number of knots
     a: float
@@ -65,8 +65,8 @@ def get_quadrature_hermite_1d(N):
 
     knots, weights = get_quadrature_hermite_1d(N)
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     N: int
         number of knots
 
@@ -90,8 +90,8 @@ def get_quadrature_clenshaw_curtis_1d(N):
 
     knots, weights = get_quadrature_clenshaw_curtis_1d(N)
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     N: int
         number of knots
 
@@ -148,8 +148,8 @@ def get_quadrature_fejer1_1d(N):
 
     knots, weights = get_quadrature_fejer1_1d(N)
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     N: int
         number of knots
 
@@ -214,8 +214,8 @@ def get_quadrature_fejer2_1d(N):
 
     knots, weights = get_quadrature_fejer2_1d(N)
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     N: int
         number of knots
 
@@ -276,8 +276,8 @@ def get_quadrature_patterson_1d(N):
 
     knots, weights = get_quadrature_patterson_1d(N)
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     N: int
         number of knots
         possible values: 1, 3, 7, 15, 31
@@ -522,8 +522,6 @@ class TensorGrid:
     """
     Generate TensorGrid object instance.
 
-    Initialisation
-    --------------
     TensorGrid(pdf_type, grid_type, grid_shape, limits, N):
 
     Attributes
@@ -627,8 +625,6 @@ class SparseGrid:
     """
     Generate SparseGrid object instance.
 
-    Initialisation
-    --------------
     SparseGrid(pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order,
                order_sequence_type, make_grid=True, verbose=True)
 
@@ -946,8 +942,6 @@ class RandomGrid:
     """
     Generate RandomGrid object instance.
 
-    Initialisation
-    --------------
     RandomGrid(pdf_type, grid_shape, limits, N, seed=None)
 
     Attributes

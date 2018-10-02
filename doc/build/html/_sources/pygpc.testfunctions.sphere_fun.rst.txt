@@ -1,0 +1,7 @@
+pygpc.testfunctions.sphere\_fun module
+======================================
+
+.. automodule:: pygpc.testfunctions.sphere_fun
+    :members:
+    :undoc-members:
+    :show-inheritance:

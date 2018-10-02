@@ -1,10 +1,10 @@
 .. pygpc documentation master file, created by
-   sphinx-quickstart on Mon Oct  1 15:17:51 2018.
+   sphinx-quickstart on Tue Oct  2 10:14:28 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Documentation of the pygpc library
-==================================
+Welcome to pygpc's documentation!
+=================================
 
 .. toctree::
    :maxdepth: 2

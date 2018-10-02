@@ -1,0 +1,7 @@
+pygpc.testfunctions.oakley\_ohagan\_2004 module
+===============================================
+
+.. automodule:: pygpc.testfunctions.oakley_ohagan_2004
+    :members:
+    :undoc-members:
+    :show-inheritance:

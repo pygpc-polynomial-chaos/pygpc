@@ -40,11 +40,10 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">range</span>
-
 <span class="kn">from</span> <span class="nn">scipy.fftpack</span> <span class="k">import</span> <span class="n">ifft</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.extmath</span> <span class="k">import</span> <span class="n">cartesian</span>
-<span class="kn">from</span> <span class="nn">.misc</span> <span class="k">import</span> <span class="n">get_multi_indices</span>
-<span class="kn">from</span> <span class="nn">.misc</span> <span class="k">import</span> <span class="n">vprint</span>
+
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="k">import</span> <span class="n">vprint</span><span class="p">,</span> <span class="n">get_multi_indices</span>
 
 
 <div class="viewcode-block" id="get_quadrature_jacobi_1d"><a class="viewcode-back" href="../../pygpc.grid.html#pygpc.grid.get_quadrature_jacobi_1d">[docs]</a><span class="k">def</span> <span class="nf">get_quadrature_jacobi_1d</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
@@ -53,8 +52,8 @@
 
 <span class="sd">    knots, weights = get_quadrature_jacobi_1d(N, b, a)</span>
 
-<span class="sd">    Parameter</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    N: int</span>
 <span class="sd">        number of knots</span>
 <span class="sd">    a: float</span>
@@ -101,8 +100,8 @@
 
 <span class="sd">    knots, weights = get_quadrature_hermite_1d(N)</span>
 
-<span class="sd">    Parameter</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    N: int</span>
 <span class="sd">        number of knots</span>
 
@@ -126,8 +125,8 @@
 
 <span class="sd">    knots, weights = get_quadrature_clenshaw_curtis_1d(N)</span>
 
-<span class="sd">    Parameter</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    N: int</span>
 <span class="sd">        number of knots</span>
 
@@ -184,8 +183,8 @@
 
 <span class="sd">    knots, weights = get_quadrature_fejer1_1d(N)</span>
 
-<span class="sd">    Parameter</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    N: int</span>
 <span class="sd">        number of knots</span>
 
@@ -250,8 +249,8 @@
 
 <span class="sd">    knots, weights = get_quadrature_fejer2_1d(N)</span>
 
-<span class="sd">    Parameter</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    N: int</span>
 <span class="sd">        number of knots</span>
 
@@ -312,8 +311,8 @@
 
 <span class="sd">    knots, weights = get_quadrature_patterson_1d(N)</span>
 
-<span class="sd">    Parameter</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    N: int</span>
 <span class="sd">        number of knots</span>
 <span class="sd">        possible values: 1, 3, 7, 15, 31</span>
@@ -558,8 +557,6 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate TensorGrid object instance.</span>
 
-<span class="sd">    Initialisation</span>
-<span class="sd">    --------------</span>
 <span class="sd">    TensorGrid(pdf_type, grid_type, grid_shape, limits, N):</span>
 
 <span class="sd">    Attributes</span>
@@ -663,8 +660,6 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate SparseGrid object instance.</span>
 
-<span class="sd">    Initialisation</span>
-<span class="sd">    --------------</span>
 <span class="sd">    SparseGrid(pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order,</span>
 <span class="sd">               order_sequence_type, make_grid=True, verbose=True)</span>
 
@@ -982,8 +977,6 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate RandomGrid object instance.</span>
 
-<span class="sd">    Initialisation</span>
-<span class="sd">    --------------</span>
 <span class="sd">    RandomGrid(pdf_type, grid_shape, limits, N, seed=None)</span>
 
 <span class="sd">    Attributes</span>
@@ -1093,7 +1086,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, Konstantin Weise.
+      &copy;2018, Konstantin Weise, Benjamin Kalloch, Lucas Possner.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>

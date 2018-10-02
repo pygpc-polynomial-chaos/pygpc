@@ -1,0 +1,7 @@
+pygpc.testfunctions.lim\_2002 module
+====================================
+
+.. automodule:: pygpc.testfunctions.lim_2002
+    :members:
+    :undoc-members:
+    :show-inheritance:

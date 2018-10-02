@@ -1,0 +1,279 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygpc.testfunctions.sphere module &#8212; pygpc 2018 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pygpc.testfunctions.sphere">
+<span id="pygpc-testfunctions-sphere-module"></span><h1>pygpc.testfunctions.sphere module<a class="headerlink" href="#module-pygpc.testfunctions.sphere" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="pygpc.testfunctions.sphere.B_outside_sphere">
+<code class="descclassname">pygpc.testfunctions.sphere.</code><code class="descname">B_outside_sphere</code><span class="sig-paren">(</span><em>sphere_radius</em>, <em>dipole_pos</em>, <em>dipole_moment</em>, <em>detector_positions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/testfunctions/sphere.html#B_outside_sphere"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.testfunctions.sphere.B_outside_sphere" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the B field outside a sphere, does not depend on conductivity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>- float</strong> (<em>sphere_radius</em>) – Radius of sphere</li>
+<li><strong>- 3x1 ndarray</strong> (<em>dipole_moment</em>) – Position of dipole</li>
+<li><strong>- 3x1 ndarray</strong> – Moment of dipole</li>
+<li><strong>- nx3 ndarray</strong> (<em>detector_positions</em>) – Position of detectors, must lie outside sphere</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array with B fields in detector positions</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">nx3 ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Dipole in SI units, positions in mm</p>
+<p class="rubric">References</p>
+<p>J.Savras - Basic mathematical and electromagnetic concepts of the biomagnetic inverse problem.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.testfunctions.sphere.fibonacci_sphere">
+<code class="descclassname">pygpc.testfunctions.sphere.</code><code class="descname">fibonacci_sphere</code><span class="sig-paren">(</span><em>nr_points</em>, <em>R=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/testfunctions/sphere.html#fibonacci_sphere"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.testfunctions.sphere.fibonacci_sphere" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates N points around evenly spread through a unit sphere</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nr_points</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of points to be spread, must be odd</li>
+<li><strong>R</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – radius of sphere</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array with the points</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Nx3 ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.testfunctions.sphere.potential_3layers_surface_electrodes">
+<code class="descclassname">pygpc.testfunctions.sphere.</code><code class="descname">potential_3layers_surface_electrodes</code><span class="sig-paren">(</span><em>conductivities</em>, <em>radii</em>, <em>anode_pos</em>, <em>cathode_pos</em>, <em>p</em>, <em>nbr_polynomials=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/testfunctions/sphere.html#potential_3layers_surface_electrodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.testfunctions.sphere.potential_3layers_surface_electrodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the electric potential in a 3-layered sphere caused by point-like electrodees</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conductivities</strong> (<em>list of lenght = 3</em>) – Conductivity of the 3 layers (innermost to outermost), in S/m</li>
+<li><strong>radii</strong> (<em>list of length = 3</em>) – Radius of each of the 3 layers (innermost to outermost), in mm</li>
+<li><strong>anode_pos</strong> (<em>3x1 ndarray</em>) – position of the anode_pos, in mm</li>
+<li><strong>cathode_pos</strong> (<em>3x1 ndarray</em>) – position of cathode_pos, in mm</li>
+<li><strong>p</strong> (<em>(</em><em>Nx3</em><em>)</em><em>ndarray</em>) – List of positions where the poteitial should be calculated, in mm</li>
+<li><strong>nbr_polynomials</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of of legendre polynomials to use</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>(Nx1) ndarray</em> – Values of the electric potential, in V</li>
+<li><em>Reference</em></li>
+<li><em>——————————</em></li>
+<li><em>S.Rush, D.Driscol EEG electrode sensitivity–an application of reciprocity.</em></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.testfunctions.sphere.potential_dipole_3layers">
+<code class="descclassname">pygpc.testfunctions.sphere.</code><code class="descname">potential_dipole_3layers</code><span class="sig-paren">(</span><em>radii</em>, <em>cond_brain_scalp</em>, <em>cond_skull</em>, <em>dipole_pos</em>, <em>dipole_moment</em>, <em>surface_points</em>, <em>nbr_polynomials=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/testfunctions/sphere.html#potential_dipole_3layers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.testfunctions.sphere.potential_dipole_3layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the electric potential in a 3-layered sphere caused by a dipole
+Calculations assumes dimensions in SI units</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>radii</strong> (<em>list of length = 3</em>) – Radius of each of the 3 layers (innermost to outermost), in mm</li>
+<li><strong>cond_brain_scalp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Conductivity of the brain and scalp layers, in S/m</li>
+<li><strong>cond_skull</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Conductivity of the skull layer, in S/m</li>
+<li><strong>dipole_pos</strong> (<em>3x1 ndarray</em>) – position of the dipole, in mm</li>
+<li><strong>dipole_moment</strong> (<em>3x1 ndarray</em>) – moment of dipole, in C x m</li>
+<li><strong>surface_points</strong> (<em>(</em><em>Nx3</em><em>)</em><em>ndarray</em>) – List of positions where the poteitial should be calculated, in mm</li>
+<li><strong>nbr_polynomials</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of of legendre polynomials to use (default = 100)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>(Nx1) ndarray</em> – Values of the electric potential, in V</li>
+<li><em>Reference</em></li>
+<li><em>——————————</em></li>
+<li><em>Ary, James P., Stanley A. Klein, and Derek H. Fender.</em></li>
+<li><strong>”Location of sources of evoked scalp potentials</strong> (<em>corrections for skull and scalp thicknesses.” Biomedical Engineering 28.6 (1981).</em>)</li>
+<li><em>eq. 2 and 2a</em></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.testfunctions.sphere.potential_homogeneous_dipole">
+<code class="descclassname">pygpc.testfunctions.sphere.</code><code class="descname">potential_homogeneous_dipole</code><span class="sig-paren">(</span><em>sphere_radius</em>, <em>conductivity</em>, <em>dipole_pos</em>, <em>dipole_moment</em>, <em>detector_positions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/testfunctions/sphere.html#potential_homogeneous_dipole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.testfunctions.sphere.potential_homogeneous_dipole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the surface potential generated by a dipole inside a homogeneous conducting sphere</p>
+<p>Calculates the surface potential generated by a dipole inside a homogeneous conducting sphere.
+:param sphere_radius - float: Radius of sphere, in mm
+:param conductivity - float: Conductivity of medium, in S/m
+:param dipole_pos - 3x1 ndarray: Position of dipole, in mm
+:param dipole_moment - 3x1 ndarray: Moment of dipole, in C.m
+:param detector_positions - nx3 ndarray: Position of detectors, will be projected into the sphere surface, in mm</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>v</strong> – Potential at the points</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">nx1 ndarray</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<p>Dezhong Yao, Electric Potential Produced by a Dipole in a Homogeneous
+Conducting Sphere</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.testfunctions.sphere.tms_E_field">
+<code class="descclassname">pygpc.testfunctions.sphere.</code><code class="descname">tms_E_field</code><span class="sig-paren">(</span><em>dipole_pos</em>, <em>dipole_moment</em>, <em>didt</em>, <em>positions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/testfunctions/sphere.html#tms_E_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.testfunctions.sphere.tms_E_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the E field in a sphere caused by external magnetic dipoles</p>
+<p>Everything should be in SI!!
+Independent of conductivity. See references</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dipole_pos</strong> (<em>mx3 ndarray</em>) – Position of dipoles, must be outside sphere</li>
+<li><strong>dipole_moment</strong> (<em>mx3 ndarray</em>) – Moment of dipoles</li>
+<li><strong>didt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Variation rate of current in the coil</li>
+<li><strong>positions</strong> (<em>nx3 ndarray</em>) – Position where fields should be calculated, must lie inside sphere</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array with B fields in detector positions</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">nx3 ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Dipole in SI units, positions in mm</p>
+<p class="rubric">References</p>
+<ol class="upperalpha simple" start="12">
+<li><dl class="first docutils">
+<dt>Heller and D. van Hulsteyn, Brain stimulation using electromagnetic sources:</dt>
+<dd>theoretical aspects</dd>
+</dl>
+</li>
+</ol>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pygpc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Konstantin Weise, Benjamin Kalloch, Lucas Possner.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/pygpc.testfunctions.sphere.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

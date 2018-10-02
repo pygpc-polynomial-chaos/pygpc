@@ -1,0 +1,123 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygpc.testfunctions.welch_1992 &#8212; pygpc 2018 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pygpc.testfunctions.welch_1992</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="welch_1992"><a class="viewcode-back" href="../../../pygpc.testfunctions.welch_1992.html#pygpc.testfunctions.welch_1992.welch_1992">[docs]</a><span class="k">def</span> <span class="nf">welch_1992</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; 20-dimensional test function of WELCH (1992)</span>
+<span class="sd">        </span>
+<span class="sd">        For input variable screening purposes, it can be found that some input </span>
+<span class="sd">        variables of this function have a very high effect on the output, </span>
+<span class="sd">        compared to other input variables. As Welch et al. (1992) point out, </span>
+<span class="sd">        interactions and nonlinear effects make this function challenging. </span>
+<span class="sd">        </span>
+<span class="sd">        Welch, W. J., Buck, R. J., Sacks, J., Wynn, H. P., Mitchell, T. J., &amp; </span>
+<span class="sd">        Morris, M. D. (1992). Screening, predicting, and computer experiments. </span>
+<span class="sd">        Technometrics, 34(1), 15-25.</span>
+<span class="sd">        </span>
+<span class="sd">        y = welch_1992(x)</span>
+<span class="sd">        </span>
+<span class="sd">        Input:  </span>
+<span class="sd">                x ... input data [N_input x 20] </span>
+<span class="sd">                      xi ~ U(-0.5, 0.5), for all i = 1, …, 20.</span>
+<span class="sd">                </span>
+<span class="sd">        Output: </span>
+<span class="sd">                y ... result [N_input x 1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mf">5.0</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">11</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">x</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[:,</span><span class="mi">19</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="mi">40</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">18</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span> \
+        <span class="o">+</span> <span class="mi">5</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">18</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.05</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.08</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.03</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.03</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">6</span><span class="p">]</span> \
+        <span class="o">-</span> <span class="mf">0.09</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">8</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.01</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">9</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.07</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">12</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">0.04</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">13</span><span class="p">]</span> \
+        <span class="o">+</span> <span class="mf">0.06</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">14</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.01</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">16</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.03</span><span class="o">*</span><span class="n">x</span><span class="p">[:,</span><span class="mi">17</span><span class="p">])])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">y</span>    </div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">pygpc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Konstantin Weise, Benjamin Kalloch, Lucas Possner.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

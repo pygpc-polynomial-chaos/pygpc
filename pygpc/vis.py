@@ -14,8 +14,6 @@ class Visualization:
     """
     Creates a new visualization in a new window. Any added subcharts will be added to this window.
 
-    Initialisation
-    --------------
     Visualisation(dims=(10, 10))
 
     Attributes

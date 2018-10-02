@@ -8,11 +8,13 @@ Submodules
 
    pygpc.gpc
    pygpc.grid
-   pygpc.io
    pygpc.misc
+   pygpc.ni
    pygpc.postproc
    pygpc.quad
    pygpc.reg
+   pygpc.rw
+   pygpc.testfunctions
    pygpc.vis
 
 Module contents

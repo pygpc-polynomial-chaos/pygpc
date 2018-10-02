@@ -5,13 +5,14 @@ Class that provides polynomial chaos quadratur methods
 
 from builtins import range
 
+from .misc import *
+from .gpc import *
+
 
 class Quad(gPC):
     """
     Quadratur gPC subclass
 
-    Initialisation
-    --------------
     Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)
 
     Attributes
