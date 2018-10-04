@@ -1,7 +1,0 @@
-pygpc.testfunctions.ishigami module
-===================================
-
-.. automodule:: pygpc.testfunctions.ishigami
-    :members:
-    :undoc-members:
-    :show-inheritance:

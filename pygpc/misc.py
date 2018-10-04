@@ -18,7 +18,7 @@ class NoDaemonProcess(multiprocessing.Process):
     """
     Helper class to create a non daemonic process.
     From https://stackoverflow.com/questions/6974695/python-process-pool-non-daemonic
-        make 'daemon' attribute always return False
+    make 'daemon' attribute always return False
     """
 
     def _get_daemon(self):

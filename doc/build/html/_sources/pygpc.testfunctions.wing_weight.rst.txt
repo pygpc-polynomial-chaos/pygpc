@@ -1,7 +1,0 @@
-pygpc.testfunctions.wing\_weight module
-=======================================
-
-.. automodule:: pygpc.testfunctions.wing_weight
-    :members:
-    :undoc-members:
-    :show-inheritance:

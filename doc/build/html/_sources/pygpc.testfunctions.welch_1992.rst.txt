@@ -1,7 +1,0 @@
-pygpc.testfunctions.welch\_1992 module
-======================================
-
-.. automodule:: pygpc.testfunctions.welch_1992
-    :members:
-    :undoc-members:
-    :show-inheritance:

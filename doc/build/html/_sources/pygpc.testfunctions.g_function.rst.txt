@@ -1,7 +1,0 @@
-pygpc.testfunctions.g\_function module
-======================================
-
-.. automodule:: pygpc.testfunctions.g_function
-    :members:
-    :undoc-members:
-    :show-inheritance:

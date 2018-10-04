@@ -11,20 +11,23 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = u'pygpc'
-copyright = u'2018, Konstantin Weise, Benjamin Kalloch, Lucas Possner'
-author = u'Konstantin Weise, Benjamin Kalloch, Lucas Possner'
+# copyright = u'2018, Konstantin Weise, Benjamin Kalloch, Lucas Possner'
+copyright = u'2018, Konstantin Weise'
+# author = u'Konstantin Weise, Benjamin Kalloch, Lucas Possner'
+author = u'Konstantin Weise'
 
 # The short X.Y version
-version = u''
+version = u'0.1'
+
 # The full version, including alpha/beta/rc tags
 release = u'2018'
 
@@ -40,12 +43,14 @@ release = u'2018'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
     'sphinx.ext.imgmath'
 ]
+
+# 'sphinx.ext.intersphinx',
 
 # Napoleon settings
 napoleon_google_docstring = False
@@ -90,32 +95,39 @@ pygments_style = None
 
 # -- Options for HTML output -------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-html_theme = 'alabaster'
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
+html_theme = 'scipy' #'sphinx_rtd_theme'
+html_theme_path = ['_theme']
 html_static_path = ['_static']
 
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# The default sidebars (for documents that don't match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
-# 'searchbox.html']``.
-#
-# html_sidebars = {}
+html_theme_options = {
+    "edit_link": "true",
+    "sidebar": "right",
+    "scipy_org_logo": "true",
+    "rootlinks": [],
+    "body_max_width": "1000"
+}
 
+pngmath_latex_preamble = r"""
+\usepackage{color}
+\definecolor{textgray}{RGB}{51,51,51}
+\color{textgray}
+"""
+pngmath_use_preview = True
+pngmath_dvipng_args = ['-gamma 1.5', '-D 96', '-bg Transparent']
+html_short_title = 'pygpc'
+html_static_path = ['_static']
+
+# Output file base name for HTML help builder.
+htmlhelp_basename = 'pygpc_doc'
+
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+#html_logo = None
+
+# The name of an image file (relative to this directory) to use as a favicon of
+# the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+#html_favicon = None
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -128,7 +140,7 @@ htmlhelp_basename = 'pygpcdoc'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
-    # 'papersize': 'letterpaper',
+    # 'papersize': 'a4paper',
 
     # The font size ('10pt', '11pt' or '12pt').
     #
@@ -141,14 +153,22 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
+    'extraclassoptions': 'openany,oneside',
+    'babel': '\\usepackage[shorthands=off]{babel}'
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
+
+# latex_documents = [
+    # (master_doc, 'pygpc.tex', u'pygpc Documentation',
+     # u'Konstantin Weise, Benjamin Kalloch, Lucas Possner', 'manual'),
+# ]
+
 latex_documents = [
-    (master_doc, 'pygpc.tex', u'pygpc Documentation',
-     u'Konstantin Weise, Benjamin Kalloch, Lucas Possner', 'manual'),
+    (master_doc, 'pygpc.tex', u'Documentation of the pygpc package',
+     u'Konstantin Weise', 'manual'),
 ]
 
 
@@ -156,11 +176,16 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
+
+# man_pages = [
+    # (master_doc, 'pygpc', u'pygpc Documentation',
+     # [author], 1)
+# ]
+
 man_pages = [
-    (master_doc, 'pygpc', u'pygpc Documentation',
+    (master_doc, 'pygpc', u'Documentation of the pygpc package',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -168,7 +193,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'pygpc', u'pygpc Documentation',
+    (master_doc, 'pygpc', u'Documentation of the pygpc package',
      author, 'pygpc', 'One line description of project.',
      'Miscellaneous'),
 ]

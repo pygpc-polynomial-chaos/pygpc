@@ -1,7 +1,0 @@
-pygpc.testfunctions.peaks module
-================================
-
-.. automodule:: pygpc.testfunctions.peaks
-    :members:
-    :undoc-members:
-    :show-inheritance:

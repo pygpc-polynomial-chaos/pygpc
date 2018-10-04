@@ -1,0 +1,7 @@
+This is makeindex, version 2.15 [TeX Live 2017] (kpathsea + Thai support).
+Scanning style file ./python.ist.......done (7 attributes redefined, 0 ignored).
+Scanning input file _pygpc.idx....done (202 entries accepted, 0 rejected).
+Sorting entries.....done (1566 comparisons).
+Generating output file _pygpc.ind....done (264 lines written, 0 warnings).
+Output written in _pygpc.ind.
+Transcript written in _pygpc.ilg.
