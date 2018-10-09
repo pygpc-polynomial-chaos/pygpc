@@ -8,6 +8,9 @@ import h5py
 import yaml
 from builtins import range
 
+from pygpc import file_logger
+from .grid import *
+
 
 def write_gpc_yml(obj, fname):
     """
@@ -288,3 +291,19 @@ def read_sobol_idx_txt(fname):
         line = f.readline().strip('\n')
 
     return sobol_idx
+
+
+def write_value(message, verbose=True):
+    """
+    Function that prints out a message over the python logging module
+
+    iprint(message, verbose=True)
+
+    Parameters
+    ----------
+    message: string
+        string to print in standard output
+    verbose: bool, optional, default=True
+        determines if string is printed out
+    """
+    console_logger.info(message)

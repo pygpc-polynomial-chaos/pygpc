@@ -5,6 +5,7 @@ Functions and classes that provide data and methods with general usage in the py
 
 import numpy as np
 import scipy.stats
+import logging
 import matplotlib.pyplot as plt
 import os
 import sys
@@ -13,8 +14,12 @@ import multiprocessing
 from builtins import range
 from multiprocessing import pool
 
+from .rw import *
+from .reg import *
+from pygpc import console_logger
 
-class NoDaemonProcess(multiprocessing.Process):
+
+class NonDaemonicProcess(multiprocessing.Process):
     """
     Helper class to create a non daemonic process.
     From https://stackoverflow.com/questions/6974695/python-process-pool-non-daemonic
@@ -37,7 +42,7 @@ class NonDaemonicPool(pool.Pool):
     because the latter is only a wrapper function, not a proper class.
     """
 
-    Process = NoDaemonProcess
+    Process = NonDaemonicProcess
 
 
 def display_fancy_bar(text, i, n_i, more_text=None):
@@ -108,7 +113,7 @@ def get_cartesian_product(array_list, cartesian_product=None):
     array_list : list of np.ndarray
         arrays to form the cartesian product with
     cartesian_product : np.ndarray
-        array to write the cartesian product
+        array to write the cartesian product in
 
     Returns
     -------
@@ -144,7 +149,7 @@ def get_cartesian_product(array_list, cartesian_product=None):
     m = n / array_list[0].size
     cartesian_product[:, 0] = np.repeat(array_list[0], m)
     if array_list[1:]:
-        cartesian(array_list[1:], cartesian_product=cartesian_product[0:m, 1:])
+        get_cartesian_product(array_list[1:], cartesian_product=cartesian_product[0:m, 1:])
         for j in range(1, array_list[0].size):
             cartesian_product[j * m:(j + 1) * m, 1:] = cartesian_product[0:m, 1:]
     return cartesian_product
@@ -509,11 +514,11 @@ def wrap_function(fn, x, args):
     return function_wrapper
 
 
-def vprint(message, verbose=True):
+def iprint(message, verbose=True):
     """
-    Function that prints out a message if verbose argument is true.
+    Function that prints out a message over the python logging module
 
-    vprint(message, verbose=True)
+    iprint(message, verbose=True)
 
     Parameters
     ----------
@@ -522,8 +527,7 @@ def vprint(message, verbose=True):
     verbose: bool, optional, default=True
         determines if string is printed out
     """
-    if verbose:
-        print(message)
+    console_logger.info(message)
 
 
 def get_num_coeffs(order, dim):
@@ -633,28 +637,28 @@ def get_pdf_beta(x, p, q, a, b):
     return (scipy.special.gamma(p) * scipy.special.gamma(q) / scipy.special.gamma(p + q)
             * (b - a) ** (p + q - 1)) ** (-1) * (x - a) ** (p - 1) * (b - x) ** (q - 1)
 
-# TODO:Refactor
-# def get_reg_obj(fname, results_folder):
-#     # if .yaml does exist: load from .yaml file
-#     if os.path.exists(fname):
-#         print(results_folder + ": Loading reg_obj from file: " + fname)
-#         reg_obj = read_gpc_obj(fname)
-#
-#     # if not: create reg_obj, save to .yaml file
-#     else:
-#         # re-initialize reg object with appropriate number of grid-points
-#         reg_obj = Reg(pdf_type,
-#                       pdf_shape,
-#                       limits,
-#                       order * np.ones(dim),
-#                       order_max=order,
-#                       interaction_order=interaction_order_max,
-#                       grid=grid_init,
-#                       random_vars=random_vars)
-#
-#         write_gpc_obj(reg_obj, fname)
-#
-#     return reg_obj
+
+def read_gpc_obj(fname, pdf_type=None, pdf_shape=None, limits=None, order=None, order_max=None,
+                 interaction_order=None, grid=None, random_vars=None):
+    # if .yaml does exist: load from .yaml file
+    if os.path.exists(fname):
+        iprint("Reading gpc_obj from file: " + fname)
+        reg_obj = read_gpc_yml(fname)
+    # if .yaml does not exist: create reg_obj, save to .yaml file
+    elif all(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars):
+        # re-initialize reg object with appropriate number of grid-points
+        reg_obj = Reg(pdf_type=pdf_type,
+                      pdf_shape=pdf_shape,
+                      limits=limits,
+                      order=order * np.ones(dim),
+                      order_max=order_max,
+                      interaction_order=interaction_order,
+                      grid=grid,
+                      random_vars=random_vars)
+
+        write_gpc_yml(reg_obj, fname)
+
+    return reg_obj
 
 # def plot(interactive=True, filename=None, xlabel="$x$", ylabel="$p(x)$"):
 #     if not interactive:

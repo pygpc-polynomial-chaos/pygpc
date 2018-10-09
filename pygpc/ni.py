@@ -3,14 +3,19 @@
 Functions that provide adaptive regression approches to perform uncertainty analysis on dynamic systems.
 """
 
-# import pyfempp
+import pyfempp
+import yaml
 import os
 import warnings
+import numpy as np
+import scipy
+import setproctitle
 from builtins import range
 from _functools import partial
 
+from .grid import *
 
-# TODO:Refactor
+
 def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=None,
                            order_start=0, order_end=10, interaction_order_max=None, eps=1E-3, print_out=False,
                            seed=None, do_mp=False, n_cpu=4, dispy=False, dispy_sched_host='localhost',
@@ -76,7 +81,7 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
         function values at grid points of the N_out output variables
     """
     try:
-        import setproctitle
+        # handle input parameters
         i_grid = 0
         i_iter = 0
         dim = len(pdf_type)
@@ -86,55 +91,25 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
         if not interaction_order_max:
             interaction_order_max = dim
 
-        # mesh_fn, tensor_fn, results_folder, coil_fn, positions_mean, v = args
-        fn_cfg, subject, results_folder, _, _, _ = args
+        config_fname, subject, results_fname, _, _, _ = args
 
-        with open(fn_cfg, 'r') as f:
+        with open(config_fname, 'r') as f:
             config = yaml.load(f)
 
         mesh_fn = subject.mesh[config['mesh_idx']]['fn_mesh_msh']
 
-        save_res_fn = False
-        setproctitle.setproctitle("run_reg_adaptive_E_gPC_" + results_folder[-5:])
+        setproctitle.setproctitle("run_reg_adaptive_E_gPC_" + results_fname[-5:])
 
-        # load surface data from skin surface
-        msh = pyfempp.read_msh(mesh_fn)
-        points = msh.nodes.node_coord
-        triangles = msh.elm.node_number_list[((msh.elm.elm_type == 2) & (msh.elm.tag1 == 1005)), 0:3]
-        skin_surface_points = pyfempp.unique_rows(np.reshape(points[triangles], (3 * triangles.shape[0], 3)))
+        skin_surface = get_skin_surface(mesh_fn)
 
-        # generate Delaunay grid object of head surface
-        skin_surface = scipy.spatial.Delaunay(skin_surface_points)
-
+        # TODO: encapsulate?
         if dispy:
-            import socket
-            import dispy
-            import sys
-            import time
-            dispy.MsgTimeout = 90
-            dispy_schedular_ip = socket.gethostbyname(dispy_sched_host)
-
-            #  ~/.local/bin/dispyscheduler.py on this machine
-            #  ~/.local/bin/dispynode.py on any else (no
-
-            if print_out:
-                print(("Trying to connect to dispyschedular on " + dispy_sched_host))
-            while True:
-                try:
-                    cluster = dispy.SharedJobCluster(func, port=0, scheduler_node=str(dispy_schedular_ip),
-                                                     reentrant=True)  # loglevel=dispy.logger.DEBUG,
-                    break
-                except socket.error as e:
-                    time.sleep(1)
-                    sys.stdout.write('.')
-                    sys.stdout.flush()
-            assert cluster
-        # TODO: Work on code above
+            cluster = get_dispy_cluster(dispy_sched_host, func)
 
         if fname:
             # if .yaml does exist: load from .yaml file
             if os.path.exists(fname):
-                print(results_folder + ": Loading reg_obj from file: " + fname)
+                print(results_fname + ": Loading reg_obj from file: " + fname)
                 reg_obj = read_gpc_obj(fname)
 
             # if not: create reg_obj, save to .yaml file
@@ -275,7 +250,7 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
 
                             # replace bad sample with new one until it works (should actually never be the case)
                             if not valid_coil_position:
-                                warnings.warn(results_folder +
+                                warnings.warn(results_fname +
                                               ": Invalid coil position found: " + str(reg_obj.grid.coords[i]))
                                 reg_obj.replace_gpc_matrix_samples(idx=np.array(i), seed=seed)
 
@@ -283,7 +258,7 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
                     # run repeated simulations
                     x = []
                     if print_out:
-                        print(results_folder + \
+                        print(results_fname + \
                               "   Performing simulations #{} to {}".format(i_grid + 1,
                                                                            reg_obj.grid.coords.shape[0]))
                     for i_grid in range(i_grid, reg_obj.grid.coords.shape[0]):
@@ -291,7 +266,7 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
 
                     func_part = partial(func,
                                         mesh_fn=mesh_fn, tensor_fn=tensor_fn,
-                                        results_folder=results_folder,
+                                        results_fname=results_fname,
                                         coil_fn=coil_fn,
                                         POSITIONS_mean=positions_mean,
                                         V=v)
@@ -373,7 +348,7 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
                 # perform leave one out cross validation
                 reg_obj.LOOCV(results)
                 if print_out:
-                    print(results_folder + "    -> relerror_LOOCV = {}".format(reg_obj.relerror_loocv[-1]))
+                    print(results_fname + "    -> relerror_LOOCV = {}".format(reg_obj.relerror_loocv[-1]))
 
                 if reg_obj.relerror_loocv[-1] < eps:
                     run_subiter = False
@@ -382,7 +357,7 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
                 interaction_order_current += 1
 
         if print_out:
-            print(results_folder + "DONE ##############################################################")
+            print(results_fname + "DONE ##############################################################")
 
         if dispy:
             try:
@@ -396,17 +371,18 @@ def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=Non
         # save results of forward simulation
         np.save(os.path.splitext(fname)[0] + "_res", results)
 
-    except Exception as e:
+    except:
         if dispy:
             try:
                 cluster.close()
             except UnboundLocalError:
                 pass
+        # TODO: print in log file
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno)
-        quit()
-    return  # reg_obj, RES
+        sys.exit()
+    # return reg_obj
 
 
 def run_reg_adaptive2(random_vars, pdf_type, pdf_shape, limits, func, args=(), order_start=0, order_end=10,
@@ -711,3 +687,48 @@ def run_reg_adaptive2(random_vars, pdf_type, pdf_shape, limits, func, args=(), o
             # increase current interaction order
             interaction_order_current = interaction_order_current + 1
     return reg_obj, res_complete
+
+
+def get_skin_surface(mesh_fname):
+    # load surface data from skin surface
+    mesh = pyfempp.read_msh(mesh_fname)
+    points = mesh.nodes.node_coord
+    triangles = mesh.elm.node_number_list[((mesh.elm.elm_type == 2) & (mesh.elm.tag1 == 1005)), 0:3]
+    points = np.reshape(points[triangles], (3 * triangles.shape[0], 3))
+    skin_surface_points = pyfempp.unique_rows(points)
+
+    # generate Delaunay grid object of head surface
+    skin_surface = scipy.spatial.Delaunay(skin_surface_points)
+
+    return skin_surface
+
+
+def get_dispy_cluster(dispy_sched_host, func):
+    import socket
+    import dispy
+    import sys
+    import time
+    dispy.MsgTimeout = 90
+    dispy_schedular_ip = socket.gethostbyname(dispy_sched_host)
+
+    # TODO: change if logging is implemented
+    print_out = True
+
+    #  ~/.local/bin/dispyscheduler.py on this machine
+    #  ~/.local/bin/dispynode.py on any else
+
+    if print_out:
+        print(("Trying to connect to dispyschedular on " + dispy_sched_host))
+    while True:
+        try:
+            cluster = dispy.SharedJobCluster(func, port=0, scheduler_node=str(dispy_schedular_ip),
+                                             reentrant=True)  # loglevel=dispy.logger.DEBUG,
+            break
+        except socket.error:
+            time.sleep(1)
+            sys.stdout.write('.')
+            sys.stdout.flush()
+
+    assert cluster
+
+    return cluster
