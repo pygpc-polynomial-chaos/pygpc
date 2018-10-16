@@ -422,7 +422,7 @@ class gPC:
         init_gpc_matrix()
         """
 
-        vprint('Constructing gPC matrix ...', verbose=self.verbose)
+        iprint('Constructing gPC matrix ...')
         gpc_matrix = np.ones([self.grid.coords.shape[0], self.N_poly])
 
         def cpu(self, gpc_matrix):
@@ -668,7 +668,7 @@ class gPC:
             boolean mask that determines which multi indices are unique
         """
 
-        vprint("Determining Sobol indices", verbose=self.verbose)
+        iprint("Determining Sobol indices...")
 
         # handle input parameters
         if not coeffs:
@@ -819,8 +819,8 @@ class gPC:
                                         / np.sum(var[not_nan_mask]))
             sobol_rel_order_std.append(0)
 
-            vprint("\tRatio: Sobol indices order {} / total variance: {:.4f}".format(i + 1, sobol_rel_order_mean[i]),
-                   self.verbose)
+            iprint("Ratio: Sobol indices order {} / total variance: {:.4f}".format(i + 1, sobol_rel_order_mean[i]),
+                   tab=1)
 
             # for first order indices, determine ratios of all random variables
             if i == 0:

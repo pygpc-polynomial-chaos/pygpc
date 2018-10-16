@@ -8,7 +8,7 @@ from builtins import range
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
 
-from .misc import vprint, get_multi_indices
+from .misc import iprint, get_multi_indices
 
 
 def get_quadrature_jacobi_1d(N, b, a):
@@ -802,7 +802,7 @@ class SparseGrid:
             cubature lookup table for weights
         """
         # make cubature lookup table for knots (dl_k) and weights (dl_w) [max(l) x dim]
-        vprint("    Generating difference grids...", verbose=self.verbose)
+        iprint("Generating difference grids...", tab=1)
         dl_k = [[0 for _ in range(self.dim)] for _ in range(int(np.amax(self.level) + 1))]
         dl_w = [[0 for _ in range(self.dim)] for _ in range(int(np.amax(self.level) + 1))]
         knots_l, weights_l, knots_l_1, weights_l_1 = 0, 0, 0, 0
@@ -859,7 +859,7 @@ class SparseGrid:
             tensor product of weights
         """
         # make list of all tensor products according to multiindex list "l"
-        vprint("    Generating subgrids ...", verbose=self.verbose)
+        iprint("Generating subgrids...", tab=1)
         dl_k, dl_w = self.calc_grid()
         l_level = self.calc_l_level()
         dL_k = []
@@ -890,7 +890,7 @@ class SparseGrid:
         Find similar points in grid and formulate calculate a list containing these points.
         """
         # find similar points in grid and formulate Point list
-        vprint("    Merging subgrids ...", verbose=self.verbose)
+        iprint("Merging subgrids...", tab=1)
         dL_w, dL_k = self.calc_tensor_products()
         point_number_list = np.zeros(dL_w.shape[0]) - 1
         point_no = 0
@@ -915,7 +915,7 @@ class SparseGrid:
             weights[i_point] = np.sum(dL_w[point_number_list == i_point])
 
         # filter for very small weights
-        vprint("    Filter grid for very small weights ...", verbose=self.verbose)
+        iprint("Filter grid for very small weights...", tab=1)
         epsilon_w = 1E-8 / self.dim
         keep_point = np.abs(weights) > epsilon_w
         self.weights = weights[keep_point] / 2 ** self.dim
@@ -933,7 +933,7 @@ class SparseGrid:
                 coords_norm[:, i_dim] = coords_norm[:, i_dim] * 1.960
 
         # denormalize grid to original parameter space
-        vprint("    Denormalizing grid for computations ...", verbose=self.verbose)
+        iprint("Denormalizing grid for computations...", tab=1)
         self.coords_norm = coords_norm
         self.coords = get_denormalized_coordinates(coords_norm, self.pdf_type, self.grid_shape, self.limits)
 

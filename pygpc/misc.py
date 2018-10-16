@@ -11,6 +11,7 @@ import os
 import sys
 import math
 import multiprocessing
+import itertools
 from builtins import range
 from multiprocessing import pool
 
@@ -46,6 +47,7 @@ class NonDaemonicPool(pool.Pool):
 
 
 def display_fancy_bar(text, i, n_i, more_text=None):
+    # TODO: improve?
     """
     Display a simple progess bar.
     Call for each iteration and start with i=1.
@@ -102,28 +104,26 @@ def display_fancy_bar(text, i, n_i, more_text=None):
         print("")
 
 
-def get_cartesian_product(array_list, cartesian_product=None):
+def get_cartesian_product(array_list):
     """
     Generate a cartesian product of input arrays.
 
-    cartesian_product = get_cartesian_product(array_list, cartesian_product=None)
+    cartesian_product = get_cartesian_product(array_list)
 
     Parameters
     ----------
     array_list : list of np.ndarray
-        arrays to form the cartesian product with
-    cartesian_product : np.ndarray
-        array to write the cartesian product in
+        arrays to compute the cartesian product with
 
     Returns
     -------
     cartesian_product : np.ndarray
-        array to write the cartesian product
+        array containing the cartesian products
         (M, len(arrays))
 
     Examples
     --------
-    cartesian(([1, 2, 3], [4, 5], [6, 7])) =
+    get_cartesian_product(([1, 2, 3], [4, 5], [6, 7])) =
 
     array([[1, 4, 6],
            [1, 4, 7],
@@ -139,20 +139,8 @@ def get_cartesian_product(array_list, cartesian_product=None):
            [3, 5, 7]])
     """
 
-    array_list = [np.asarray(x) for x in array_list]
-    dtype = array_list[0].dtype
-
-    n = np.prod([x.size for x in array_list])
-    if cartesian_product is None:
-        cartesian_product = np.zeros([n, len(array_list)], dtype=dtype)
-
-    m = n / array_list[0].size
-    cartesian_product[:, 0] = np.repeat(array_list[0], m)
-    if array_list[1:]:
-        get_cartesian_product(array_list[1:], cartesian_product=cartesian_product[0:m, 1:])
-        for j in range(1, array_list[0].size):
-            cartesian_product[j * m:(j + 1) * m, 1:] = cartesian_product[0:m, 1:]
-    return cartesian_product
+    cartesian_product = [element for element in itertools.product(*array_list)]
+    return np.array(cartesian_product)
 
 
 def get_rotation_matrix(theta):
@@ -193,6 +181,7 @@ def get_rotation_matrix(theta):
 
     
 def get_list_multi_delete(input_list, index):
+    # TODO: improve?
     """
     Delete multiple entries from list.
 
@@ -219,23 +208,24 @@ def get_list_multi_delete(input_list, index):
 
 def get_array_unique_rows(array):
     """
-    Compute unique rows of array and delete rows that are linearly dependent.
+    Compute unique rows of array and delete rows that are redundant.
 
     unique = get_array_unique_rows(array)
 
     Parameters
     ----------
     array: np.ndarray
-        matrix with k linearly dependent rows
+        matrix with k redundant rows
 
     Returns
     -------
     unique: np.ndarray
-        matrix without k linearly dependent rows
+        matrix without k redundant rows
     """
 
-    unique, idx = np.unique(array.view(array.dtype.descr * array.shape[1]), return_index=True)
-    return unique[np.argsort(idx)].view(array.dtype).reshape(-1, array.shape[1])
+    _, index = np.unique(array, axis=0, return_index=True)
+    index = np.sort(index)
+    return array[index]
 
 
 def get_set_combinations(array, number_elements):
@@ -243,56 +233,23 @@ def get_set_combinations(array, number_elements):
     Computes all k-tuples (e_1, e_2, ..., e_k) of combinations of the set of elements of the first row of the
     input matrix where e_n+1 > e_n
 
-    combination_vectors = get_set_combinations(array, number_elements)
+    combinations = get_set_combinations(array, number_elements)
 
     Parameters
     ----------
     array: np.ndarray
-        matrix containing a first row of input elements
+        array to perform the combinatorial problem with
     number_elements: int
         number of elements in tuple
 
     Returns
     -------
-    combination_vectors : np.ndarray
-        matrix of combination vectors
+    combinations: np.ndarray
+        array of combination vectors
     """
 
-    # array is numpy array [1 x nv]
-    # number_elements is scalar
-    nv = array.shape[1]
-    if nv == number_elements:
-        return array
-    if nv < number_elements:
-        return []
-
-    d = nv - number_elements
-    ny = d + 1
-
-    for i in range(2, number_elements + 1):
-        ny = ny + (1.0 * ny * d) / i
-
-    combination_vectors = np.zeros([int(ny), int(number_elements)])
-
-    index = np.linspace(1, number_elements, number_elements).astype(int)
-    limit = np.append(np.linspace(nv - number_elements + 1, nv - 1, number_elements - 1), 0)
-    a = int(1)
-
-    while 1:
-        b = int(a + nv - index[number_elements - 1])  # Write index for last column
-        for i in range(1, number_elements):  # Write the left number_elements-1 columns
-            combination_vectors[(a - 1):b, i - 1] = array[0, index[i - 1] - 1]
-
-        # Write the number_elements.th column
-        combination_vectors[(a - 1):b, number_elements - 1] = array[0, index[number_elements - 1] - 1:nv]
-        a = b + 1  # Move the write pointer
-
-        new_loop = np.sum(index < limit)
-        if new_loop == 0:  # All columns are filled:
-            break  # Ready!
-        index[(new_loop - 1):number_elements] = index[new_loop - 1] + np.linspace(1, number_elements - new_loop + 1,
-                                                                                     number_elements - new_loop + 1)
-    return combination_vectors
+    combinations = itertools.combinations(array, number_elements)
+    return np.array([c for c in combinations])
 
 
 def get_multi_indices(length, max_order):
@@ -310,8 +267,8 @@ def get_multi_indices(length, max_order):
 
     Returns
     -------
-    multi_indices : np.ndarray
-        matrix of multi-indices
+    multi_indices: np.ndarray
+        array of multi-indices
     """
 
     multi_indices = []
@@ -514,7 +471,7 @@ def wrap_function(fn, x, args):
     return function_wrapper
 
 
-def iprint(message, verbose=True):
+def iprint(message, verbose=True, tab=None):
     """
     Function that prints out a message over the python logging module
 
@@ -527,6 +484,9 @@ def iprint(message, verbose=True):
     verbose: bool, optional, default=True
         determines if string is printed out
     """
+
+    if tab:
+        message = '\t'*tab + message
     console_logger.info(message)
 
 
@@ -639,7 +599,7 @@ def get_pdf_beta(x, p, q, a, b):
 
 
 def read_gpc_obj(fname, pdf_type=None, pdf_shape=None, limits=None, order=None, order_max=None,
-                 interaction_order=None, grid=None, random_vars=None):
+                 interaction_order=None, grid=None, random_vars=None, dim=None):
     # if .yaml does exist: load from .yaml file
     if os.path.exists(fname):
         iprint("Reading gpc_obj from file: " + fname)

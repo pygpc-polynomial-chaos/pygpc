@@ -125,7 +125,7 @@ class Reg(gPC):
         # gpc_matrix_inv      ... [N_coeffs x N_grid]
         # sim_results      ... [N_grid   x N_points]
 
-        vprint('Determine gPC coefficients ...', verbose=self.verbose)
+        iprint('Determine gPC coefficients...')
         self.N_out = sim_results.shape[1]
 
         if sim_results.shape[0] != self.gpc_matrix_inv.shape[1] and \
@@ -178,6 +178,6 @@ class Reg(gPC):
 
         # store result in relative_error_loocv
         self.relative_error_loocv.append(np.mean(relative_error))
-        vprint(" (" + str(time.time() - start) + ")", verbose=self.verbose)
+        iprint(" (" + str(time.time() - start) + ")")
 
         return self.relative_error_loocv[-1]

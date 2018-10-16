@@ -111,7 +111,7 @@ class Quad(gPC):
             gPC coefficients
         """
 
-        vprint('Determine gPC coefficients ...', verbose=self.verbose)
+        iprint('Determine gPC coefficients...')
         self.N_out = sim_results.shape[1]
 
         # check if quadrature rule (grid) fits to the probability density distribution (pdf)
