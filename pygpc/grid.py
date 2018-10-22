@@ -8,7 +8,8 @@ from builtins import range
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
 
-from .misc import iprint, get_multi_indices
+from .misc import *
+from pygpc import iprint
 
 
 def get_quadrature_jacobi_1d(N, b, a):
@@ -34,7 +35,7 @@ def get_quadrature_jacobi_1d(N, b, a):
         weights of the grid
     """
     # make array to count N: 0, 1, ..., N-1
-    N_arr = np.arange(N)
+    N_arr = np.arange(1, N)
 
     # compose diagonals for companion matrix
     t01 = 1.0 * (b - a) / (2 + a + b)
@@ -271,6 +272,7 @@ def get_quadrature_fejer2_1d(N):
 
 
 def get_quadrature_patterson_1d(N):
+    # TODO: save values in seperate files?
     """
     Computes the nested Gauss-Patterson nodes and weights for N = 1,3,7,15,31.
 
@@ -710,15 +712,15 @@ class SparseGrid:
         self.coords = None  # coordinates of gpc model calculation in the system space
         self.coords_norm = None  # coordinates of gpc model calculation in the gpc space [-1,1]
         self.weights = None  # weights for numerical integration for every point in the coordinate space
-        self.level_sequence = None  # integer sequence of levels
-        self.order_sequence = None  # integer sequence of polynom order of levels
+        self.level_sequence = []  # integer sequence of levels
+        self.order_sequence = []  # integer sequence of polynom order of levels
 
         # grid is generated during initialization or coords, coords_norm and weights are added manually
         if make_grid:
             self.calc_multi_index_lst()
             self.calc_coords_weights()
         else:
-            print('Sparse grid initialized but not generated. Please add coords / coords_norm and weights manually.')
+            iprint('Sparse grid initialized but not generated. Please add coords / coords_norm and weights manually.')
 
     def calc_multi_index_lst(self):
         """
@@ -727,18 +729,16 @@ class SparseGrid:
         for i_dim in range(self.dim):
             
             if self.grid_type[i_dim] == 'fejer2':
-                self.level_sequence = range(1, self.level[i_dim] + 1)
+                self.level_sequence.append([element for element in range(1, self.level[i_dim] + 1)])
             else:
-                self.level_sequence = range(self.level[i_dim] + 1)
+                self.level_sequence.append([element for element in range(self.level[i_dim] + 1)])
 
             if self.order_sequence_type == 'exp':  # order = 2**level + 1
                 if self.grid_type[i_dim] == 'fejer2':  # start with order = 1 @ level = 1
-                    self.order_sequence.append(
-                        (2 ** (np.linspace(1, self.level[i_dim], self.level[i_dim]).tolist()) - 1).tolist())
+                    self.order_sequence.append((np.power(2, np.arange(1, self.level[i_dim])) - 1).tolist())
                     self.order_sequence[i_dim][0] = 1
                 elif self.grid_type[i_dim] == 'patterson':  # start with order = 1 @ level = 0 [1,3,7,15,31,...]
-                    self.order_sequence.append(
-                        (2 ** (np.linspace(0, self.level[i_dim], self.level[i_dim] + 1).tolist() + 1) - 1).tolist())
+                    self.order_sequence.append((np.power(2, np.arange(0, self.level[i_dim])) + 1).tolist())
                 else:  # start with order = 1 @ level = 0
                     self.order_sequence.append(
                         (2 ** np.linspace(0, self.level[i_dim], self.level[i_dim] + 1) + 1).tolist())
@@ -748,7 +748,7 @@ class SparseGrid:
                 if self.grid_type[i_dim] == 'fejer2':  # start with level = 1 @ order = 1
                     self.order_sequence.append(np.linspace(1, self.level[i_dim] + 1, self.level[i_dim] + 1).tolist())
                 elif self.grid_type[i_dim] == 'patterson':  # start with order = 1 @ level = 0 [1,3,7,15,31,...]
-                    print("Not possible in case of Gauss-Patterson grid.")
+                    iprint("Not possible in case of Gauss-Patterson grid.")
                 else:  # start with
                     self.order_sequence.append(np.linspace(1, self.level[i_dim] + 1, self.level[i_dim] + 1).tolist())
 
@@ -880,8 +880,8 @@ class SparseGrid:
             # tensor product of weights
             dL_w.append(np.prod(cartesian(weights), axis=1))
 
-        dL_w = np.vstack(dL_w)
-        dL_k = np.hstack(dL_k)
+        dL_w = np.hstack(dL_w)
+        dL_k = np.vstack(dL_k)
 
         return dL_k, dL_w
 
@@ -891,7 +891,7 @@ class SparseGrid:
         """
         # find similar points in grid and formulate Point list
         iprint("Merging subgrids...", tab=1)
-        dL_w, dL_k = self.calc_tensor_products()
+        dL_k, dL_w = self.calc_tensor_products()
         point_number_list = np.zeros(dL_w.shape[0]) - 1
         point_no = 0
         epsilon_k = 1E-6
@@ -899,9 +899,9 @@ class SparseGrid:
 
         while any(point_number_list < 0):
             not_found = point_number_list < 0
-            dL_k_nf = dL_k[not_found, :]
+            dL_k_nf = dL_k[not_found]
             point_temp = np.zeros(dL_k_nf.shape[0]) - 1
-            point_temp[np.sum(np.abs(dL_k_nf - dL_k_nf[0, :]), axis=1) < epsilon_k] = point_no
+            point_temp[np.sum(np.abs(dL_k_nf - dL_k_nf[0]), axis=1) < epsilon_k] = point_no
             point_number_list[not_found] = point_temp
             point_no = point_no + 1
             coords_norm.append(dL_k_nf[0, :])

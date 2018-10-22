@@ -15,10 +15,6 @@ import itertools
 from builtins import range
 from multiprocessing import pool
 
-from .rw import *
-from .reg import *
-from pygpc import console_logger
-
 
 class NonDaemonicProcess(multiprocessing.Process):
     """
@@ -230,8 +226,8 @@ def get_array_unique_rows(array):
 
 def get_set_combinations(array, number_elements):
     """
-    Computes all k-tuples (e_1, e_2, ..., e_k) of combinations of the set of elements of the first row of the
-    input matrix where e_n+1 > e_n
+    Compute all k-tuples (e_1, e_2, ..., e_k) of combinations of the set of elements of the input array where
+    e_n+1 > e_n.
 
     combinations = get_set_combinations(array, number_elements)
 
@@ -275,8 +271,7 @@ def get_multi_indices(length, max_order):
     for i_max_order in range(max_order + 1):
         # Chose (length-1) the splitting points of the array [0:(length+max_order)]
         # 1:length+max_order-1
-        s = get_set_combinations(np.linspace(1, length + i_max_order - 1, length + i_max_order - 1) *
-                                 np.ones([1, length + i_max_order - 1]), length - 1)
+        s = get_set_combinations(np.arange(length + i_max_order - 1) + 1, length - 1)
 
         m = s.shape[0]
 
@@ -471,25 +466,6 @@ def wrap_function(fn, x, args):
     return function_wrapper
 
 
-def iprint(message, verbose=True, tab=None):
-    """
-    Function that prints out a message over the python logging module
-
-    iprint(message, verbose=True)
-
-    Parameters
-    ----------
-    message: string
-        string to print in standard output
-    verbose: bool, optional, default=True
-        determines if string is printed out
-    """
-
-    if tab:
-        message = '\t'*tab + message
-    console_logger.info(message)
-
-
 def get_num_coeffs(order, dim):
     """
     Calculate the number of PCE coefficients by the used order and dimension.
@@ -597,28 +573,6 @@ def get_pdf_beta(x, p, q, a, b):
     return (scipy.special.gamma(p) * scipy.special.gamma(q) / scipy.special.gamma(p + q)
             * (b - a) ** (p + q - 1)) ** (-1) * (x - a) ** (p - 1) * (b - x) ** (q - 1)
 
-
-def read_gpc_obj(fname, pdf_type=None, pdf_shape=None, limits=None, order=None, order_max=None,
-                 interaction_order=None, grid=None, random_vars=None, dim=None):
-    # if .yaml does exist: load from .yaml file
-    if os.path.exists(fname):
-        iprint("Reading gpc_obj from file: " + fname)
-        reg_obj = read_gpc_yml(fname)
-    # if .yaml does not exist: create reg_obj, save to .yaml file
-    elif all(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars):
-        # re-initialize reg object with appropriate number of grid-points
-        reg_obj = Reg(pdf_type=pdf_type,
-                      pdf_shape=pdf_shape,
-                      limits=limits,
-                      order=order * np.ones(dim),
-                      order_max=order_max,
-                      interaction_order=interaction_order,
-                      grid=grid,
-                      random_vars=random_vars)
-
-        write_gpc_yml(reg_obj, fname)
-
-    return reg_obj
 
 # def plot(interactive=True, filename=None, xlabel="$x$", ylabel="$p(x)$"):
 #     if not interactive:

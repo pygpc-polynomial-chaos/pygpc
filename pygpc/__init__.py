@@ -2,12 +2,9 @@
 A package that provides submodules in order to perform polynomial chaos uncertainty analysis on complex dynamic systems.
 """
 
-# initialize loggers for the whole package
-
+# initialize logger
 import logging
 
-
-# initialize logger
 file_logger = logging.getLogger('gPC')
 file_logger.setLevel(logging.DEBUG)
 file_logger_handler = logging.FileHandler('gPC.log')
@@ -40,3 +37,33 @@ def deactivate_terminal_output():
 
 def deactivate_logfile_output():
     file_logger.disabled = True
+
+
+def iprint(message, verbose=True, tab=None):
+    """
+    Function that prints out a message over the python logging module
+
+    iprint(message, verbose=True)
+
+    Parameters
+    ----------
+    message: string
+        string to print in standard output
+    verbose: bool, optional, default=True
+        determines if string is printed out
+    """
+
+    if tab:
+        message = '\t'*tab + message
+    console_logger.info(message)
+
+
+import misc
+import gpc
+import grid
+import postproc
+import quad
+import reg
+import rw
+import testfun
+import vis

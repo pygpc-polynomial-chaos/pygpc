@@ -422,7 +422,7 @@ class gPC:
         init_gpc_matrix()
         """
 
-        iprint('Constructing gPC matrix ...')
+        iprint('Constructing gPC matrix...')
         gpc_matrix = np.ones([self.grid.coords.shape[0], self.N_poly])
 
         def cpu(self, gpc_matrix):
