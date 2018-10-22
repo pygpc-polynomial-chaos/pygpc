@@ -1,6 +1,7 @@
 """
 Testfunctions and electromagnetic field calculations
 """
+
 from __future__ import division
 
 import numpy as np

@@ -7,10 +7,12 @@ import time
 import random
 import numpy as np
 import scipy
+import sys
 from builtins import range
 
 from .misc import *
 from .gpc import *
+from pygpc import iprint, wprint
 
 
 class Reg(gPC):
@@ -98,6 +100,9 @@ class Reg(gPC):
         # setup polynomial basis functions
         self.init_polynomial_basis()
 
+        # setup polynomial basis functions
+        self.init_polynomial_index()
+
         # construct gpc matrix [Ngrid x Npolybasis]
         self.init_gpc_matrix()
 
@@ -121,20 +126,19 @@ class Reg(gPC):
             gPC coefficients
         """
 
-        # coeffs    ... [N_coeffs x N_points]
-        # gpc_matrix_inv      ... [N_coeffs x N_grid]
-        # sim_results      ... [N_grid   x N_points]
-
         iprint('Determine gPC coefficients...')
-        self.N_out = sim_results.shape[1]
 
-        if sim_results.shape[0] != self.gpc_matrix_inv.shape[1] and \
-           sim_results.shape[1] != self.gpc_matrix_inv.shape[1]:
-            print("Please check format of input sim_results: matrix [N_grid x N_out] !")
+        # handle (N,) arrays
+        if len(sim_results.shape) == 1:
+            self.N_out = 1
         else:
-            sim_results = sim_results.T
+            self.N_out = sim_results.shape[1]
 
-        return np.dot(self.gpc_matrix_inv, sim_results)
+        try:
+            return np.dot(self.gpc_matrix_inv, sim_results.T)
+        except ValueError:
+            wprint("Please check format of parameter sim_results: [N_grid x N_out] np.ndarray.")
+            raise
 
     def get_loocv(self, sim_results):
         """

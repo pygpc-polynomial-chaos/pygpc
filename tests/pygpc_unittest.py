@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Unittest class of pygpc
-@author: Konstantin Weise
+Unittest class of for the pygpc framework
 """
+
 import unittest
 import pygpc
 import numpy as np
@@ -13,18 +13,18 @@ import matplotlib.pyplot as plt
 
 
 # first test fixture (class)
-class TestpygpcMethods(unittest.TestCase):
+class TestPygpcMethods(unittest.TestCase):
 
-    # setup method called before every testcase
+    # setup method called before every test case
     def setUp(self):
         pass
 
     def run(self, result=None):
         self._result = result
         self._num_expectations = 0
-        super(TestpygpcMethods, self).run(result)
+        super(TestPygpcMethods, self).run(result)
 
-    def _fail(self, failure):
+    def failed(self, failure):
         try:
             raise failure
         except failure.__class__:
@@ -33,12 +33,12 @@ class TestpygpcMethods(unittest.TestCase):
     def expect_equal(self, a, b, msg=''):
         if a != b:
             msg = '({}) Expected {} to equal {}. '.format(self._num_expectations, a, b) + msg
-            self._fail(self.failureException(msg))
+            self.failed(self.failureException(msg))
         self._num_expectations += 1
 
     def expect_true(self, a, msg):
         if not a:
-            self._fail(self.failureException(msg))
+            self.failed(self.failureException(msg))
         self._num_expectations += 1
 
     def test_1_regular_gpc(self):
@@ -49,10 +49,10 @@ class TestpygpcMethods(unittest.TestCase):
         random_vars = ['x1', 'x2']      # label of random variables
         DIM = 2                         # number of random variables
         testfun = "peaks"               # test function
-        pdftype = ["beta", "beta"]      # Type of input PDFs in each dimension
+        pdf_type = ["beta", "beta"]      # Type of input PDFs in each dimension
         p = [1, 3]                      # first shape parameter of beta distribution (also often: alpha)
         q = [1, 6]                      # second shape parameter of beta distribution (also often: beta)
-        pdfshape = [p, q]
+        pdf_shape = [p, q]
         a = [0.5, -0.5]                 # lower bounds of random variables
         b = [1.5, 1]                    # upper bounds of random variables
         limits = [a, b]
@@ -61,7 +61,7 @@ class TestpygpcMethods(unittest.TestCase):
         interaction_order = 2           # interaction order between variables
 
         # random grid parameters:
-        N_rand = int(1.5 * pygpc.calc_Nc(DIM, order[0]))  # number of grid points
+        N_rand = int(1.5 * pygpc.misc.get_num_coeffs(DIM, order[0]))  # number of grid points
 
         # Sparse grid parameters:
         gridtype_sparse = ["jacobi", "jacobi"]  # type of quadrature rule in each dimension
@@ -74,86 +74,89 @@ class TestpygpcMethods(unittest.TestCase):
         gridtype_tens = ["jacobi", "jacobi"]    # type of quadrature rule in each dimension
 
         # Monte Carlo simulations (bruteforce for comparison)
-        N_mc = int(1E5)                         # number of random samples
+        N_monte_carlo = int(1E5)                         # number of random samples
 
         # generate grids for computations
-        grid_rand = pygpc.randomgrid(pdftype, pdfshape, limits, N_rand)
-        grid_mc = pygpc.randomgrid(pdftype, pdfshape, limits, N_mc)
+        grid_rand = pygpc.grid.RandomGrid(pdf_type, pdf_shape, limits, N_rand)
+        
+        grid_mc = pygpc.grid.RandomGrid(pdf_type, pdf_shape, limits, N_monte_carlo)
 
-        grid_SG = pygpc.grid.sparsegrid(pdftype, gridtype_sparse, pdfshape, limits, level, level_max, interaction_order,
-                                        order_sequence_type)
-        grid_tens = pygpc.grid.tensgrid(pdftype, gridtype_tens, pdfshape, limits, N_tens)
+        grid_sg = pygpc.grid.SparseGrid(pdf_type, gridtype_sparse, pdf_shape, limits, level, level_max,
+                                        interaction_order, order_sequence_type)
+        grid_tens = pygpc.grid.TensorGrid(pdf_type, gridtype_tens, pdf_shape, limits, N_tens)
 
         # % generate gpc objects
-        gpc_reg = pygpc.reg(pdftype, pdfshape, limits, order, order_max, interaction_order, grid_rand, random_vars)
-        gpc_tens = pygpc.quad(pdftype, pdfshape, limits, order, order_max, interaction_order, grid_tens, random_vars)
-        gpc_SG = pygpc.quad(pdftype, pdfshape, limits, order, order_max, interaction_order, grid_SG, random_vars)
+        gpc_reg = pygpc.reg.Reg(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid_rand, random_vars)
+        gpc_tens = pygpc.quad.Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order,
+                              grid_tens, random_vars)
+        gpc_sg = pygpc.quad.Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid_sg, random_vars)
 
         # % evaluate model function on different grids
-        data_rand = pygpc.tf.peaks(grid_rand.coords)
-        data_mc = pygpc.tf.peaks(grid_mc.coords)
-        data_tens = pygpc.tf.peaks(grid_tens.coords)
-        data_SG = pygpc.tf.peaks(grid_SG.coords)
-        data_mc = pygpc.tf.peaks(grid_mc.coords)
+        data_rand = pygpc.testfun.peaks(grid_rand.coords)
+        data_mc = pygpc.testfun.peaks(grid_mc.coords)
+        data_tens = pygpc.testfun.peaks(grid_tens.coords)
+        data_sg = pygpc.testfun.peaks(grid_sg.coords)
+        data_mc = pygpc.testfun.peaks(grid_mc.coords)
 
         # % determine gpc coefficients
-        coeffs_reg = gpc_reg.expand(data_rand)
-        coeffs_tens = gpc_tens.expand(data_tens)
-        coeffs_SG = gpc_SG.expand(data_SG)
+        coeffs_reg = gpc_reg.get_coeffs_expand(data_rand)
+        coeffs_tens = gpc_tens.get_coeffs_expand(data_tens)
+        coeffs_sg = gpc_sg.get_coeffs_expand(data_sg)
 
         # perform postprocessing
-        print("Calculating mean ...")
-        out_mean_reg = gpc_reg.mean(coeffs_reg)
-        out_mean_tens = gpc_tens.mean(coeffs_tens)
-        out_mean_SG = gpc_SG.mean(coeffs_SG)
+        print("Calculating mean...")
+        out_mean_reg = gpc_reg.get_mean_value(coeffs_reg)
+        out_mean_tens = gpc_tens.get_mean_value(coeffs_tens)
+        out_mean_SG = gpc_sg.get_mean_value(coeffs_sg)
         out_mean_mc = np.mean(data_mc)
 
         print("Calculating standard deviation ...")
-        out_std_reg = gpc_reg.std(coeffs_reg)
-        out_std_tens = gpc_tens.std(coeffs_tens)
-        out_std_SG = gpc_SG.std(coeffs_SG)
+        out_std_reg = gpc_reg.get_standard_deviation(coeffs_reg)
+        out_std_tens = gpc_tens.get_standard_deviation(coeffs_tens)
+        out_std_SG = gpc_sg.get_standard_deviation(coeffs_sg)
         out_std_mc = np.std(data_mc)
 
         print("Calculating sobol coefficients ...")
-        out_sobol_reg, out_sobol_idx_reg = gpc_reg.sobol(coeffs_reg)
-        out_sobol_tens, out_sobol_idx_tens = gpc_tens.sobol(coeffs_tens)
-        out_sobol_SG, out_sobol_idx_SG = gpc_SG.sobol(coeffs_SG)
-
+        out_sobol_reg, out_sobol_idx_reg, out_sobol_idx_bool_reg = gpc_reg.get_sobol_indices(coeffs=coeffs_reg)
+        out_sobol_tens, out_sobol_idx_tens, out_sobol_idx_bool_tens = gpc_tens.get_sobol_indices(coeffs=coeffs_tens)
+        out_sobol_sg, out_sobol_idx_sg,out_sobol_idx_bool_sg = gpc_sg.get_sobol_indices(coeffs=coeffs_sg)
+        #
         print("Calculating global sensitivity indices ...")
-        out_globalsens_reg = gpc_reg.globalsens(coeffs_reg)
-        out_globalsens_tens = gpc_tens.globalsens(coeffs_tens)
-        out_globalsens_SG = gpc_SG.globalsens(coeffs_SG)
+        out_globalsens_reg = gpc_reg.get_global_sens(coeffs_reg)
+        out_globalsens_tens = gpc_tens.get_global_sens(coeffs_tens)
+        out_globalsens_SG = gpc_sg.get_global_sens(coeffs_sg)
 
         print("Calculating output PDFs ...")
-        pdf_x_reg, pdf_y_reg = gpc_reg.pdf(coeffs_reg, N_mc)
-        pdf_x_tens, pdf_y_tens = gpc_tens.pdf(coeffs_tens, N_mc)
-        pdf_x_SG, pdf_y_SG = gpc_SG.pdf(coeffs_SG, N_mc)
+        pdf_x_reg, pdf_y_reg = gpc_reg.get_pdf(coeffs_reg, N_monte_carlo)
+        pdf_x_tens, pdf_y_tens = gpc_tens.get_pdf(coeffs_tens, N_monte_carlo)
+        pdf_x_SG, pdf_y_SG = gpc_sg.get_pdf(coeffs_sg, N_monte_carlo)
 
-        kde_mc = scipy.stats.gaussian_kde(data_mc.transpose(), bw_method=0.2 / data_mc.std(ddof=1))
-        pdf_x_mc = np.linspace(data_mc.min(), data_mc.max(), 100)
-        pdf_y_mc = kde_mc(pdf_x_mc)
-        pdf_x_mc = pdf_x_mc[np.newaxis].T
-        pdf_y_mc = pdf_y_mc[np.newaxis].T
-
-
-        print("Comparing gpc results to bruteforce Monte Carlo simulations ...")
-
-        # compare results to predefined error value (and interpolate if necessary)
-        data_reg = gpc_reg.evaluate(coeffs_reg,grid_mc.coords_norm)
-        data_tens = gpc_tens.evaluate(coeffs_tens, grid_mc.coords_norm)
-        data_SG = gpc_SG.evaluate(coeffs_SG, grid_mc.coords_norm)
-
-        eps_reg = pygpc.NRMSD(data_reg, data_mc)
-        eps_tens = pygpc.NRMSD(data_tens, data_mc)
-        eps_SG = pygpc.NRMSD(data_SG, data_mc)
-
-        eps0 = 1 # error tolerance in %
-
-        self.expect_true(eps_reg < eps0, 'gPC regression test failed with error = {:1.2f}%'.format(eps_reg[0]))
-        self.expect_true(eps_tens < eps0, 'gPC tensored grid test failed with error = {:1.2f}%'.format(eps_tens[0]))
-        self.expect_true(eps_SG < eps0, 'gPC sparse grid test failed with error = {:1.2f}%'.format(eps_SG[0]))
-
-        print("done!\n")
+        # kde_mc = scipy.stats.gaussian_kde(data_mc.transpose(), bw_method=0.2 / data_mc.std(ddof=1))
+        # pdf_x_mc = np.linspace(data_mc.min(), data_mc.max(), 100)
+        # pdf_y_mc = kde_mc(pdf_x_mc)
+        # pdf_x_mc = pdf_x_mc[np.newaxis].T
+        # pdf_y_mc = pdf_y_mc[np.newaxis].T
+        #
+        #
+        # print("Comparing gpc results to bruteforce Monte Carlo simulations ...")
+        #
+        # # compare results to predefined error value (and interpolate if necessary)
+        # data_reg = gpc_reg.evaluate(coeffs_reg,grid_mc.coords_norm)
+        # data_tens = gpc_tens.evaluate(coeffs_tens, grid_mc.coords_norm)
+        # data_sg = gpc_sg.evaluate(coeffs_sg, grid_mc.coords_norm)
+        #
+        # eps_reg = pygpc.NRMSD(data_reg, data_mc)
+        # eps_tens = pygpc.NRMSD(data_tens, data_mc)
+        # eps_SG = pygpc.NRMSD(data_sg, data_mc)
+        #
+        # # error tolerance in %
+        # eps0 = 1
+        #
+        # self.expect_true(eps_reg < eps0, 'gPC regression test failed with error = {:1.2f}%'.format(eps_reg[0]))
+        # self.expect_true(eps_tens < eps0, 'gPC tensored grid test failed with error = {:1.2f}%'.format(eps_tens[0]))
+        # self.expect_true(eps_SG < eps0, 'gPC sparse grid test failed with error = {:1.2f}%'.format(eps_SG[0]))
+        #
+        # print("done!\n")
 
     # def test_2_adaptive_gpc(self):
     #     print("1. Testing adaptive gPC")
@@ -165,7 +168,7 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     # Statistical parameters
     #     random_vars = ['sigma_1', 'sigma_2', 'sigma_3']
-    #     pdftype = ["beta", "beta", "beta"]
+    #     pdf_type = ["beta", "beta", "beta"]
     #     DIM = 3  # number of random variables
     #     a = [0.15, 0.01, 0.4]  # lower bounds of conductivities in S/m
     #     b = [0.45, 0.02, 0.6]  # upper bounds of conductivities in S/m
@@ -174,7 +177,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     max_order = 0  # maximum order at initialization
     #
     #     eps = 1E-3  # relative error bound
-    #     pdfshape = [p, q]
+    #     pdf_shape = [p, q]
     #     limits = [a, b]
     #
     #     # anodal and cathodal position at angle phi_electrode in x-z plane
@@ -193,8 +196,8 @@ class TestpygpcMethods(unittest.TestCase):
     #     ########################################################################################
     #     # run adaptive gpc (regression) passing the goal function func(x, args())
     #     reg, phi = pygpc.run_reg_adaptive2(random_vars=random_vars,
-    #                                        pdftype=pdftype,
-    #                                        pdfshape=pdfshape,
+    #                                        pdf_type=pdf_type,
+    #                                        pdf_shape=pdf_shape,
     #                                        limits=limits,
     #                                        func=pygpc.tf.potential_3layers_surface_electrodes,
     #                                        args=(R, anode_pos, cathode_pos, points, 50),

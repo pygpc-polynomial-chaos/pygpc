@@ -115,7 +115,7 @@ class gPC:
         self.N_grid = None
         self.N_samples = None
         self.mean_random_vars = None
-        self.cpu = None
+        self.cpu = True
         self.gpu = None
         self.verbose = True
         self.gpc_matrix = None
@@ -188,7 +188,7 @@ class gPC:
         """
 
         # calculate maximum order of polynomials
-        N_max = int(np.max(self.order))
+        N_max = int(max(self.order))
 
         # 2D list of polynomials (lookup)
         self.poly = [[0 for _ in range(self.dim)] for _ in range(N_max + 1)]
@@ -422,7 +422,7 @@ class gPC:
         init_gpc_matrix()
         """
 
-        iprint('Constructing gPC matrix ...')
+        iprint('Constructing gPC matrix...')
         gpc_matrix = np.ones([self.grid.coords.shape[0], self.N_poly])
 
         def cpu(self, gpc_matrix):
@@ -487,8 +487,9 @@ class gPC:
             expected mean value
         """
 
-        mean = coeffs[0, :]
-        mean = mean[np.newaxis, :]
+        mean = coeffs[0]
+        # TODO: check if 1-dimensional array should be (N,) or (N,1)
+        # mean = mean[np.newaxis, :]
         return mean
 
     @staticmethod
@@ -509,8 +510,9 @@ class gPC:
             standard deviation
         """
 
-        std = np.sqrt(np.sum(np.square(coeffs[1:, :]), axis=0))
-        std = std[np.newaxis, :]
+        std = np.sqrt(np.sum(np.square(coeffs[1:]), axis=0))
+        # TODO: check if 1-dimensional array should be (N,) or (N,1)
+        # std = std[np.newaxis, :]
         return std
 
     def get_pdf_monte_carlo(self, N_samples, coeffs=None, output_idx=None):
@@ -535,10 +537,13 @@ class gPC:
         """
 
         # handle input parameters
-        if not coeffs:
+        if coeffs is None:
             coeffs = self.gpc_coeffs
 
-        self.N_out = coeffs.shape[1]
+        if len(coeffs.shape) == 1:
+            self.N_out = 1
+        else:
+            self.N_out = coeffs.shape[1]
 
         # seed the random numbers generator
         np.random.seed()
@@ -552,15 +557,13 @@ class gPC:
             if self.pdf_type[i_dim] == "norm" or self.pdf_type[i_dim] == "normal":
                 xi[:, i_dim] = (np.random.normal(0, 1, [N_samples, 1]))[:, 0]
 
-        # TODO: pce necessary?
         # if output index list is not provided, sample all gpc outputs
-        # if not output_idx:
-            # output_idx = np.linspace(0, self.N_out - 1, self.N_out)
+        if output_idx is None:
+            output_idx = np.arange(self.N_out)
             # output_idx = output_idx[np.newaxis, :]
-        # pce = self.evaluate(coeffs, xi, output_idx)
-        # return xi, pce
+        pce = self.get_pce(coeffs=coeffs, xi=xi, output_idx=output_idx)
 
-        return xi
+        return xi, pce
 
     def get_pce(self, coeffs=None, xi=None, output_idx=None):
         """
@@ -587,16 +590,16 @@ class gPC:
         pce = get_pce([[xi_1_p1 ... xi_dim_p1] ,[xi_1_p2 ... xi_dim_p2]], np.array([[0,5,13]]))
         """
 
-        def cpu():
-            pce = np.zeros([xi.shape[0], coeffs.shape[1]])
+        def cpu(self):
+            pce = np.zeros([xi.shape[0], self.N_out])
             for i_poly in range(self.N_poly):
                 gpc_matrix_new_row = np.ones(xi.shape[0])
                 for i_dim in range(self.dim):
                     gpc_matrix_new_row *= self.poly[self.poly_idx[i_poly][i_dim]][i_dim](xi[:, i_dim])
-                pce += np.outer(gpc_matrix_new_row, coeffs[i_poly, :])
+                pce += np.outer(gpc_matrix_new_row, coeffs[i_poly])
             return pce
 
-        def gpu():
+        def gpu(self):
             # initialize matrices and parameters
             pce = np.zeros([xi.shape[0], coeffs.shape[1]])
             number_of_variables = len(self.poly[0])
@@ -628,11 +631,15 @@ class gPC:
             return pce
 
         # handle input parameters
-        self.N_out = coeffs.shape[1]
+        if len(coeffs.shape) == 1:
+            self.N_out = 1
+        else:
+            self.N_out = coeffs.shape[1]
+
         self.N_poly = self.poly_idx.shape[0]
-        if not coeffs:
+        if coeffs is None:
             coeffs = self.gpc_coeffs
-        if not xi:
+        if xi is None:
             xi = self.grid.coords_norm
         if len(xi.shape) == 1:
             xi = xi[:, np.newaxis]
@@ -643,13 +650,13 @@ class gPC:
             coeffs = coeffs[:, output_idx]
 
         if self.cpu:
-            return cpu()
+            return cpu(self)
         else:
-            return gpu()
+            return gpu(self)
 
     def get_sobol_indices(self, coeffs=None):
         """
-        Determine the available sobol indices.
+        Calculate the available sobol indices.
 
         sobol, sobol_idx = get_sobol_indices(coeffs=None)
 
@@ -671,9 +678,17 @@ class gPC:
         iprint("Determining Sobol indices...")
 
         # handle input parameters
-        if not coeffs:
+        if coeffs is None:
             coeffs = self.gpc_coeffs
+
+        # handle (N,) arrays
+        if len(coeffs.shape) == 1:
+            N_out = 1
+        else:
+            N_out = coeffs.shape[1]
+
         N_coeffs = coeffs.shape[0]
+
         if N_coeffs == 1:
             raise Exception('Number of coefficients is 1 ... no sobol indices to calculate ...')
 
@@ -699,9 +714,9 @@ class gPC:
         # calculate sobol coefficients matrix by summing up the individual
         # contributions to the respective sobol coefficients
         # size [N_sobol x N_points]    
-        sobol = np.zeros([N_sobol_available, coeffs.shape[1]])
+        sobol = np.zeros([N_sobol_available, N_out])
         for i_sobol in range(N_sobol_available):
-            sobol[i_sobol, :] = np.sum(np.square(coeffs[sobol_poly_idx[:, i_sobol] == 1, :]), axis=0)
+            sobol[i_sobol] = np.sum(np.square(coeffs[sobol_poly_idx[:, i_sobol] == 1]), axis=0)
 
         # sort sobol coefficients in descending order (w.r.t. first output only ...)
         idx_sort_descend_1st = np.argsort(sobol[:, 0], axis=0)[::-1]
@@ -1000,7 +1015,11 @@ class gPC:
             y-coordinates of output pdf (probability density of output quantity)
         """
 
-        self.N_out = coeffs.shape[1]
+        # handle (N,) arrays
+        if len(coeffs.shape) == 1:
+            self.N_out = 1
+        else:
+            self.N_out = coeffs.shape[1]
 
         # if output index array is not provided, determine pdfs of all outputs 
         if not output_idx:
@@ -1008,13 +1027,13 @@ class gPC:
             output_idx = output_idx[np.newaxis, :]
 
         # sample gPC expansion
-        samples_in, samples_out = self.get_pdf_mc(coeffs, N_samples, output_idx)
+        samples_in, samples_out = self.get_pdf_monte_carlo(N_samples, coeffs=coeffs, output_idx=output_idx)
 
         # determine kernel density estimates using Gaussian kernel
         pdf_x = np.zeros([100, self.N_out])
         pdf_y = np.zeros([100, self.N_out])
 
-        for i_out in range(coeffs.shape[1]):
+        for i_out in range(self.N_out):
             kde = scipy.stats.gaussian_kde(samples_out.transpose(), bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
             pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
             pdf_y[:, i_out] = kde(pdf_x[:, i_out])

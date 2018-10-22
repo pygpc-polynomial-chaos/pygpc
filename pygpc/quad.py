@@ -88,6 +88,9 @@ class Quad(gPC):
         # setup polynomial basis functions
         self.init_polynomial_basis()
 
+        # setup polynomial basis functions
+        self.init_polynomial_index()
+
         # construct gpc matrix [Ngrid x Npolybasis]
         self.init_gpc_matrix()
 
@@ -112,13 +115,18 @@ class Quad(gPC):
         """
 
         iprint('Determine gPC coefficients...')
-        self.N_out = sim_results.shape[1]
+
+        # handle (N,) arrays
+        if len(sim_results.shape) == 1:
+            self.N_out = 1
+        else:
+            self.N_out = sim_results.shape[1]
 
         # check if quadrature rule (grid) fits to the probability density distribution (pdf)
         grid_pdf_fit = True
         for i_dim in range(self.dim):
             if self.pdf_type[i_dim] == 'beta':
-                if not (self.grid.gridtype[i_dim] == 'jacobi'):
+                if not (self.grid.grid_type[i_dim] == 'jacobi'):
                     grid_pdf_fit = False
                     break
             elif (self.pdf_type[i_dim] == 'norm') or (self.pdf_type[i_dim] == 'normal'):

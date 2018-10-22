@@ -6,10 +6,11 @@ Functions that provide input and output functionality
 import pickle
 import h5py
 import yaml
+import logging
 from builtins import range
 
-from pygpc import file_logger
 from .grid import *
+from pygpc import console_logger
 
 
 def write_gpc_yml(obj, fname):
