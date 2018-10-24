@@ -107,7 +107,7 @@ class TestPygpcMethods(unittest.TestCase):
         print("Calculating mean...")
         out_mean_reg = gpc_reg.get_mean_value(coeffs_reg)
         out_mean_tens = gpc_tens.get_mean_value(coeffs_tens)
-        out_mean_SG = gpc_sg.get_mean_value(coeffs_sg)
+        out_mean_sg = gpc_sg.get_mean_value(coeffs_sg)
         out_mean_mc = np.mean(data_mc)
 
         print("Calculating standard deviation ...")
@@ -131,6 +131,27 @@ class TestPygpcMethods(unittest.TestCase):
         pdf_x_tens, pdf_y_tens = gpc_tens.get_pdf(coeffs_tens, N_monte_carlo)
         pdf_x_SG, pdf_y_SG = gpc_sg.get_pdf(coeffs_sg, N_monte_carlo)
 
+        # print("Calculating standard deviation ...")
+        # out_std_reg = gpc_reg.std(coeffs_reg)
+        # out_std_tens = gpc_tens.std(coeffs_tens)
+        # out_std_SG = gpc_sg.std(coeffs_SG)
+        # out_std_mc = np.std(data_mc)
+        #
+        # print("Calculating sobol coefficients ...")
+        # out_sobol_reg, out_sobol_idx_reg = gpc_reg.sobol(coeffs_reg)
+        # out_sobol_tens, out_sobol_idx_tens = gpc_tens.sobol(coeffs_tens)
+        # out_sobol_SG, out_sobol_idx_SG = gpc_sg.sobol(coeffs_SG)
+        #
+        # print("Calculating global sensitivity indices ...")
+        # out_globalsens_reg = gpc_reg.globalsens(coeffs_reg)
+        # out_globalsens_tens = gpc_tens.globalsens(coeffs_tens)
+        # out_globalsens_SG = gpc_sg.globalsens(coeffs_SG)
+        #
+        # print("Calculating output PDFs ...")
+        # pdf_x_reg, pdf_y_reg = gpc_reg.pdf(coeffs_reg, N_monte_carlo)
+        # pdf_x_tens, pdf_y_tens = gpc_tens.pdf(coeffs_tens, N_monte_carlo)
+        # pdf_x_sg, pdf_y_sg = gpc_sg.pdf(coeffs_SG, N_monte_carlo)
+        #
         # kde_mc = scipy.stats.gaussian_kde(data_mc.transpose(), bw_method=0.2 / data_mc.std(ddof=1))
         # pdf_x_mc = np.linspace(data_mc.min(), data_mc.max(), 100)
         # pdf_y_mc = kde_mc(pdf_x_mc)
@@ -147,7 +168,8 @@ class TestPygpcMethods(unittest.TestCase):
         #
         # eps_reg = pygpc.NRMSD(data_reg, data_mc)
         # eps_tens = pygpc.NRMSD(data_tens, data_mc)
-        # eps_SG = pygpc.NRMSD(data_sg, data_mc)
+        # eps_sg = pygpc.NRMSD(data_sg, data_mc)
+        #
         #
         # # error tolerance in %
         # eps0 = 1

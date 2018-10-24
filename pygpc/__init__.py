@@ -52,11 +52,15 @@ def iprint(message, verbose=True, tab=None):
     verbose: bool, optional, default=True
         determines if string is printed out
     """
+    
+    if tab:
+        message = '\t'*tab + message
+    console_logger.info(message)
 
 
 def wprint(message, verbose=True, tab=None):
     """
-    Function that prints out a message over the python logging module
+    Function that prints out a warning message over the python logging module
 
     wprint(message, verbose=True)
 
