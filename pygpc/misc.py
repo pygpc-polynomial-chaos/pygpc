@@ -289,19 +289,19 @@ def get_multi_indices(length, max_order):
     return multi_indices.astype(int)
 
 
-def get_normalized_rms(array, ref):
+def get_normalized_rms_deviation(array, array_ref):
     """
     Determine the normalized root mean square deviation between input data and reference data in [%].
 
-    normalized_rms = get_normalized_rms(array, ref)
+    normalized_rms = get_normalized_rms(array, array_ref)
 
     Parameters
     ----------
     array: np.ndarray
         input data [ (x), y0, y1, y2 ... ]
-    ref: np.ndarray
-        reference data [ (xref), yref ]
-        if ref is 1D, all sizes have to match
+    array_ref: np.ndarray
+        reference data [ (x_ref), y0_ref, y1_ref, y2_ref ... ]
+        if array_ref is 1D, all sizes have to match
 
     Returns
     -------
@@ -310,27 +310,33 @@ def get_normalized_rms(array, ref):
     """
 
     N_points = array.shape[0]
-    
+
+    # handle different array lengths
+    if len(array_ref.shape) == 1:
+        array_ref = array_ref[:, None]
+    if len(array.shape) == 1:
+        array = array[:, None]
+
     # determine number of input arrays
-    if ref.shape[1] == 2:
+    if array_ref.shape[1] == 2:
         N_data = array.shape[1]-1
     else:
         N_data = array.shape[1]
     
-    # interpolate array on ref data if necessary
-    if ref.shape[1] == 1:
+    # interpolate array on array_ref data if necessary
+    if array_ref.shape[1] == 1:
         data = array
-        data_ref = ref
+        data_ref = array_ref
     else:
         # crop reference if it is longer than the axis of the data
-        array_ref = ref[(ref[:, 0] >= min(array[:, 0])) & (ref[:, 0] <= max(array[:, 0])), 0]
-        data_ref = ref[(ref[:, 0] >= min(array[:, 0])) & (ref[:, 0] <= max(array[:, 0])), 1]
-        
+        data_ref = array_ref[(array_ref[:, 0] >= min(array[:, 0])) & (array_ref[:, 0] <= max(array[:, 0])), 1]
+        array_ref = array_ref[(array_ref[:, 0] >= min(array[:, 0])) & (array_ref[:, 0] <= max(array[:, 0])), 0]
+
         data = np.zeros([len(array_ref), N_data])
         for i_data in range(N_data):
             data[:, i_data] = np.interp(array_ref, array[:, 0], array[:, i_data+1])
 
-    if (max(data_ref) - min(data_ref)) == 0: 
+    if max(data_ref) == min(data_ref):
         delta = max(data_ref)
     else:
         delta = max(data_ref) - min(data_ref)
@@ -340,7 +346,7 @@ def get_normalized_rms(array, ref):
     return normalized_rms
 
 
-def get_betapdf_fit(data, beta_tolerance=0, uni_intervall=0):
+def get_beta_pdf_fit(data, beta_tolerance=0, uni_intervall=0):
     """
     Fit data to a beta distribution in the interval [a, b].
 
