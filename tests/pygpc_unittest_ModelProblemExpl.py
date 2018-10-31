@@ -155,7 +155,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     print("done!\n")
 
     def test_2_adaptive_gpc(self):
-        from pygpc.testfuns.sphere_model import SphereModel
+        from pygpc.testfuns.testfunctions import SphereModel
         from pygpc.Problem import Problem
         from pygpc.Problem import RandomParameter
         from collections import OrderedDict

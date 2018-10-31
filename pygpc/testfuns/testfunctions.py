@@ -5,10 +5,8 @@ from pygpc.AbstractModel import AbstractModel
 
 class Peaks:
 
-    def __init__(self, x, context,a,b):
-        super(Peaks, self).__init__(context)
-
-        self.x = x
+    def __init__(self, parameters, context):
+        super(Peaks, self).__init__(parameters, context)
 
     def simulate(self, process_id):
         """ 2-dimensional peaks function.
@@ -19,21 +17,20 @@ class Peaks:
                 res     ... result [N_input x 1]
         """
 
-        y = np.array([(3.0*(1-self.x[:,0])**2.*np.exp(-(self.x[:,0]**2) - (self.x[:,1]+1)**2) \
-            - 10.0*(self.x[:,0]/5.0 - self.x[:,0]**3 - self.x[:,1]**5)*np.exp(-self.x[:,0]**2-self.x[:,1]**2)\
-            - 1.0/3*np.exp(-(self.x[:,0]+1)**2 - self.x[:,1]**2))]).transpose()
+        y = np.array([(3.0*(1-self.parameters["x"][:,0])**2.*np.exp(-(self.parameters["x"][:,0]**2) - (self.parameters["x"][:,1]+1)**2) \
+            - 10.0*(self.parameters["x"][:,0]/5.0 - self.parameters["x"][:,0]**3 - self.parameters["x"][:,1]**5)*np.exp(-self.parameters["x"][:,0]**2-self.parameters["x"][:,1]**2)\
+            - 1.0/3*np.exp(-(self.parameters["x"][:,0]+1)**2 - self.parameters["x"][:,1]**2))]).transpose()
     
         return y
 
 class Lim2002:
-    def __init__(self, x, context,a,b):
-        super(Lim2002, self).__init__(context)
+    def __init__(self, parameters, context):
+        super(Lim2002, self).__init__(parameters, context)
 
-        self.x = x
     def simulate(self, process_id):
         """ 2-dimensional test function of Lim et al.
         This function is a polynomial in two dimensions, with terms up to degree
-        5. It is nonlinear, and it is smooth despite being complex, which is
+        5. It is nonlinear, and it is smooth despite being compleparameters["x"], which is
         common for computer experiment functions (Lim et al., 2002). 
         
         Lim, Y. B., Sacks, J., Studden, W. J., & Welch, W. J. (2002). Design
@@ -53,19 +50,15 @@ class Lim2002:
                 y ... result [N_input x 1]
         """
     
-        y = np.array([(9 + 5.0/2*self.x[:,0] - 35.0/2*self.x[:,1] + 5.0/2*self.x[:,0]*self.x[:,1]
-        + 19*self.x[:,1]**2 - 15.0/2*self.x[:,0]**3 - 5.0/2*self.x[:,0]*self.x[:,1]**2 - 11.0/2*self.x[:,1]**4
-        + self.x[:,0]**3*self.x[:,1]**2)]).transpose()
+        y = np.array([(9 + 5.0/2*self.parameters["x"][:,0] - 35.0/2*self.parameters["x"][:,1] + 5.0/2*self.parameters["x"][:,0]*self.parameters["x"][:,1]
+        + 19*self.parameters["x"][:,1]**2 - 15.0/2*self.parameters["x"][:,0]**3 - 5.0/2*self.parameters["x"][:,0]*self.parameters["x"][:,1]**2 - 11.0/2*self.parameters["x"][:,1]**4
+        + self.parameters["x"][:,0]**3*self.parameters["x"][:,1]**2)]).transpose()
     
         return y
     
 class Ishigami:
-    def __init__(self, x, context,a,b):
-        super(Ishigami, self).__init__(context)
-
-        self.a = a
-        self.b = b
-        self.x = x
+    def __init__(self, parameters, context):
+        super(Ishigami, self).__init__(parameters, context)
 
     def simulate(self, process_id):
         """ 3-dimensional test function of Ishigami.
@@ -95,18 +88,15 @@ class Ishigami:
         Output: 
                 y   ... result [N_input x 1]
          """
-        y = np.array([(np.sin(self.x[:,0])+self.a*np.sin(self.x[:,1])**2+self.b*self.x[:,2]**4*np.sin(self.x[:,0]))]).transpose()
+        y = np.array([(np.sin(self.parameters["x"][:,0])+self.parameters["a"]*np.sin(self.parameters["x"][:,1])**2+self.self.parameters["b"]*self.parameters["x"][:,2]**4*np.sin(self.parameters["x"][:,0]))]).transpose()
     
         return y
         
 class Sphere0Fun:
 
-    def __init__(self, x, context, a, b):
-        super(Sphere0Fun, self).__init__(context)
+    def __init__(self, parameters, context):
+        super(Sphere0Fun, self).__init__(parameters, context)
 
-        self.a = a
-        self.b = b
-        self.x = x
 
     def simulate(self, process_id):
         """ N-dimensional sphere function with zero mean.
@@ -121,26 +111,25 @@ class Sphere0Fun:
         """
 
         try:
-            N = self.x.shape[1]
+            N = self.parameters["x"].shape[1]
         except IndexError:
             N=1
-            self.x=np.array([self.x])
+            self.parameters["x"]=np.array([self.parameters["x"]])
 
         # zero mean
-        c2 = (1.0*N*(self.b**3-self.a**3))/(3*(self.b-self.a))
+        c2 = (1.0*N*(self.parameters["b"]**3-self.parameters["a"]**3))/(3*(self.parameters["b"]-self.parameters["a"]))
     
         # sphere function
-        y = np.array([(np.sum(np.square(self.x),axis=1)-c2)]).transpose()
+        y = np.array([(np.sum(np.square(self.parameters["x"]),axis=1)-c2)]).transpose()
     
         return y
 
 
 class SphereFun:
 
-    def __init__(self, x, context):
-        super(SphereFun, self).__init__(context)
+    def __init__(self, parameters, context):
+        super(SphereFun, self).__init__(parameters, context)
 
-        self.x = x
 
     def simulate(self, process_id):
         """ N-dimensional sphere function with zero mean.
@@ -154,18 +143,15 @@ class SphereFun:
         """
     
         # sphere function
-        y = np.array([(np.sum(np.square(self.x),axis=1))]).transpose()
+        y = np.array([(np.sum(np.square(self.parameters["x"]),axis=1))]).transpose()
     
         return y
 
 
 class GFunction:
 
-    def __init__(self, x, context, a):
-        super(GFunction, self).__init__(context)
-
-        self.a = a
-        self.x = x
+    def __init__(self, parameters, context):
+        super(GFunction, self).__init__(parameters, context)
 
     def simulate(self, process_id):
         """ N-dimensional g-function used by Saltelli and Sobol
@@ -189,21 +175,19 @@ class GFunction:
         """
          
         try:
-            self.x.shape[1]
+            self.parameters["x"].shape[1]
         except IndexError:
-            self.x=np.array([self.x])
+            self.parameters["x"]=np.array([self.parameters["x"]])
 
         # g-function
-        y = np.array([(np.prod((np.abs(4.0*self.x-2)+self.a)/(1.0+self.a),axis=1))]).transpose()
+        y = np.array([(np.prod((np.abs(4.0*self.parameters["x"]-2)+self.parameters["a"])/(1.0+self.parameters["a"]),axis=1))]).transpose()
     
         return y
     
 class OakleyOhagan2004:
 
-    def __init__(self, x, context):
-        super(OakleyOhagan2004, self).__init__(context)
-
-        self.x = x
+    def __init__(self, parameters, context):
+        super(OakleyOhagan2004, self).__init__(parameters, context)
 
     def simulate(self, process_id):
         """ 15-dimensional test function of OAKLEY & O'HAGAN (2004)
@@ -234,17 +218,15 @@ class OakleyOhagan2004:
         a3 = np.loadtxt('misc/oakley_ohagan_2004_a3.txt')
 
         # function
-        y = np.array([(np.dot(self.x,a1) + np.dot(np.sin(self.x),a2) + np.dot(np.cos(self.x),a3) \
-            + np.sum(np.multiply(np.dot(self.x,M),self.x),axis=1))]).transpose()
+        y = np.array([(np.dot(self.parameters["x"],a1) + np.dot(np.sin(self.parameters["x"]),a2) + np.dot(np.cos(self.parameters["x"]),a3) \
+            + np.sum(np.multiply(np.dot(self.parameters["x"],M),self.parameters["x"]),axis=1))]).transpose()
 
         return y
     
 class Welch1992:
 
-    def __init__(self, x, context):
-        super(Welch1992, self).__init__(context)
-
-        self.x = x
+    def __init__(self, parameters, context):
+        super(Welch1992, self).__init__(parameters, context)
 
     def simulate(self, process_id):
         """ 20-dimensional test function of WELCH (1992)
@@ -268,19 +250,17 @@ class Welch1992:
                 y ... result [N_input x 1]
         """
 
-        y = np.array([(5.0*self.x[:,11]/(1+self.x[:,0]) + 5*(self.x[:,3]-self.x[:,19])**2 + self.x[:,4] + 40*self.x[:,18]**3 \
-            + 5*self.x[:,18] + 0.05*self.x[:,1] + 0.08*self.x[:,2] - 0.03*self.x[:,5] + 0.03*self.x[:,6] \
-            - 0.09*self.x[:,8] - 0.01*self.x[:,9] - 0.07*self.x[:,10] + 0.25*self.x[:,12]**2 - 0.04*self.x[:,13] \
-            + 0.06*self.x[:,14] - 0.01*self.x[:,16] - 0.03*self.x[:,17])]).transpose()
+        y = np.array([(5.0*self.parameters["x"][:,11]/(1+self.parameters["x"][:,0]) + 5*(self.parameters["x"][:,3]-self.parameters["x"][:,19])**2 + self.parameters["x"][:,4] + 40*self.parameters["x"][:,18]**3 \
+            + 5*self.parameters["x"][:,18] + 0.05*self.parameters["x"][:,1] + 0.08*self.parameters["x"][:,2] - 0.03*self.parameters["x"][:,5] + 0.03*self.parameters["x"][:,6] \
+            - 0.09*self.parameters["x"][:,8] - 0.01*self.parameters["x"][:,9] - 0.07*self.parameters["x"][:,10] + 0.25*self.parameters["x"][:,12]**2 - 0.04*self.parameters["x"][:,13] \
+            + 0.06*self.parameters["x"][:,14] - 0.01*self.parameters["x"][:,16] - 0.03*self.parameters["x"][:,17])]).transpose()
     
         return y
 
 class WingWeights(AbstractModel):
 
-    def __init__(self, x, context):
-            super(WingWeights, self).__init__(context)
-
-            self.x = x
+    def __init__(self, parameters, context):
+            super(WingWeights, self).__init__(parameters, context)
 
         # copied from 'sphere.py' -> potential_3layers_surface_electrodes
 
@@ -308,24 +288,20 @@ class WingWeights(AbstractModel):
         Output: 
                 y ... result [N_input x 1]
         """
-        y = np.array([( 0.036*self.x[:,0]**0.758 * self.x[:,1]**0.0035 \
-          * (x[:,2]/np.cos(self.x[:,3])**2)**0.6 * self.x[:,4]**0.006 * self.x[:,5]**0.04 \
-          * (100*self.x[:,6]/np.cos(self.x[:,3]))**-0.3 * (self.x[:,7]*self.x[:,8])**0.49 \
-          + self.x[:,0]*self.x[:,9])]).transpose()
+        y = np.array([( 0.036*self.parameters["x"][:,0]**0.758 * self.parameters["x"][:,1]**0.0035 \
+          * (self.parameters["x"][:,2]/np.cos(self.parameters["x"][:,3])**2)**0.6 * self.parameters["x"][:,4]**0.006 * self.parameters["x"][:,5]**0.04 \
+          * (100*self.parameters["x"][:,6]/np.cos(self.parameters["x"][:,3]))**-0.3 * (self.parameters["x"][:,7]*self.parameters["x"][:,8])**0.49 \
+          + self.parameters["x"][:,0]*self.parameters["x"][:,9])]).transpose()
     
         return y
 
 class SphereModel(AbstractModel):
 
-    def __init__(self, conductivities, context, radii, anode_pos, cathode_pos, p, nbr_polynomials=50):
-        super(SphereModel, self).__init__(context)
+#    def __init__(self, conductivities, context, radii, anode_pos, cathode_pos, p, nbr_polynomials=50):
+    def __init__(self, parameters, context):
+        super(SphereModel, self).__init__(parameters, context)
 
-        self.conductivities = conductivities
-        self.radii = radii
-        self.anode_pos = anode_pos
-        self.cathode_pos = cathode_pos
-        self.p = p
-        self.nbr_polynomials = nbr_polynomials
+        self.nbr_polynomials = 50
 
     # copied from 'sphere.py' -> potential_3layers_surface_electrodes
     def simulate( self, process_id):
@@ -356,34 +332,34 @@ class SphereModel(AbstractModel):
         ------------------------------
         S.Rush, D.Driscol EEG electrode sensitivity--an application of reciprocity.
         """
-        assert len(self.radii) == 3
-        assert self.radii[0] < self.radii[1] and self.radii[1] < self.radii[2]
-        assert len(self.conductivities) == 3
-        assert len(self.anode_pos) == 3
-        assert len(self.cathode_pos) == 3
-        assert self.p.shape[1] == 3
+        assert len(self.parameters["R"]) == 3
+        assert self.parameters["R"][0] < self.parameters["R"][1] and self.parameters["R"][1] < self.parameters["R"][2]
+        #assert len(self.conductivities) == 3
+        assert len(self.parameters["anode_pos"]) == 3
+        assert len(self.parameters["cathode_pos"]) == 3
+        assert self.parameters["points"].shape[1] == 3
 
-        b_over_s = float(self.conductivities[0]) / float(self.conductivities[1])
-        s_over_t = float(self.conductivities[1]) / float(self.conductivities[2])
-        radius_brain = self.radii[0] * 1e-3
-        radius_skull = self.radii[1] * 1e-3
-        radius_skin = self.radii[2] * 1e-3
+        b_over_s = float(self.parameters["sigma_1"]) / float(self.parameters["sigma_2"])
+        s_over_t = float(self.parameters["sigma_2"]) / float(self.parameters["sigma_3"])
+        radius_brain = self.parameters["R"][0] * 1e-3
+        radius_skull = self.parameters["R"][1] * 1e-3
+        radius_skin = self.parameters["R"][2] * 1e-3
 
-        r = np.linalg.norm(self.p, axis=1) * 1e-3
-        theta = np.arccos(self.p[:, 2] * 1e-3 / r)
-        phi = np.arctan2(self.p[:, 1], self.p[:, 0])
+        r = np.linalg.norm(self.parameters["points"], axis=1) * 1e-3
+        theta = np.arccos(self.parameters["points"][:, 2] * 1e-3 / r)
+        phi = np.arctan2(self.parameters["points"][:, 1], self.parameters["points"][:, 0])
 
         p_r = np.vstack((r, theta, phi)).T
 
-        cathode_pos = (np.sqrt(self.cathode_pos[0]**2 + self.cathode_pos[1]**2 + self.cathode_pos[2]**2) * 1e-3,
-                       np.arccos(self.cathode_pos[2] /
-                                 np.sqrt(self.cathode_pos[0]**2 + self.cathode_pos[1]**2 + self.cathode_pos[2]**2)),
-                       np.arctan2(self.cathode_pos[1], self.cathode_pos[0]))
+        cathode_pos = (np.sqrt(self.parameters["cathode_pos"][0]**2 + self.parameters["cathode_pos"][1]**2 + self.parameters["cathode_pos"][2]**2) * 1e-3,
+                       np.arccos(self.parameters["cathode_pos"][2] /
+                                 np.sqrt(self.parameters["cathode_pos"][0]**2 + self.parameters["cathode_pos"][1]**2 + self.parameters["cathode_pos"][2]**2)),
+                       np.arctan2(self.parameters["cathode_pos"][1], self.parameters["cathode_pos"][0]))
 
-        anode_pos = (np.sqrt(self.anode_pos[0]**2 + self.anode_pos[1]**2 + self.anode_pos[2]**2) * 1e-3,
-                     np.arccos(self.anode_pos[2] /
-                               np.sqrt(self.anode_pos[0] ** 2 + self.anode_pos[1]**2 + self.anode_pos[2]**2)),
-                     np.arctan2(self.anode_pos[1], self.anode_pos[0]))
+        anode_pos = (np.sqrt(self.parameters["anode_pos"][0]**2 + self.parameters["anode_pos"][1]**2 + self.parameters["anode_pos"][2]**2) * 1e-3,
+                     np.arccos(self.parameters["anode_pos"][2] /
+                               np.sqrt(self.parameters["anode_pos"][0] ** 2 + self.parameters["anode_pos"][1]**2 + self.parameters["anode_pos"][2]**2)),
+                     np.arctan2(self.parameters["anode_pos"][1], self.parameters["anode_pos"][0]))
 
         A = lambda n: ((2 * n + 1)**3 / (2 * n)) / (((b_over_s + 1) * n + 1) * ((s_over_t + 1) * n + 1) +
                                                     (b_over_s - 1) * (s_over_t - 1) * n * (n + 1) * (radius_brain / radius_skull)**(2 * n + 1) +
@@ -417,9 +393,9 @@ class SphereModel(AbstractModel):
             np.sin(anode_pos[1]) * np.sin(p_r[:, 1]) * \
             np.cos(p_r[:, 2] - anode_pos[2])
 
-        potentials = np.zeros((self.p.shape[0]), dtype='float64')
+        potentials = np.zeros((self.parameters["points"].shape[0]), dtype='float64')
 
-        coefficients = np.zeros((self.nbr_polynomials, self.p.shape[0]), dtype='float64')
+        coefficients = np.zeros((self.nbr_polynomials, self.parameters["points"].shape[0]), dtype='float64')
 
         # accelerate
         for ii in range(1, self.nbr_polynomials):
@@ -437,9 +413,8 @@ class SphereModel(AbstractModel):
             np.polynomial.legendre.legval(cos_theta_a[inside_sphere], coefficients[:, inside_sphere], tensor=False) -
             np.polynomial.legendre.legval(cos_theta_b[inside_sphere], coefficients[:, inside_sphere], tensor=False))
 
-        potentials *= 1.0 / (2 * np.pi * self.conductivities[2] * radius_skin)
+        potentials *= 1.0 / (2 * np.pi * self.parameters["sigma_3"] * radius_skin)
 
         potentials[outside_sphere] = 0.0
 
         return potentials
-        # plot_scatter(points_cart[:,0],points_cart[:,1],points_cart[:,2],potentials)
