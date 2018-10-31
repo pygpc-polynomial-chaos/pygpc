@@ -24,7 +24,7 @@ import math
 from _functools import partial
 import multiprocessing
 import multiprocessing.pool
-import PyGPC_Worker
+import Worker
 
 from .grid import quadrature_jacobi_1D
 from .grid import quadrature_hermite_1D
@@ -1326,15 +1326,16 @@ def run_reg_adaptive2(random_vars, pdftype, pdfshape, limits, func, args=(), ord
 
     return regobj, res_complete
 
-def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, args=(), order_start=0, order_end=10,
-                      interaction_order_max=None, eps=1E-3, print_out=False, seed=None,
-                      save_res_fn='',n_cpu=1):
+def run_reg_adaptive2_parallel(problem,
+                               order_start=0, order_end=10,interaction_order_max=None,eps=1E-3,seed=None,
+                               print_out=False, save_res_fn='', n_cpu=1):
     """
     Adaptive regression approach based on leave one out cross validation error
     estimation
 
     Parameters
     ----------
+    problem : an instance of the gpc-problem (= Model + specific parameters)
     random_vars : list of str
         string labels of the random variables
     pdftype : list
@@ -1379,6 +1380,37 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, ar
            Funtion values at grid points of the N_out output variables
            size: [N_grid x N_out]
     """
+    from pygpc.Problem import RandomParameter
+    from copy import deepcopy
+
+    # process the Problem parameters
+    # since the core of the gpc framework was not adapted
+    # to the new named parameters we must revert it the data structure
+    # to the previous arrangement (= different array for type,shape,limits
+    # and the order determines which variable is represented)
+    random_vars = []
+    pdftype     = []
+    pdfshape    = [[],[]]
+    limits      = [[],[]]
+
+    # we need to distinguish between
+    # a) random variables
+    #    -> They define a random variable with a certain probability distribution.
+    #    -> The properties of the distribution are used by the PyGPC framework to
+    #       compute scalar samples of the defined distribution
+    #    -> The distributions defined here will be replaced by the computed samples
+    #       and then passed on to the SimulationModel
+    # b) normal model parameters
+    #   -> will be passed to the SimulationModel without any modificaiton
+    # model
+    for key,value in problem.parameters.items():
+        if isinstance(value, RandomParameter):
+            random_vars.append(key)
+            pdftype.append(value.pdftype)
+            pdfshape[0].append(value.pdfshape[0])
+            pdfshape[1].append(value.pdfshape[1])
+            limits[0].append(value.limits[0])
+            limits[1].append(value.limits[1])
 
     # initialize iterators
     matrix_ratio = 1.5
@@ -1388,7 +1420,7 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, ar
     interaction_order_current = 0
     func_time = None
     read_from_file = None
-    dim = len(pdftype)
+    dim = len(random_vars)
     if not interaction_order_max:
         interaction_order_max = dim
     order = order_start
@@ -1452,7 +1484,9 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, ar
     seq_num = 0
 
     # create worker objects that will evaluate the function
-    for val in base_grid:
+    for random_var_instances in base_grid:
+        # we need a new copy of the parameters dictionary for each worker-object
+        parameters = deepcopy(problem.parameters)
         # setup context (let the process know which iteration, interaction order etc.)
         context = {
             'global_task_ctr': global_task_counter,
@@ -1464,14 +1498,23 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, ar
             'interaction_order_current': interaction_order_current,
             'save_res_fn': save_res_fn
         }
-        worker_objs.append( Model(val, context, *(args)) )
+        # replace random vars of the Problem with single instances
+        # determined by the PyGPC framework:
+        # assign the instances of the random_vars to the respective
+        # entries of the dictionary
+        # -> As a result we have the same keys in the dictionary but
+        #    no RandomParameters anymore but a sample from the defined PDF.
+        for i in range(0, len(random_var_instances)):
+            parameters[random_vars[i]] = random_var_instances[i] # ASSUMPTION: the order of the random vars did not change!
+
+        worker_objs.append( problem.modelClass(parameters, context) )
         i_grid += 1
         seq_num += 1
 
     # assign the worker objects to the processes; execute them in parallel
     start_time = time.time()
-    process_pool = multiprocessing.Pool(n_cpu, PyGPC_Worker.init, (process_queue,))
-    res = process_pool.map(PyGPC_Worker.run, worker_objs)  # the map-function deals with chunking the data
+    process_pool = multiprocessing.Pool(n_cpu, Worker.init, (process_queue,))
+    res = process_pool.map(Worker.run, worker_objs)  # the map-function deals with chunking the data
 
     print(('        parallel function evaluation: ' + str(time.time() - start_time) + 'sec'))
 
@@ -1555,7 +1598,8 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, ar
             global_task_counter.value = 0    # since we re-use the  global counter, we need to reset it first
             seq_num = 0
 
-            for val in grid_new:
+            for random_var_instances in grid_new:
+                parameters = deepcopy(problem.parameters)
                 # setup context (let the process know which iteration, interaction order etc.)
                 context = {
                     'global_task_ctr': global_task_counter,
@@ -1568,13 +1612,23 @@ def run_reg_adaptive2_parallel(random_vars, pdftype, pdfshape, limits, Model, ar
                     'save_res_fn': save_res_fn
                 }
 
-                worker_objs.append( Model(val, context, *(args) ) )
+                # assign the instances of the random_vars to the respective
+                # replace random vars of the Problem with single instances
+                # determined by the PyGPC framework:
+                # assign the instances of the random_vars to the respective
+                # entries of the dictionary
+                # -> As a result we have the same keys in the dictionary but
+                #    no RandomParameters anymore but a sample from the defined PDF.
+                for i in range(0, len(random_var_instances)):
+                    parameters[random_vars[i]] = random_var_instances[i]  # ASSUMPTION: the order of the random vars did not change!
+
+                worker_objs.append( problem.modelClass(parameters, context ) )
                 i_grid += 1
                 seq_num += 1
 
             # assign the worker objects to the processes; execute them in parallel
             start_time = time.time()
-            res_new_list = process_pool.map( PyGPC_Worker.run, worker_objs ) # the map-function deals with chunking the data
+            res_new_list = process_pool.map(Worker.run, worker_objs) # the map-function deals with chunking the data
 
             # initialize the result array with the correct size and set the elements according to their order
             # (the first element in 'res' might not necessarily be the result of the first Process/i_grid)

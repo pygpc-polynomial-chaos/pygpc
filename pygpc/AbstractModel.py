@@ -31,7 +31,7 @@ class AbstractModel:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, context):
+    def __init__(self, parameters, context):
         """
         Constructor; initialized the SimulationWrapper class with the provided context
 
@@ -58,6 +58,8 @@ class AbstractModel:
         self.interaction_oder_current = context['interaction_order_current']
         self.global_task_counter = context['global_task_ctr']
         self.seq_number = context['seq_number']
+
+        self.parameters = parameters
 
     def read_previous_results(self):
         """

@@ -5,26 +5,21 @@ import numpy as np
 from subprocess import check_output
 from shutil import copytree
 from shutil import rmtree
+from shutil import move
 
-from pygpc.SimulationModel import AbstractModel
+from pygpc.AbstractModel import AbstractModel
 
 class MyModel(AbstractModel):
     # OF_CASE_DIR = "/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_head"
-    OF_CASE_DIR_BASE = "/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_LI0315593X_WML"
+    #OF_CASE_DIR_BASE = "/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_LI0315593X_WML"
+    OF_CASE_DIR_BASE = "/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_LI02828972_WML"
+    #OF_CASE_DIR_BASE = "/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_LI02443371_WML"
 
-    def __init__(self, conductivities, context):
-        super(MyModel, self).__init__(context)
-
-        self.conductivities = conductivities
+    def __init__(self, parameters, context):
+        super(MyModel, self).__init__(parameters, context)
 
     def simulate(self, process_id):
         OF_CASE_DIR = MyModel.OF_CASE_DIR_BASE + "_" + repr(process_id)
-
-        scalp_cond = repr(self.conductivities[0])
-        skull_cond = repr(self.conductivities[1])
-        gm_cond = repr(self.conductivities[2])
-        wm_cond = repr(self.conductivities[3])
-        lesion_cond = repr(self.conductivities[4])
 
         # Step 1: setup the case directory by replacing the conductivities with the ones provided by the PyGPC framework
         rmtree(OF_CASE_DIR + "/0", ignore_errors=True)
@@ -33,12 +28,13 @@ class MyModel(AbstractModel):
         with open(OF_CASE_DIR + "/0/sigma") as f:
             sigma = f.read()
 
-        sigma = sigma.replace("%SKIN_VAL%", scalp_cond)
-        sigma = sigma.replace("%SKULL_VAL%", skull_cond)
+
+        sigma = sigma.replace("%SKIN_VAL%", str(self.parameters["scalp_cond"]))
+        sigma = sigma.replace("%SKULL_VAL%", str(self.parameters["skull_cond"]))
         sigma = sigma.replace("%CSF_VAL%", "1.65")
-        sigma = sigma.replace("%GM_VAL%", gm_cond)
-        sigma = sigma.replace("%WM_VAL%", wm_cond)
-        sigma = sigma.replace("%LESION_VAL%", lesion_cond)
+        sigma = sigma.replace("%GM_VAL%", str(self.parameters["gm_cond"]))
+        sigma = sigma.replace("%WM_VAL%", str(self.parameters["wm_cond"]))
+        sigma = sigma.replace("%LESION_VAL%", str(self.parameters["lesion_cond"]))
         sigma = sigma.replace("%AIR_VAL%", "1e-15")
         sigma = sigma.replace("%ELECTRODE_VAL%", "1.4")
 
@@ -62,6 +58,8 @@ class MyModel(AbstractModel):
         internal_field_flag = False
         num_lines_to_read = -1
 
+        ElPot = np.array([])
+
         with open(OF_CASE_DIR + "/" + repr(num_iterations + 1) + "/ElPot") as f:
             for line in f:
                 if "internalField" in line:
@@ -74,9 +72,10 @@ class MyModel(AbstractModel):
             for i in range(0, num_lines_to_read):
                 ElPot[i] = float(next(f))
 
-            return ElPot
+        # rename result directory, appending the iteration number, to save content for later analysis
+        move(OF_CASE_DIR + "/" + repr(num_iterations + 1), OF_CASE_DIR + "/" + repr(self.i_grid) + "_iter_" + repr(num_iterations + 1))
 
-        return np.array([])
+        return ElPot
 
     @staticmethod
     def write_result_field(fieldName, data):

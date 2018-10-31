@@ -1,22 +1,37 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-def peaks(x):
-    """ 2-dimensional peaks function.
-    
-        Input:  
-                x       ... input data [N_input x 2]
-        Output: 
-                res     ... result [N_input x 1]
-    """
-    y = np.array([(3.0*(1-x[:,0])**2.*np.exp(-(x[:,0]**2) - (x[:,1]+1)**2) \
-        - 10.0*(x[:,0]/5.0 - x[:,0]**3 - x[:,1]**5)*np.exp(-x[:,0]**2-x[:,1]**2)\
-        - 1.0/3*np.exp(-(x[:,0]+1)**2 - x[:,1]**2))]).transpose()
-    
-    return y
+from pygpc.AbstractModel import AbstractModel
 
-def lim_2002(x):
-    """ 2-dimensional test function of Lim et al.
+class Peaks:
+
+    def __init__(self, x, context,a,b):
+        super(Peaks, self).__init__(context)
+
+        self.x = x
+
+    def simulate(self, process_id):
+        """ 2-dimensional peaks function.
+    
+            Input:
+                 x       ... input data [N_input x 2]
+            Output:
+                res     ... result [N_input x 1]
+        """
+
+        y = np.array([(3.0*(1-self.x[:,0])**2.*np.exp(-(self.x[:,0]**2) - (self.x[:,1]+1)**2) \
+            - 10.0*(self.x[:,0]/5.0 - self.x[:,0]**3 - self.x[:,1]**5)*np.exp(-self.x[:,0]**2-self.x[:,1]**2)\
+            - 1.0/3*np.exp(-(self.x[:,0]+1)**2 - self.x[:,1]**2))]).transpose()
+    
+        return y
+
+class Lim2002:
+    def __init__(self, x, context,a,b):
+        super(Lim2002, self).__init__(context)
+
+        self.x = x
+    def simulate(self, process_id):
+        """ 2-dimensional test function of Lim et al.
         This function is a polynomial in two dimensions, with terms up to degree
         5. It is nonlinear, and it is smooth despite being complex, which is
         common for computer experiment functions (Lim et al., 2002). 
@@ -36,16 +51,24 @@ def lim_2002(x):
                 
         Output: 
                 y ... result [N_input x 1]
-    """
+        """
     
-    y = np.array([(9 + 5.0/2*x[:,0] - 35.0/2*x[:,1] + 5.0/2*x[:,0]*x[:,1] 
-        + 19*x[:,1]**2 - 15.0/2*x[:,0]**3 - 5.0/2*x[:,0]*x[:,1]**2 - 11.0/2*x[:,1]**4 
-        + x[:,0]**3*x[:,1]**2)]).transpose()
+        y = np.array([(9 + 5.0/2*self.x[:,0] - 35.0/2*self.x[:,1] + 5.0/2*self.x[:,0]*self.x[:,1]
+        + 19*self.x[:,1]**2 - 15.0/2*self.x[:,0]**3 - 5.0/2*self.x[:,0]*self.x[:,1]**2 - 11.0/2*self.x[:,1]**4
+        + self.x[:,0]**3*self.x[:,1]**2)]).transpose()
     
-    return y
+        return y
     
-def ishigami(x,a,b):
-    """ 3-dimensional test function of Ishigami.
+class Ishigami:
+    def __init__(self, x, context,a,b):
+        super(Ishigami, self).__init__(context)
+
+        self.a = a
+        self.b = b
+        self.x = x
+
+    def simulate(self, process_id):
+        """ 3-dimensional test function of Ishigami.
         The Ishigami function of Ishigami & Homma (1990) is used as an example
         for uncertainty and sensitivity analysis methods, because it exhibits
         strong nonlinearity and nonmonotonicity. It also has a peculiar
@@ -71,39 +94,56 @@ def ishigami(x,a,b):
                 
         Output: 
                 y   ... result [N_input x 1]
-    """
-    y = np.array([(np.sin(x[:,0])+a*np.sin(x[:,1])**2+b*x[:,2]**4*np.sin(x[:,0]))]).transpose()
+         """
+        y = np.array([(np.sin(self.x[:,0])+self.a*np.sin(self.x[:,1])**2+self.b*self.x[:,2]**4*np.sin(self.x[:,0]))]).transpose()
     
-    return y
+        return y
         
-def sphere0_fun(x,a,b):
-    """ N-dimensional sphere function with zero mean.
+class Sphere0Fun:
+
+    def __init__(self, x, context, a, b):
+        super(Sphere0Fun, self).__init__(context)
+
+        self.a = a
+        self.b = b
+        self.x = x
+
+    def simulate(self, process_id):
+        """ N-dimensional sphere function with zero mean.
         
         y = sphere0(x,a,b)
 
         Input:  
-                x   ... input data [N_input x N_dims]
+                self.x   ... input data [N_input x N_dims]
                 a,b ... lower and upper bound of all input vars
         Output: 
                 y   ... result [N_input x 1]
-    """
+        """
 
-    try:
-        N = x.shape[1]
-    except IndexError:
-        N=1
-        x=np.array([x])
+        try:
+            N = self.x.shape[1]
+        except IndexError:
+            N=1
+            self.x=np.array([self.x])
 
-    # zero mean   
-    c2 = (1.0*N*(b**3-a**3))/(3*(b-a))
+        # zero mean
+        c2 = (1.0*N*(self.b**3-self.a**3))/(3*(self.b-self.a))
     
-    # sphere function
-    y = np.array([(np.sum(np.square(x),axis=1)-c2)]).transpose()
+        # sphere function
+        y = np.array([(np.sum(np.square(self.x),axis=1)-c2)]).transpose()
     
-    return y
-    
-def sphere_fun(x):
-    """ N-dimensional sphere function with zero mean.
+        return y
+
+
+class SphereFun:
+
+    def __init__(self, x, context):
+        super(SphereFun, self).__init__(context)
+
+        self.x = x
+
+    def simulate(self, process_id):
+        """ N-dimensional sphere function with zero mean.
         
         y = sphere0(x)
         
@@ -111,15 +151,24 @@ def sphere_fun(x):
                 x ... input data [N_input x N_dims]
         Output: 
                 y ... result [N_input x 1]
-    """
+        """
     
-    # sphere function
-    y = np.array([(np.sum(np.square(x),axis=1))]).transpose()
+        # sphere function
+        y = np.array([(np.sum(np.square(self.x),axis=1))]).transpose()
     
-    return y    
+        return y
 
-def g_function(x,a):
-    """ N-dimensional g-function used by Saltelli and Sobol
+
+class GFunction:
+
+    def __init__(self, x, context, a):
+        super(GFunction, self).__init__(context)
+
+        self.a = a
+        self.x = x
+
+    def simulate(self, process_id):
+        """ N-dimensional g-function used by Saltelli and Sobol
         this test function is used as an integrand for various numerical 
         estimation methods, including sensitivity analysis methods, because it 
         is fairly complex, and its sensitivity indices can be expressed 
@@ -137,20 +186,27 @@ def g_function(x,a):
                 a ... importance factor of dimensions [N_dims]
         Output: 
                 y ... result [N_input x 1]
-    """
+        """
          
-    try:
-        x.shape[1]
-    except IndexError:
-        x=np.array([x])
+        try:
+            self.x.shape[1]
+        except IndexError:
+            self.x=np.array([self.x])
 
-    # g-function
-    y = np.array([(np.prod((np.abs(4.0*x-2)+a)/(1.0+a),axis=1))]).transpose()
+        # g-function
+        y = np.array([(np.prod((np.abs(4.0*self.x-2)+self.a)/(1.0+self.a),axis=1))]).transpose()
     
-    return res
+        return y
     
-def oakley_ohagan_2004(x):
-    """ 15-dimensional test function of OAKLEY & O'HAGAN (2004)
+class OakleyOhagan2004:
+
+    def __init__(self, x, context):
+        super(OakleyOhagan2004, self).__init__(context)
+
+        self.x = x
+
+    def simulate(self, process_id):
+        """ 15-dimensional test function of OAKLEY & O'HAGAN (2004)
         
         This function's a-coefficients are chosen so that 5 of the input
         variables contribute significantly to the output variance, 5 have a 
@@ -169,23 +225,30 @@ def oakley_ohagan_2004(x):
                 
         Output: 
                 y ... result [N_input x 1]
-    """
+        """
     
-    # load coefficients
-    M = np.loadtxt('misc/oakley_ohagan_2004_M.txt')
-    a1 = np.loadtxt('misc/oakley_ohagan_2004_a1.txt')
-    a2 = np.loadtxt('misc/oakley_ohagan_2004_a2.txt')
-    a3 = np.loadtxt('misc/oakley_ohagan_2004_a3.txt')
+        # load coefficients
+        M = np.loadtxt('misc/oakley_ohagan_2004_M.txt')
+        a1 = np.loadtxt('misc/oakley_ohagan_2004_a1.txt')
+        a2 = np.loadtxt('misc/oakley_ohagan_2004_a2.txt')
+        a3 = np.loadtxt('misc/oakley_ohagan_2004_a3.txt')
+
+        # function
+        y = np.array([(np.dot(self.x,a1) + np.dot(np.sin(self.x),a2) + np.dot(np.cos(self.x),a3) \
+            + np.sum(np.multiply(np.dot(self.x,M),self.x),axis=1))]).transpose()
+
+        return y
     
-    # function
-    y = np.array([(np.dot(x,a1) + np.dot(np.sin(x),a2) + np.dot(np.cos(x),a3) \
-        + np.sum(np.multiply(np.dot(x,M),x),axis=1))]).transpose()
-    
-    return y
-    
-def welch_1992(x):
-    """ 20-dimensional test function of WELCH (1992)
-        
+class Welch1992:
+
+    def __init__(self, x, context):
+        super(Welch1992, self).__init__(context)
+
+        self.x = x
+
+    def simulate(self, process_id):
+        """ 20-dimensional test function of WELCH (1992)
+
         For input variable screening purposes, it can be found that some input 
         variables of this function have a very high effect on the output, 
         compared to other input variables. As Welch et al. (1992) point out, 
@@ -203,16 +266,26 @@ def welch_1992(x):
                 
         Output: 
                 y ... result [N_input x 1]
-    """
-    y = np.array([(5.0*x[:,11]/(1+x[:,0]) + 5*(x[:,3]-x[:,19])**2 + x[:,4] + 40*x[:,18]**3 \
-        + 5*x[:,18] + 0.05*x[:,1] + 0.08*x[:,2] - 0.03*x[:,5] + 0.03*x[:,6] \
-        - 0.09*x[:,8] - 0.01*x[:,9] - 0.07*x[:,10] + 0.25*x[:,12]**2 - 0.04*x[:,13] \
-        + 0.06*x[:,14] - 0.01*x[:,16] - 0.03*x[:,17])]).transpose()
-    
-    return y
+        """
 
-def wing_weight(x):
-    """ 10-dimensional test function which models a light aircraft wing
+        y = np.array([(5.0*self.x[:,11]/(1+self.x[:,0]) + 5*(self.x[:,3]-self.x[:,19])**2 + self.x[:,4] + 40*self.x[:,18]**3 \
+            + 5*self.x[:,18] + 0.05*self.x[:,1] + 0.08*self.x[:,2] - 0.03*self.x[:,5] + 0.03*self.x[:,6] \
+            - 0.09*self.x[:,8] - 0.01*self.x[:,9] - 0.07*self.x[:,10] + 0.25*self.x[:,12]**2 - 0.04*self.x[:,13] \
+            + 0.06*self.x[:,14] - 0.01*self.x[:,16] - 0.03*self.x[:,17])]).transpose()
+    
+        return y
+
+class WingWeights(AbstractModel):
+
+    def __init__(self, x, context):
+            super(WingWeights, self).__init__(context)
+
+            self.x = x
+
+        # copied from 'sphere.py' -> potential_3layers_surface_electrodes
+
+    def simulate(self, process_id):
+        """ 10-dimensional test function which models a light aircraft wing
         
         Forrester, A., Sobester, A., & Keane, A. (2008). Engineering design via 
         surrogate modelling: a practical guide. Wiley.
@@ -234,10 +307,139 @@ def wing_weight(x):
                 
         Output: 
                 y ... result [N_input x 1]
-    """
-    y = np.array([( 0.036*x[:,0]**0.758 * x[:,1]**0.0035 \
-          * (x[:,2]/np.cos(x[:,3])**2)**0.6 * x[:,4]**0.006 * x[:,5]**0.04 \
-          * (100*x[:,6]/np.cos(x[:,3]))**-0.3 * (x[:,7]*x[:,8])**0.49 \
-          + x[:,0]*x[:,9])]).transpose()
+        """
+        y = np.array([( 0.036*self.x[:,0]**0.758 * self.x[:,1]**0.0035 \
+          * (x[:,2]/np.cos(self.x[:,3])**2)**0.6 * self.x[:,4]**0.006 * self.x[:,5]**0.04 \
+          * (100*self.x[:,6]/np.cos(self.x[:,3]))**-0.3 * (self.x[:,7]*self.x[:,8])**0.49 \
+          + self.x[:,0]*self.x[:,9])]).transpose()
     
-    return y       
+        return y
+
+class SphereModel(AbstractModel):
+
+    def __init__(self, conductivities, context, radii, anode_pos, cathode_pos, p, nbr_polynomials=50):
+        super(SphereModel, self).__init__(context)
+
+        self.conductivities = conductivities
+        self.radii = radii
+        self.anode_pos = anode_pos
+        self.cathode_pos = cathode_pos
+        self.p = p
+        self.nbr_polynomials = nbr_polynomials
+
+    # copied from 'sphere.py' -> potential_3layers_surface_electrodes
+    def simulate( self, process_id):
+        """Calculates the electric potential in a 3-layered sphere caused by point-like electrodees
+
+
+        Parameters
+        -------------------------------
+        conductivities: list of lenght = 3
+            Conductivity of the 3 layers (innermost to outermost), in S/m
+        radii: list of length = 3
+            Radius of each of the 3 layers (innermost to outermost), in mm
+        anode_pos: 3x1 ndarray
+            position of the anode_pos, in mm
+        cathode_pos: 3x1 ndarray
+            position of cathode_pos, in mm
+        p: (Nx3)ndarray
+            List of positions where the poteitial should be calculated, in mm
+        nbr_polynomials: int
+            Number of of legendre polynomials to use
+
+        Returns
+        ------------------------------
+        (Nx1) ndarray
+            Values of the electric potential, in V
+
+        Reference
+        ------------------------------
+        S.Rush, D.Driscol EEG electrode sensitivity--an application of reciprocity.
+        """
+        assert len(self.radii) == 3
+        assert self.radii[0] < self.radii[1] and self.radii[1] < self.radii[2]
+        assert len(self.conductivities) == 3
+        assert len(self.anode_pos) == 3
+        assert len(self.cathode_pos) == 3
+        assert self.p.shape[1] == 3
+
+        b_over_s = float(self.conductivities[0]) / float(self.conductivities[1])
+        s_over_t = float(self.conductivities[1]) / float(self.conductivities[2])
+        radius_brain = self.radii[0] * 1e-3
+        radius_skull = self.radii[1] * 1e-3
+        radius_skin = self.radii[2] * 1e-3
+
+        r = np.linalg.norm(self.p, axis=1) * 1e-3
+        theta = np.arccos(self.p[:, 2] * 1e-3 / r)
+        phi = np.arctan2(self.p[:, 1], self.p[:, 0])
+
+        p_r = np.vstack((r, theta, phi)).T
+
+        cathode_pos = (np.sqrt(self.cathode_pos[0]**2 + self.cathode_pos[1]**2 + self.cathode_pos[2]**2) * 1e-3,
+                       np.arccos(self.cathode_pos[2] /
+                                 np.sqrt(self.cathode_pos[0]**2 + self.cathode_pos[1]**2 + self.cathode_pos[2]**2)),
+                       np.arctan2(self.cathode_pos[1], self.cathode_pos[0]))
+
+        anode_pos = (np.sqrt(self.anode_pos[0]**2 + self.anode_pos[1]**2 + self.anode_pos[2]**2) * 1e-3,
+                     np.arccos(self.anode_pos[2] /
+                               np.sqrt(self.anode_pos[0] ** 2 + self.anode_pos[1]**2 + self.anode_pos[2]**2)),
+                     np.arctan2(self.anode_pos[1], self.anode_pos[0]))
+
+        A = lambda n: ((2 * n + 1)**3 / (2 * n)) / (((b_over_s + 1) * n + 1) * ((s_over_t + 1) * n + 1) +
+                                                    (b_over_s - 1) * (s_over_t - 1) * n * (n + 1) * (radius_brain / radius_skull)**(2 * n + 1) +
+                                                    (s_over_t - 1) * (n + 1) * ((b_over_s + 1) * n + 1) * (radius_skull / radius_skin)**(2 * n + 1) +
+                                                    (b_over_s - 1) * (n + 1) * ((s_over_t + 1) * (n + 1) - 1) * (radius_brain / radius_skin)**(2 * n + 1))
+        # All of the bellow are modified: division by raidus_skin moved to the
+        # coefficients calculations due to numerical constraints
+        # THIS IS DIFFERENT FROM THE PAPER (there's a sum instead of difference)
+        S = lambda n: (A(n)) * ((1 + b_over_s) * n + 1) / (2 * n + 1)
+        U = lambda n: (A(n) * radius_skin) * n * (1 - b_over_s) * \
+            radius_brain**(2 * n + 1) / (2 * n + 1)
+        T = lambda n: (A(n) / ((2 * n + 1)**2)) *\
+            (((1 + b_over_s) * n + 1) * ((1 + s_over_t) * n + 1) +
+             n * (n + 1) * (1 - b_over_s) * (1 - s_over_t) * (radius_brain / radius_skull)**(2 * n + 1))
+        W = lambda n: ((n * A(n) * radius_skin) / ((2 * n + 1)**2)) *\
+            ((1 - s_over_t) * ((1 + b_over_s) * n + 1) * radius_skull**(2 * n + 1) +
+             (1 - b_over_s) * ((1 + s_over_t) * n + s_over_t) * radius_brain**(2 * n + 1))
+
+        brain_region = np.where(p_r[:, 0] <= radius_brain)[0]
+        skull_region = np.where(
+            (p_r[:, 0] > radius_brain) * (p_r[:, 0] <= radius_skull))[0]
+        skin_region = np.where((p_r[:, 0] > radius_skull)
+                               * (p_r[:, 0] <= radius_skin))[0]
+        inside_sphere = np.where((p_r[:, 0] <= radius_skin))[0]
+        outside_sphere = np.where((p_r[:, 0] > radius_skin))[0]
+
+        cos_theta_a = np.cos(cathode_pos[1]) * np.cos(p_r[:, 1]) +\
+            np.sin(cathode_pos[1]) * np.sin(p_r[:, 1]) * \
+            np.cos(p_r[:, 2] - cathode_pos[2])
+        cos_theta_b = np.cos(anode_pos[1]) * np.cos(p_r[:, 1]) +\
+            np.sin(anode_pos[1]) * np.sin(p_r[:, 1]) * \
+            np.cos(p_r[:, 2] - anode_pos[2])
+
+        potentials = np.zeros((self.p.shape[0]), dtype='float64')
+
+        coefficients = np.zeros((self.nbr_polynomials, self.p.shape[0]), dtype='float64')
+
+        # accelerate
+        for ii in range(1, self.nbr_polynomials):
+            n = float(ii)
+            coefficients[ii, brain_region] = np.nan_to_num(
+                A(n) * ((p_r[brain_region, 0] / radius_skin)**n))
+
+            coefficients[ii, skull_region] = np.nan_to_num(S(n) * (p_r[skull_region, 0] / radius_skin)**n +
+                                                           U(n) * (p_r[skull_region, 0] * radius_skin)**(-n - 1))
+
+            coefficients[ii, skin_region] = np.nan_to_num(T(n) * (p_r[skin_region, 0] / radius_skin)**n
+                                                          + W(n) * (p_r[skin_region, 0] * radius_skin)**(-n - 1))
+
+        potentials[inside_sphere] = np.nan_to_num(
+            np.polynomial.legendre.legval(cos_theta_a[inside_sphere], coefficients[:, inside_sphere], tensor=False) -
+            np.polynomial.legendre.legval(cos_theta_b[inside_sphere], coefficients[:, inside_sphere], tensor=False))
+
+        potentials *= 1.0 / (2 * np.pi * self.conductivities[2] * radius_skin)
+
+        potentials[outside_sphere] = 0.0
+
+        return potentials
+        # plot_scatter(points_cart[:,0],points_cart[:,1],points_cart[:,2],potentials)

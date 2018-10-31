@@ -9,49 +9,35 @@ on tDCS simulations including information of white matter lesion tissue.
 import pygpc
 
 from MySimulationModel import MyModel
-
+from collections import OrderedDict
+from pygpc.Problem import Problem
+from pygpc.Problem import RandomParameter
 
 class WMLSim:
     def run_adaptive_gpc(self):
-        # Statistical parameters
-#        """"
-        # head case
-        random_vars = ['scalp', 'skull', 'gm', 'wm', 'lesion']
-        pdftype = ["beta", "beta", "beta", "beta", "beta"]
-        a = [0.28, 0.0016, 0.22, 0.09, 0.04]  # lower bounds of conductivities in S/m
-        b = [0.87, 0.033, 0.67, 0.29, 1.5]  # upper bounds of conductivities in S/m
-        p = [3, 3, 3, 3, 3]  # first shape parameter of pdf
-        q = [3, 3, 3, 3, 3]  # second shape parameter of pdf
- #       """
-        """"
-        # capacitor case
-        random_vars = ['scalp', 'skull', 'gm']
-        pdftype = ["beta", "beta", "beta"]
-        a = [0.28, 0.0016, 0.22]    # lower bounds of conductivities in S/m
-        b = [0.87, 0.033, 0.67]     # upper bounds of conductivities in S/m
-        p = [3, 3, 3]               # first shape parameter of pdf
-        q = [3, 3, 3]               # second shape parameter of pdf
-        """
+
+        parameters = OrderedDict()
+        parameters["scalp_cond"] = RandomParameter("beta", [3,3], [0.28,0.87])
+        parameters["skull_cond"] = RandomParameter("beta", [3,3], [0.0016,0.033])
+        parameters["gm_cond"] = RandomParameter("beta", [3,3], [0.22,0.67])
+        parameters["wm_cond"] = RandomParameter("beta", [3,3], [0.09,0.29])
+        parameters["lesion_cond"] = RandomParameter("beta", [3,3], [0.04,1.5])
 
         eps = 1E-3  # relative error bound
-        pdfshape = [p, q]
-        limits = [a, b]
+
+
+        lesionSensitivity = Problem(MyModel, parameters)
 
         ########################################################################################
         # run adaptive gpc (regression) passing the goal function func(x, args())
-        reg, phi = pygpc.run_reg_adaptive2_parallel(random_vars=random_vars,
-                                                    pdftype=pdftype,
-                                                    pdfshape=pdfshape,
-                                                    limits=limits,
-                                                    Model=MyModel,
-                                                    args=(),
+        reg, phi = pygpc.run_reg_adaptive2_parallel(problem=lesionSensitivity,
                                                     order_start=0,
                                                     order_end=16,
                                                     interaction_order_max=2,
                                                     eps=eps,
                                                     print_out=True,
                                                     seed=1,
-                                                    save_res_fn='/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_LI0315593X_WML/pygpc_data/',
+                                                    save_res_fn='/home/kalloch/OpenFOAM/kalloch-3.0.1/run/PyGPC_LI02828972_WML/pygpc_data/fazekas2', #PyGPC_LI02443371_WML/pygpc_data/fazekas1',#PyGPC_LI02828972_WML/pygpc_data/fazekas2',
                                                     n_cpu=8)
 
         ########################################################################################
