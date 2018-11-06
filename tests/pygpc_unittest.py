@@ -11,8 +11,6 @@ from scipy.interpolate import griddata
 import sys
 import matplotlib.pyplot as plt
 
-from pygpc.testfuns.sphere_model import SphereModel
-
 # first test fixture (class)
 class TestpygpcMethods(unittest.TestCase):
 
@@ -157,6 +155,8 @@ class TestpygpcMethods(unittest.TestCase):
     #     print("done!\n")
 
     def test_2_adaptive_gpc(self):
+        from pygpc.testfuns.sphere_model import SphereModel
+
         print("1. Testing adaptive gPC")
         # Model parameters
         save_res_fn = ''
@@ -191,21 +191,6 @@ class TestpygpcMethods(unittest.TestCase):
 
         ########################################################################################
         # run adaptive gpc (regression) passing the goal function func(x, args())
-        '''
-        reg, phi = pygpc.run_reg_adaptive2(random_vars=random_vars,
-                                           pdftype=pdftype,
-                                           pdfshape=pdfshape,
-                                           limits=limits,
-                                           func=pygpc.tf.potential_3layers_surface_electrodes,
-                                           args=(R, anode_pos, cathode_pos, points, 50),
-                                           order_start=0,
-                                           order_end=10,
-                                           interaction_order_max=2,
-                                           eps=eps,
-                                           print_out=True,
-                                           seed=1,
-                                           save_res_fn=save_res_fn)
-        '''
         reg, phi = pygpc.run_reg_adaptive2_parallel(random_vars=random_vars,
                                                     pdftype=pdftype,
                                                     pdfshape=pdfshape,
