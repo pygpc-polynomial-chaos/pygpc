@@ -8,13 +8,32 @@ import yaml
 import os
 import warnings
 import numpy as np
+import dill           # module for saving and loading object instances
+import pickle         # module for saving and loading object instances
+import h5py
+import sys
+import time
 import scipy
-import setproctitle
-from builtins import range
+import random
+import os
+import sys
+import warnings
+import yaml
+import copy
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
 from _functools import partial
+import multiprocessing
+import multiprocessing.pool
+import Worker
 
 from .grid import *
 
+from .misc import unique_rows
+from .misc import allVL1leq
+from .misc import euler_angles_to_rotation_matrix
+from .misc import fancy_bar
 
 def run_reg_adaptive_E_gPC(pdf_type, pdf_shape, limits, func, args=(), fname=None,
                            order_start=0, order_end=10, interaction_order_max=None, eps=1E-3, print_out=False,
@@ -688,6 +707,369 @@ def run_reg_adaptive2(random_vars, pdf_type, pdf_shape, limits, func, args=(), o
             interaction_order_current = interaction_order_current + 1
     return reg_obj, res_complete
 
+def run_reg_adaptive2_parallel(problem,
+                               order_start=0, order_end=10,interaction_order_max=None,eps=1E-3,seed=None,
+                               print_out=False, save_res_fn='', n_cpu=1):
+    """
+    Adaptive regression approach based on leave one out cross validation error
+    estimation
+    Parameters
+    ----------
+    problem : an instance of the gpc-problem (= Model + specific parameters)
+    random_vars : list of str
+        string labels of the random variables
+    pdftype : list
+              Type of probability density functions of input parameters,
+              i.e. ["beta", "norm",...]
+    pdfshape : list of lists
+               Shape parameters of probability density functions
+               s1=[...] "beta": p, "norm": mean
+               s2=[...] "beta": q, "norm": std
+               pdfshape = [s1,s2]
+    limits : list of lists
+             Upper and lower bounds of random variables (only "beta")
+             a=[...] "beta": lower bound, "norm": n/a define 0
+             b=[...] "beta": upper bound, "norm": n/a define 0
+             limits = [a,b]
+    func : callable func(x,*args)
+           The objective function to be minimized.
+    args : tuple, optional
+           Extra arguments passed to func, i.e. f(x,*args).
+    order_start : int, optional
+                  Initial gpc expansion order (maximum order)
+    order_end : int, optional
+                Maximum gpc expansion order to expand to
+    interaction_order_max: int
+        define maximum interaction order of parameters (default: all interactions)
+    eps : float, optional
+          Relative mean error of leave one out cross validation
+    print_out : boolean, optional
+          Print output of iterations and subiterations (True/False)
+    seed : int, optional
+        Set np.random.seed(seed) in random_grid()
+    save_res_fn : string, optional
+          If provided, results are saved in hdf5 file
+    c_cpu : int
+          Number of threads to use in parallel.
+          
+    Returns
+    -------
+    gobj : object
+           gpc object
+    res  : ndarray
+           Funtion values at grid points of the N_out output variables
+           size: [N_grid x N_out]
+    """
+    from pygpc.Problem import RandomParameter
+    from copy import deepcopy
+
+    # process the Problem parameters
+    # since the core of the gpc framework was not adapted
+    # to the new named parameters we must revert it the data structure
+    # to the previous arrangement (= different array for type,shape,limits
+    # and the order determines which variable is represented)
+    random_vars = []
+    pdftype     = []
+    pdfshape    = [[],[]]
+    limits      = [[],[]]
+
+    # we need to distinguish between
+    # a) random variables
+    #    -> They define a random variable with a certain probability distribution.
+    #    -> The properties of the distribution are used by the PyGPC framework to
+    #       compute scalar samples of the defined distribution
+    #    -> The distributions defined here will be replaced by the computed samples
+    #       and then passed on to the SimulationModel
+    # b) normal model parameters
+    #   -> will be passed to the SimulationModel without any modificaiton
+    # model
+    for key,value in problem.parameters.items():
+        if isinstance(value, RandomParameter):
+            random_vars.append(key)
+            pdftype.append(value.pdftype)
+            pdfshape[0].append(value.pdfshape[0])
+            pdfshape[1].append(value.pdfshape[1])
+            limits[0].append(value.limits[0])
+            limits[1].append(value.limits[1])
+
+    # initialize iterators
+    matrix_ratio = 1.5
+    i_grid = 0
+    i_iter = 0
+    run_subiter = True
+    interaction_order_current = 0
+    func_time = None
+    read_from_file = None
+    dim = len(random_vars)
+    if not interaction_order_max:
+        interaction_order_max = dim
+    order = order_start
+    res_complete = None
+    if save_res_fn and save_res_fn[-5:] != '.hdf5':
+        save_res_fn += '.hdf5'
+
+    # make dummy grid
+    grid_init = randomgrid(pdftype, pdfshape, limits, 1, seed=seed)
+
+    # make initial regobj
+    regobj = reg(pdftype,
+                 pdfshape,
+                 limits,
+                 order * np.ones(dim),
+                 order_max=order,
+                 interaction_order=interaction_order_max,
+                 grid=grid_init)
+
+    # determine number of coefficients
+    n_c_init = regobj.poly_idx.shape[0]
+
+    # make initial grid
+    grid_init = randomgrid(pdftype, pdfshape, limits, np.ceil(1.2*n_c_init), seed=seed)
+
+    # re-initialize reg object with appropriate number of grid-points
+    regobj = reg(pdftype,
+                 pdfshape,
+                 limits,
+                 order * np.ones(dim),
+                 order_max=order,
+                 interaction_order=interaction_order_max,
+                 grid=grid_init,
+                 random_vars=random_vars)
+
+    # run simulations on initial grid
+    print("Iteration #{} (initial grid)".format(i_iter))
+    print("=============")
+
+    # read conductivities from grid
+    base_grid = regobj.grid.coords[0:regobj.grid.coords.shape[0], :]
+    n_base_grid  = len(base_grid)
+
+    if print_out:
+        print("    Performing simulations {} to {}".format(i_grid + 1, n_base_grid))
+
+    # setting up parallelization
+    n_cpu_available = multiprocessing.cpu_count()
+    n_cpu = min(n_cpu, n_cpu_available)
+
+    # setup thread pool and run
+    # use a process queue to assign persistent, unique IDs to the processes in the pool
+    process_manager = multiprocessing.Manager()
+    process_queue = process_manager.Queue()
+    for i in range(0, n_cpu ):
+        process_queue.put(i)
+
+    worker_objs = []
+    global_task_counter = process_manager.Value('i', 0)     # global counter used by all threads to keep track of the progress
+    global_lock    = process_manager.RLock()                 # necessary to synchronize read/write access to serialized results
+    seq_num = 0
+
+    # create worker objects that will evaluate the function
+    for random_var_instances in base_grid:
+        # we need a new copy of the parameters dictionary for each worker-object
+        parameters = deepcopy(problem.parameters)
+        # setup context (let the process know which iteration, interaction order etc.)
+        context = {
+            'global_task_ctr': global_task_counter,
+            'seq_number': seq_num,
+            'lock': global_lock,
+            'i_iter': i_iter,
+            'i_grid': i_grid,
+            'max_grid': n_base_grid,
+            'interaction_order_current': interaction_order_current,
+            'save_res_fn': save_res_fn
+        }
+        # replace random vars of the Problem with single instances
+        # determined by the PyGPC framework:
+        # assign the instances of the random_vars to the respective
+        # entries of the dictionary
+        # -> As a result we have the same keys in the dictionary but
+        #    no RandomParameters anymore but a sample from the defined PDF.
+        for i in range(0, len(random_var_instances)):
+            parameters[random_vars[i]] = random_var_instances[i] # ASSUMPTION: the order of the random vars did not change!
+
+        worker_objs.append( problem.modelClass(parameters, context) )
+        i_grid += 1
+        seq_num += 1
+
+    # assign the worker objects to the processes; execute them in parallel
+    start_time = time.time()
+    process_pool = multiprocessing.Pool(n_cpu, Worker.init, (process_queue,))
+    res = process_pool.map(Worker.run, worker_objs)  # the map-function deals with chunking the data
+
+    print(('        parallel function evaluation: ' + str(time.time() - start_time) + 'sec'))
+
+    # initialize the result array with the correct size and set the elements according to their order
+    # (the first element in 'res' might not necessarily be the result of the first Process/i_grid)
+    res_complete = [None]*n_base_grid
+    for result in res:
+        res_complete[ result[0] ] = result[1]
+
+    res_complete = np.array( res_complete )
+
+    # ensure that the grid-counter is forwareded to the first new position
+    i_grid = n_base_grid
+
+    # perform leave one out cross validation for elements that are never nan
+    non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
+    regobj.nan_elm = np.where(np.any(np.isnan(res_complete), axis=0))[0]
+    n_nan = np.sum(np.isnan(res_complete))
+
+    # how many nan-per element? 1 -> all gridpoints are NAN for all elements
+    if n_nan > 0:
+        nan_ratio_per_elm = np.round(float(n_nan) / len(regobj.nan_elm) / res_complete.shape[0], 3)
+        if print_out:
+            print(("Number of NaN elms: {} from {}, ratio per elm: {}".format(len(regobj.nan_elm),
+                                                                     res_complete.shape[1],
+                                                                     nan_ratio_per_elm)))
+
+    regobj.LOOCV(res_complete[:, non_nan_mask])
+
+    if print_out:
+        print(("    -> relerror_LOOCV = {}").format(regobj.relerror_loocv[-1]))
+
+    # main interations (order)
+    while (regobj.relerror_loocv[-1] > eps) and order < order_end:
+
+        i_iter = i_iter + 1
+        order = order + 1
+
+        print("Iteration #{}".format(i_iter))
+        print("=============")
+
+        # determine new possible polynomials
+        poly_idx_all_new = allVL1leq(dim, order)
+        poly_idx_all_new = poly_idx_all_new[np.sum(poly_idx_all_new, axis=1) == order]
+        interaction_order_current_max = np.max(poly_idx_all_new)
+
+        # reset current interaction order before subiterations
+        interaction_order_current = 1
+
+        # subiterations (interaction orders)
+        while (interaction_order_current <= interaction_order_current_max) and \
+                (interaction_order_current <= interaction_order_max) and \
+                run_subiter:
+
+            print("   Subiteration #{}".format(interaction_order_current))
+            print("   ================")
+
+            interaction_order_list = np.sum(poly_idx_all_new > 0, axis=1)
+
+            # filter out polynomials of interaction_order = interaction_order_count
+            poly_idx_added = poly_idx_all_new[interaction_order_list == interaction_order_current, :]
+
+            # add polynomials to gpc expansion
+            regobj.enrich_polynomial_basis(poly_idx_added)
+
+            if seed:
+                seed += 1
+            # generate new grid-points
+            regobj.enrich_gpc_matrix_samples(matrix_ratio, seed=seed)
+
+            # run simulations
+            print(("   Performing simulations " + str(i_grid + 1) + " to " + str(regobj.grid.coords.shape[0])))
+
+            # read conductivities from grid
+            grid_new   = regobj.grid.coords[ int(i_grid):int(len( regobj.grid.coords ))]
+            grid_new   = grid_new.tolist() # grid_new_chunks has trouble with the nbdarray returned by regobj.grid.coords
+            n_grid_new = len( grid_new )
+
+            # create worker objects that will evaluate the function
+            worker_objs = []
+            global_task_counter.value = 0    # since we re-use the  global counter, we need to reset it first
+            seq_num = 0
+
+            for random_var_instances in grid_new:
+                parameters = deepcopy(problem.parameters)
+                # setup context (let the process know which iteration, interaction order etc.)
+                context = {
+                    'global_task_ctr': global_task_counter,
+                    'lock': global_lock,
+                    'seq_number' : seq_num,
+                    'i_iter': i_iter,
+                    'i_grid': i_grid,
+                    'max_grid' : n_grid_new,
+                    'interaction_order_current': interaction_order_current,
+                    'save_res_fn': save_res_fn
+                }
+
+                # assign the instances of the random_vars to the respective
+                # replace random vars of the Problem with single instances
+                # determined by the PyGPC framework:
+                # assign the instances of the random_vars to the respective
+                # entries of the dictionary
+                # -> As a result we have the same keys in the dictionary but
+                #    no RandomParameters anymore but a sample from the defined PDF.
+                for i in range(0, len(random_var_instances)):
+                    parameters[random_vars[i]] = random_var_instances[i]  # ASSUMPTION: the order of the random vars did not change!
+
+                worker_objs.append( problem.modelClass(parameters, context ) )
+                i_grid += 1
+                seq_num += 1
+
+            # assign the worker objects to the processes; execute them in parallel
+            start_time = time.time()
+            res_new_list = process_pool.map(Worker.run, worker_objs) # the map-function deals with chunking the data
+
+            # initialize the result array with the correct size and set the elements according to their order
+            # (the first element in 'res' might not necessarily be the result of the first Process/i_grid)
+            res = [None] * n_grid_new
+            for result in res_new_list:
+                res[result[0]] = result[1]
+
+            res = np.array(res)
+
+
+            print('   parallel function evaluation: ' + str(time.time() - start_time) + ' sec\n')
+
+            # append result to solution matrix (RHS)
+            if i_grid == 0:
+                res_complete = res
+            else:
+                res_complete = np.vstack([res_complete, res])
+
+            i_grid = regobj.grid.coords.shape[0]
+
+            non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
+            regobj.nan_elm = np.where(np.any(np.isnan(res_complete), axis=0))[0]
+            n_nan = np.sum(np.isnan(res_complete))
+
+            # how many nan-per element? 1 -> all gridpoints are NAN for all elements
+            if n_nan > 0:
+                nan_ratio_per_elm = np.round(float(n_nan) / len(regobj.nan_elm) / res_complete.shape[0], 3)
+                if print_out:
+                    print("Number of NaN elms: {} from {}, ratio per elm: {}".format(len(regobj.nan_elm),
+                                                                             res_complete.shape[1],
+                                                                             nan_ratio_per_elm))
+# DEBUG
+#            print res_complete[:, non_nan_mask]
+#            flat = res_complete.flatten()
+#            print ">>>> MEAN OF CURRENT RESULTS MATRIX"
+#            print np.mean(flat)
+# DEBUG END
+
+            regobj.LOOCV(res_complete[:, non_nan_mask])
+
+            if print_out:
+                print("    -> relerror_LOOCV = {}".format(regobj.relerror_loocv[-1]))
+            if regobj.relerror_loocv[-1] < eps:
+                run_subiter = False
+
+            # save reg object and results for this subiteration
+            if save_res_fn:
+                fn_folder, fn_file = os.path.split(save_res_fn)
+                fn_file = os.path.splitext(fn_file)[0]
+                fn = os.path.join(fn_folder,
+                                  fn_file + '_' + str(i_iter).zfill(2) + "_" + str(interaction_order_current).zfill(2))
+                save_gpcobj(regobj, fn + '_gpc.pkl')
+                np.save(fn + '_results', res_complete)
+
+            # increase current interaction order
+            interaction_order_current = interaction_order_current + 1
+
+    process_pool.close()
+    process_pool.join()
+
+    return regobj, res_complete
 
 def get_skin_surface(mesh_fname):
     # load surface data from skin surface

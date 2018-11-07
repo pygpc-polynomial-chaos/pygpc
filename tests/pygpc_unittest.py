@@ -180,12 +180,14 @@ class TestPygpcMethods(unittest.TestCase):
         print("done!\n")
 
     def test_2_adaptive_gpc(self):
+        from pygpc.testfuns.sphere_model import SphereModel
+
         print("2. Testing adaptive gPC")
         # Model parameters
         save_res_fn = ''
-        R = [80, 90, 100]  # Radii of spheres in mm
+        R = [80, 90, 100]   # Radii of spheres in mm
         phi_electrode = 15  # Polar angle of electrode location in deg
-        N_points = 201  # Number of grid-points in x- and z-direction
+        N_points = 201      # Number of grid-points in x- and z-direction
 
         # Statistical parameters
         random_vars = ['sigma_1', 'sigma_2', 'sigma_3']
@@ -214,61 +216,66 @@ class TestPygpcMethods(unittest.TestCase):
         points = points[np.sqrt(np.sum(points ** 2, 1)) <= R[2], :]
         points = np.array([points[:, 0], np.zeros(points.shape[0]), points[:, 1]]).T
 
-        # ########################################################################################
-        # # run adaptive gpc (regression) passing the goal function func(x, args())
-        # reg, phi = pygpc.run_reg_adaptive2(random_vars=random_vars,
-        #                                    pdf_type=pdf_type,
-        #                                    pdf_shape=pdf_shape,
-        #                                    limits=limits,
-        #                                    func=pygpc.tf.potential_3layers_surface_electrodes,
-        #                                    args=(R, anode_pos, cathode_pos, points, 50),
-        #                                    order_start=0,
-        #                                    order_end=10,
-        #                                    interaction_order_max=2,
-        #                                    eps=eps,
-        #                                    print_out=True,
-        #                                    seed=None,
-        #                                    save_res_fn=save_res_fn)
-        #
-        # ########################################################################################
-        #
-        # # perform final gpc expansion including all simulations
-        # coeffs_phi = reg.expand(phi)
-        #
-        # # postprocessing
-        # mean = reg.mean(coeffs_phi)
-        # std = reg.std(coeffs_phi)
-        # sobol, sobol_idx = reg.sobol(coeffs_phi)
-        # globalsens = reg.globalsens(coeffs_phi)
-        #
-        # # plot mean and standard deviation, define regular grid and interpolate data on it (on same points)
-        # xi = np.linspace(-R[2], R[2], N_points)
-        # zi = xi
-        #
-        # fig = plt.figure('size', figsize=[6, 10])
-        #
-        # for i in range(2):
-        #     fig.add_subplot(2, 1, i + 1)
-        #
-        #     if i == 0:
-        #         pdata = mean
-        #         title = 'Mean'
-        #     elif i == 1:
-        #         pdata = std
-        #         title = 'Standard Deviation'
-        #
-        #     pdata_int = griddata((points[:, 0], points[:, 2]), pdata[0, :], (xi[None, :], zi[:, None]), method='linear')
-        #     CS = plt.contour(xi, zi, pdata_int, 30, linewidths=0.5, colors='k')
-        #     CS = plt.contourf(xi, zi, pdata_int, 30, cmap=plt.cm.jet)
-        #     plt.colorbar()
-        #     plt.title(title)
-        #
-        #     for j in range(3):
-        #         plt.plot(np.cos(np.linspace(0, 2 * np.pi, 360)) * R[j],
-        #                  np.sin(np.linspace(0, 2 * np.pi, 360)) * R[j],
-        #                  'k')
-        #
-        # print("done!\n")
+        ########################################################################################
+        # run adaptive gpc (regression) passing the goal function func(x, args())
+        reg, phi = pygpc.run_reg_adaptive2_parallel(random_vars=random_vars,
+                                                    pdftype=pdf_type,
+                                                    pdfshape=pdf_shape,
+                                                    limits=limits,
+                                                    Model=SphereModel,
+                                                    args=(R, anode_pos, cathode_pos, points, 50),
+                                                    order_start=0,
+                                                    order_end=10,
+                                                    interaction_order_max=2,
+                                                    eps=eps,
+                                                    print_out=True,
+                                                    seed=1,
+                                                    save_res_fn=save_res_fn,
+                                                    n_cpu=8)
+        ########################################################################################
+
+
+
+
+        # perform final gpc expansion including all simulations
+        coeffs_phi = reg.expand(phi)
+
+        # postprocessing
+        mean = reg.mean(coeffs_phi)
+        std = reg.std(coeffs_phi)
+        sobol, sobol_idx = reg.sobol(coeffs_phi)
+        sobol_1st, sobol_idx_1st = pygpc.extract_sobol_order(sobol, sobol_idx, order=1)
+        sobol_2nd, sobol_idx_2nd = pygpc.extract_sobol_order(sobol, sobol_idx, order=2)
+        globalsens = reg.globalsens(coeffs_phi)
+
+        # plot mean and standard deviation, define regular grid and interpolate data on it (on same points)
+        xi = np.linspace(-R[2], R[2], N_points)
+        zi = xi
+
+        fig = plt.figure('size', figsize=[6, 10])
+        
+        for i in range(2):
+            fig.add_subplot(2, 1, i + 1)
+
+            if i == 0:
+                pdata = mean
+                title = 'Mean'
+            elif i == 1:
+                pdata = std
+                title = 'Standard Deviation'
+
+            pdata_int = griddata((points[:, 0], points[:, 2]), pdata[0, :], (xi[None, :], zi[:, None]), method='linear')
+            CS = plt.contour(xi, zi, pdata_int, 30, linewidths=0.5, colors='k')
+            CS = plt.contourf(xi, zi, pdata_int, 30, cmap=plt.cm.jet)
+            plt.colorbar()
+            plt.title(title)
+
+            for j in range(3):
+                plt.plot(np.cos(np.linspace(0, 2 * np.pi, 360)) * R[j],
+                         np.sin(np.linspace(0, 2 * np.pi, 360)) * R[j],
+                         'k')
+
+        print("done!\n")
 
 
 if __name__ == '__main__':

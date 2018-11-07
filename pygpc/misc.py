@@ -94,7 +94,7 @@ def display_fancy_bar(text, i, n_i, more_text=None):
     sys.stdout.write(text + i.zfill(fill_width) + " from " + str(n_i))
     # this prints [50-spaces], i% * =
     sys.stdout.write(" [%-40s] %d%%" % (
-        '=' * int((float(i) + 1) / n_i * 100 / 2.5), float(i) / n_i * 100))
+        '=' * int((float(i) + 0) / n_i * 100 / 2.5), float(i) / n_i * 100))
     sys.stdout.flush()
     if int(i) == n_i:
         print("")
