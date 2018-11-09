@@ -77,19 +77,19 @@ class TestPygpcMethods(unittest.TestCase):
         N_monte_carlo = int(1E5)                         # number of random samples
 
         # generate grids for computations
-        grid_rand = pygpc.grid.RandomGrid(pdf_type, pdf_shape, limits, N_rand)
+        grid_rand = pygpc.Grid.RandomGrid(pdf_type, pdf_shape, limits, N_rand)
         
-        grid_mc = pygpc.grid.RandomGrid(pdf_type, pdf_shape, limits, N_monte_carlo)
+        grid_mc = pygpc.Grid.RandomGrid(pdf_type, pdf_shape, limits, N_monte_carlo)
 
-        grid_sg = pygpc.grid.SparseGrid(pdf_type, gridtype_sparse, pdf_shape, limits, level, level_max,
+        grid_sg = pygpc.Grid.SparseGrid(pdf_type, gridtype_sparse, pdf_shape, limits, level, level_max,
                                         interaction_order, order_sequence_type)
-        grid_tens = pygpc.grid.TensorGrid(pdf_type, gridtype_tens, pdf_shape, limits, N_tens)
+        grid_tens = pygpc.Grid.TensorGrid(pdf_type, gridtype_tens, pdf_shape, limits, N_tens)
 
         # % generate gpc objects
-        gpc_reg = pygpc.reg.Reg(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid_rand, random_vars)
-        gpc_tens = pygpc.quad.Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order,
-                              grid_tens, random_vars)
-        gpc_sg = pygpc.quad.Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid_sg, random_vars)
+        gpc_reg = pygpc.Reg.Reg(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid_rand, random_vars)
+        gpc_tens = pygpc.Quad.Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order,
+                                   grid_tens, random_vars)
+        gpc_sg = pygpc.Quad.Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid_sg, random_vars)
 
         # % evaluate model function on different grids
         data_rand = pygpc.testfun.peaks(grid_rand.coords)
@@ -105,9 +105,9 @@ class TestPygpcMethods(unittest.TestCase):
 
         # perform postprocessing
         print("Calculating mean...")
-        out_mean_reg = gpc_reg.get_mean_value(coeffs_reg)
-        out_mean_tens = gpc_tens.get_mean_value(coeffs_tens)
-        out_mean_sg = gpc_sg.get_mean_value(coeffs_sg)
+        out_mean_reg = gpc_reg.get_mean(coeffs_reg)
+        out_mean_tens = gpc_tens.get_mean(coeffs_tens)
+        out_mean_sg = gpc_sg.get_mean(coeffs_sg)
         out_mean_mc = np.mean(data_mc)
 
         print("Calculating standard deviation ...")
@@ -161,9 +161,9 @@ class TestPygpcMethods(unittest.TestCase):
         print("Comparing gpc results to bruteforce Monte Carlo simulations ...")
 
         # compare results to predefined error value (and interpolate if necessary)
-        data_reg = gpc_reg.get_pce(coeffs_reg, grid_mc.coords_norm)
-        data_tens = gpc_tens.get_pce(coeffs_tens, grid_mc.coords_norm)
-        data_sg = gpc_sg.get_pce(coeffs_sg, grid_mc.coords_norm)
+        data_reg = gpc_reg.get_approximation(coeffs_reg, grid_mc.coords_norm)
+        data_tens = gpc_tens.get_approximation(coeffs_tens, grid_mc.coords_norm)
+        data_sg = gpc_sg.get_approximation(coeffs_sg, grid_mc.coords_norm)
 
         eps_reg = pygpc.misc.get_normalized_rms_deviation(data_reg, data_mc)
         eps_tens = pygpc.misc.get_normalized_rms_deviation(data_tens, data_mc)

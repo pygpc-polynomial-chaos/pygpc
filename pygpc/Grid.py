@@ -9,7 +9,7 @@ from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
 
 from .misc import *
-from pygpc import iprint
+from .io import iprint
 
 
 def get_quadrature_jacobi_1d(N, b, a):

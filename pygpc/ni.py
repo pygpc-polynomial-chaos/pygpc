@@ -28,7 +28,7 @@ import multiprocessing
 import multiprocessing.pool
 import Worker
 
-from .grid import *
+from .Grid import *
 
 from .misc import unique_rows
 from .misc import allVL1leq

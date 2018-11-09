@@ -47,13 +47,13 @@ N_mc = int(1E5)                        # number of random samples
 grid_rand   = pygpc.randomgrid(pdftype,pdfshape,limits,N_rand)
 grid_mc     = pygpc.randomgrid(pdftype,pdfshape,limits,N_mc)
 
-grid_SG     = pygpc.grid.sparsegrid(pdftype,gridtype_sparse,pdfshape,limits,level,level_max,interaction_order, order_sequence_type)
-grid_tens   = pygpc.grid.tensgrid(pdftype, gridtype_tens, pdfshape, limits, N_tens)
+grid_SG     = pygpc.Grid.sparsegrid(pdftype, gridtype_sparse, pdfshape, limits, level, level_max, interaction_order, order_sequence_type)
+grid_tens   = pygpc.Grid.tensgrid(pdftype, gridtype_tens, pdfshape, limits, N_tens)
 
 #% generate gpc objects
-gpc_reg  = pygpc.reg( pdftype, pdfshape, limits, order, order_max, interaction_order, grid_rand)
-gpc_tens = pygpc.quad(pdftype, pdfshape, limits, order, order_max, interaction_order, grid_tens)
-gpc_SG   = pygpc.quad(pdftype, pdfshape, limits, order, order_max, interaction_order, grid_SG)
+gpc_reg  = pygpc.Reg(pdftype, pdfshape, limits, order, order_max, interaction_order, grid_rand)
+gpc_tens = pygpc.Quad(pdftype, pdfshape, limits, order, order_max, interaction_order, grid_tens)
+gpc_SG   = pygpc.Quad(pdftype, pdfshape, limits, order, order_max, interaction_order, grid_SG)
 
 
 #% evaluate model function on different grids

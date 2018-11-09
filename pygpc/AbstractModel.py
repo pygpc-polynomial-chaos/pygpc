@@ -8,7 +8,7 @@
    - additional parameters are optional
 
  *Outputs*
-   - The simulation resutls for every mesh element
+   - The simulation results for every mesh element
      (order of the results does not matter, but must be consistent across consecutive calls)
 
 @author: Benjamin Kalloch
@@ -17,10 +17,9 @@
 import numpy as np
 import os
 import h5py
-import time
 
 from abc import ABCMeta, abstractmethod
-from .misc import fancy_bar
+from .misc import display_fancy_bar
 
 
 class AbstractModel:
@@ -31,17 +30,19 @@ class AbstractModel:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, parameters, context):
+    def __init__(self, p, context):
         """
         Constructor; initialized the SimulationWrapper class with the provided context
 
         Parameters
         ----------
+        p : dictionary
+            Dictionary containing the model parameters
         context : dictionary
             dictionary that contains information about this worker's context
                 - save_res_fn : location of the hdf5 file to serialize the results to
-                - i_grid      : current iteration in the subgrid that is processed
-                - max_grid    : size of the current subgrid that is processed
+                - i_grid      : current iteration in the sub-grid that is processed
+                - max_grid    : size of the current sub-grid that is processed
                 - i_iter      : current main iteration
                 - interaction_oder_current : current interaction order
                 - lock        : reference to the Lock object that all processes share for synchronization
@@ -59,7 +60,7 @@ class AbstractModel:
         self.global_task_counter = context['global_task_ctr']
         self.seq_number = context['seq_number']
 
-        self.parameters = parameters
+        self.p = p
 
     def read_previous_results(self):
         """
@@ -68,7 +69,8 @@ class AbstractModel:
         grind-index (i_grid) is considered to maintain the order of the results when the
         SimulationModels are executed in parallel.
 
-        :return:
+        Returns
+        -------
             None :
                 if no serialized results could be found
             list :
@@ -82,7 +84,7 @@ class AbstractModel:
                         with h5py.File(self.save_res_fn, 'r') as f:
                             ds = f['res']
                             # read data from file at current grid_position
-                            res  = ds[self.i_grid, :]
+                            res = ds[self.i_grid, :]
                     
                             return res
 
@@ -95,7 +97,7 @@ class AbstractModel:
 
     def write_results(self, data):
         """
-        This function writes the data to a file on harddisk.
+        This function writes the data to a file on hard disk.
         When writing the data the current grid-index (i_grid) is considered.
         The data are written to the row corresponding i_grid in order to
         maintain the order of the results when the SimulationModels are
@@ -103,8 +105,8 @@ class AbstractModel:
 
         Parameters
         ----------
-        data : ndarray, m x n
-            The data to write, the results at n mesh points of m simulations
+        data : ndarray [m x n]
+            The data to write, the results of n outputs of m simulations
         """
         if self.save_res_fn:
             self.lock.acquire()
@@ -116,8 +118,8 @@ class AbstractModel:
                         if ds.shape[0] < require_size:   # check if resize is necessary
                             ds.resize(require_size, axis=0)
                         ds[self.i_grid, :] = data[np.newaxis, :]
-                    except (KeyError,ValueError):
-                        ds = f.create_dataset('res', (require_size,len(data)), maxshape=(None, len(data)))
+                    except (KeyError, ValueError):
+                        ds = f.create_dataset('res', (require_size, len(data)), maxshape=(None, len(data)))
                         ds[self.i_grid, :] = data[np.newaxis, :]
             finally:
                 self.lock.release()
@@ -134,7 +136,7 @@ class AbstractModel:
 
     def print_progress(self, func_time=None, read_from_file=False):
         """
-        This functions print the progress according to the current context and global_counter.
+        This function prints the progress according to the current context and global_counter.
         """
         self.lock.acquire()
         try:
@@ -145,11 +147,11 @@ class AbstractModel:
             else:
                 more_text = None
 
-            fancy_bar("It/Subit: {}/{} Performing simulation".format(self.i_iter,
-                                                                     self.interaction_oder_current),
-                      self.global_task_counter.value,
-                      self.max_grid,
-                      more_text)
+            display_fancy_bar("It/Sub-it: {}/{} Performing simulation".format(self.i_iter,
+                                                                              self.interaction_oder_current),
+                              self.global_task_counter.value,
+                              self.max_grid,
+                              more_text)
         finally:
             self.lock.release()
 
@@ -160,12 +162,11 @@ class AbstractModel:
     def simulate(self, process_id):
         """
         This abstract method must be implemented by the subclass.
-        It should perform the simulation task depding on the input_values
-        provided to the object on instantiation.
+        It should perform the simulation task depending on the input_values provided to the object on instantiation.
 
         Parameters
         ----------
-        _process_id : int
+        process_id : int
             A unique identifier; no two processes of the pool will run concurrently with the same identifier
         """
         pass
