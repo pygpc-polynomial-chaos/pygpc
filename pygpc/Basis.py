@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.special
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 
 class Basis:

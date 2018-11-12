@@ -72,7 +72,6 @@ class GPC:
 
     def __init__(self, problem):
 
-        # in GPC
         self.order = None
         self.order_max = None
         self.interaction_order = None
@@ -84,15 +83,6 @@ class GPC:
 
         # external
         self.gpc_coeffs = None
-
-        # in problem
-        self.random_vars = None
-        self.pdf_shape = None
-        self.pdf_type = None
-        self.dim = None
-        self.N_out = None
-        self.limits = None
-        self.mean_random_vars = None
 
         # in basis
         self.poly = None
@@ -108,11 +98,21 @@ class GPC:
         self.N_grid = None
         self.grid = None
 
-        # misc
-        self.sobol = None
-        self.sobol_idx = None
-        self.sobol_idx_bool = None
-        self.N_samples = None
+        # misc (DONE)
+        self.sobol = None               # not needed
+        self.sobol_idx = None           # not needed
+        self.sobol_idx_bool = None      # not needed
+        self.N_samples = None           # not needed
+
+
+        # in problem (DONE)
+        self.random_vars = None
+        self.pdf_shape = None
+        self.pdf_type = None
+        self.dim = None
+        self.N_out = None               # not needed
+        self.limits = None
+        self.mean_random_vars = None
 
     def init_polynomial_coeffs(self, order_begin, order_end):
         """

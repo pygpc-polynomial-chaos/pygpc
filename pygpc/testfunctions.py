@@ -526,7 +526,7 @@ class PotentialHomogeneousDipole(AbstractModel):
     Notes
     -----
     .. [1] Yao, D. (2000). Electric potential produced by a dipole in a homogeneous conducting sphere.
-       IEEE transactions on biomedical engineering, 47(7), 964-966.
+       IEEE Transactions on Biomedical Engineering, 47(7), 964-966.
     """
 
     def __init__(self, p, context):
@@ -700,7 +700,7 @@ class TMSEfieldSphere(AbstractModel):
     Notes
     -----
     .. [1] Heller, L., & van Hulsteyn, D. B. (1992). Brain stimulation using electromagnetic sources:
-       theoretical aspects. Biophysical journal, 63(1), 129-138.
+       theoretical aspects. Biophysical Journal, 63(1), 129-138.
     """
 
     def __init__(self, p, context):

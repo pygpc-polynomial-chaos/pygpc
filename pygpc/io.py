@@ -102,7 +102,7 @@ def read_gpc_yml(fname):
                           grid_type=info['grid_type'],
                           grid_shape=info['pdf_shape'],
                           limits=info['limits'],
-                          N=info['N'])
+                          nodes_dim=info['N'])
         grid.weights = np.asarray(info['weights'])
 
     elif info['grid_type'] == 'SparseGrid':

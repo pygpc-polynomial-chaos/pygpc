@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
- This is a wrapper script to be calles by the 'multiprocecsing.map' function in 'run_reg_adaptive2_parallel'
+ This is a wrapper script to be calles by the 'multiprocecsing.map' function in 'reg_adaptive'
 
 @author: Benjamin Kalloch
 """

@@ -4,7 +4,7 @@ A package that provides submodules to perform polynomial chaos uncertainty analy
 
 import misc
 import GPC
-import Grid
+import Grid                 # ok
 import Solver
 import SGPC
 import EGPC
@@ -13,6 +13,6 @@ import testfunctions
 import vis
 import AbstractModel
 import Basis
-import Problem
+from .Problem import *      # ok
 import Solver
 import Worker

@@ -64,7 +64,7 @@ class SGPC(GPC):
         # std = std[np.newaxis, :]
         return std
 
-    def get_samples(self, n_samples, coeffs=None, output_idx=None):
+    def get_samples(self, n_samples, coeffs, output_idx=None):
         """
         Randomly sample the gPC expansion to determine output pdfs in specific points.
 
@@ -74,10 +74,10 @@ class SGPC(GPC):
         ----------
         n_samples: int
             Number of random samples drawn from the respective input pdfs.
+        coeffs: [N_coeffs x N_out] np.ndarray, optional, default=None
+            GPC coefficients
         output_idx: [1 x N_out] np.ndarray, optional, default=None
             Index of output quantities to consider.
-        coeffs: [N_coeffs x N_out] np.ndarray, optional, default=None
-            gPC coefficients
 
         Returns
         -------
@@ -88,9 +88,6 @@ class SGPC(GPC):
         """
 
         # handle input parameters
-        if coeffs is None:
-            coeffs = self.gpc_coeffs
-
         if len(coeffs.shape) == 1:
             self.N_out = 1
         else:
@@ -103,8 +100,8 @@ class SGPC(GPC):
         xi = np.zeros([n_samples, self.dim])
         for i_dim in range(self.dim):
             if self.pdf_type[i_dim] == "beta":
-                xi[:, i_dim] = (np.random.beta(self.pdf_shape[0][i_dim],
-                                               self.pdf_shape[1][i_dim], [n_samples, 1]) * 2.0 - 1)[:, 0]
+                xi[:, i_dim] = (np.random.beta(self.pdf_shape[i_dim][0],
+                                               self.pdf_shape[i_dim][1], [n_samples, 1]) * 2.0 - 1)[:, 0]
             if self.pdf_type[i_dim] == "norm" or self.pdf_type[i_dim] == "normal":
                 xi[:, i_dim] = (np.random.normal(0, 1, [n_samples, 1]))[:, 0]
 
@@ -116,7 +113,7 @@ class SGPC(GPC):
 
         return xi, pce
 
-    def get_approximation(self, coeffs=None, xi=None, output_idx=None):
+    def get_approximation(self, coeffs, xi, output_idx=None):
         """
         Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).
 
@@ -124,9 +121,9 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        coeffs: [N_coeffs x N_out] np.ndarray, optional, default=None
+        coeffs: [N_coeffs x N_out] np.ndarray
             Gpc coefficients
-        xi: [1 x dim] np.ndarray, optional, default=None
+        xi: [1 x dim] np.ndarray
             Point in variable space to evaluate local sensitivity in normalized coordinates
         output_idx: [1 x N_out] np.ndarray, optional, default=None
             Index of output quantities to consider (Default: all outputs).
@@ -188,10 +185,7 @@ class SGPC(GPC):
             self.N_out = coeffs.shape[1]
 
         self.N_poly = self.poly_idx.shape[0]
-        if coeffs is None:
-            coeffs = self.gpc_coeffs
-        if xi is None:
-            xi = self.grid.coords_norm
+
         if len(xi.shape) == 1:
             xi = xi[:, np.newaxis]
         if np.any(output_idx):
@@ -206,7 +200,7 @@ class SGPC(GPC):
             return gpu(self)
 
     # noinspection PyTypeChecker
-    def get_sobol_indices(self, coeffs=None):
+    def get_sobol_indices(self, coeffs):
         """
         Calculate the available sobol indices.
 
@@ -214,7 +208,7 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        coeffs: [N_coeffs x N_out] np.ndarray, optional, default=None
+        coeffs: [N_coeffs x N_out] np.ndarray
             Gpc coefficients
 
         Returns
@@ -228,10 +222,6 @@ class SGPC(GPC):
         """
 
         iprint("Determining Sobol indices...")
-
-        # handle input parameters
-        if coeffs is None:
-            coeffs = self.gpc_coeffs
 
         # handle (N,) arrays
         if len(coeffs.shape) == 1:
@@ -285,7 +275,7 @@ class SGPC(GPC):
 
         return sobol, sobol_idx, sobol_idx_bool
 
-    def get_sobol_composition(self, sobol=None, sobol_idx=None, sobol_idx_bool=None):
+    def get_sobol_composition(self, sobol, sobol_idx, sobol_idx_bool):
         """
         Determine average ratios of Sobol indices over all output quantities:
         (i) over all orders and (e.g. 1st: 90%, 2nd: 8%, 3rd: 2%)
@@ -412,11 +402,13 @@ class SGPC(GPC):
         # variable separately (2*N_max points for high accuracy)
 
         for i_dim in range(self.dim):
-            if self.pdf_type[i_dim] == 'beta':  # Jacobi polynomials
+            # Jacobi polynomials
+            if self.pdf_type[i_dim] == 'beta':
                 knots_list_1d[i_dim], weights_list_1d[i_dim] = get_quadrature_jacobi_1d(2 * n_max,
                                                                                         self.pdf_shape[0][i_dim] - 1,
                                                                                         self.pdf_shape[1][i_dim] - 1)
-            if self.pdf_type[i_dim] == 'norm' or self.pdf_type[i_dim] == "normal":  # Hermite polynomials
+            # Hermite polynomials
+            if self.pdf_type[i_dim] == 'norm' or self.pdf_type[i_dim] == "normal":
                 knots_list_1d[i_dim], weights_list_1d[i_dim] = get_quadrature_hermite_1d(2 * n_max)
 
         # pre-process polynomials

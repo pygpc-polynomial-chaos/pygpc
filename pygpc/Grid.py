@@ -4,7 +4,6 @@ Functions and classes that provide data and methods for the generation and proce
 """
 
 import numpy as np
-from builtins import range
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
 
@@ -12,596 +11,570 @@ from .misc import *
 from .io import iprint
 
 
-def get_quadrature_jacobi_1d(N, b, a):
+class Grid:
     """
-    Get knots and weights of Jacobi polynomials (beta distribution).
-
-    knots, weights = get_quadrature_jacobi_1d(N, b, a)
-
-    Parameters
-    ----------
-    N: int
-        number of knots
-    a: float
-        lower limit of quadrature coefficients
-    b: float
-        upper limit of quadrature coefficients
-
-    Returns
-    -------
-    knots: np.ndarray
-        knots of the grid
-    weights: np.ndarray
-        weights of the grid
+    Grid class
     """
-    # make array to count N: 0, 1, ..., N-1
-    N_arr = np.arange(1, N)
+    def __init__(self, problem):
+        """
+        Constructor; Initialize Grid class
 
-    # compose diagonals for companion matrix
-    t01 = 1.0 * (b - a) / (2 + a + b)
-    t02 = 1.0 * ((b - a) * (a + b)) / ((2 * N_arr + a + b) * (2 * N_arr + 2 + a + b))
-    t1 = np.append(t01, t02)
-    t2 = np.sqrt((4.0 * N_arr * (N_arr + a) * (N_arr + b) * (N_arr + a + b)) / (
-            (2 * N_arr - 1 + a + b) * (2 * N_arr + a + b) ** 2 * (2 * N_arr + 1 + a + b)))
+        Parameters
+        ----------
+        problem : Problem object
+            Object instance of gPC Problem to investigate
+        """
+        self.N_grid = None
+        self.problem = problem
 
-    # compose companion matrix
-    T = np.diag(t1) + np.diag(t2, 1) + np.diag(t2, -1)
+    @staticmethod
+    def get_quadrature_jacobi_1d(n, b, a):
+        """
+        Get knots and weights of Jacobi polynomials (beta distribution).
 
-    # evaluate roots of polynomials (the abscissas are the roots of the
-    # characteristic polynomial, i.d. the eigenvalues of the companion matrix)
-    # the weights can be derived from the corresponding eigenvectors.
-    eigvals, eigvecs = np.linalg.eig(T)
-    idx_sorted = np.argsort(eigvals)
-    eigvals_sorted = eigvals[idx_sorted]
+        knots, weights = Grid.get_quadrature_jacobi_1d(n, b, a)
 
-    weights = 2.0 * eigvecs[0, idx_sorted] ** 2
-    knots = eigvals_sorted
+        Parameters
+        ----------
+        n: int
+            Number of knots
+        a: float
+            Lower limit of quadrature coefficients
+        b: float
+            Upper limit of quadrature coefficients
 
-    return knots, weights
+        Returns
+        -------
+        knots: np.ndarray
+            Knots of the grid
+        weights: np.ndarray
+            Weights of the grid
+        """
+        # make array to count N: 0, 1, ..., N-1
+        n_arr = np.arange(1, n)
 
+        # compose diagonals for companion matrix
+        t01 = 1.0 * (b - a) / (2 + a + b)
+        t02 = 1.0 * ((b - a) * (a + b)) / ((2 * n_arr + a + b) * (2 * n_arr + 2 + a + b))
+        t1 = np.append(t01, t02)
+        t2 = np.sqrt((4.0 * n_arr * (n_arr + a) * (n_arr + b) * (n_arr + a + b)) / (
+                (2 * n_arr - 1 + a + b) * (2 * n_arr + a + b) ** 2 * (2 * n_arr + 1 + a + b)))
 
-def get_quadrature_hermite_1d(N):
-    """
-    Get knots and weights of Hermite polynomials (normal distribution).
+        # compose companion matrix
+        t = np.diag(t1) + np.diag(t2, 1) + np.diag(t2, -1)
 
-    knots, weights = get_quadrature_hermite_1d(N)
+        # evaluate roots of polynomials (the abscissas are the roots of the
+        # characteristic polynomial, i.d. the eigenvalues of the companion matrix)
+        # the weights can be derived from the corresponding eigenvectors.
+        eigvals, eigvecs = np.linalg.eig(t)
+        idx_sorted = np.argsort(eigvals)
+        eigvals_sorted = eigvals[idx_sorted]
 
-    Parameters
-    ----------
-    N: int
-        number of knots
+        weights = 2.0 * eigvecs[0, idx_sorted] ** 2
+        knots = eigvals_sorted
 
-    Returns
-    -------
-    knots: np.ndarray
-        knots of the grid
-    weights: np.ndarray
-        weights of the grid
-    """
-    N = np.int(N)
-    knots, weights = np.polynomial.hermite_e.hermegauss(N)
-    weights = np.array(list(2.0 * weights / np.sum(weights)))
+        return knots, weights
 
-    return knots, weights
+    @staticmethod
+    def get_quadrature_hermite_1d(n):
+        """
+        Get knots and weights of Hermite polynomials (normal distribution).
 
+        knots, weights = Grid.get_quadrature_hermite_1d(n)
 
-def get_quadrature_clenshaw_curtis_1d(N):
-    """
-    Get the Clenshaw Curtis nodes and weights.
+        Parameters
+        ----------
+        n: int
+            number of knots
 
-    knots, weights = get_quadrature_clenshaw_curtis_1d(N)
+        Returns
+        -------
+        knots: np.ndarray
+            knots of the grid
+        weights: np.ndarray
+            weights of the grid
+        """
+        n = np.int(n)
+        knots, weights = np.polynomial.hermite_e.hermegauss(n)
+        weights = np.array(list(2.0 * weights / np.sum(weights)))
 
-    Parameters
-    ----------
-    N: int
-        number of knots
+        return knots, weights
 
-    Returns
-    -------
-    knots: np.ndarray
-        knots of the grid
-    weights: np.ndarray
-        weights of the grid
-    """
-    N = np.int(N)
+    @staticmethod
+    def get_quadrature_clenshaw_curtis_1d(n):
+        """
+        Get the Clenshaw Curtis nodes and weights.
 
-    if N == 1:
-        knots = 0
-        weights = 2
-    else:
-        n = N - 1
-        C = np.zeros((N, 2))
-        k = 2 * (1 + np.arange(np.floor(n / 2)))
-        C[::2, 0] = 2 / np.hstack((1, 1 - k * k))
-        C[1, 1] = -n
-        V = np.vstack((C, np.flipud(C[1:n, :])))
-        F = np.real(ifft(V, n=None, axis=0))
-        knots = F[0:N, 1]
-        weights = np.hstack((F[0, 0], 2 * F[1:n, 0], F[n, 0]))
+        knots, weights = Grid.get_quadrature_clenshaw_curtis_1d(n)
 
-    return knots, weights
+        Parameters
+        ----------
+        n: int
+            Number of knots
 
+        Returns
+        -------
+        knots: np.ndarray
+            Knots of the grid
+        weights: np.ndarray
+            Weights of the grid
+        """
+        n = np.int(n)
 
-def get_quadrature_fejer1_1d(N):
-    """
-    Computes the Fejer type 1 nodes and weights.
-    
-    This method uses a direct approach. The paper by Waldvogel
-    exhibits a more efficient approach using Fourier transforms.
+        if n == 1:
+            knots = 0
+            weights = 2
+        else:
+            n = n - 1
+            c = np.zeros((n, 2))
+            k = 2 * (1 + np.arange(np.floor(n / 2)))
+            c[::2, 0] = 2 / np.hstack((1, 1 - k * k))
+            c[1, 1] = -n
+            v = np.vstack((c, np.flipud(c[1:n, :])))
+            f = np.real(ifft(v, n=None, axis=0))
+            knots = f[0:n, 1]
+            weights = np.hstack((f[0, 0], 2 * f[1:n, 0], f[n, 0]))
 
-    Reference:
-    Philip Davis, Philip Rabinowitz,
-    Methods of Numerical Integration,
-    Second Edition,
-    Dover, 2007,
-    ISBN: 0486453391 Titel anhand dieser ISBN in Citavi-Projekt übernehmen,
-    LC: QA299.3.D28.
+        return knots, weights
 
-    Walter Gautschi,
-    Numerical Quadrature in the Presence of a Singularity,
-    SIAM Journal on Numerical Analysis,
-    Volume 4, Number 3, 1967, pages 357-362.
+    @staticmethod
+    def get_quadrature_fejer1_1d(n):
+        """
+        Computes the Fejer type 1 nodes and weights.
 
-    Joerg Waldvogel,
-    Fast Construction of the Fejer and Clenshaw-Curtis Quadrature Rules,
-    BIT Numerical Mathematics,
-    Volume 43, Number 1, 2003, pages 1-18.
+        This method uses a direct approach after Davis and Rabinowitz (2007) [1] and Gautschi (1967) [2].
+        The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fourier transforms.
 
-    knots, weights = get_quadrature_fejer1_1d(N)
+        knots, weights = Grid.get_quadrature_fejer1_1d(n)
 
-    Parameters
-    ----------
-    N: int
-        number of knots
+        Parameters
+        ----------
+        n: int
+            Number of knots
 
-    Returns
-    -------
-    knots: np.ndarray
-        knots of the grid
-    weights: np.ndarray
-        weights of the grid
-   """
-    N = np.int(N)
+        Returns
+        -------
+        knots: np.ndarray
+            Knots of the grid
+        weights: np.ndarray
+            Weights of the grid
 
-    theta = np.zeros(N)
+        Notes
+        -----
+        .. [1] Davis, P. J., & Rabinowitz, P. (2007). Methods of numerical integration.
+           Courier Corporation, second edition, ISBN: 0486453391.
+           [2] Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
+           SIAM Journal on Numerical Analysis, 4(3), 357-362.
+           [3] Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
+           BIT Numerical Mathematics, 46(1), 195-202.
+        """
+        n = np.int(n)
 
-    for i in range(0, N):
-        theta[i] = float(2 * N - 1 - 2 * i) * np.pi / float(2 * N)
+        theta = np.zeros(n)
 
-    knots = np.zeros(N)
+        for i in range(0, n):
+            theta[i] = float(2 * n - 1 - 2 * i) * np.pi / float(2 * n)
 
-    for i in range(0, N):
-        knots[i] = np.cos(theta[i])
+        knots = np.zeros(n)
 
-    weights = np.zeros(N)
-
-    for i in range(0, N):
-        weights[i] = 1.0
-        jhi = (N // 2)
-        for j in range(0, jhi):
-            angle = 2.0 * float(j + 1) * theta[i]
-            weights[i] = weights[i] - 2.0 * np.cos(angle) / float(4 * (j + 1) ** 2 - 1)
-
-    for i in range(0, N):
-        weights[i] = 2.0 * weights[i] / float(N)
-
-    return knots, weights
-
-
-def get_quadrature_fejer2_1d(N):
-    """
-    Computes the Fejer type 2 nodes and weights (Clenshaw Curtis without boundary nodes).
-        
-    This method uses a direct approach. The paper by Waldvogel
-    exhibits a more efficient approach using Fourier transforms.
-
-    Reference:
-    Philip Davis, Philip Rabinowitz,
-    Methods of Numerical Integration,
-    Second Edition,
-    Dover, 2007,
-    ISBN: 0486453391 Titel anhand dieser ISBN in Citavi-Projekt übernehmen,
-    LC: QA299.3.D28.
-
-    Walter Gautschi,
-    Numerical Quadrature in the Presence of a Singularity,
-    SIAM Journal on Numerical Analysis,
-    Volume 4, Number 3, 1967, pages 357-362.
-
-    Joerg Waldvogel,
-    Fast Construction of the Fejer and Clenshaw-Curtis Quadrature Rules,
-    BIT Numerical Mathematics,
-    Volume 43, Number 1, 2003, pages 1-18.
-
-    knots, weights = get_quadrature_fejer2_1d(N)
-
-    Parameters
-    ----------
-    N: int
-        number of knots
-
-    Returns
-    -------
-    knots: np.ndarray
-        knots of the grid
-    weights: np.ndarray
-        weights of the grid
-    """
-    N = np.int(N)
-
-    if N == 1:
-
-        knots = np.array([0.0])
-        weights = np.array([2.0])
-
-    elif N == 2:
-
-        knots = np.array([-0.5, +0.5])
-        weights = np.array([1.0, 1.0])
-
-    else:
-
-        theta = np.zeros(N)
-
-        for i in range(0, N):
-            theta[i] = float(N - i) * np.pi / float(N + 1)
-
-        knots = np.zeros(N)
-
-        for i in range(0, N):
+        for i in range(0, n):
             knots[i] = np.cos(theta[i])
 
-        weights = np.zeros(N)
+        weights = np.zeros(n)
 
-        for i in range(0, N):
-
+        for i in range(0, n):
             weights[i] = 1.0
-            jhi = ((N - 1) // 2)
-
+            jhi = (n // 2)
             for j in range(0, jhi):
                 angle = 2.0 * float(j + 1) * theta[i]
                 weights[i] = weights[i] - 2.0 * np.cos(angle) / float(4 * (j + 1) ** 2 - 1)
-                p = 2 * ((N + 1) // 2) - 1
 
-            weights[i] = weights[i] - np.cos(float(p + 1) * theta[i]) / float(p)
+        for i in range(0, n):
+            weights[i] = 2.0 * weights[i] / float(n)
 
-        for i in range(0, N):
-            weights[i] = 2.0 * weights[i] / float(N + 1)
+        return knots, weights
 
-    return knots, weights
+    @staticmethod
+    def get_quadrature_fejer2_1d(n):
+        """
+        Computes the Fejer type 2 nodes and weights (Clenshaw Curtis without boundary nodes).
+
+        This method uses a direct approach after Davis and Rabinowitz (2007) [1] and Gautschi (1967) [2].
+        The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fourier transforms.
+
+        knots, weights = Grid.get_quadrature_fejer2_1d(n)
+
+        Parameters
+        ----------
+        n: int
+            Number of knots
+
+        Returns
+        -------
+        knots: np.ndarray
+            Knots of the grid
+        weights: np.ndarray
+            Weights of the grid
+
+        Notes
+        -----
+        .. [1] Davis, P. J., & Rabinowitz, P. (2007). Methods of numerical integration.
+           Courier Corporation, second edition, ISBN: 0486453391.
+           [2] Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
+           SIAM Journal on Numerical Analysis, 4(3), 357-362.
+           [3] Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
+           BIT Numerical Mathematics, 46(1), 195-202.
+        """
+        n = np.int(n)
+
+        if n == 1:
+            knots = np.array([0.0])
+            weights = np.array([2.0])
+
+        elif n == 2:
+            knots = np.array([-0.5, +0.5])
+            weights = np.array([1.0, 1.0])
+
+        else:
+            theta = np.zeros(n)
+            p = 1
+
+            for i in range(0, n):
+                theta[i] = float(n - i) * np.pi / float(n + 1)
+
+            knots = np.zeros(n)
+
+            for i in range(0, n):
+                knots[i] = np.cos(theta[i])
+
+            weights = np.zeros(n)
+
+            for i in range(0, n):
+                weights[i] = 1.0
+                jhi = ((n - 1) // 2)
+
+                for j in range(0, jhi):
+                    angle = 2.0 * float(j + 1) * theta[i]
+                    weights[i] = weights[i] - 2.0 * np.cos(angle) / float(4 * (j + 1) ** 2 - 1)
+                    p = 2 * ((n + 1) // 2) - 1
+
+                weights[i] = weights[i] - np.cos(float(p + 1) * theta[i]) / float(p)
+
+            for i in range(0, n):
+                weights[i] = 2.0 * weights[i] / float(n + 1)
+
+        return knots, weights
+
+    @staticmethod
+    def get_quadrature_patterson_1d(n):
+        """
+        Computes the nested Gauss-Patterson nodes and weights for n = 1,3,7,15,31 nodes.
+
+        knots, weights = Grid.get_quadrature_patterson_1d(n)
+
+        Parameters
+        ----------
+        n: int
+            Number of knots (possible values: 1, 3, 7, 15, 31)
+
+        Returns
+        -------
+        knots: np.ndarray
+            Knots of the grid
+        weights: np.ndarray
+            Weights of the grid
+        """
+        x = np.zeros(n)
+        w = np.zeros(n)
+
+        if n == 1:
+
+            x = 0.0
+
+            w = 2.0
+
+        elif n == 3:
+
+            x[0] = -0.77459666924148337704
+            x[1] = 0.0
+            x[2] = 0.77459666924148337704
+
+            w[0] = 0.555555555555555555556
+            w[1] = 0.888888888888888888889
+            w[2] = 0.555555555555555555556
+
+        elif n == 7:
+
+            x[0] = -0.96049126870802028342
+            x[1] = -0.77459666924148337704
+            x[2] = -0.43424374934680255800
+            x[3] = 0.0
+            x[4] = 0.43424374934680255800
+            x[5] = 0.77459666924148337704
+            x[6] = 0.96049126870802028342
+
+            w[0] = 0.104656226026467265194
+            w[1] = 0.268488089868333440729
+            w[2] = 0.401397414775962222905
+            w[3] = 0.450916538658474142345
+            w[4] = 0.401397414775962222905
+            w[5] = 0.268488089868333440729
+            w[6] = 0.104656226026467265194
+
+        elif n == 15:
+
+            x[0] = -0.99383196321275502221
+            x[1] = -0.96049126870802028342
+            x[2] = -0.88845923287225699889
+            x[3] = -0.77459666924148337704
+            x[4] = -0.62110294673722640294
+            x[5] = -0.43424374934680255800
+            x[6] = -0.22338668642896688163
+            x[7] = 0.0
+            x[8] = 0.22338668642896688163
+            x[9] = 0.43424374934680255800
+            x[10] = 0.62110294673722640294
+            x[11] = 0.77459666924148337704
+            x[12] = 0.88845923287225699889
+            x[13] = 0.96049126870802028342
+            x[14] = 0.99383196321275502221
+
+            w[0] = 0.0170017196299402603390
+            w[1] = 0.0516032829970797396969
+            w[2] = 0.0929271953151245376859
+            w[3] = 0.134415255243784220360
+            w[4] = 0.171511909136391380787
+            w[5] = 0.200628529376989021034
+            w[6] = 0.219156858401587496404
+            w[7] = 0.225510499798206687386
+            w[8] = 0.219156858401587496404
+            w[9] = 0.200628529376989021034
+            w[10] = 0.171511909136391380787
+            w[11] = 0.134415255243784220360
+            w[12] = 0.0929271953151245376859
+            w[13] = 0.0516032829970797396969
+            w[14] = 0.0170017196299402603390
+
+        elif n == 31:
+
+            x[0] = -0.99909812496766759766
+            x[1] = -0.99383196321275502221
+            x[2] = -0.98153114955374010687
+            x[3] = -0.96049126870802028342
+            x[4] = -0.92965485742974005667
+            x[5] = -0.88845923287225699889
+            x[6] = -0.83672593816886873550
+            x[7] = -0.77459666924148337704
+            x[8] = -0.70249620649152707861
+            x[9] = -0.62110294673722640294
+            x[10] = -0.53131974364437562397
+            x[11] = -0.43424374934680255800
+            x[12] = -0.33113539325797683309
+            x[13] = -0.22338668642896688163
+            x[14] = -0.11248894313318662575
+            x[15] = 0.0
+            x[16] = 0.11248894313318662575
+            x[17] = 0.22338668642896688163
+            x[18] = 0.33113539325797683309
+            x[19] = 0.43424374934680255800
+            x[20] = 0.53131974364437562397
+            x[21] = 0.62110294673722640294
+            x[22] = 0.70249620649152707861
+            x[23] = 0.77459666924148337704
+            x[24] = 0.83672593816886873550
+            x[25] = 0.88845923287225699889
+            x[26] = 0.92965485742974005667
+            x[27] = 0.96049126870802028342
+            x[28] = 0.98153114955374010687
+            x[29] = 0.99383196321275502221
+            x[30] = 0.99909812496766759766
+
+            w[0] = 0.00254478079156187441540
+            w[1] = 0.00843456573932110624631
+            w[2] = 0.0164460498543878109338
+            w[3] = 0.0258075980961766535646
+            w[4] = 0.0359571033071293220968
+            w[5] = 0.0464628932617579865414
+            w[6] = 0.0569795094941233574122
+            w[7] = 0.0672077542959907035404
+            w[8] = 0.0768796204990035310427
+            w[9] = 0.0857559200499903511542
+            w[10] = 0.0936271099812644736167
+            w[11] = 0.100314278611795578771
+            w[12] = 0.105669893580234809744
+            w[13] = 0.109578421055924638237
+            w[14] = 0.111956873020953456880
+            w[15] = 0.112755256720768691607
+            w[16] = 0.111956873020953456880
+            w[17] = 0.109578421055924638237
+            w[18] = 0.105669893580234809744
+            w[19] = 0.100314278611795578771
+            w[20] = 0.0936271099812644736167
+            w[21] = 0.0857559200499903511542
+            w[22] = 0.0768796204990035310427
+            w[23] = 0.0672077542959907035404
+            w[24] = 0.0569795094941233574122
+            w[25] = 0.0464628932617579865414
+            w[26] = 0.0359571033071293220968
+            w[27] = 0.0258075980961766535646
+            w[28] = 0.0164460498543878109338
+            w[29] = 0.00843456573932110624631
+            w[30] = 0.00254478079156187441540
+        else:
+            print("Number of points does not match Gauss-Patterson quadrature rule.")
+            raise NotImplementedError
+
+        knots = x
+        weights = w
+
+        return knots, weights
+
+    def get_denormalized_coordinates(self, coords_norm):
+        """
+        Denormalize grid from standardized ([-1, 1] except hermite) to original parameter space for simulations.
+
+        coords = Grid.get_denormalized_coordinates(coords_norm)
+
+        Parameters
+        ----------
+        coords_norm: [N_samples x dim] np.ndarray
+            normalized [-1, 1] coordinates xi
+
+        Returns
+        -------
+        coords: [N_samples x dim] np.ndarray
+            Denormalized coordinates xi
+        """
+        coords = np.zeros(coords_norm.shape)
+
+        for i_dim in range(coords_norm.shape[1]):
+
+            if self.problem.pdf_type[i_dim] == "beta":
+                coords[:, i_dim] = (coords_norm[:, i_dim] + 1) / \
+                                   2 * (self.problem.pdf_limits[i_dim][1] - self.problem.pdf_limits[i_dim][0]) \
+                                   + self.problem.pdf_limits[i_dim][0]
+
+            if self.problem.pdf_type[i_dim] == "norm" or self.problem.pdf_type[i_dim] == "normal":
+                coords[:, i_dim] = coords_norm[:, i_dim] * self.problem.pdf_shape[i_dim][1] + \
+                                   self.problem.pdf_shape[i_dim][0]
+
+        return coords
+
+    def get_normalized_coordinates(self, coords):
+        """
+        Normalize grid from original parameter (except hermite) to standardized ([-1, 1] space for simulations.
+
+        coords_norm = Grid.get_normalized_coordinates(coords)
+
+        Parameters
+        ----------
+        coords: [N_samples x dim] np.ndarray
+            Denormalized coordinates xi in original parameter space
+
+        Returns
+        -------
+        coords_norm: [N_samples x dim] np.ndarray
+            Normalized [-1, 1] coordinates xi
+        """
+        coords_norm = np.zeros(coords.shape)
+
+        for i_dim in range(coords.shape[1]):
+
+            if self.problem.pdf_type[i_dim] == "beta":
+                coords_norm[:, i_dim] = (coords[:, i_dim] - self.problem.pdf_limits[i_dim][0])
+                coords_norm[:, i_dim] = coords_norm[:, i_dim] / \
+                                        (self.problem.pdf_limits[i_dim][1] - self.problem.pdf_limits[i_dim][0]) * \
+                                        2.0 - 1
+
+            if self.problem.pdf_type[i_dim] == "norm" or self.problem.pdf_type[i_dim] == "normal":
+                coords_norm[:, i_dim] = (coords[:, i_dim] - self.problem.pdf_shape[i_dim][0]) / \
+                                        self.problem.pdf_shape[i_dim][1]
+
+        return coords_norm
 
 
-def get_quadrature_patterson_1d(N):
-    # TODO: save values in seperate files?
-    """
-    Computes the nested Gauss-Patterson nodes and weights for N = 1,3,7,15,31.
-
-    knots, weights = get_quadrature_patterson_1d(N)
-
-    Parameters
-    ----------
-    N: int
-        number of knots
-        possible values: 1, 3, 7, 15, 31
-
-    Returns
-    -------
-    knots: np.ndarray
-        knots of the grid
-    weights: np.ndarray
-        weights of the grid
-    """
-    x = np.zeros(N)
-    w = np.zeros(N)
-
-    if N == 1:
-
-        x = 0.0
-
-        w = 2.0
-
-    elif N == 3:
-
-        x[0] = -0.77459666924148337704
-        x[1] = 0.0
-        x[2] = 0.77459666924148337704
-
-        w[0] = 0.555555555555555555556
-        w[1] = 0.888888888888888888889
-        w[2] = 0.555555555555555555556
-
-    elif N == 7:
-
-        x[0] = -0.96049126870802028342
-        x[1] = -0.77459666924148337704
-        x[2] = -0.43424374934680255800
-        x[3] = 0.0
-        x[4] = 0.43424374934680255800
-        x[5] = 0.77459666924148337704
-        x[6] = 0.96049126870802028342
-
-        w[0] = 0.104656226026467265194
-        w[1] = 0.268488089868333440729
-        w[2] = 0.401397414775962222905
-        w[3] = 0.450916538658474142345
-        w[4] = 0.401397414775962222905
-        w[5] = 0.268488089868333440729
-        w[6] = 0.104656226026467265194
-
-    elif N == 15:
-
-        x[0] = -0.99383196321275502221
-        x[1] = -0.96049126870802028342
-        x[2] = -0.88845923287225699889
-        x[3] = -0.77459666924148337704
-        x[4] = -0.62110294673722640294
-        x[5] = -0.43424374934680255800
-        x[6] = -0.22338668642896688163
-        x[7] = 0.0
-        x[8] = 0.22338668642896688163
-        x[9] = 0.43424374934680255800
-        x[10] = 0.62110294673722640294
-        x[11] = 0.77459666924148337704
-        x[12] = 0.88845923287225699889
-        x[13] = 0.96049126870802028342
-        x[14] = 0.99383196321275502221
-
-        w[0] = 0.0170017196299402603390
-        w[1] = 0.0516032829970797396969
-        w[2] = 0.0929271953151245376859
-        w[3] = 0.134415255243784220360
-        w[4] = 0.171511909136391380787
-        w[5] = 0.200628529376989021034
-        w[6] = 0.219156858401587496404
-        w[7] = 0.225510499798206687386
-        w[8] = 0.219156858401587496404
-        w[9] = 0.200628529376989021034
-        w[10] = 0.171511909136391380787
-        w[11] = 0.134415255243784220360
-        w[12] = 0.0929271953151245376859
-        w[13] = 0.0516032829970797396969
-        w[14] = 0.0170017196299402603390
-
-    elif N == 31:
-
-        x[0] = -0.99909812496766759766
-        x[1] = -0.99383196321275502221
-        x[2] = -0.98153114955374010687
-        x[3] = -0.96049126870802028342
-        x[4] = -0.92965485742974005667
-        x[5] = -0.88845923287225699889
-        x[6] = -0.83672593816886873550
-        x[7] = -0.77459666924148337704
-        x[8] = -0.70249620649152707861
-        x[9] = -0.62110294673722640294
-        x[10] = -0.53131974364437562397
-        x[11] = -0.43424374934680255800
-        x[12] = -0.33113539325797683309
-        x[13] = -0.22338668642896688163
-        x[14] = -0.11248894313318662575
-        x[15] = 0.0
-        x[16] = 0.11248894313318662575
-        x[17] = 0.22338668642896688163
-        x[18] = 0.33113539325797683309
-        x[19] = 0.43424374934680255800
-        x[20] = 0.53131974364437562397
-        x[21] = 0.62110294673722640294
-        x[22] = 0.70249620649152707861
-        x[23] = 0.77459666924148337704
-        x[24] = 0.83672593816886873550
-        x[25] = 0.88845923287225699889
-        x[26] = 0.92965485742974005667
-        x[27] = 0.96049126870802028342
-        x[28] = 0.98153114955374010687
-        x[29] = 0.99383196321275502221
-        x[30] = 0.99909812496766759766
-
-        w[0] = 0.00254478079156187441540
-        w[1] = 0.00843456573932110624631
-        w[2] = 0.0164460498543878109338
-        w[3] = 0.0258075980961766535646
-        w[4] = 0.0359571033071293220968
-        w[5] = 0.0464628932617579865414
-        w[6] = 0.0569795094941233574122
-        w[7] = 0.0672077542959907035404
-        w[8] = 0.0768796204990035310427
-        w[9] = 0.0857559200499903511542
-        w[10] = 0.0936271099812644736167
-        w[11] = 0.100314278611795578771
-        w[12] = 0.105669893580234809744
-        w[13] = 0.109578421055924638237
-        w[14] = 0.111956873020953456880
-        w[15] = 0.112755256720768691607
-        w[16] = 0.111956873020953456880
-        w[17] = 0.109578421055924638237
-        w[18] = 0.105669893580234809744
-        w[19] = 0.100314278611795578771
-        w[20] = 0.0936271099812644736167
-        w[21] = 0.0857559200499903511542
-        w[22] = 0.0768796204990035310427
-        w[23] = 0.0672077542959907035404
-        w[24] = 0.0569795094941233574122
-        w[25] = 0.0464628932617579865414
-        w[26] = 0.0359571033071293220968
-        w[27] = 0.0258075980961766535646
-        w[28] = 0.0164460498543878109338
-        w[29] = 0.00843456573932110624631
-        w[30] = 0.00254478079156187441540
-    else:
-        print("Number of points does not match Gauss-Patterson quadrature rule.")
-        raise NotImplementedError
-
-    knots = x
-    weights = w
-
-    return knots, weights
-
-
-def get_denormalized_coordinates(coords_norm, pdf_type, grid_shape, limits):
-    """
-    Denormalize grid from standardized ([-1, 1] except hermite) to original parameter space for simulations.
-
-    coords = get_denormalized_coordinates(coords_norm, pdf_type, grid_shape, limits)
-
-    Parameters
-    ----------
-    pdf_type: [dim] list of str
-        type of pdf 'beta' or 'norm'
-    grid_shape: [2 x N_vars] list of list of float
-        shape parameters of PDF
-        beta (jacobi):  [alpha, beta]
-        norm (hermite): [mean, std]
-    limits: [2 x N_vars] list of list of float
-        upper and lower bounds of PDF
-        beta (jacobi):  [min, max]
-        norm (hermite): [0, 0] (unused)
-    coords_norm: [N_samples x dim] np.ndarray
-        normalized [-1, 1] coordinates xi
-
-    Returns
-    -------
-    coords: [N_samples x dim] np.ndarray
-        denormalized coordinates xi
-    """
-    coords = np.zeros(coords_norm.shape)
-
-    for i_dim in range(coords_norm.shape[1]):
-        
-        # if gridtype[i_dim] == 'jacobi' or gridtype[i_dim] == 'cc' or gridtype[i_dim] == 'fejer2':
-        if pdf_type[i_dim] == "beta":
-            coords[:, i_dim] = (coords_norm[:, i_dim] + 1) / 2 * (limits[1][i_dim] - limits[0][i_dim]) + limits[0][
-                i_dim]
-        # if gridtype[i_dim] == 'hermite':
-        if pdf_type[i_dim] == "norm" or pdf_type[i_dim] == "normal":
-            coords[:, i_dim] = coords_norm[:, i_dim] * grid_shape[1][i_dim] + grid_shape[0][i_dim]
-
-    return coords
-
-
-def get_normalized_coordinates(coords, pdf_type, grid_shape, limits):
-    """
-    Normalize grid from original parameter (except hermite) to standardized ([-1, 1] space for simulations.
-
-    coords_norm = get_normalized_coordinates(coords, pdf_type, grid_shape, limits)
-
-    Parameters
-    ----------
-    pdf_type: [dim] list of str
-        type of pdf 'beta' or 'norm'
-    grid_shape: [2 x N_vars] list of list of float
-        shape parameters of PDF
-        beta (jacobi):  [alpha, beta]
-        norm (hermite): [mean, std]
-    limits: [2 x N_vars] list of list of float
-        upper and lower bounds of PDF
-        beta (jacobi):  [min, max]
-        norm (hermite): [0, 0] (unused)
-    coords: [N_samples x dim] np.ndarray
-        denormalized coordinates xi
-
-    Returns
-    -------
-    coords_norm: [N_samples x dim] np.ndarray
-        normalized [-1, 1] coordinates xi
-    """
-    coords_norm = np.zeros(coords.shape)
-
-    for i_dim in range(coords.shape[1]):
-        
-        # if gridtype[i_dim] == 'jacobi' or gridtype[i_dim] == 'cc' or gridtype[i_dim] == 'fejer2':
-        if pdf_type[i_dim] == "beta":
-            coords_norm[:, i_dim] = (coords[:, i_dim] - limits[0][i_dim])
-            coords_norm[:, i_dim] = coords_norm[:, i_dim] / (limits[1][i_dim] - limits[0][i_dim]) * 2.0 - 1
-
-        # if gridtype[i_dim] == 'hermite':
-        if pdf_type[i_dim] == "norm" or pdf_type[i_dim] == "normal":
-            coords_norm[:, i_dim] = (coords[:, i_dim] - grid_shape[0][i_dim]) / grid_shape[1][i_dim]
-
-    return coords_norm
-
-
-class TensorGrid:
+class TensorGrid(Grid):
     """
     Generate TensorGrid object instance.
 
-    TensorGrid(pdf_type, grid_type, grid_shape, limits, N):
+    TensorGrid(problem, parameters):
 
     Attributes
     ----------
-    pdf_type: [N_vars] list of str
-        variable specific type of PDF ("beta", "normal")
-    grid_type: [N_vars] list of str
-        specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
-    grid_shape: [2 x N_vars] list of list of float
-        shape parameters of PDF
-        beta (jacobi):  [alpha, beta]
-        norm (hermite): [mean, std]
-    limits: [2 x N_vars] list of list of float
-        upper and lower bounds of PDF
-        beta (jacobi):  [min, max]
-        norm (hermite): [0, 0] (unused)
-    N: [N_vars] list of int
-        number of nodes in each dimension
-    dim: int
-        number of uncertain parameters to process
-    knots_dim_list: [dim] list of np.ndarray
-        knots of grid in each dimension
-    weights_dim_list: [dim] list of np.ndarray
-        weights of grid in each dimension
-    coords_norm: [N_samples x dim] np.ndarray
-        normalized [-1, 1] coordinates xi
-    weights: np.ndarray
-        weights of the grid
-    coords: [N_samples x dim] np.ndarray
-        denormalized coordinates xi
-    
-    Parameters
-    ----------
-    pdf_type: [N_vars] list of str
-        variable specific type of PDF ("beta", "normal")
-    grid_type: [N_vars] list of str
-        specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
-    grid_shape: [2 x N_vars] list of list of float
-        shape parameters of PDF
-        beta (jacobi):  [alpha, beta]
-        norm (hermite): [mean, std]
-    limits: [2 x N_vars] list of list of float
-        upper and lower bounds of PDF
-        beta (jacobi):  [min, max]
-        norm (hermite): [0, 0] (unused)
-    N: [N_vars] list of int
-        number of nodes in each dimension
+    self.grid_type: [N_vars] list of str
+        Type of quadrature used to construct tensor grid ('jacobi', 'hermite', 'cc', 'fejer2')
+    self.knots_dim_list: [dim] list of np.ndarray
+        Knots of grid in each dimension
+    self.weights_dim_list: [dim] list of np.ndarray
+        Weights of grid in each dimension
+    self.weights: np.ndarray [n_grid x dim]
+        Weights of the grid (all)
+    self.coords: [n_grid x dim] np.ndarray
+        Denormalized coordinates xi
+    self.coords_norm: [n_grid x dim] np.ndarray
+        Normalized [-1, 1] coordinates xi
+    self.n_grid: int
+        Total number of nodes in grid.
     """
 
-    def __init__(self, pdf_type, grid_type, grid_shape, limits, N):
-        self.pdf_type = pdf_type  # 'beta', 'normal'
-        self.grid_type = grid_type  # 'jacobi', 'hermite', 'cc', 'fejer2'
-        self.grid_shape = grid_shape  # pdf_shape: jacobi: -> [alpha, beta] hermite: -> [mean, std]
-        self.limits = limits  # limits: [min, max]
-        self.N = N  # number of nodes in each dimension [dim x 1]
-        self.dim = len(self.N)  # number of dimension
+    def __init__(self, problem, parameters):
+        """
+        Constructor; Initializes TensorGrid object instance.
+
+        Parameters
+        ----------
+        problem: Problem object
+            Object instance of gPC Problem to investigate
+        parameters: dict
+            Grid parameters
+            - parameters["grid_type"] ... list of str [dim]: type of grid ('jacobi', 'hermite', 'cc', 'fejer2')
+            - parameters["n_dim"] ... list of int [dim]: Number of nodes in each dimension
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> pygpc.Grid.TensorGrid(problem, {"grid_type": ["hermite", "jacobi"], "n_dim": [5, 6]})
+        """
+        super(TensorGrid, self).__init__(problem)
+        self.parameters = parameters
+        self.grid_type = parameters["grid_type"]
 
         # get knots and weights of polynomials in each dimension
         self.knots_dim_list = []
         self.weights_dim_list = []
-        for i_dim in range(self.dim):
-            
-            if self.grid_type[i_dim] == 'jacobi':  # jacobi polynomials
-                knots, weights = get_quadrature_jacobi_1d(self.N[i_dim], self.grid_shape[0][i_dim] - 1,
-                                                                    self.grid_shape[1][i_dim] - 1)
-            if self.grid_type[i_dim] == 'hermite':  # hermite polynomials
-                knots, weights = get_quadrature_hermite_1d(self.N[i_dim])
-            if self.grid_type[i_dim] == 'clenshaw_curtis':  # Clenshaw Curtis
-                knots, weights = get_quadrature_clenshaw_curtis_1d(self.N[i_dim])
-            if self.grid_type[i_dim] == 'fejer2':  # Fejer type 2 (Clenshaw Curtis without boundary nodes)
-                knots, weights = get_quadrature_fejer2_1d(self.N[i_dim])
-            if self.grid_type[i_dim] == 'patterson':  # Gauss-Patterson (Nested Legendre rule)
-                knots, weights = get_quadrature_patterson_1d(self.N[i_dim])
+        for i_dim in range(self.problem.dim):
+
+            # Jacobi polynomials
+            if self.grid_type[i_dim] == 'jacobi':
+                knots, weights = self.get_quadrature_jacobi_1d(self.parameters["n_dim"][i_dim],
+                                                               self.problem.pdf_shape[i_dim][0] - 1,
+                                                               self.problem.pdf_shape[i_dim][1] - 1)
+
+            # Hermite polynomials
+            elif self.grid_type[i_dim] == 'hermite':
+                knots, weights = self.get_quadrature_hermite_1d(self.parameters["n_dim"][i_dim])
+
+            # Clenshaw Curtis
+            elif self.grid_type[i_dim] == 'clenshaw_curtis':
+                knots, weights = self.get_quadrature_clenshaw_curtis_1d(self.parameters["n_dim"][i_dim])
+
+            # Fejer type 2 (Clenshaw Curtis without boundary nodes)
+            elif self.grid_type[i_dim] == 'fejer2':
+                knots, weights = self.get_quadrature_fejer2_1d(self.parameters["n_dim"][i_dim])
+
+            # Gauss-Patterson (Nested Legendre rule)
+            elif self.grid_type[i_dim] == 'patterson':
+                knots, weights = self.get_quadrature_patterson_1d(self.parameters["n_dim"][i_dim])
+
+            else:
+                knots = []
+                weights = []
+                AttributeError("Specified grid_type {} not implemented!".format(self.parameters["grid_type"][i_dim]))
 
             self.knots_dim_list.append(knots)
             self.weights_dim_list.append(weights)
 
-        # combine coordinates to full tensored grid (all combinations)
+        # combine coordinates to full tensor grid (all combinations)
         self.coords_norm = cartesian(self.knots_dim_list)
 
         # rescale normalized coordinates in case of normal distributions and "fejer2" or "cc" grids
@@ -611,24 +584,27 @@ class TensorGrid:
         # +- 2.576 * sigma -> 99%
         # +- 3.000 * sigma -> 99.73%
         for i_dim in range(self.dim):
-            if (self.pdf_type[i_dim] == "norm" or self.pdf_type[i_dim] == "normal") and (
+            if (self.problem.pdf_type[i_dim] == "norm" or self.problem.pdf_type[i_dim] == "normal") and (
                     not (self.grid_type[i_dim] == "hermite")):
                 self.coords_norm[:, i_dim] = self.coords_norm[:, i_dim] * 1.960
 
         # determine combined weights of Gauss quadrature
-        self.weights = np.prod(cartesian(self.weights_dim_list), axis=1) / (2.0 ** self.dim)
+        self.weights = np.prod(cartesian(self.weights_dim_list), axis=1) / (2.0 ** self.problem.dim)
 
         # denormalize grid to original parameter space
-        self.coords = get_denormalized_coordinates(self.coords_norm, self.pdf_type, self.grid_shape, self.limits)
+        self.coords = self.get_denormalized_coordinates(self.coords_norm)
+
+        # Total number of nodes in grid
+        self.n_grid = self.coords.shape[0]
 
 
-# TODO: grid_shape[1] of norm is now STD. Check if code changes in sparse.
 class SparseGrid:
     """
-    Generate SparseGrid object instance.
+    SparseGrid object instance.
 
-    SparseGrid(pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order,
-               order_sequence_type, make_grid=True, verbose=True)
+    SparseGrid(problem, parameters)
+
+    pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order, order_sequence_type, make_grid=True, verbose=True)
 
     Attributes
     ----------
@@ -669,76 +645,91 @@ class SparseGrid:
     dim: int
         number of uncertain parameters to process
 
-    Parameters
-    ----------
-    pdf_type: [N_vars] list of str
-        variable specific type of PDF ("beta", "normal")
-    grid_type: [N_vars] list of str
-        specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
-    grid_shape: [2 x N_vars] list of list of float
-        shape parameters of PDF
-        beta (jacobi):  [alpha, beta]
-        norm (hermite): [mean, std]
-    limits: [2 x N_vars] list of list of float
-        upper and lower bounds of PDF
-        beta (jacobi):  [min, max]
-        norm (hermite): [0, 0] (unused)
-    level: [N_vars] list of int
-        number of levels in each dimension
-    level_max: int
-        global combined level maximum
-    interaction_order: int
-        interaction order of parameters and grid, i.e. the grid points are lying between this number of dimensions
-    order_sequence_type: str
-        type of order sequence ('lin', 'exp') common: 'exp'
-    make_grid: boolean, optional, default=True
-        boolean value to determine if to generate grid during initialization
-    verbose: bool, optional, default=True
-        boolean value to determine if to print out the progress into the standard output
     """
 
-    def __init__(self, pdf_type, grid_type, grid_shape, limits, level, level_max, interaction_order,
-                 order_sequence_type, make_grid=True, verbose=True):
-        self.pdf_type = pdf_type  # 'beta', 'normal'
-        self.grid_type = grid_type  # 'jacobi', 'hermite', 'cc', 'fejer2'
-        self.grid_shape = grid_shape  # pdfshape: jacobi: -> [alpha and beta], hermite: -> [mean, variance]
-        self.limits = limits  # limits: [min, max]
-        self.level = level  # number of levels in each dimension [dim x 1]
-        self.level_max = level_max  # global combined level maximum
-        self.interaction_order = interaction_order  # interaction order of parameters and grid
-        self.order_sequence_type = order_sequence_type  # 'lin', 'exp' type of order sequence (common: 'exp')
-        self.verbose = verbose  # output while grid generation on/off
-        self.dim = len(self.level)  # number of dimension
+    def __init__(self, problem, parameters):
+        """
+        Constructor; Initializes SparseGrid class
+
+
+        Parameters
+        ----------
+        problem: Problem object
+
+        parameters: dict
+
+        grid_type: [N_vars] list of str
+            specify type of quadrature used to construct sparse grid ('jacobi', 'hermite', 'cc', 'fejer2')
+        level: [N_vars] list of int
+            number of levels in each dimension
+        level_max: int
+            global combined level maximum
+        interaction_order: int
+            interaction order of parameters and grid, i.e. the grid points are lying between this number of dimensions
+        order_sequence_type: str
+            type of order sequence ('lin', 'exp') common: 'exp'
+        make_grid: boolean, optional, default=True
+            boolean value to determine if to generate grid during initialization
+        verbose: bool, optional, default=True
+            boolean value to determine if to print out the progress into the standard output
+
+        Notes
+        -----
+        Adds Attributes:
+
+
+        """
+
+        self.problem = problem
+        self.grid_type = parameters["grid_type"]
+        self.level = parameters["level"]  # number of levels in each dimension [dim x 1]
+        self.level_max = parameters["level_max"]  # global combined level maximum
+        self.interaction_order = parameters["interaction_order"]  # interaction order of parameters and grid
+        self.order_sequence_type = parameters["order_sequence_type"]  # 'lin', 'exp' type of order sequence (common: 'exp')
+
         self.coords = None  # coordinates of gpc model calculation in the system space
         self.coords_norm = None  # coordinates of gpc model calculation in the gpc space [-1,1]
         self.weights = None  # weights for numerical integration for every point in the coordinate space
         self.level_sequence = []  # integer sequence of levels
         self.order_sequence = []  # integer sequence of polynom order of levels
 
+        # output while grid generation on/off
+        if "verbose" not in parameters.keys():
+            self.verbose = False
+
+        # Generate grid if not specified
+        if "verbose" not in parameters.keys():
+            self.make_grid = True
+
         # grid is generated during initialization or coords, coords_norm and weights are added manually
-        if make_grid:
-            self.calc_multi_index_lst()
+        if parameters["make_grid"]:
+            self.calc_multi_indices()
             self.calc_coords_weights()
         else:
             iprint('Sparse grid initialized but not generated. Please add coords / coords_norm and weights manually.')
 
-    def calc_multi_index_lst(self):
+    def calc_multi_indices(self):
         """
         Calculate the multi index list needed for the calculation of the SparseGrid.
         """
-        for i_dim in range(self.dim):
+        for i_dim in range(self.problem.dim):
             
             if self.grid_type[i_dim] == 'fejer2':
-                self.level_sequence.append([element for element in range(1, self.level[i_dim] + 1)])
+                self.level_sequence.append(
+                    [element for element in range(1, self.level[i_dim] + 1)])
             else:
-                self.level_sequence.append([element for element in range(self.level[i_dim] + 1)])
+                self.level_sequence.append(
+                    [element for element in range(self.level[i_dim] + 1)])
 
             if self.order_sequence_type == 'exp':  # order = 2**level + 1
+
                 if self.grid_type[i_dim] == 'fejer2':  # start with order = 1 @ level = 1
                     self.order_sequence.append((np.power(2, np.arange(1, self.level[i_dim])) - 1).tolist())
                     self.order_sequence[i_dim][0] = 1
+
                 elif self.grid_type[i_dim] == 'patterson':  # start with order = 1 @ level = 0 [1,3,7,15,31,...]
                     self.order_sequence.append((np.power(2, np.arange(0, self.level[i_dim])) + 1).tolist())
+
                 else:  # start with order = 1 @ level = 0
                     self.order_sequence.append(
                         (2 ** np.linspace(0, self.level[i_dim], self.level[i_dim] + 1) + 1).tolist())
@@ -747,8 +738,10 @@ class SparseGrid:
             elif self.order_sequence_type == 'lin':  # order = level
                 if self.grid_type[i_dim] == 'fejer2':  # start with level = 1 @ order = 1
                     self.order_sequence.append(np.linspace(1, self.level[i_dim] + 1, self.level[i_dim] + 1).tolist())
+
                 elif self.grid_type[i_dim] == 'patterson':  # start with order = 1 @ level = 0 [1,3,7,15,31,...]
                     iprint("Not possible in case of Gauss-Patterson grid.")
+
                 else:  # start with
                     self.order_sequence.append(np.linspace(1, self.level[i_dim] + 1, self.level[i_dim] + 1).tolist())
 
@@ -764,23 +757,23 @@ class SparseGrid:
             multi indices filtered by level capacity and interaction order
         """
         if "fejer2" in self.grid_type:
-            if self.dim == 1:
+            if self.problem.dim == 1:
                 l_level = np.array([np.linspace(1, self.level_max, self.level_max)]).transpose()
             else:
-                l_level = get_multi_indices(self.dim, self.level_max - self.dim)
+                l_level = get_multi_indices(self.problem.dim, self.level_max - self.problem.dim)
                 l_level = l_level + 1
         else:
-            if self.dim == 1:
+            if self.problem.dim == 1:
                 l_level = np.array([np.linspace(0, self.level_max, self.level_max + 1)]).transpose()
             else:
-                l_level = get_multi_indices(self.dim, self.level_max)
+                l_level = get_multi_indices(self.problem.dim, self.level_max)
 
         # filter out rows exceeding the individual level cap
-        for i_dim in range(self.dim):
+        for i_dim in range(self.problem.dim):
             l_level = l_level[l_level[:, i_dim] <= self.level[i_dim]]
 
         # Consider interaction order (filter out multi-indices exceeding it)
-        if self.interaction_order < self.dim:
+        if self.interaction_order < self.problem.dim:
             if any("fejer2" in s for s in self.grid_type):
                 l_level = l_level[np.sum(l_level > 1, axis=1) <= self.interaction_order, :]
             else:
