@@ -302,9 +302,9 @@ def write_value(message, verbose=True):
     Parameters
     ----------
     message: string
-        string to print in standard output
+        String to print in standard output
     verbose: bool, optional, default=True
-        determines if string is printed out
+        Determines if string is printed out
     """
     console_logger.info(message)
 
@@ -405,9 +405,9 @@ def iprint(message, verbose=True, tab=None):
     Parameters
     ----------
     message: string
-        string to print in standard output
+        String to print in standard output
     verbose: bool, optional, default=True
-        determines if string is printed out
+        Determines if string is printed out
     """
 
     if tab:

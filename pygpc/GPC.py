@@ -72,17 +72,22 @@ class GPC:
 
     def __init__(self, problem):
 
-        self.order = None
-        self.order_max = None
-        self.interaction_order = None
+        # GPC
         self.cpu = True
         self.gpu = None
         self.verbose = True
         self.gpc_matrix = None
         self.gpc_matrix_inv = None
+        self.interaction_order = None
+
+        # SGPC
+        self.order = None
+        self.order_max = None
+
+        # EGPC
 
         # external
-        self.gpc_coeffs = None
+        self.gpc_coeffs = None      # DELETE THIS
 
         # in basis
         self.poly = None
@@ -94,8 +99,8 @@ class GPC:
         self.poly_der = None
         self.N_poly = None
 
-        # in grid
-        self.N_grid = None
+        # in grid (DONE)
+        self.n_grid = None
         self.grid = None
 
         # misc (DONE)
