@@ -224,12 +224,12 @@ def get_array_unique_rows(array):
     return array[index]
 
 
-def get_set_combinations(array, number_elements):
+def get_all_combinations(array, number_elements):
     """
     Compute all k-tuples (e_1, e_2, ..., e_k) of combinations of the set of elements of the input array where
     e_n+1 > e_n.
 
-    combinations = get_set_combinations(array, number_elements)
+    combinations = get_all_combinations(array, number_elements)
 
     Parameters
     ----------
@@ -246,47 +246,6 @@ def get_set_combinations(array, number_elements):
 
     combinations = itertools.combinations(array, number_elements)
     return np.array([c for c in combinations])
-
-
-def get_multi_indices(length, max_order):
-    """
-    Computes all multi-indices with a maximum overall order of max_order.
-
-    multi_indices = get_multi_indices(length, max_order)
-
-    Parameters
-    ----------
-    length : int
-        length of multi-index tuples
-    max_order : int
-        maximum overall interaction order
-
-    Returns
-    -------
-    multi_indices: np.ndarray
-        array of multi-indices
-    """
-
-    multi_indices = []
-    for i_max_order in range(max_order + 1):
-        # Chose (length-1) the splitting points of the array [0:(length+max_order)]
-        # 1:length+max_order-1
-        s = get_set_combinations(np.arange(length + i_max_order - 1) + 1, length - 1)
-
-        m = s.shape[0]
-
-        s1 = np.zeros([m, 1])
-        s2 = (length + i_max_order) + s1
-
-        v = np.diff(np.hstack([s1, s, s2]))
-        v = v - 1
-
-        if i_max_order == 0:
-            multi_indices = v
-        else:
-            multi_indices = np.vstack([multi_indices, v])
-
-    return multi_indices.astype(int)
 
 
 def get_normalized_rms_deviation(array, array_ref):
@@ -529,7 +488,7 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim):
     if dim == 1:
         poly_idx = np.array([np.linspace(0, order_dim_max, order_dim_max + 1)]).astype(int).transpose()
     else:
-        poly_idx = get_multi_indices(int(dim), order_glob_max)
+        poly_idx = get_multi_indices_max_order(int(dim), order_glob_max)
 
     for i_dim in range(dim):
         # add multi-indexes to list when not yet included

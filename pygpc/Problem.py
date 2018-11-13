@@ -5,8 +5,6 @@ from collections import OrderedDict
 from collections import namedtuple
 import numpy as np
 
-RandomParameter = namedtuple("RandomParameter", "pdf_type pdf_shape pdf_limits")
-
 
 class Problem:
     """

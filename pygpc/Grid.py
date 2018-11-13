@@ -6,12 +6,11 @@ Functions and classes that provide data and methods for the generation and proce
 import numpy as np
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
-
-from .misc import *
+from .misc import get_multi_indices_max_order
 from .io import iprint
 
 
-class Grid:
+class Grid(object):
     """
     Grid class
 
@@ -655,7 +654,7 @@ class SparseGrid(Grid):
             - order_sequence_type (str) ... Type of order sequence ('lin', 'exp') common: 'exp'
             - make_grid (boolean, optional, default=True) ... Boolean value to determine if to generate grid
               during initialization
-            - verbose (bool, optional, default=True) ... Boolean value to determine if to print out the progress into the standard output
+            - verbose (bool, optional, default=True) ... Print output messages into stdout
 
         Notes
         -----
@@ -664,7 +663,7 @@ class SparseGrid(Grid):
         level_sequence: list of int
             Integer sequence of levels
         order_sequence: list of int
-            Integer sequence of polynom order of levels
+            Integer sequence of polynomial order of levels
         """
         
         super(SparseGrid, self).__init__(problem)
@@ -675,7 +674,7 @@ class SparseGrid(Grid):
         self.interaction_order = parameters["interaction_order"]        # Interaction order of parameters and grid
         self.order_sequence_type = parameters["order_sequence_type"]    # Order sequence ('lin', 'exp' (common))
         self.level_sequence = []  # Integer sequence of levels
-        self.order_sequence = []  # Integer sequence of polynom order of levels
+        self.order_sequence = []  # Integer sequence of polynomial order of levels
 
         # output while grid generation on/off
         if "verbose" not in parameters.keys():
@@ -748,13 +747,13 @@ class SparseGrid(Grid):
             if self.problem.dim == 1:
                 l_level = np.array([np.linspace(1, self.level_max, self.level_max)]).transpose()
             else:
-                l_level = self.get_multi_indices(self.problem.dim, self.level_max - self.problem.dim)
+                l_level = get_multi_indices_max_order(self.problem.dim, self.level_max - self.problem.dim)
                 l_level = l_level + 1
         else:
             if self.problem.dim == 1:
                 l_level = np.array([np.linspace(0, self.level_max, self.level_max + 1)]).transpose()
             else:
-                l_level = self.get_multi_indices(self.problem.dim, self.level_max)
+                l_level = get_multi_indices_max_order(self.problem.dim, self.level_max)
 
         # filter out rows exceeding the individual level cap
         for i_dim in range(self.problem.dim):
@@ -778,9 +777,9 @@ class SparseGrid(Grid):
         Returns
         -------
         dl_k: list of list of float
-            cubature lookup table for knots
+            Cubature lookup table for knots
         dl_w: list of list of float
-            cubature lookup table for weights
+            Cubature lookup table for weights
         """
         # make cubature lookup table for knots (dl_k) and weights (dl_w) [max(l) x dim]
         iprint("Generating difference grids...", tab=1, verbose=self.verbose)
@@ -834,7 +833,9 @@ class SparseGrid(Grid):
                     dl_k[i_level][i_dim] = knots_l
                     dl_w[i_level][i_dim] = weights_l
                 else:
+                    # noinspection PyTypeChecker
                     dl_k[i_level][i_dim] = np.hstack((knots_l, knots_l_1))
+                    # noinspection PyTypeChecker
                     dl_w[i_level][i_dim] = np.hstack((weights_l, -weights_l_1))
 
         return dl_k, dl_w
@@ -843,21 +844,21 @@ class SparseGrid(Grid):
         """
         Calculate the tensor products of the knots and the weights.
 
-        dL_k, dL_w = calc_tensor_products()
+        dll_k, dll_w = calc_tensor_products()
 
         Returns
         -------
-        dL_k: np.ndarray
+        dll_k: np.ndarray
             Tensor product of knots
-        dL_w: np.ndarray
+        dll_w: np.ndarray
             Tensor product of weights
         """
-        # make list of all tensor products according to multiindex list "l"
-        iprint("Generating subgrids...", tab=1, verbose=self.verbose)
+        # make list of all tensor products according to multi-index list "l"
+        iprint("Generating sub-grids...", tab=1, verbose=self.verbose)
         dl_k, dl_w = self.calc_grid()
         l_level = self.calc_l_level()
-        dL_k = []
-        dL_w = []
+        dll_k = []
+        dll_w = []
 
         for i_l_level in range(l_level.shape[0]):
 
@@ -869,37 +870,37 @@ class SparseGrid(Grid):
                 weights.append(np.asarray(dl_w[np.int(l_level[i_l_level, i_dim])][i_dim], dtype=float))
 
             # tensor product of knots
-            dL_k.append(cartesian(knots))
+            dll_k.append(cartesian(knots))
 
             # tensor product of weights
-            dL_w.append(np.prod(cartesian(weights), axis=1))
+            dll_w.append(np.prod(cartesian(weights), axis=1))
 
-        dL_w = np.hstack(dL_w)
-        dL_k = np.vstack(dL_k)
+        dll_w = np.hstack(dll_w)
+        dll_k = np.vstack(dll_k)
 
-        return dL_k, dL_w
+        return dll_k, dll_w
 
     def calc_coords_weights(self):
         """
-        Determine coords and weights of sparse grid by generating, merging and subtracting subgrids.
+        Determine coords and weights of sparse grid by generating, merging and subtracting sub-grids.
         """
         # find similar points in grid and formulate Point list
-        dL_k, dL_w = self.calc_tensor_products()
-        point_number_list = np.zeros(dL_w.shape[0]) - 1
+        dll_k, dll_w = self.calc_tensor_products()
+        point_number_list = np.zeros(dll_w.shape[0]) - 1
         point_no = 0
         epsilon_k = 1E-6
         coords_norm = []
 
-        iprint("Merging subgrids...", tab=1, verbose=self.verbose)
+        iprint("Merging sub-grids...", tab=1, verbose=self.verbose)
 
         while any(point_number_list < 0):
             not_found = point_number_list < 0
-            dL_k_nf = dL_k[not_found]
-            point_temp = np.zeros(dL_k_nf.shape[0]) - 1
-            point_temp[np.sum(np.abs(dL_k_nf - dL_k_nf[0]), axis=1) < epsilon_k] = point_no
+            dll_k_nf = dll_k[not_found]
+            point_temp = np.zeros(dll_k_nf.shape[0]) - 1
+            point_temp[np.sum(np.abs(dll_k_nf - dll_k_nf[0]), axis=1) < epsilon_k] = point_no
             point_number_list[not_found] = point_temp
             point_no = point_no + 1
-            coords_norm.append(dL_k_nf[0, :])
+            coords_norm.append(dll_k_nf[0, :])
 
         coords_norm = np.array(coords_norm)
         point_number_list = np.asarray(point_number_list, dtype=int)
@@ -907,7 +908,7 @@ class SparseGrid(Grid):
         weights = np.zeros(np.amax(point_number_list) + 1) - 999
 
         for i_point in range(np.amax(point_number_list) + 1):
-            weights[i_point] = np.sum(dL_w[point_number_list == i_point])
+            weights[i_point] = np.sum(dll_w[point_number_list == i_point])
 
         # filter for very small weights
         iprint("Filter grid for very small weights...", tab=1, verbose=self.verbose)
@@ -941,10 +942,10 @@ class RandomGrid(Grid):
 
     Attributes
     ----------
-    N: int
-        number of random samples to generate
+    n_grid: int
+        Number of random samples to generate
     seed: float
-        seeding point to replicate random grids
+        Seeding point to replicate random grids
     """
 
     def __init__(self, problem, parameters):
@@ -965,7 +966,7 @@ class RandomGrid(Grid):
         self.n_grid = int(parameters["n_grid"])     # Number of random samples
         self.seed = parameters["seed"]              # Seed of random grid (if necessary to reproduce random grid)
 
-        # Generate random samples for each random input variable [N x dim]
+        # Generate random samples for each random input variable [n_grid x dim]
         self.coords_norm = np.zeros([self.n_grid, self.problem.dim])
         
         if self.seed:

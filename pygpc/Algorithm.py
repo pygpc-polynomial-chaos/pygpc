@@ -318,7 +318,7 @@ class Algorithm:
                 vprint("=============", verbose=reg_obj.verbose)
 
                 # determine new possible polynomials
-                poly_idx_all_new = get_multi_indices(dim, order)
+                poly_idx_all_new = get_multi_indices_max_order(dim, order)
                 poly_idx_all_new = poly_idx_all_new[np.sum(poly_idx_all_new, axis=1) == order]
                 interaction_order_current_max = np.max(poly_idx_all_new)
 

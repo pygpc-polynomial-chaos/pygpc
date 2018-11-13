@@ -157,7 +157,6 @@ class TestpygpcMethods(unittest.TestCase):
     def test_2_adaptive_gpc(self):
         from pygpc.testfuns.testfunctions import SphereModel
         from pygpc.Problem import Problem
-        from pygpc.Problem import RandomParameter
         from collections import OrderedDict
 
         print("1. Testing adaptive gPC")
@@ -170,9 +169,9 @@ class TestpygpcMethods(unittest.TestCase):
         params["R"] = [80, 90, 100]
         params["phi_electrode"] = 15
         params["N_points"] = 201
-        params["sigma_1"] = RandomParameter("beta", [5, 5], [0.15, 0.45])
-        params["sigma_2"] = RandomParameter("beta", [1, 3], [0.01, 0.02])
-        params["sigma_3"] = RandomParameter("beta", [2, 2], [0.4, 0.6])
+        params["sigma_1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 5], pdf_limits=[0.15, 0.45])
+        params["sigma_2"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 3], pdf_limits=[0.01, 0.02])
+        params["sigma_3"] = pygpc.RandomParameter.Beta(pdf_shape=[2, 2], pdf_limits=[0.4, 0.6])
 
         # anodal and cathodal position at angle phi_electrode in x-z plane
         anode_pos = np.array(
