@@ -3,11 +3,12 @@
 Functions and classes that provide data and methods for the generation and processing of numerical grids
 """
 
+import uuid
 import numpy as np
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
-from .misc import get_multi_indices_max_order
 from .io import iprint
+from .misc import get_multi_indices_max_order
 
 
 class Grid(object):
@@ -18,12 +19,14 @@ class Grid(object):
     ----------
     problem : Problem object
         Object instance of gPC Problem to investigate
-    weights: np.ndarray [n_grid x dim]
+    _weights: np.ndarray [n_grid x dim]
         Weights of the grid (all)
-    coords: [n_grid x dim] np.ndarray
+    _coords: [n_grid x dim] np.ndarray
         Denormalized coordinates xi
-    coords_norm: [n_grid x dim] np.ndarray
+    _coords_norm: [n_grid x dim] np.ndarray
         Normalized [-1, 1] coordinates xi
+    coords_id: list of UUID objects (version 4) [n_grid]
+        Unique IDs of grid points
     n_grid: int
         Total number of nodes in grid.
     """
@@ -37,26 +40,61 @@ class Grid(object):
             Object instance of gPC Problem to investigate
         """
         self.n_grid = None          # Total number of grid points
-        self.coords = None          # coordinates of gpc model calculation in the system space
-        self.coords_norm = None     # coordinates of gpc model calculation in the gpc space [-1,1]
-        self.weights = None         # weights for numerical integration for every point in the coordinate space
-        self.problem = problem
+        self._coords = None         # Coordinates of gpc model calculation in the system space
+        self._coords_norm = None    # Coordinates of gpc model calculation in the gpc space [-1,1]
+        self.coords_id = None       # Unique IDs of grid points
+        self._weights = None        # Weights for numerical integration for every point in the coordinate space
+        self.problem = problem      # Problem class instance
+
+    @property
+    def coords(self):
+        return self._coords
+
+    @coords.setter
+    def coords(self, value):
+        self._coords = value
+        self.n_grid = self._coords.shape[0]
+
+        # Generate unique IDs of grid points
+        if self.coords_id is None:
+            self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+    @property
+    def coords_norm(self):
+        return self._coords_norm
+
+    @coords_norm.setter
+    def coords_norm(self, value):
+        self._coords_norm = value
+        self.n_grid = self._coords.shape[0]
+
+        # Generate unique IDs of grid points
+        if self.coords_id is None:
+            self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+    @property
+    def weights(self):
+        return self._weights
+
+    @weights.setter
+    def weights(self, value):
+        self._weights = value
 
     @staticmethod
-    def get_quadrature_jacobi_1d(n, b, a):
+    def get_quadrature_jacobi_1d(n, p, q):
         """
-        Get knots and weights of Jacobi polynomials (beta distribution).
+        Get knots and weights of Jacobi polynomials.
 
-        knots, weights = Grid.get_quadrature_jacobi_1d(n, b, a)
+        knots, weights = Grid.get_quadrature_jacobi_1d(n, p, q)
 
         Parameters
         ----------
         n: int
             Number of knots
-        a: float
-            Lower limit of quadrature coefficients
-        b: float
-            Upper limit of quadrature coefficients
+        p: float
+            First shape parameter
+        q: float
+            Second shape parameter
 
         Returns
         -------
@@ -65,15 +103,16 @@ class Grid(object):
         weights: np.ndarray
             Weights of the grid
         """
+
         # make array to count N: 0, 1, ..., N-1
         n_arr = np.arange(1, n)
 
         # compose diagonals for companion matrix
-        t01 = 1.0 * (b - a) / (2 + a + b)
-        t02 = 1.0 * ((b - a) * (a + b)) / ((2 * n_arr + a + b) * (2 * n_arr + 2 + a + b))
+        t01 = 1.0 * (p - q) / (2 + q + p)
+        t02 = 1.0 * ((p - q) * (q + p)) / ((2 * n_arr + q + p) * (2 * n_arr + 2 + q + p))
         t1 = np.append(t01, t02)
-        t2 = np.sqrt((4.0 * n_arr * (n_arr + a) * (n_arr + b) * (n_arr + a + b)) / (
-                (2 * n_arr - 1 + a + b) * (2 * n_arr + a + b) ** 2 * (2 * n_arr + 1 + a + b)))
+        t2 = np.sqrt((4.0 * n_arr * (n_arr + q) * (n_arr + p) * (n_arr + q + p)) / (
+                (2 * n_arr - 1 + q + p) * (2 * n_arr + q + p) ** 2 * (2 * n_arr + 1 + q + p)))
 
         # compose companion matrix
         t = np.diag(t1) + np.diag(t2, 1) + np.diag(t2, -1)
@@ -605,6 +644,9 @@ class TensorGrid(Grid):
         # Total number of nodes in grid
         self.n_grid = self.coords.shape[0]
 
+        # Generate and append unique IDs of grid points
+        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
 
 class SparseGrid(Grid):
     """
@@ -689,11 +731,15 @@ class SparseGrid(Grid):
             self.calc_multi_indices()
             self.calc_coords_weights()
         else:
-            iprint('Sparse grid initialized but not generated. Please add coords / coords_norm and weights manually.',
+            iprint('Sparse grid initialized but not generated. Please add coords / coords_norm and weights manually'
+                   'by calling mygrid.set_grid().',
                    verbose=self.verbose)
 
         # Determine total number of grid points
         self.n_grid = self.coords.shape[0]
+
+        # Generate unique IDs of grid points
+        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
     def calc_multi_indices(self):
         """
@@ -983,3 +1029,37 @@ class RandomGrid(Grid):
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
+
+        # Generate unique IDs of grid points
+        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+    def extend_random_grid(self, n_grid_new, seed=None):
+        """
+        Add sample points according to input pdfs to grid (old points are kept).
+
+        extend_random_grid(n_grid_new, seed=None):
+
+        Parameters
+        ----------
+        n_grid_new: float
+            Total number of grid points in extended random grid (old points are kept)
+        seed: float, optional, default=None
+            Random seeding point
+        """
+
+        # Number of new grid points
+        n_grid_add = int(self.n_grid - n_grid_new)
+
+        if n_grid_add > 0:
+            # Generate new grid points
+            new_grid = RandomGrid(problem=self.problem, parameters={"n_grid": n_grid_add, "seed": seed})
+
+            # append points to existing grid
+            self.coords = np.vstack([self.coords, new_grid.coords])
+            self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+
+            # Generate and append unique IDs of new grid points
+            self.coords_id = self.coords_id + [uuid.uuid4() for _ in range(n_grid_add)]
+
+        else:
+            Warning("No samples added to grid ... (n_grid_new < n_grid)")

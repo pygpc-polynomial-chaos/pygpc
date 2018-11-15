@@ -99,9 +99,9 @@ class TestPygpcMethods(unittest.TestCase):
         data_mc = pygpc.testfun.peaks(grid_mc.coords)
 
         # % determine gpc coefficients
-        coeffs_reg = gpc_reg.get_coeffs_expand(data_rand)
-        coeffs_tens = gpc_tens.get_coeffs_expand(data_tens)
-        coeffs_sg = gpc_sg.get_coeffs_expand(data_sg)
+        coeffs_reg = gpc_reg.get_coeffs(data_rand)
+        coeffs_tens = gpc_tens.get_coeffs(data_tens)
+        coeffs_sg = gpc_sg.get_coeffs(data_sg)
 
         # perform postprocessing
         print("Calculating mean...")

@@ -1,46 +1,48 @@
 import time
 import random
 import numpy as np
-from builtins import range, int
+import scipy.stats
 from .GPC import *
 from .io import iprint, wprint
 from .misc import display_fancy_bar
+from .misc import get_array_unique_rows
 from .Basis import *
 
 
 class SGPC(GPC):
     """
-    Class for standard gPC
+    Sub-class for standard gPC (SGPC)
 
     Attributes
     ----------
-    order: [dim] list of int
-        maximum individual expansion order
-        generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order: list of int [dim]
+        Maximum individual expansion order [order_1, order_2, ..., order_dim].
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
     order_max: int
-        maximum expansion order (sum of all exponents)
-        the maximum expansion order considers the sum of the orders of combined polynomials only
+        Maximum global expansion order (sum of all exponents).
+        The maximum expansion order considers the sum of the orders of combined polynomials only
     interaction_order: int
-        number of random variables, which can interact with each other
-        all polynomials are ignored, which have an interaction order greater than the specified
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
     """
 
     def __init__(self, problem, order, order_max, interaction_order):
         """
         Constructor; Initializes the SGPC class
 
-
         Parameters
         ----------
-        order: [dim] list of int
-            Maximum individual expansion order
+        problem: Problem class instance
+            GPC Problem under investigation
+        order: list of int [dim]
+            Maximum individual expansion order [order_1, order_2, ..., order_dim].
             Generates individual polynomials also if maximum expansion order in order_max is exceeded
         order_max: int
-            Maximum expansion order (sum of all exponents)
+            Maximum global expansion order (sum of all exponents).
             The maximum expansion order considers the sum of the orders of combined polynomials only
         interaction_order: int
-            Number of random variables, which can interact with each other
-            All polynomials are ignored, which have an interaction order greater than specified
+            Number of random variables, which can interact with each other.
+            All polynomials are ignored, which have an interaction order greater than the specified
         """
         super(SGPC, self).__init__(problem)
 
@@ -49,7 +51,10 @@ class SGPC(GPC):
         self.interaction_order = interaction_order
 
         self.basis = Basis()
-        self.basis.init_basis_sgpc(order, order_max, interaction_order)
+        self.basis.init_basis_sgpc(problem=problem,
+                                   order=order,
+                                   order_max=order_max,
+                                   interaction_order=interaction_order)
 
     @staticmethod
     def get_mean(coeffs):
@@ -99,9 +104,9 @@ class SGPC(GPC):
 
     def get_samples(self, n_samples, coeffs, output_idx=None):
         """
-        Randomly sample the gPC expansion to determine output pdfs in specific points.
+        Randomly sample gPC expansion.
 
-        xi = SGPC.get_pdf_mc(N_samples, coeffs=None, output_idx=None)
+        x, pce = SGPC.get_pdf_mc(N_samples, coeffs=None, output_idx=None)
 
         Parameters
         ----------
@@ -114,123 +119,25 @@ class SGPC(GPC):
 
         Returns
         -------
-        xi: [N_samples x dim] np.ndarray
+        x: [n_samples x dim] np.ndarray
             Generated samples in normalized coordinates.
-        pce: [N_samples x N_out] np.ndarray
-            GPC approximation at points xi.
+        pce: [n_samples x n_out] np.ndarray
+            GPC approximation at points x.
         """
-
-        # handle input parameters
-        if len(coeffs.shape) == 1:
-            self.N_out = 1
-        else:
-            self.N_out = coeffs.shape[1]
 
         # seed the random numbers generator
         np.random.seed()
 
-        # generate random samples for each random input variable [N_samples x dim]
-        xi = np.zeros([n_samples, self.dim])
-        for i_dim in range(self.dim):
-            if self.pdf_type[i_dim] == "beta":
-                xi[:, i_dim] = (np.random.beta(self.pdf_shape[i_dim][0],
-                                               self.pdf_shape[i_dim][1], [n_samples, 1]) * 2.0 - 1)[:, 0]
-            if self.pdf_type[i_dim] == "norm" or self.pdf_type[i_dim] == "normal":
-                xi[:, i_dim] = (np.random.normal(0, 1, [n_samples, 1]))[:, 0]
+        # generate temporary grid with random samples for each random input variable [n_samples x dim]
+        grid = RandomGrid(problem=self.problem, parameters={"n_grid": n_samples, "seed": None})
 
         # if output index list is not provided, sample all gpc outputs
         if output_idx is None:
-            output_idx = np.arange(self.N_out)
+            output_idx = np.arange(coeffs.shape[1])
             # output_idx = output_idx[np.newaxis, :]
-        pce = self.get_approximation(coeffs=coeffs, xi=xi, output_idx=output_idx)
+        pce = self.get_approximation(coeffs=coeffs, x=grid.coords_norm, output_idx=output_idx)
 
-        return xi, pce
-
-    def get_approximation(self, coeffs, xi, output_idx=None):
-        """
-        Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).
-
-        pce = SGPC.get_approximation(coeffs=None, xi=None, output_idx=None)
-
-        Parameters
-        ----------
-        coeffs: [N_coeffs x N_out] np.ndarray
-            Gpc coefficients
-        xi: [1 x dim] np.ndarray
-            Point in variable space to evaluate local sensitivity in normalized coordinates
-        output_idx: [1 x N_out] np.ndarray, optional, default=None
-            Index of output quantities to consider (Default: all outputs).
-
-        Returns
-        -------
-        pce: [N_xi x N_out] np.ndarray
-            Gpc approximation at normalized coordinates xi.
-
-        Example
-        -------
-        pce = get_approximation([[xi_1_p1 ... xi_dim_p1] ,[xi_1_p2 ... xi_dim_p2]], np.array([[0,5,13]]))
-        """
-
-        def cpu(s):
-            pce = np.zeros([xi.shape[0], s.N_out])
-            for i_poly in range(s.N_poly):
-                gpc_matrix_new_row = np.ones(xi.shape[0])
-                for i_dim in range(s.dim):
-                    gpc_matrix_new_row *= self.poly[s.poly_idx[i_poly][i_dim]][i_dim](xi[:, i_dim])
-                pce += np.outer(gpc_matrix_new_row, coeffs[i_poly])
-            return pce
-
-        def gpu(s):
-            # initialize matrices and parameters
-            pce = np.zeros([xi.shape[0], coeffs.shape[1]])
-            number_of_variables = len(s.poly[0])
-            highest_degree = len(s.poly)
-
-            # handle pointer
-            polynomial_coeffs_pointer = s.poly_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            polynomial_index_pointer = s.poly_idx_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-            xi_pointer = xi.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            sim_result_pointer = pce.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            sim_coeffs_pointer = coeffs.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            number_of_xi_size_t = ctypes.c_size_t(xi.shape[0])
-            number_of_variables_size_t = ctypes.c_size_t(number_of_variables)
-            number_of_psi_size_t = ctypes.c_size_t(coeffs.shape[0])
-            highest_degree_size_t = ctypes.c_size_t(highest_degree)
-            number_of_result_vectors_size_t = ctypes.c_size_t(coeffs.shape[1])
-
-            # handle shared object
-            dll = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'pckg', 'pce.so'), mode=ctypes.RTLD_GLOBAL)
-            cuda_pce = dll.polynomial_chaos_matrix
-            cuda_pce.argtypes = [ctypes.POINTER(ctypes.c_double)] + [ctypes.POINTER(ctypes.c_int)] + \
-                                [ctypes.POINTER(ctypes.c_double)] * 3 + [ctypes.c_size_t] * 5
-
-            # evaluate CUDA implementation
-            cuda_pce(polynomial_coeffs_pointer, polynomial_index_pointer, xi_pointer, sim_result_pointer,
-                     sim_coeffs_pointer, number_of_psi_size_t, number_of_result_vectors_size_t,
-                     number_of_variables_size_t,
-                     highest_degree_size_t, number_of_xi_size_t)
-            return pce
-
-        # handle input parameters
-        if len(coeffs.shape) == 1:
-            self.N_out = 1
-        else:
-            self.N_out = coeffs.shape[1]
-
-        self.N_poly = self.poly_idx.shape[0]
-
-        if len(xi.shape) == 1:
-            xi = xi[:, np.newaxis]
-        if np.any(output_idx):
-            output_idx = np.array(output_idx)
-            if len(output_idx.shape):
-                output_idx = output_idx[np.newaxis, :]
-            coeffs = coeffs[:, output_idx]
-
-        if self.cpu:
-            return cpu(self)
-        else:
-            return gpu(self)
+        return grid.coords_norm, pce
 
     # noinspection PyTypeChecker
     def get_sobol_indices(self, coeffs):
@@ -241,16 +148,16 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        coeffs: [N_coeffs x N_out] np.ndarray
-            Gpc coefficients
+        coeffs: [n_coeffs x n_out] np.ndarray
+            GPC coefficients
 
         Returns
         -------
-        sobol: [N_sobol x N_out] np.ndarray
-            Unnormalized sobol_indices
-        sobol_idx: list of [N_sobol x dim] np.ndarray
+        sobol: ndarray of float [n_sobol x n_out]
+            Unnormalized Sobol indices
+        sobol_idx: list of ndarray of int [n_sobol x n_sobol_included]
             Parameter combinations in rows of sobol.
-        sobol_idx_bool: list of np.ndarray of bool
+        sobol_idx_bool: list of ndarray of bool [n_sobol x dim]
             Boolean mask that determines which multi indices are unique.
         """
 
@@ -268,8 +175,9 @@ class SGPC(GPC):
             raise Exception('Number of coefficients is 1 ... no sobol indices to calculate ...')
 
         # Generate boolean matrix of all basis functions where order > 0 = True
-        # size: [N_coeffs x dim]
-        sobol_mask = self.poly_idx != 0
+        # size: [n_basis x dim]
+        multi_indices = np.array([map(lambda _b:_b.p["i"], b_row) for b_row in self.basis.b])
+        sobol_mask = multi_indices != 0
 
         # look for unique combinations (i.e. available sobol combinations)
         # size: [N_sobol x dim]
@@ -359,19 +267,21 @@ class SGPC(GPC):
         str_out = []
 
         # get maximum length of random_vars label
-        max_len = max([len(self.random_vars[i]) for i in range(len(self.random_vars))])
+        max_len = max([len(self.problem.random_vars[i]) for i in range(len(self.problem.random_vars))])
 
         for i in range(order_max):
             # extract sobol coefficients of order i
-            sobol_extracted, sobol_extracted_idx = get_extracted_sobol_order(sobol, sobol_idx, i + 1)
+            sobol_extracted, sobol_extracted_idx = self.get_extracted_sobol_order(sobol, sobol_idx, i + 1)
 
-            sobol_rel_order_mean.append(np.sum(np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten())
-                                        / np.sum(var[not_nan_mask]))
+            # determine average sobol index over all elements
+            sobol_rel_order_mean.append(np.sum(np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten()) /
+                                        np.sum(var[not_nan_mask]))
 
-            # TODO: @Konstantin: Implement the STD of the relative averaged Sobol coefficients here
-            sobol_rel_order_std.append(0)
+            sobol_rel_order_std.append(np.std(np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten() /
+                                              var[not_nan_mask]))
 
-            iprint("Ratio: Sobol indices order {} / total variance: {:.4f}".format(i+1, sobol_rel_order_mean[i]), tab=1)
+            iprint("Ratio: Sobol indices order {} / total variance: {:.4f} +- {:.4f}"
+                   .format(i+1, sobol_rel_order_mean[i], sobol_rel_order_std[i]), tab=1, verbose=self.verbose)
 
             # for first order indices, determine ratios of all random variables
             if i == 0:
@@ -382,11 +292,10 @@ class SGPC(GPC):
                                                     / np.sum(var[not_nan_mask]))
                     sobol_rel_1st_order_std.append(0)
 
-                    str_out.append("\t{}{}: {:.4f}".format((max_len -
-                                                            len(self.random_vars[
-                                                                    sobol_extracted_idx_1st[j]])) * ' ',
-                                                           self.random_vars[sobol_extracted_idx_1st[j]],
-                                                           sobol_rel_1st_order_mean[j]))
+                    str_out.append("\t{}{}: {:.4f}"
+                                   .format((max_len - len(self.problem.random_vars[sobol_extracted_idx_1st[j]])) * ' ',
+                                           self.problem.random_vars[sobol_extracted_idx_1st[j]],
+                                           sobol_rel_1st_order_mean[j]))
 
         sobol_rel_order_mean = np.array(sobol_rel_order_mean)
         sobol_rel_1st_order_mean = np.array(sobol_rel_1st_order_mean)
@@ -400,6 +309,44 @@ class SGPC(GPC):
                sobol_rel_order_mean, sobol_rel_order_std, \
                sobol_rel_1st_order_mean, sobol_rel_1st_order_std
 
+    @staticmethod
+    def get_extracted_sobol_order(sobol, sobol_idx, order=1):
+        """
+        Extract Sobol indices with specified order from Sobol data.
+
+        sobol_1st, sobol_idx_1st = SGPC.get_extracted_sobol_order(sobol, sobol_idx, order=1)
+
+        Parameters
+        ----------
+        sobol: ndarray [N_sobol x N_out]
+            Sobol indices of N_out output quantities
+        sobol_idx: [N_sobol] list or ndarray of int
+            Parameter label indices belonging to Sobol indices
+        order: int, optional, default=1
+            Sobol index order to extract
+
+        Returns
+        -------
+        sobol_n_order: ndarray of float
+            n-th order Sobol indices of N_out output quantities
+        sobol_idx_n_order: ndarray of int
+            Parameter label indices belonging to n-th order Sobol indices
+        """
+
+        # make mask of nth order sobol indices
+        mask = [index for index, sobol_element in enumerate(sobol_idx) if sobol_element.shape[0] == order]
+
+        # extract from dataset
+        sobol_n_order = sobol[mask, :]
+        sobol_idx_n_order = np.vstack(sobol_idx[mask])
+
+        # sort sobol indices according to parameter indices in ascending order
+        sort_idx = np.argsort(sobol_idx_n_order, axis=0)[:, 0]
+        sobol_n_order = sobol_n_order[sort_idx, :]
+        sobol_idx_n_order = sobol_idx_n_order[sort_idx, :]
+
+        return sobol_n_order, sobol_idx_n_order
+
     # noinspection PyTypeChecker
     def get_global_sens(self, coeffs):
         """
@@ -409,12 +356,12 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        coeffs: [N_coeffs x N_out] np.ndarray
-            Gpc coefficients
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
 
         Returns
         -------
-        global_sens: [dim x N_out] np.ndarray
+        global_sens: ndarray [dim x n_out]
             Global derivative based sensitivity coefficients
 
         Notes
@@ -423,159 +370,105 @@ class SGPC(GPC):
            Commun. Comput. Phys., 5 (2009), pp. 242-272 eq. (3.14) page 255
         """
 
-        n_max = int(len(self.poly))
+        b_int_global = np.zeros([self.problem.dim, self.basis.n_basis])
 
-        self.poly_der = [[0 for _ in range(self.dim)] for _ in range(n_max)]
-        poly_der_int = [[0 for _ in range(self.dim)] for _ in range(n_max)]
-        poly_int = [[0 for _ in range(self.dim)] for _ in range(n_max)]
-        knots_list_1d = [0 for _ in range(self.dim)]
-        weights_list_1d = [0 for _ in range(self.dim)]
+        # construct matrix with integral expressions [n_basis x dim]
+        b_int = np.array([map(lambda _b: _b.fun_int, b_row) for b_row in self.basis.b])
+        b_int_der = np.array([map(lambda _b: _b.fun_der_int, b_row) for b_row in self.basis.b])
 
-        # generate quadrature points for numerical integration for each random
-        # variable separately (2*N_max points for high accuracy)
+        for i_sens in range(self.problem.dim):
+            # replace column with integral expressions from derivative of parameter[i_dim]
+            tmp = copy.deepcopy(b_int)
+            tmp[:, i_sens] = b_int_der[:, i_sens]
 
-        for i_dim in range(self.dim):
-            # Jacobi polynomials
-            if self.pdf_type[i_dim] == 'beta':
-                knots_list_1d[i_dim], weights_list_1d[i_dim] = get_quadrature_jacobi_1d(2 * n_max,
-                                                                                        self.pdf_shape[0][i_dim] - 1,
-                                                                                        self.pdf_shape[1][i_dim] - 1)
-            # Hermite polynomials
-            if self.pdf_type[i_dim] == 'norm' or self.pdf_type[i_dim] == "normal":
-                knots_list_1d[i_dim], weights_list_1d[i_dim] = get_quadrature_hermite_1d(2 * n_max)
+            # determine global integral expression
+            b_int_global[i_sens, :] = np.prod(tmp, axis=1)
 
-        # pre-process polynomials
-        for i_dim in range(self.dim):
-            for i_order in range(n_max):
-                # evaluate the derivatives of the polynomials
-                self.poly_der[i_order][i_dim] = np.polyder(self.poly[i_order][i_dim])
+        global_sens = np.dot(b_int_global, coeffs)
+        # global_sens = np.dot(b_int_global, coeffs) / (2 ** self.problem.dim)
 
-                # evaluate poly and poly_der at quadrature points and integrate w.r.t.
-                # pdf (multiply with weights and sum up)
-                # saved like self.poly [N_order x dim]
-                poly_int[i_order][i_dim] = np.sum(
-                    np.dot(self.poly[i_order][i_dim](knots_list_1d[i_dim]), weights_list_1d[i_dim]))
-                poly_der_int[i_order][i_dim] = np.sum(
-                    np.dot(self.poly_der[i_order][i_dim](knots_list_1d[i_dim]), weights_list_1d[i_dim]))
-
-        n_poly = self.poly_idx.shape[0]
-        poly_der_int_multi = np.zeros([self.dim, n_poly])
-
-        for i_sens in range(self.dim):
-            for i_poly in range(n_poly):
-                poly_der_int_single = 1
-
-                # evaluate complete integral (joint basis function)
-                for i_dim in range(self.dim):
-                    if i_dim == i_sens:
-                        poly_der_int_single *= poly_der_int[self.poly_idx[i_poly][i_dim]][i_dim]
-                    else:
-                        poly_der_int_single *= poly_int[self.poly_idx[i_poly][i_dim]][i_dim]
-
-                poly_der_int_multi[i_sens, i_poly] = poly_der_int_single
-
-        # sum up over all coefficients
-        # [dim x N_points]  = [dim x N_poly] * [N_poly x N_points]
-        return np.dot(poly_der_int_multi, coeffs) / (2 ** self.dim)
+        return global_sens
 
     # noinspection PyTypeChecker
-    def get_local_sens(self, coeffs, xi):
+    def get_local_sens(self, coeffs, x):
         """
-        Determine the local derivative based sensitivity coefficients in the point of interest xi
+        Determine the local derivative based sensitivity coefficients in the point of interest x
         (normalized coordinates [-1, 1]).
 
-        local_sens = SGPC.calc_localsens(coeffs, xi)
+        local_sens = SGPC.calc_localsens(coeffs, x)
 
         Parameters
         ----------
-        coeffs: [N_coeffs x N_out] np.ndarray
-            Gpc coefficients
-        xi: [N_coeffs x N_out] np.ndarray
-            Point in variable space to evaluate local sensitivity in (normalized coordinates!)
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
+        x: ndarray of float [n_basis x n_out]
+            Point in variable space to evaluate local sensitivity in (normalized coordinates [-1, 1])
 
         Returns
         -------
-        local_sens: [dim x N_out] np.ndarray
-            Local sensitivity
+        local_sens: ndarray [dim x n_out]
+            Local sensitivity of output quantities in point x
         """
 
-        n_max = len(self.poly)
+        b_x_global = np.zeros([self.problem.dim, self.basis.n_basis])
 
-        self.poly_der = [[0 for _ in range(self.dim)] for _ in range(n_max + 1)]
-        poly_der_xi = [[0 for _ in range(self.dim)] for _ in range(n_max + 1)]
-        poly_opvals = [[0 for _ in range(self.dim)] for _ in range(n_max + 1)]
+        # evaluate fun(x) and fun_der(x) at point of operation x [n_basis x dim]
+        b_x = np.array([map(lambda _b: _b.fun(x), b_row) for b_row in self.basis.b])
+        b_der_x = np.array([map(lambda _b: _b.fun_der(x), b_row) for b_row in self.basis.b])
 
-        # pre-process polynomials
-        for i_dim in range(self.dim):
-            for i_order in range(n_max + 1):
-                # evaluate the derivatives of the polynomials
-                self.poly_der[i_order][i_dim] = np.polyder(self.poly[i_order][i_dim])
+        for i_sens in range(self.problem.dim):
+            # replace column with integral expressions from derivative of parameter[i_dim]
+            tmp = copy.deepcopy(b_x)
+            tmp[:, i_sens] = b_der_x[:, i_sens]
 
-                # evaluate poly and poly_der at point of operation
-                poly_opvals[i_order][i_dim] = self.poly[i_order][i_dim](xi[1, i_dim])
-                poly_der_xi[i_order][i_dim] = self.poly_der[i_order][i_dim](xi[1, i_dim])
+            # determine global integral expression
+            b_x_global[i_sens, :] = np.prod(tmp, axis=1)
 
-        n_vals = 1
-        poly_sens = np.zeros([self.dim, self.N_poly])
+        local_sens = np.dot(b_x_global, coeffs)
 
-        for i_sens in range(self.dim):
-            for i_poly in range(self.N_poly):
-                poly_sens_single = np.ones(n_vals)
-
-                # construct polynomial basis according to partial derivatives
-                for i_dim in range(self.dim):
-                    if i_dim == i_sens:
-                        poly_sens_single *= poly_der_xi[self.poly_idx[i_poly][i_dim]][i_dim]
-                    else:
-                        poly_sens_single *= poly_opvals[self.poly_idx[i_poly][i_dim]][i_dim]
-                poly_sens[i_sens, i_poly] = poly_sens_single
-
-        # sum up over all coefficients
-        # [dim x N_points]  = [dim x N_poly]  *   [N_poly x N_points]
-        return np.dot(poly_sens, coeffs)
+        return local_sens
 
     def get_pdf(self, coeffs, n_samples, output_idx=None):
         """ Determine the estimated pdfs of the output quantities
 
-        pdf_x, pdf_y = SGPC.get_pdf(coeffs, N_samples, output_idx=None)
+        pdf_x, pdf_y = SGPC.get_pdf(coeffs, n_samples, output_idx=None)
 
         Parameters
         ----------
-        coeffs: [N_coeffs x N_out] np.ndarray
-            Gpc coefficients
+        coeffs: [n_coeffs x n_out] np.ndarray
+            GPC coefficients
         n_samples: int
-            Number of samples used to estimate output pdf
-        output_idx: [1 x N_out] np.ndarray, optional, default=None
-            Index of output quantities to consider.
-            If output_idx=None, all output quantities are considered
+            Number of samples used to estimate output pdfs
+        output_idx: ndarray, optional, default=None [1 x n_out]
+            Index of output quantities to consider (if output_idx=None, all output quantities are considered)
 
         Returns
         -------
-        pdf_x: [100 x N_out] np.ndarray
-            x-coordinates of output pdf (output quantity),
-        pdf_y: [100 x N_out] np.ndarray
-            y-coordinates of output pdf (probability density of output quantity)
+        pdf_x: [100 x n_out] np.ndarray
+            x-coordinates of output pdfs of output quantities
+        pdf_y: [100 x n_out] np.ndarray
+            y-coordinates of output pdfs (probability density of output quantity)
         """
 
         # handle (N,) arrays
         if len(coeffs.shape) == 1:
-            self.N_out = 1
+            n_out = 1
         else:
-            self.N_out = coeffs.shape[1]
+            n_out = coeffs.shape[1]
 
         # if output index array is not provided, determine pdfs of all outputs
         if not output_idx:
-            output_idx = np.linspace(0, self.N_out - 1, self.N_out)
+            output_idx = np.linspace(0, n_out - 1, n_out)
             output_idx = output_idx[np.newaxis, :]
 
         # sample gPC expansion
-        samples_in, samples_out = self.get_samples(n_samples, coeffs=coeffs, output_idx=output_idx)
+        samples_in, samples_out = self.get_samples(n_samples=n_samples, coeffs=coeffs, output_idx=output_idx)
 
         # determine kernel density estimates using Gaussian kernel
-        pdf_x = np.zeros([100, self.N_out])
-        pdf_y = np.zeros([100, self.N_out])
+        pdf_x = np.zeros([100, n_out])
+        pdf_y = np.zeros([100, n_out])
 
-        for i_out in range(self.N_out):
+        for i_out in range(n_out):
             kde = scipy.stats.gaussian_kde(samples_out.transpose(), bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
             pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
             pdf_y[:, i_out] = kde(pdf_x[:, i_out])
@@ -591,116 +484,38 @@ class Reg(SGPC):
 
     Attributes
     ----------
-    N_grid: int
-        number of grid points
-    dim: int
-        number of uncertain parameters to process
-    pdf_type: [dim] list of str
-        type of pdf 'beta' or 'norm'
-    pdf_shape: list of list of float
-        shape parameters of pdfs
-        beta-dist:   [[alpha], [beta]    ]
-        normal-dist: [[mean],  [variance]]
-    limits: list of list of float
-        upper and lower bounds of random variables
-        beta-dist:   [[a1 ...], [b1 ...]]
-        normal-dist: [[0 ... ], [0 ... ]] (not used)
-    order: [dim] list of int
-        maximum individual expansion order
-        generates individual polynomials also if maximum expansion order in order_max is exceeded
-    order_max: int
-        maximum expansion order (sum of all exponents)
-        the maximum expansion order considers the sum of the orders of combined polynomials only
-    interaction_order: int
-        number of random variables, which can interact with each other
-        all polynomials are ignored, which have an interaction order greater than the specified
-    grid: grid object
-        grid object generated in grid.py including grid.coords and grid.coords_norm
-    random_vars: [dim] list of str
-        string labels of the random variables
     relative_error_loocv: list of float
         relative error of the leave-one-out-cross-validation
-    nan_elm: list of float
-        which elements were dropped due to NaN
-
-    Parameters
-    ----------
-    pdf_type: [dim] list of str
-        type of pdf 'beta' or 'norm'
-    pdf_shape: list of list of float
-        shape parameters of pdfs
-        beta-dist:   [[alpha], [beta]    ]
-        normal-dist: [[mean],  [variance]]
-    limits: list of list of float
-        upper and lower bounds of random variables
-        beta-dist:   [[a1 ...], [b1 ...]]
-        normal-dist: [[0 ... ], [0 ... ]] (not used)
-    order: [dim] list of int
-        maximum individual expansion order
-        generates individual polynomials also if maximum expansion order in order_max is exceeded
-    order_max: int
-        maximum expansion order (sum of all exponents)
-        the maximum expansion order considers the sum of the orders of combined polynomials only
-    interaction_order: int
-        number of random variables, which can interact with each other
-        all polynomials are ignored, which have an interaction order greater than the specified
-    grid: grid object
-        grid object generated in grid.py including grid.coords and grid.coords_norm
-    random_vars: [dim] list of str, optional, default=None
-        string labels of the random variables
     """
 
     def __init__(self, problem, order, order_max, interaction_order):
         """
         Constructor; Initializes Regression SGPC class
 
-        Attributes
-        ----------
-        relative_error_loocv: float
-            Relative mean error of leave one out cross validation (loocv)
-
-        """
-        super(Reg, self).__init__(problem, order, order_max, interaction_order)
-
-        self.relative_error_loocv = []
-
-    def get_coeffs_expand(self, sim_results):
-        """
-        Determine the gPC coefficients by the regression method.
-
-        coeffs = get_coeffs_expand(sim_results)
-
         Parameters
         ----------
-        sim_results: [N_grid x N_out] np.ndarray of float
-            results from simulations with N_out output quantities,
-
-        Returns
-        -------
-        coeffs: [N_coeffs x N_out] np.ndarray of float
-            gPC coefficients
+        problem: Problem class instance
+            GPC Problem under investigation
+        order: list of int [dim]
+            Maximum individual expansion order [order_1, order_2, ..., order_dim].
+            Generates individual polynomials also if maximum expansion order in order_max is exceeded
+        order_max: int
+            Maximum global expansion order (sum of all exponents).
+            The maximum expansion order considers the sum of the orders of combined polynomials only
+        interaction_order: int
+            Number of random variables, which can interact with each other.
+            All polynomials are ignored, which have an interaction order greater than the specified
         """
+        super(Reg, self).__init__(problem, order, order_max, interaction_order)
+        self.solver = 'Moore-Penrose'   # Default solver
+        self.relative_error_loocv = []
 
-        iprint('Determine gPC coefficients...')
-
-        # handle (N,) arrays
-        if len(sim_results.shape) == 1:
-            self.N_out = 1
-        else:
-            self.N_out = sim_results.shape[1]
-
-        try:
-            return np.dot(self.gpc_matrix_inv, sim_results.T)
-        except ValueError:
-            wprint("Please check format of parameter sim_results: [N_grid x N_out] np.ndarray.")
-            raise
-
-    def get_loocv(self, sim_results):
+    def loocv(self, sim_results):
         """
         Perform leave one out cross validation of gPC with maximal 100 points
         and add result to self.relative_error_loocv.
 
-        relative_error_loocv = GPC.get_loocv(sim_results)
+        relative_error_loocv = SGPC.loocv(sim_results)
 
         Parameters
         ----------
@@ -710,7 +525,7 @@ class Reg(SGPC):
         Returns
         -------
         relative_error_loocv: float
-            relative mean error of leave one out cross validation
+            Relative mean error of leave one out cross validation
         """
 
         # define number of performed cross validations (max 100)
@@ -745,127 +560,116 @@ class Reg(SGPC):
 
 class Quad(SGPC):
     """
-    Quadrature gPC subclass
+    Quadrature SGPC sub-class
 
     Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)
 
     Attributes
     ----------
-    N_grid: int
-        number of grid points
-    dim: int
-        number of uncertain parameters to process
-    pdf_type: [dim] list of str
-        type of pdf 'beta' or 'norm'
-    pdf_shape: list of list of float
-        shape parameters of pdfs
-        beta-dist:   [[alpha], [beta]    ]
-        normal-dist: [[mean],  [variance]]
-    limits: list of list of float
-        upper and lower bounds of random variables
-        beta-dist:   [[a1 ...], [b1 ...]]
-        normal-dist: [[0 ... ], [0 ... ]] (not used)
-    order: [dim] list of int
-        maximum individual expansion order
-        generates individual polynomials also if maximum expansion order in order_max is exceeded
-    order_max: int
-        maximum expansion order (sum of all exponents)
-        the maximum expansion order considers the sum of the orders of combined polynomials only
-    interaction_order: int
-        number of random variables, which can interact with each other
-        all polynomials are ignored, which have an interaction order greater than the specified
-    grid: grid object
-        grid object generated in grid.py including grid.coords and grid.coords_norm
-    random_vars: [dim] list of str
-        string labels of the random variables
 
-    Parameters
-    ----------
-    pdf_type: [dim] list of str
-        type of pdf 'beta' or 'norm'
-    pdf_shape: list of list of float
-        shape parameters of pdfs
-        beta-dist:   [[alpha], [beta]    ]
-        normal-dist: [[mean],  [variance]]
-    limits: list of list of float
-        upper and lower bounds of random variables
-        beta-dist:   [[a1 ...], [b1 ...]]
-        normal-dist: [[0 ... ], [0 ... ]] (not used)
-    order: [dim] list of int
-        maximum individual expansion order
-        generates individual polynomials also if maximum expansion order in order_max is exceeded
-    order_max: int
-        maximum expansion order (sum of all exponents)
-        the maximum expansion order considers the sum of the orders of combined polynomials only
-    interaction_order: int
-        number of random variables, which can interact with each other
-        all polynomials are ignored, which have an interaction order greater than the specified
-    grid: grid object
-        grid object generated in grid.py including grid.coords and grid.coords_norm
-    random_vars: [dim] list of str, optional, default=None
-        string labels of the random variables
     """
 
-    def __init__(self, pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None):
-        super(Reg, self).__init__(problem, order, order_max, interaction_order)
-
-    def get_coeffs_expand(self, sim_results):
+    def __init__(self, problem, order, order_max, interaction_order):
         """
-        Determine the gPC coefficients by the quadrature method
-
-        coeffs = get_coeffs_expand(self, sim_results)
+        Constructor; Initializes Quadrature SGPC sub-class
 
         Parameters
         ----------
-        sim_results: [N_grid x N_out] np.ndarray of float
-            results from simulations with N_out output quantities
-
-        Returns
-        -------
-        coeffs: [N_coeffs x N_out] np.ndarray of float
-            gPC coefficients
+        problem: Problem class instance
+            GPC Problem under investigation
+        order: list of int [dim]
+            Maximum individual expansion order [order_1, order_2, ..., order_dim].
+            Generates individual polynomials also if maximum expansion order in order_max is exceeded
+        order_max: int
+            Maximum global expansion order (sum of all exponents).
+            The maximum expansion order considers the sum of the orders of combined polynomials only
+        interaction_order: int
+            Number of random variables, which can interact with each other.
+            All polynomials are ignored, which have an interaction order greater than the specified
         """
+        super(Quad, self).__init__(problem, order, order_max, interaction_order)
+        self.solver = 'NumInt'  # Default solver
 
-        iprint('Determine gPC coefficients...')
 
-        # handle (N,) arrays
-        if len(sim_results.shape) == 1:
-            self.N_out = 1
-        else:
-            self.N_out = sim_results.shape[1]
 
-        # check if quadrature rule (grid) fits to the probability density distribution (pdf)
-        grid_pdf_fit = True
-        for i_dim in range(self.dim):
-            if self.pdf_type[i_dim] == 'beta':
-                if not (self.grid.grid_type[i_dim] == 'jacobi'):
-                    grid_pdf_fit = False
-                    break
-            elif (self.pdf_type[i_dim] == 'norm') or (self.pdf_type[i_dim] == 'normal'):
-                if not (self.grid.gridtype[i_dim] == 'hermite'):
-                    grid_pdf_fit = False
-                    break
+        # # handle (N,) arrays
+        # if len(sim_results.shape) == 1:
+        #     self.N_out = 1
+        # else:
+        #     self.N_out = sim_results.shape[1]
 
-        # if not, calculate joint pdf
-        if not grid_pdf_fit:
-            joint_pdf = np.ones(self.grid.coords_norm.shape)
 
-            for i_dim in range(self.dim):
-                if self.pdf_type[i_dim] == 'beta':
-                    joint_pdf[:, i_dim] = get_pdf_beta(self.grid.coords_norm[:, i_dim],
-                                                       self.pdf_shape[0][i_dim],
-                                                       self.pdf_shape[1][i_dim], -1, 1)
 
-                if self.pdf_type[i_dim] == 'norm' or self.pdf_type[i_dim] == 'normal':
-                    joint_pdf[:, i_dim] = scipy.stats.norm.pdf(self.grid.coords_norm[:, i_dim])
 
-            joint_pdf = np.array([np.prod(joint_pdf, axis=1)]).transpose()
+    # N_grid: int
+    #     number of grid points
+    # N_poly: int
+    #     number of polynomials psi
+    # N_samples: int
+    #     number of samples xi
+    #
+    # order: [dim] list of int
+    #     maximum individual expansion order
+    #     generates individual polynomials also if maximum expansion order in order_max is exceeded
+    # order_max: int
+    #     maximum expansion order (sum of all exponents)
+    #     the maximum expansion order considers the sum of the orders of combined polynomials only
+    # interaction_order: int
+    #     number of random variables, which can interact with each other
+    #     all polynomials are ignored, which have an interaction order greater than the specified
+    # grid: grid object
+    #     grid object generated in grid.py including grid.coords and grid.coords_norm
+    #
+    # sobol: [N_sobol x N_out] np.ndarray
+    #     Sobol indices of N_out output quantities
+    # sobol_idx: [N_sobol] list of np.ndarray
+    #     List of parameter label indices belonging to Sobol indices
+    #
+    # gpc_coeffs: [N_poly x N_out] np.ndarray
+    #     coefficient matrix of independent regions of interest for every coefficient
+    # poly: [dim x order_span] list of list of np.poly1d:
+    #     polynomial objects containing the coefficients that are used to build the gpc matrix
+    # poly_gpu: np.ndarray
+    #     polynomial coefficients stored in a np.ndarray that can be processed on a graphic card
+    # poly_idx: [N_poly x dim] np.ndarray
+    #     multi indices to determine the degree of the used sub-polynomials
+    # poly_idx_gpu [N_poly x dim] np.ndarray
+    #     multi indices to determine the degree of the used sub-polynomials stored in a np.ndarray that can be processed
+    #     on a graphic card
+    # poly_der: [dim x order_span] list of list of np.poly1d:
+    #     derivative of the polynomial objects containing the coefficients that are used to build the gpc matrix
+    # poly_norm: [order_span x dim] np.ndarray
+    #     normalizing scaling factors of the used sub-polynomials
+    # poly_norm_basis: [N_poly] np.ndarray
+    #     normalizing scaling factors of the polynomial basis functions
+    # sobol_idx_bool: list of np.ndarray of bool
+    #     boolean mask that determines which multi indices are unique
 
-            # weight sim_results with the joint pdf
-            sim_results = sim_results * joint_pdf * 2 ** self.dim
 
-        # scale rows of gpc matrix with quadrature weights
-        gpc_matrix_weighted = np.dot(np.diag(self.grid.weights), self.gpc_matrix)
-
-        # determine gpc coefficients [N_coeffs x N_output]
-        return np.dot(sim_results.transpose(), gpc_matrix_weighted).transpose()
+    # N_grid: int
+    #     number of grid points
+    # dim: int
+    #     number of uncertain parameters to process
+    # pdf_type: [dim] list of str
+    #     type of pdf 'beta' or 'norm'
+    # pdf_shape: list of list of float
+    #     shape parameters of pdfs
+    #     beta-dist:   [[alpha], [beta]    ]
+    #     normal-dist: [[mean],  [variance]]
+    # limits: list of list of float
+    #     upper and lower bounds of random variables
+    #     beta-dist:   [[a1 ...], [b1 ...]]
+    #     normal-dist: [[0 ... ], [0 ... ]] (not used)
+    # order: [dim] list of int
+    #     maximum individual expansion order
+    #     generates individual polynomials also if maximum expansion order in order_max is exceeded
+    # order_max: int
+    #     maximum expansion order (sum of all exponents)
+    #     the maximum expansion order considers the sum of the orders of combined polynomials only
+    # interaction_order: int
+    #     number of random variables, which can interact with each other
+    #     all polynomials are ignored, which have an interaction order greater than the specified
+    # grid: grid object
+    #     grid object generated in grid.py including grid.coords and grid.coords_norm
+    # random_vars: [dim] list of str
+    #     string labels of the random variables

@@ -409,10 +409,10 @@ def iprint(message, verbose=True, tab=None):
     verbose: bool, optional, default=True
         Determines if string is printed out
     """
-
-    if tab:
-        message = '\t' * tab + message
-    console_logger.info(message)
+    if verbose:
+        if tab:
+            message = '\t' * tab + message
+        console_logger.info(message)
 
 
 def wprint(message, verbose=True, tab=None):
@@ -424,11 +424,12 @@ def wprint(message, verbose=True, tab=None):
     Parameters
     ----------
     message: string
-        string to print in standard output
+        String to print in standard output
     verbose: bool, optional, default=True
-        determines if string is printed out
+        Determines if string is printed out
     """
 
-    if tab:
-        message = '\t' * tab + message
-    console_logger.warning(message)
+    if verbose:
+        if tab:
+            message = '\t' * tab + message
+        console_logger.warning(message)

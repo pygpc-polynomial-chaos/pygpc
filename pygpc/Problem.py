@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
-from collections import namedtuple
 import numpy as np
+from .RandomParameter import *
 
 
 class Problem:
@@ -56,9 +56,9 @@ class Problem:
     >>> parameters["R"] = [80, 90, 100]                                                 # constant parameter
     >>> parameters["phi_electrode"] = 15                                                #       "
     >>> parameters["N_points"] = 201                                                    #       "
-    >>> parameters["sigma_1"] = pygpc.RandomParameter("beta", [5, 5], [0.15, 0.45])     # random variable
-    >>> parameters["sigma_2"] = pygpc.RandomParameter("beta", [1, 3], [0.01, 0.02])     #       "
-    >>> parameters["sigma_3"] = pygpc.RandomParameter("beta", [2, 2], [0.4, 0.6])       #       "
+    >>> parameters["sigma_1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 5], pdf_limits=[0.15, 0.45])  # random variable
+    >>> parameters["sigma_2"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 3], pdf_limits=[0.01, 0.02])  #       "
+    >>> parameters["sigma_3"] = pygpc.RandomParameter.Norm(pdf_shape=[2, 2])                           #       "
     >>> problem = pygpc.Problem(model, parameters)
     """
     def __init__(self, model, parameters):
@@ -66,7 +66,7 @@ class Problem:
 
         self.model = model
         self.parameters = parameters
-
+        self.parameters_random = []
         self.params_names = self.parameters.keys()
         self.dim = 0
         self.random_vars = []
@@ -74,9 +74,10 @@ class Problem:
         self.pdf_type = []
         self.pdf_limits = []
 
-        for p in self.params_names:
-            if type(self.parameters[p]) is RandomParameter:
+        for i_p, p in enumerate(self.params_names):
+            if isinstance(parameters[p], RandomParameter):
                 self.dim += 1
+                self.parameters_random.append(parameters[p])
                 self.random_vars.append(p)
                 self.pdf_shape.append(parameters[p].pdf_shape)
                 self.pdf_type.append(parameters[p].pdf_type)

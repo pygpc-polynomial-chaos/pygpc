@@ -1,16 +1,14 @@
-from abc import ABCMeta
 import scipy.special
 import numpy as np
+from .Grid import Grid
 
 
-class BasisFunction:
+class BasisFunction(object):
     """
     Abstract class of basis functions.
     This base class provides basic properties and methods for the basis functions.
     It cannot be used directly, but inherits properties and methods to the specific basis function sub classes.
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, p):
         """
@@ -18,6 +16,7 @@ class BasisFunction:
         """
         self.p = p
         self.fun = None
+        self.fun_norm = None
 
     def __call__(self, x):
         """
@@ -68,7 +67,7 @@ class Jacobi(BasisFunction):
                               scipy.special.gamma(self.p["i"] + self.p["p"] + self.p["q"] - 1) *
                               scipy.special.factorial(self.p["i"]))
 
-        # normalization factor of polynomial
+        # normalization factor of polynomial (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
         self.fun_norm = (jacobi_norm * beta_norm)
 
         # define basis function
@@ -76,6 +75,14 @@ class Jacobi(BasisFunction):
                                         self.p["q"] - 1,  # beta-pdf: alpha=p /// jacobi-poly: alpha=q-1  !!!
                                         self.p["p"] - 1,  # beta-pdf: beta=q  /// jacobi-poly: beta=p-1   !!!
                                         monic=False) / np.sqrt(self.fun_norm)
+
+        # derivative of polynomial
+        self.fun_der = np.polyder(self.fun)
+
+        # integral of fun and fun_der w.r.t. pdf (numerical integration with corresponding weights)
+        knots, weights = Grid(0).get_quadrature_jacobi_1d(n=10 * self.p["i"], p=self.p["p"] - 1, q=self.p["q"] - 1)
+        self.fun_int = np.dot(self.fun(knots), weights)
+        self.fun_der_int = np.dot(self.fun_der(knots), weights)
 
 
 class Hermite(BasisFunction):
@@ -96,11 +103,22 @@ class Hermite(BasisFunction):
 
         super(Hermite, self).__init__(p)
 
-        # determine polynomial normalization factor
+        # normalization factor of polynomial (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
         self.fun_norm = scipy.special.factorial(p["i"])
 
         # define basis function
         self.fun = scipy.special.hermitenorm(p["i"], monic=False) / np.sqrt(self.fun_norm)
+
+        # derivative of polynomial
+        self.fun_der = np.polyder(self.fun)
+
+        # derivative of polynomial
+        self.fun_der = np.polyder(self.fun)
+
+        # integral of fun and fun_der w.r.t. pdf (numerical integration with corresponding weights)
+        knots, weights = Grid(0).get_quadrature_hermite_1d(n=10 * self.p["i"])
+        self.fun_int = np.dot(self.fun(knots), weights)
+        self.fun_der_int = np.dot(self.fun_der(knots), weights)
 
 
 class StepUp(BasisFunction):
@@ -120,6 +138,9 @@ class StepUp(BasisFunction):
         """
 
         super(StepUp, self).__init__(p)
+
+        # normalization factor of function (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
+        self.fun_norm = 1.0
 
         # define basis function
         self.fun = lambda x: 0.0 if x < p["xs"] else (0.5 if x == p["xs"] else 1.0)
@@ -142,6 +163,9 @@ class StepDown(BasisFunction):
         """
 
         super(StepDown, self).__init__(p)
+
+        # normalization factor of function (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
+        self.fun_norm = 1.0
 
         # define basis function
         self.fun = lambda x: 1.0 if x < p["xs"] else (0.5 if x == p["xs"] else 0.0)
@@ -166,6 +190,9 @@ class Rect(BasisFunction):
 
         super(Rect, self).__init__(p)
 
+        # normalization factor of function (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
+        self.fun_norm = 1.0
+
         # define basis function
         self.fun = lambda x: 1.0 if p["x1"] < x < p["x2"] else (0.5 if x == p["x1"] or x == p["x2"] else 0.0)
 
@@ -189,6 +216,9 @@ class SigmoidUp(BasisFunction):
 
         super(SigmoidUp, self).__init__(p)
 
+        # normalization factor of function (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
+        self.fun_norm = 1.0
+
         # define basis function
         self.fun = lambda x: 1.0 / (1 + np.exp(-p["r"] * (x - p["xs"])))
 
@@ -211,6 +241,9 @@ class SigmoidDown(BasisFunction):
         """
 
         super(SigmoidDown, self).__init__(p)
+
+        # normalization factor of function (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
+        self.fun_norm = 1.0
 
         # define basis function
         self.fun = lambda x: 1.0 / (1 + np.exp(-p["r"] * (- x + p["xs"])))

@@ -539,43 +539,43 @@ def get_pdf_beta(x, p, q, a, b):
             * (b - a) ** (p + q - 1)) ** (-1) * (x - a) ** (p - 1) * (b - x) ** (q - 1)
 
 
-def get_extracted_sobol_order(sobol, sobol_idx, order=1):
+def get_multi_indices_max_order(dim, max_order):
     """
-    Extract Sobol indices with specified order from Sobol data.
+    Computes all multi-indices with a maximum overall order of max_order.
 
-    sobol_1st, sobol_idx_1st = extract_sobol_order(sobol, sobol_idx, order=1)
+    multi_indices = get_multi_indices_max_order(length, max_order)
 
     Parameters
     ----------
-    sobol: [N_sobol x N_out] np.ndarray
-        Sobol indices of N_out output quantities
-    sobol_idx: [N_sobol] list or np.ndarray of int
-        list of parameter label indices belonging to Sobol indices
-    order: int, optional, default=1
-        Sobol index order to extract
+    dim : int
+        Number of random parameters (length of multi-index tuples)
+    max_order : int
+        Maximum order (over all parameters)
 
     Returns
     -------
-    sobol_n_order: np.ndarray
-        n-th order Sobol indices of N_out output quantities
-
-    sobol_idx_n_order: np.ndarray
-        List of parameter label indices belonging to n-th order Sobol indices
+    multi_indices: np.ndarray [n_basis x dim]
+        Multi-indices for a classical maximum order gpc
     """
 
-    # make mask of 1st order (linear) sobol indices
-    mask = [index for index, sobol_element in enumerate(sobol_idx) if sobol_element.shape[0] == order]
+    multi_indices = []
+    for i_max_order in range(max_order + 1):
+        s = get_all_combinations(np.arange(dim + i_max_order - 1) + 1, dim - 1)
 
-    # extract from dataset
-    sobol_n_order = sobol[mask, :]
-    sobol_idx_n_order = np.vstack(sobol_idx[mask])
+        m = s.shape[0]
 
-    # sort sobol indices according to parameter indices in ascending order
-    sort_idx = np.argsort(sobol_idx_n_order, axis=0)[:, 0]
-    sobol_n_order = sobol_n_order[sort_idx, :]
-    sobol_idx_n_order = sobol_idx_n_order[sort_idx, :]
+        s1 = np.zeros([m, 1])
+        s2 = (dim + i_max_order) + s1
 
-    return sobol_n_order, sobol_idx_n_order
+        v = np.diff(np.hstack([s1, s, s2]))
+        v = v - 1
+
+        if i_max_order == 0:
+            multi_indices = v
+        else:
+            multi_indices = np.vstack([multi_indices, v])
+
+    return multi_indices.astype(int)
 
 # def plot(interactive=True, filename=None, xlabel="$x$", ylabel="$p(x)$"):
 #     if not interactive:

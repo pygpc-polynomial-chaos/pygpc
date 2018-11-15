@@ -304,7 +304,7 @@ class Algorithm:
             i_grid = i_grid + 1
 
             # perform leave one out cross validation
-            reg_obj.get_loocv(results)
+            reg_obj.loocv(results)
 
             vprint("    -> relerror_LOOCV = {}".format(reg_obj.relerror_loocv[-1]), verbose=reg_obj.verbose)
 
