@@ -300,7 +300,7 @@ class GPC(object):
             self.gpc_matrix_coords_id = self.grid.coords_id
             self.gpc_matrix_b_id = self.basis.b_id
 
-    def solve(self, sim_results, solver=None, settings=None):
+    def solve(self, sim_results, solver=None, settings=None, gpc_matrix=None):
         """
         Determines gPC coefficients
 
@@ -318,12 +318,16 @@ class GPC(object):
             - 'Moore-Penrose' ... None
             - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0
             - 'NumInt' ... None
+        gpc_matrix: ndarray of float [n_grid x n_basis], optional, default: self.gpc_matrix
+            GPC matrix to invert
 
         Returns
         -------
         coeffs: ndarray of float [n_coeffs x n_out]
             gPC coefficients
         """
+        if not gpc_matrix:
+            gpc_matrix = self.gpc_matrix
 
         # use default solver if not specified
         if solver is None:
@@ -333,16 +337,16 @@ class GPC(object):
 
         if solver == 'Moore-Penrose':
             # determine pseudoinverse of gPC matrix
-            self.gpc_matrix_inv = np.linalg.pinv(self.gpc_matrix)
+            gpc_matrix_inv = np.linalg.pinv(gpc_matrix)
 
             try:
-                coeffs = np.dot(self.gpc_matrix_inv, sim_results)
+                coeffs = np.dot(gpc_matrix_inv, sim_results)
             except ValueError:
                 raise AttributeError("Please check format of parameter sim_results: [n_grid x n_out] np.ndarray.")
 
         elif solver == 'OMP':
             # transform gPC matrix to fastmat format
-            gpc_matrix_fm = fm.Matrix(self.gpc_matrix)
+            gpc_matrix_fm = fm.Matrix(gpc_matrix)
 
             # determine gPC-coefficients of extended basis using OMP
             coeffs = fm.algs.OMP(gpc_matrix_fm, sim_results, settings["n_coeffs_sparse"])
@@ -374,7 +378,7 @@ class GPC(object):
                 sim_results = sim_results * joint_pdf * 2 ** self.problem.dim
 
             # scale rows of gpc matrix with quadrature weights
-            gpc_matrix_weighted = np.dot(np.diag(self.grid.weights), self.gpc_matrix)
+            gpc_matrix_weighted = np.dot(np.diag(self.grid.weights), gpc_matrix)
 
             # determine gpc coefficients [n_coeffs x n_output]
             coeffs = np.dot(sim_results.transpose(), gpc_matrix_weighted).transpose()

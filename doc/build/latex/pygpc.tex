@@ -469,7 +469,7 @@ list of np.ndarray of bool
 \index{extend\_gpc\_matrix\_samples() (pygpc.gpc.gPC method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.extend_gpc_matrix_samples}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{extend\_gpc\_matrix\_samples}}}{\emph{samples\_poly\_ratio}, \emph{seed=None}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.extend_random_grid}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{extend\_gpc\_matrix\_samples}}}{\emph{samples\_poly\_ratio}, \emph{seed=None}}{}
 Add sample points according to input pdfs to grid and extend the gpc matrix such that the ratio of
 rows/columns equals samples\_poly\_ratio.
 
@@ -559,7 +559,7 @@ get\_local\_sens = calc\_localsens(coeffs, xi)
 \index{get\_mean\_random\_vars() (pygpc.gpc.gPC method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_mean_random_vars}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_mean\_random\_vars}}}{}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_mean_random_vars_input}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_mean\_random\_vars}}}{}{}
 Determine the average values of the input random variables from their pdfs.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode
@@ -575,7 +575,7 @@ Determine the average values of the input random variables from their pdfs.
 \index{get\_mean\_value() (pygpc.gpc.gPC static method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_mean_value}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_mean\_value}}}{\emph{coeffs}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_mean}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_mean\_value}}}{\emph{coeffs}}{}
 Calculate the expected mean value.
 
 mean = get\_mean\_value(coeffs)
@@ -596,7 +596,7 @@ mean = get\_mean\_value(coeffs)
 \index{get\_pce() (pygpc.gpc.gPC method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_pce}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pce}}}{\emph{coeffs=None}, \emph{xi=None}, \emph{output\_idx=None}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_approximation}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pce}}}{\emph{coeffs=None}, \emph{xi=None}, \emph{output\_idx=None}}{}
 Calculates the gPC approximation in points with output\_idx and normalized parameters xi (interval: {[}-1, 1{]}).
 
 pce = get\_pce(coeffs=None, xi=None, output\_idx=None)
@@ -665,7 +665,7 @@ if output\_idx=None, all output quantities are considered
 \index{get\_pdf\_monte\_carlo() (pygpc.gpc.gPC method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_pdf_monte_carlo}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pdf\_monte\_carlo}}}{\emph{N\_samples}, \emph{coeffs=None}, \emph{output\_idx=None}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_samples}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pdf\_monte\_carlo}}}{\emph{N\_samples}, \emph{coeffs=None}, \emph{output\_idx=None}}{}
 Randomly sample the gPC expansion to determine output pdfs in specific points.
 
 xi = get\_pdf\_mc(N\_samples, coeffs=None, output\_idx=None)
@@ -724,7 +724,7 @@ sobol, sobol\_idx = get\_sobol\_indices(coeffs=None)
 \index{get\_sobol\_order() (pygpc.gpc.gPC method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_sobol_order}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_sobol\_order}}}{\emph{sobol=None}, \emph{sobol\_idx=None}, \emph{sobol\_idx\_bool=None}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.get_sobol_composition}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_sobol\_order}}}{\emph{sobol=None}, \emph{sobol\_idx=None}, \emph{sobol\_idx\_bool=None}}{}
 Evaluate order of determined sobol indices.
 
 sobol, sobol\_idx, sobol\_rel\_order\_mean, sobol\_rel\_order\_std, sobol\_rel\_1st\_order\_mean, sobol\_rel\_1st\_order\_std
@@ -791,7 +791,7 @@ std = get\_standard\_deviation(coeffs)
 \index{init\_gpc\_matrix() (pygpc.gpc.gPC method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.init_gpc_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_gpc\_matrix}}}{}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.gpc.gPC.set_gpc_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_gpc\_matrix}}}{}{}
 Construct the gPC matrix and  the Moore-Penrose-pseudo-inverse.
 
 init\_gpc\_matrix()
@@ -1385,7 +1385,7 @@ np.ndarray
 \index{calc\_multi\_index\_lst() (pygpc.grid.SparseGrid method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.grid.SparseGrid.calc_multi_index_lst}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{calc\_multi\_index\_lst}}}{}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.grid.SparseGrid.calc_multi_indices}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{calc\_multi\_index\_lst}}}{}{}
 Calculate the multi index list needed for the calculation of the SparseGrid.
 
 \end{fulllineitems}
@@ -2099,7 +2099,7 @@ list
 \index{get\_multi\_indices() (in module pygpc.misc)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.misc.get_multi_indices}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_multi\_indices}}}{\emph{length}, \emph{max\_order}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.misc.get_multi_indices_max_order}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_multi\_indices}}}{\emph{length}, \emph{max\_order}}{}
 Computes all multi-indices with a maximum overall order of max\_order.
 
 multi\_indices = get\_multi\_indices(length, max\_order)
@@ -2279,7 +2279,7 @@ rotation\_matrix = get\_rotation\_matrix(theta)
 \index{get\_set\_combinations() (in module pygpc.misc)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.misc.get_set_combinations}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_set\_combinations}}}{\emph{array}, \emph{number\_elements}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.misc.get_all_combinations}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_set\_combinations}}}{\emph{array}, \emph{number\_elements}}{}
 Computes all k-tuples (e\_1, e\_2, …, e\_k) of combinations of the set of elements of the first row of the
 input matrix where e\_n+1 \textgreater{} e\_n
 
@@ -2458,7 +2458,7 @@ if None, perform all interactions
 \index{run\_reg\_adaptive\_E\_gPC() (in module pygpc.ni)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.ni.run_reg_adaptive_E_gPC}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.ni.}}\sphinxbfcode{\sphinxupquote{run\_reg\_adaptive\_E\_gPC}}}{\emph{pdf\_type}, \emph{pdf\_shape}, \emph{limits}, \emph{func}, \emph{args=()}, \emph{fname=None}, \emph{order\_start=0}, \emph{order\_end=10}, \emph{interaction\_order\_max=None}, \emph{eps=0.001}, \emph{print\_out=False}, \emph{seed=None}, \emph{do\_mp=False}, \emph{n\_cpu=4}, \emph{dispy=False}, \emph{dispy\_sched\_host='localhost'}, \emph{random\_vars=''}, \emph{hdf5\_geo\_fn=''}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.ni.reg_adaptive_tms}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.ni.}}\sphinxbfcode{\sphinxupquote{run\_reg\_adaptive\_E\_gPC}}}{\emph{pdf\_type}, \emph{pdf\_shape}, \emph{limits}, \emph{func}, \emph{args=()}, \emph{fname=None}, \emph{order\_start=0}, \emph{order\_end=10}, \emph{interaction\_order\_max=None}, \emph{eps=0.001}, \emph{print\_out=False}, \emph{seed=None}, \emph{do\_mp=False}, \emph{n\_cpu=4}, \emph{dispy=False}, \emph{dispy\_sched\_host='localhost'}, \emph{random\_vars=''}, \emph{hdf5\_geo\_fn=''}}{}
 Perform adaptive regression approach based on leave one out cross validation error estimation.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
@@ -2774,7 +2774,7 @@ all polynomials are ignored, which have an interaction order greater than the sp
 \index{get\_coeffs\_expand() (pygpc.quad.Quad method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.quad.Quad.get_coeffs_expand}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_coeffs\_expand}}}{\emph{sim\_results}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.quad.Quad.get_coeffs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_coeffs\_expand}}}{\emph{sim\_results}}{}
 Determine the gPC coefficients by the quadrature method
 
 coeffs = get\_coeffs\_expand(self, sim\_results)
@@ -3011,7 +3011,7 @@ all polynomials are ignored, which have an interaction order greater than the sp
 \index{get\_coeffs\_expand() (pygpc.reg.Reg method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.reg.Reg.get_coeffs_expand}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_coeffs\_expand}}}{\emph{sim\_results}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.reg.Reg.get_coeffs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_coeffs\_expand}}}{\emph{sim\_results}}{}
 Determine the gPC coefficients by the regression method.
 
 coeffs = get\_coeffs\_expand(sim\_results)
@@ -3032,7 +3032,7 @@ coeffs = get\_coeffs\_expand(sim\_results)
 \index{get\_loocv() (pygpc.reg.Reg method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.reg.Reg.get_loocv}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_loocv}}}{\emph{sim\_results}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.reg.Reg.loocv}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_loocv}}}{\emph{sim\_results}}{}
 Perform leave one out cross validation of gPC with maximal 100 points
 and add result to self.relative\_error\_loocv.
 

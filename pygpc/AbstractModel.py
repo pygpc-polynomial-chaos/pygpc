@@ -51,9 +51,9 @@ class AbstractModel:
                 - seq_number  : sequence number of the task this object represents; necessary to maintain the correct
                                 sequence of results
         """
-        self.save_res_fn = context['save_res_fn']
+        self.save_res_fn = context['fn_results']
         self.i_grid = context['i_grid']
-        self.i_iter = context['i_iter']
+        self.i_iter = context['order']
         self.lock = context['lock']
         self.max_grid = context['max_grid']
         self.interaction_oder_current = context['interaction_order_current']

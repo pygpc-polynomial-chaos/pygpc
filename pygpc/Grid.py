@@ -1061,5 +1061,7 @@ class RandomGrid(Grid):
             # Generate and append unique IDs of new grid points
             self.coords_id = self.coords_id + [uuid.uuid4() for _ in range(n_grid_add)]
 
+            self.n_grid = self.coords.shape[0]
+
         else:
             Warning("No samples added to grid ... (n_grid_new < n_grid)")

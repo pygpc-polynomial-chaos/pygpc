@@ -1,6 +1,6 @@
 import numpy as np
 from .GPC import *
-
+import scipy.stats
 
 class EGPC(GPC):
     """
@@ -17,7 +17,7 @@ class EGPC(GPC):
         """
         Calculate the expected mean value.
 
-        mean = EGPC.get_mean(coeffs)
+        mean = SGPC.get_mean(coeffs)
 
         Parameters
         ----------

@@ -65,13 +65,13 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        coeffs: [N_coeffs x N_out] np.ndarray
-            Gpc coefficients
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
 
         Returns
         -------
-        mean: [1 x N_out] np.ndarray
-            Expected mean value
+        mean: ndarray of float [1 x n_out]
+            Expected value of output quantities
         """
 
         mean = coeffs[0]
@@ -88,13 +88,13 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        coeffs: np.array of float [N_coeffs x N_out]
-            Gpc coefficients
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
 
         Returns
         -------
-        std: [1 x N_out] np.ndarray
-            Standard deviation
+        std: ndarray of float [1 x n_out]
+            Standard deviation of output quantities
         """
 
         std = np.sqrt(np.sum(np.square(coeffs[1:]), axis=0))
@@ -106,22 +106,22 @@ class SGPC(GPC):
         """
         Randomly sample gPC expansion.
 
-        x, pce = SGPC.get_pdf_mc(N_samples, coeffs=None, output_idx=None)
+        x, pce = SGPC.get_pdf_mc(n_samples, coeffs, output_idx=None)
 
         Parameters
         ----------
         n_samples: int
             Number of random samples drawn from the respective input pdfs.
-        coeffs: [N_coeffs x N_out] np.ndarray, optional, default=None
+        coeffs: ndarray of float [n_basis x n_out]
             GPC coefficients
-        output_idx: [1 x N_out] np.ndarray, optional, default=None
+        output_idx: ndarray of int [1 x n_out] optional, default=None
             Index of output quantities to consider.
 
         Returns
         -------
-        x: [n_samples x dim] np.ndarray
-            Generated samples in normalized coordinates.
-        pce: [n_samples x n_out] np.ndarray
+        x: ndarray of float [n_samples x dim]
+            Generated samples in normalized coordinates [-1, 1].
+        pce: ndarray of float [n_samples x n_out]
             GPC approximation at points x.
         """
 
@@ -144,21 +144,21 @@ class SGPC(GPC):
         """
         Calculate the available sobol indices.
 
-        sobol, sobol_idx = SGPC.get_sobol_indices(coeffs=None)
+        sobol, sobol_idx = SGPC.get_sobol_indices(coeffs)
 
         Parameters
         ----------
-        coeffs: [n_coeffs x n_out] np.ndarray
+        coeffs:  ndarray of float [n_basis x n_out]
             GPC coefficients
 
         Returns
         -------
         sobol: ndarray of float [n_sobol x n_out]
             Unnormalized Sobol indices
-        sobol_idx: list of ndarray of int [n_sobol x n_sobol_included]
+        sobol_idx: list of ndarray of int [n_sobol x (n_sobol_included)]
             Parameter combinations in rows of sobol.
-        sobol_idx_bool: list of ndarray of bool [n_sobol x dim]
-            Boolean mask that determines which multi indices are unique.
+        sobol_idx_bool: ndarray of bool [n_sobol x dim]
+            Boolean mask which contains unique multi indices.
         """
 
         iprint("Determining Sobol indices...")
@@ -223,29 +223,29 @@ class SGPC(GPC):
         (ii) for the 1st order indices w.r.t. each random variable. (1st: x1: 50%, x2: 40%)
 
         sobol, sobol_idx, sobol_rel_order_mean, sobol_rel_order_std, sobol_rel_1st_order_mean, sobol_rel_1st_order_std
-        = SGPC.get_sobol_composition(coeffs=None, sobol=None, sobol_idx=None, sobol_idx_bool=None)
+        = SGPC.get_sobol_composition(coeffs, sobol, sobol_idx, sobol_idx_bool)
 
         Parameters
         ----------
-        sobol: [N_sobol x N_out] np.ndarray
+        sobol: ndarray of float [n_sobol x n_out]
             Unnormalized sobol_indices
-        sobol_idx: list of [N_sobol x dim] np.ndarray
+        sobol_idx: list of ndarray [n_sobol x (n_sobol_included)]
             Parameter combinations in rows of sobol.
-        sobol_idx_bool: list of np.ndarray of bool
-            Boolean mask that determines which multi indices are unique.
+        sobol_idx_bool: list of ndarray of bool
+            Boolean mask which contains unique multi indices.
 
         Returns
         -------
-        sobol_rel_order_mean: np.ndarray
+        sobol_rel_order_mean: ndarray of float [n_out]
             Average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,),
             (over all output quantities)
-        sobol_rel_order_std: np.ndarray
+        sobol_rel_order_std: ndarray of float [n_out]
             Standard deviation of the proportion of the Sobol indices of the different order to the total variance
             (1st, 2nd, etc..,), (over all output quantities)
-        sobol_rel_1st_order_mean: np.ndarray
+        sobol_rel_1st_order_mean: ndarray of float [n_out]
             Average proportion of the random variables of the 1st order Sobol indices to the total variance,
             (over all output quantities)
-        sobol_rel_1st_order_std: np.ndarray
+        sobol_rel_1st_order_std: ndarray of float [n_out]
             Standard deviation of the proportion of the random variables of the 1st order Sobol indices to the total
             variance
             (over all output quantities)
@@ -305,8 +305,7 @@ class SGPC(GPC):
             for j in range(len(str_out)):
                 print(str_out[j])
 
-        return sobol, sobol_idx, \
-               sobol_rel_order_mean, sobol_rel_order_std, \
+        return sobol_rel_order_mean, sobol_rel_order_std, \
                sobol_rel_1st_order_mean, sobol_rel_1st_order_std
 
     @staticmethod
@@ -318,17 +317,17 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        sobol: ndarray [N_sobol x N_out]
-            Sobol indices of N_out output quantities
-        sobol_idx: [N_sobol] list or ndarray of int
+        sobol: ndarray of float [n_sobol x n_out]
+            Sobol indices of n_out output quantities
+        sobol_idx: list or ndarray of int [n_sobol]
             Parameter label indices belonging to Sobol indices
         order: int, optional, default=1
             Sobol index order to extract
 
         Returns
         -------
-        sobol_n_order: ndarray of float
-            n-th order Sobol indices of N_out output quantities
+        sobol_n_order: ndarray of float [n_out]
+            n-th order Sobol indices of n_out output quantities
         sobol_idx_n_order: ndarray of int
             Parameter label indices belonging to n-th order Sobol indices
         """
@@ -435,7 +434,7 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        coeffs: [n_coeffs x n_out] np.ndarray
+        coeffs: ndarray of float [n_coeffs x n_out]
             GPC coefficients
         n_samples: int
             Number of samples used to estimate output pdfs
@@ -444,9 +443,9 @@ class SGPC(GPC):
 
         Returns
         -------
-        pdf_x: [100 x n_out] np.ndarray
+        pdf_x: ndarray of float [100 x n_out]
             x-coordinates of output pdfs of output quantities
-        pdf_y: [100 x n_out] np.ndarray
+        pdf_y: ndarray of float [100 x n_out]
             y-coordinates of output pdfs (probability density of output quantity)
         """
 
@@ -510,7 +509,7 @@ class Reg(SGPC):
         self.solver = 'Moore-Penrose'   # Default solver
         self.relative_error_loocv = []
 
-    def loocv(self, sim_results):
+    def loocv(self, sim_results, solver, settings):
         """
         Perform leave one out cross validation of gPC with maximal 100 points
         and add result to self.relative_error_loocv.
@@ -519,7 +518,7 @@ class Reg(SGPC):
 
         Parameters
         ----------
-        sim_results: [n_grid x n_out] np.ndarray
+        sim_results: ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
 
         Returns
@@ -540,11 +539,12 @@ class Reg(SGPC):
             # get mask of eliminated row
             mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
 
-            # invert reduced gpc matrix
-            gpc_matrix_inv_loo = np.linalg.pinv(self.gpc_matrix[mask, :])
-
             # determine gpc coefficients (this takes a lot of time for large problems)
-            coeffs_loo = np.dot(gpc_matrix_inv_loo, sim_results[mask, :])
+            coeffs_loo = self.solve(sim_results=sim_results[mask, :],
+                                    solver=solver,
+                                    settings=settings,
+                                    gpc_matrix=self.gpc_matrix[mask, :])
+
             sim_results_temp = sim_results[loocv_point_idx[i], :]
             relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(self.gpc_matrix[loocv_point_idx[i], :],
                                                                             coeffs_loo))\
@@ -561,17 +561,13 @@ class Reg(SGPC):
 class Quad(SGPC):
     """
     Quadrature SGPC sub-class
-
-    Quad(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)
-
-    Attributes
-    ----------
-
     """
 
     def __init__(self, problem, order, order_max, interaction_order):
         """
         Constructor; Initializes Quadrature SGPC sub-class
+
+        Quad(problem, order, order_max, interaction_order)
 
         Parameters
         ----------

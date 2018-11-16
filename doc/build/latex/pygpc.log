@@ -1214,7 +1214,7 @@ obol_rel_1st_order_mean,
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 730--732
-\T1/ptm/m/n/10 sobol_rel_1st_order_std = get_sobol_order(coeffs=None, sobol=Non
+\T1/ptm/m/n/10 sobol_rel_1st_order_std = get_sobol_composition(coeffs=None, sobol=Non
 e, sobol_idx=None,
  []
 
