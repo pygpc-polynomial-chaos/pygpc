@@ -2,7 +2,7 @@
 A package that provides submodules to perform polynomial chaos uncertainty analysis on complex dynamic systems.
 """
 
-import misc
+from .misc import *
 import GPC
 import Solver
 import SGPC
@@ -17,4 +17,6 @@ import Solver
 import Worker
 import Grid                         # ok
 from .Problem import *              # ok
+from .Algorithm import *            # ok
 import RandomParameter              # ok
+

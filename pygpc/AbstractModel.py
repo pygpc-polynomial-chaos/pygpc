@@ -40,7 +40,7 @@ class AbstractModel:
             Dictionary containing the model parameters
         context : dictionary
             dictionary that contains information about this worker's context
-                - save_res_fn : location of the hdf5 file to serialize the results to
+                - fn_results  : location of the hdf5 file to serialize the results to
                 - i_grid      : current iteration in the sub-grid that is processed
                 - max_grid    : size of the current sub-grid that is processed
                 - i_iter      : current main iteration
@@ -51,7 +51,7 @@ class AbstractModel:
                 - seq_number  : sequence number of the task this object represents; necessary to maintain the correct
                                 sequence of results
         """
-        self.save_res_fn = context['fn_results']
+        self.fn_results = context['fn_results']
         self.i_grid = context['i_grid']
         self.i_iter = context['order']
         self.lock = context['lock']
@@ -66,7 +66,7 @@ class AbstractModel:
         """
         This functions reads previous serialized results from the hard disk (if present).
         When reading from the array containing the serialized results, the current
-        grind-index (i_grid) is considered to maintain the order of the results when the
+        grid-index (i_grid) is considered to maintain the order of the results when the
         SimulationModels are executed in parallel.
 
         Returns
@@ -76,12 +76,12 @@ class AbstractModel:
             list :
                 containing the read data
         """
-        if self.save_res_fn:
+        if self.fn_results:
             self.lock.acquire()
             try:
-                if os.path.exists(self.save_res_fn):
+                if os.path.exists(self.fn_results):
                     try:
-                        with h5py.File(self.save_res_fn, 'r') as f:
+                        with h5py.File(self.fn_results, 'r') as f:
                             ds = f['res']
                             # read data from file at current grid_position
                             res = ds[self.i_grid, :]
@@ -108,11 +108,12 @@ class AbstractModel:
         data : ndarray [m x n]
             The data to write, the results of n outputs of m simulations
         """
-        if self.save_res_fn:
+        data = np.array(data)
+        if self.fn_results:
             self.lock.acquire()
             try:
                 require_size = self.i_grid + 1
-                with h5py.File(self.save_res_fn, 'a') as f:
+                with h5py.File(self.fn_results, 'a') as f:
                     try:
                         ds = f['res']
                         if ds.shape[0] < require_size:   # check if resize is necessary
@@ -121,6 +122,14 @@ class AbstractModel:
                     except (KeyError, ValueError):
                         ds = f.create_dataset('res', (require_size, len(data)), maxshape=(None, len(data)))
                         ds[self.i_grid, :] = data[np.newaxis, :]
+
+                # with h5py.File(self.fn_results, 'a') as f:
+                #     if "res" not in f.keys():
+                #         f.create_dataset("res", data=data, maxshape=None)
+                #     else:
+                #         f["res"].resize((f["res"].shape[0] + data.shape[0]), axis=0)
+                #         f["res"][-data.shape[0]:] = data
+
             finally:
                 self.lock.release()
 
@@ -143,7 +152,7 @@ class AbstractModel:
             if func_time:
                 more_text = "Function evaluation took: " + repr(func_time) + "s"
             elif read_from_file:
-                more_text = "Read data row from " + self.save_res_fn
+                more_text = "Read data row from " + self.fn_results
             else:
                 more_text = None
 

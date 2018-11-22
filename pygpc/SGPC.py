@@ -24,9 +24,15 @@ class SGPC(GPC):
     interaction_order: int
         Number of random variables, which can interact with each other.
         All polynomials are ignored, which have an interaction order greater than the specified
+    interaction_order_current: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+        Current interaction order counter (only used in case of adaptive algorithms)
+    fn_results : string, optional, default=None
+        If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
     """
 
-    def __init__(self, problem, order, order_max, interaction_order):
+    def __init__(self, problem, order, order_max, interaction_order, fn_results=None):
         """
         Constructor; Initializes the SGPC class
 
@@ -43,12 +49,15 @@ class SGPC(GPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
+        fn_results : string, optional, default=None
+            If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
         """
-        super(SGPC, self).__init__(problem)
+        super(SGPC, self).__init__(problem, fn_results)
 
         self.order = order
         self.order_max = order_max
         self.interaction_order = interaction_order
+        self.interaction_order_current = interaction_order
 
         self.basis = Basis()
         self.basis.init_basis_sgpc(problem=problem,
@@ -101,43 +110,6 @@ class SGPC(GPC):
         # TODO: check if 1-dimensional array should be (N,) or (N,1)
         # std = std[np.newaxis, :]
         return std
-
-    def get_samples(self, n_samples, coeffs, output_idx=None):
-        """
-        Randomly sample gPC expansion.
-
-        x, pce = SGPC.get_pdf_mc(n_samples, coeffs, output_idx=None)
-
-        Parameters
-        ----------
-        n_samples: int
-            Number of random samples drawn from the respective input pdfs.
-        coeffs: ndarray of float [n_basis x n_out]
-            GPC coefficients
-        output_idx: ndarray of int [1 x n_out] optional, default=None
-            Index of output quantities to consider.
-
-        Returns
-        -------
-        x: ndarray of float [n_samples x dim]
-            Generated samples in normalized coordinates [-1, 1].
-        pce: ndarray of float [n_samples x n_out]
-            GPC approximation at points x.
-        """
-
-        # seed the random numbers generator
-        np.random.seed()
-
-        # generate temporary grid with random samples for each random input variable [n_samples x dim]
-        grid = RandomGrid(problem=self.problem, parameters={"n_grid": n_samples, "seed": None})
-
-        # if output index list is not provided, sample all gpc outputs
-        if output_idx is None:
-            output_idx = np.arange(coeffs.shape[1])
-            # output_idx = output_idx[np.newaxis, :]
-        pce = self.get_approximation(coeffs=coeffs, x=grid.coords_norm, output_idx=output_idx)
-
-        return grid.coords_norm, pce
 
     # noinspection PyTypeChecker
     def get_sobol_indices(self, coeffs):
@@ -427,53 +399,6 @@ class SGPC(GPC):
 
         return local_sens
 
-    def get_pdf(self, coeffs, n_samples, output_idx=None):
-        """ Determine the estimated pdfs of the output quantities
-
-        pdf_x, pdf_y = SGPC.get_pdf(coeffs, n_samples, output_idx=None)
-
-        Parameters
-        ----------
-        coeffs: ndarray of float [n_coeffs x n_out]
-            GPC coefficients
-        n_samples: int
-            Number of samples used to estimate output pdfs
-        output_idx: ndarray, optional, default=None [1 x n_out]
-            Index of output quantities to consider (if output_idx=None, all output quantities are considered)
-
-        Returns
-        -------
-        pdf_x: ndarray of float [100 x n_out]
-            x-coordinates of output pdfs of output quantities
-        pdf_y: ndarray of float [100 x n_out]
-            y-coordinates of output pdfs (probability density of output quantity)
-        """
-
-        # handle (N,) arrays
-        if len(coeffs.shape) == 1:
-            n_out = 1
-        else:
-            n_out = coeffs.shape[1]
-
-        # if output index array is not provided, determine pdfs of all outputs
-        if not output_idx:
-            output_idx = np.linspace(0, n_out - 1, n_out)
-            output_idx = output_idx[np.newaxis, :]
-
-        # sample gPC expansion
-        samples_in, samples_out = self.get_samples(n_samples=n_samples, coeffs=coeffs, output_idx=output_idx)
-
-        # determine kernel density estimates using Gaussian kernel
-        pdf_x = np.zeros([100, n_out])
-        pdf_y = np.zeros([100, n_out])
-
-        for i_out in range(n_out):
-            kde = scipy.stats.gaussian_kde(samples_out.transpose(), bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
-            pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
-            pdf_y[:, i_out] = kde(pdf_x[:, i_out])
-
-        return pdf_x, pdf_y
-
 
 class Reg(SGPC):
     """
@@ -485,9 +410,19 @@ class Reg(SGPC):
     ----------
     relative_error_loocv: list of float
         relative error of the leave-one-out-cross-validation
+    solver: str
+        Solver to determine the gPC coefficients
+        - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
+        - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+        - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
+    settings: dict
+        Solver settings
+        - 'Moore-Penrose' ... None
+        - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0
+        - 'NumInt' ... None
     """
 
-    def __init__(self, problem, order, order_max, interaction_order):
+    def __init__(self, problem, order, order_max, interaction_order, fn_results=None):
         """
         Constructor; Initializes Regression SGPC class
 
@@ -504,9 +439,12 @@ class Reg(SGPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
+        fn_results : string, optional, default=None
+            If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
         """
-        super(Reg, self).__init__(problem, order, order_max, interaction_order)
+        super(Reg, self).__init__(problem, order, order_max, interaction_order, fn_results)
         self.solver = 'Moore-Penrose'   # Default solver
+        self.settings = None            # Default Solver settings
         self.relative_error_loocv = []
 
     def loocv(self, sim_results, solver, settings):
@@ -520,6 +458,16 @@ class Reg(SGPC):
         ----------
         sim_results: ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
+        solver: str
+            Solver to determine the gPC coefficients
+            - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
+            - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+            - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
+        settings: dict
+            Solver settings
+            - 'Moore-Penrose' ... None
+            - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0
+            - 'NumInt' ... None
 
         Returns
         -------
@@ -563,7 +511,7 @@ class Quad(SGPC):
     Quadrature SGPC sub-class
     """
 
-    def __init__(self, problem, order, order_max, interaction_order):
+    def __init__(self, problem, order, order_max, interaction_order, fn_results=None):
         """
         Constructor; Initializes Quadrature SGPC sub-class
 
@@ -582,90 +530,9 @@ class Quad(SGPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
+        fn_results : string, optional, default=None
+            If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
         """
-        super(Quad, self).__init__(problem, order, order_max, interaction_order)
+        super(Quad, self).__init__(problem, order, order_max, interaction_order, fn_results)
         self.solver = 'NumInt'  # Default solver
-
-
-
-        # # handle (N,) arrays
-        # if len(sim_results.shape) == 1:
-        #     self.N_out = 1
-        # else:
-        #     self.N_out = sim_results.shape[1]
-
-
-
-
-    # N_grid: int
-    #     number of grid points
-    # N_poly: int
-    #     number of polynomials psi
-    # N_samples: int
-    #     number of samples xi
-    #
-    # order: [dim] list of int
-    #     maximum individual expansion order
-    #     generates individual polynomials also if maximum expansion order in order_max is exceeded
-    # order_max: int
-    #     maximum expansion order (sum of all exponents)
-    #     the maximum expansion order considers the sum of the orders of combined polynomials only
-    # interaction_order: int
-    #     number of random variables, which can interact with each other
-    #     all polynomials are ignored, which have an interaction order greater than the specified
-    # grid: grid object
-    #     grid object generated in grid.py including grid.coords and grid.coords_norm
-    #
-    # sobol: [N_sobol x N_out] np.ndarray
-    #     Sobol indices of N_out output quantities
-    # sobol_idx: [N_sobol] list of np.ndarray
-    #     List of parameter label indices belonging to Sobol indices
-    #
-    # gpc_coeffs: [N_poly x N_out] np.ndarray
-    #     coefficient matrix of independent regions of interest for every coefficient
-    # poly: [dim x order_span] list of list of np.poly1d:
-    #     polynomial objects containing the coefficients that are used to build the gpc matrix
-    # poly_gpu: np.ndarray
-    #     polynomial coefficients stored in a np.ndarray that can be processed on a graphic card
-    # poly_idx: [N_poly x dim] np.ndarray
-    #     multi indices to determine the degree of the used sub-polynomials
-    # poly_idx_gpu [N_poly x dim] np.ndarray
-    #     multi indices to determine the degree of the used sub-polynomials stored in a np.ndarray that can be processed
-    #     on a graphic card
-    # poly_der: [dim x order_span] list of list of np.poly1d:
-    #     derivative of the polynomial objects containing the coefficients that are used to build the gpc matrix
-    # poly_norm: [order_span x dim] np.ndarray
-    #     normalizing scaling factors of the used sub-polynomials
-    # poly_norm_basis: [N_poly] np.ndarray
-    #     normalizing scaling factors of the polynomial basis functions
-    # sobol_idx_bool: list of np.ndarray of bool
-    #     boolean mask that determines which multi indices are unique
-
-
-    # N_grid: int
-    #     number of grid points
-    # dim: int
-    #     number of uncertain parameters to process
-    # pdf_type: [dim] list of str
-    #     type of pdf 'beta' or 'norm'
-    # pdf_shape: list of list of float
-    #     shape parameters of pdfs
-    #     beta-dist:   [[alpha], [beta]    ]
-    #     normal-dist: [[mean],  [variance]]
-    # limits: list of list of float
-    #     upper and lower bounds of random variables
-    #     beta-dist:   [[a1 ...], [b1 ...]]
-    #     normal-dist: [[0 ... ], [0 ... ]] (not used)
-    # order: [dim] list of int
-    #     maximum individual expansion order
-    #     generates individual polynomials also if maximum expansion order in order_max is exceeded
-    # order_max: int
-    #     maximum expansion order (sum of all exponents)
-    #     the maximum expansion order considers the sum of the orders of combined polynomials only
-    # interaction_order: int
-    #     number of random variables, which can interact with each other
-    #     all polynomials are ignored, which have an interaction order greater than the specified
-    # grid: grid object
-    #     grid object generated in grid.py including grid.coords and grid.coords_norm
-    # random_vars: [dim] list of str
-    #     string labels of the random variables
+        self.settings = None    # Default solver settings

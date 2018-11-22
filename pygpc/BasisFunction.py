@@ -68,7 +68,7 @@ class Jacobi(BasisFunction):
                               scipy.special.factorial(self.p["i"]))
 
         # normalization factor of polynomial (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
-        self.fun_norm = (jacobi_norm * beta_norm)
+        self.fun_norm = jacobi_norm * beta_norm
 
         # define basis function
         self.fun = scipy.special.jacobi(self.p["i"],
@@ -112,13 +112,14 @@ class Hermite(BasisFunction):
         # derivative of polynomial
         self.fun_der = np.polyder(self.fun)
 
-        # derivative of polynomial
-        self.fun_der = np.polyder(self.fun)
-
         # integral of fun and fun_der w.r.t. pdf (numerical integration with corresponding weights)
-        knots, weights = Grid(0).get_quadrature_hermite_1d(n=10 * self.p["i"])
-        self.fun_int = np.dot(self.fun(knots), weights)
-        self.fun_der_int = np.dot(self.fun_der(knots), weights)
+        if self.p["i"] == 0:
+            self.fun_int = 1.0
+            self.fun_der_int = 0.0
+        else:
+            knots, weights = Grid(0).get_quadrature_hermite_1d(n=10 * self.p["i"])
+            self.fun_int = np.dot(self.fun(knots), weights)
+            self.fun_der_int = np.dot(self.fun_der(knots), weights)
 
 
 class StepUp(BasisFunction):

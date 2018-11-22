@@ -5,6 +5,7 @@ from .misc import get_cartesian_product
 from builtins import range
 import numpy as np
 import fastmat as fm
+import scipy.stats
 import ctypes
 
 
@@ -39,9 +40,11 @@ class GPC(object):
         Flag to execute the calculation on the gpu
     verbose: bool
         boolean value to determine if to print out the progress into the standard output
+    fn_results : string, optional, default=None
+        If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
     """
 
-    def __init__(self, problem):
+    def __init__(self, problem, fn_results):
 
         # objects
         self.problem = problem
@@ -57,10 +60,12 @@ class GPC(object):
 
         # options
         self.solver = None
+        self.settings = None
         self.gpu = None
         self.verbose = True
+        self.fn_results = fn_results
 
-    def set_gpc_matrix(self):
+    def init_gpc_matrix(self):
         """
         Sets self.gpc_matrix with given self.basis and self.grid
         """
@@ -124,6 +129,94 @@ class GPC(object):
         #              number_of_psi_size_t, number_of_variables_size_t, highest_degree_size_t, number_of_xi_size_t)
 
         return gpc_matrix
+
+    def get_pdf(self, coeffs, n_samples, output_idx=None):
+        """ Determine the estimated pdfs of the output quantities
+
+        pdf_x, pdf_y = SGPC.get_pdf(coeffs, n_samples, output_idx=None)
+
+        Parameters
+        ----------
+        coeffs: ndarray of float [n_coeffs x n_out]
+            GPC coefficients
+        n_samples: int
+            Number of samples used to estimate output pdfs
+        output_idx: ndarray, optional, default=None [1 x n_out]
+            Index of output quantities to consider (if output_idx=None, all output quantities are considered)
+
+        Returns
+        -------
+        pdf_x: ndarray of float [100 x n_out]
+            x-coordinates of output pdfs of output quantities
+        pdf_y: ndarray of float [100 x n_out]
+            y-coordinates of output pdfs (probability density of output quantity)
+        """
+
+        # handle (N,) arrays
+        if len(coeffs.shape) == 1:
+            n_out = 1
+        else:
+            n_out = coeffs.shape[1]
+
+        # if output index array is not provided, determine pdfs of all outputs
+        if not output_idx:
+            output_idx = np.linspace(0, n_out - 1, n_out)
+            output_idx = output_idx[np.newaxis, :]
+
+        # sample gPC expansion
+        samples_in, samples_out = self.get_samples(n_samples=n_samples, coeffs=coeffs, output_idx=output_idx)
+
+        if n_out == 1:
+            samples_out = samples_out[:, np.newaxis]
+
+        # determine kernel density estimates using Gaussian kernel
+        pdf_x = np.zeros([100, n_out])
+        pdf_y = np.zeros([100, n_out])
+
+        for i_out in range(n_out):
+            kde = scipy.stats.gaussian_kde(samples_out.transpose(), bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
+            pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
+            pdf_y[:, i_out] = kde(pdf_x[:, i_out])
+
+        return pdf_x, pdf_y
+
+    def get_samples(self, coeffs, n_samples, output_idx=None):
+        """
+        Randomly sample gPC expansion.
+
+        x, pce = SGPC.get_pdf_mc(n_samples, coeffs, output_idx=None)
+
+        Parameters
+        ----------
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
+        n_samples: int
+            Number of random samples drawn from the respective input pdfs.
+        output_idx: ndarray of int [1 x n_out] optional, default=None
+            Index of output quantities to consider.
+
+        Returns
+        -------
+        x: ndarray of float [n_samples x dim]
+            Generated samples in normalized coordinates [-1, 1].
+        pce: ndarray of float [n_samples x n_out]
+            GPC approximation at points x.
+        """
+
+        # seed the random numbers generator
+        np.random.seed()
+
+        # generate temporary grid with random samples for each random input variable [n_samples x dim]
+        grid = RandomGrid(problem=self.problem, parameters={"n_grid": n_samples, "seed": None})
+
+        # if output index list is not provided, sample all gpc outputs
+        if output_idx is None:
+            n_out = 1 if coeffs.ndim == 1 else coeffs.shape[1]
+            output_idx = np.arange(n_out)
+            # output_idx = output_idx[np.newaxis, :]
+        pce = self.get_approximation(coeffs=coeffs, x=grid.coords_norm, output_idx=output_idx)
+
+        return grid.coords_norm, pce
 
     def get_approximation(self, coeffs, x, output_idx=None):
         """
@@ -333,6 +426,10 @@ class GPC(object):
         if solver is None:
             solver = self.solver
 
+        # use default solver settings if not specified
+        if solver is None:
+            settings = self.settings
+
         iprint("Determine gPC coefficients using '{}' solver...".format(solver), tab=1, verbose=self.verbose)
 
         if solver == 'Moore-Penrose':
@@ -348,8 +445,11 @@ class GPC(object):
             # transform gPC matrix to fastmat format
             gpc_matrix_fm = fm.Matrix(gpc_matrix)
 
+            if sim_results.ndim == 1:
+                sim_results = sim_results[:, np.newaxis]
+
             # determine gPC-coefficients of extended basis using OMP
-            coeffs = fm.algs.OMP(gpc_matrix_fm, sim_results, settings["n_coeffs_sparse"])
+            coeffs = fm.algs.OMP(gpc_matrix_fm, sim_results, int(settings["n_coeffs_sparse"]))
 
         elif solver == 'NumInt':
             # check if quadrature rule (grid) fits to the probability density distribution (pdf)

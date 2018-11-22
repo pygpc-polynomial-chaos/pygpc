@@ -18,7 +18,7 @@ class Grid(object):
     Attributes
     ----------
     problem : Problem object
-        Object instance of gPC Problem to investigate
+        Object instance of gPC problem to investigate
     _weights: np.ndarray [n_grid x dim]
         Weights of the grid (all)
     _coords: [n_grid x dim] np.ndarray
@@ -66,7 +66,7 @@ class Grid(object):
     @coords_norm.setter
     def coords_norm(self, value):
         self._coords_norm = value
-        self.n_grid = self._coords.shape[0]
+        self.n_grid = self._coords_norm.shape[0]
 
         # Generate unique IDs of grid points
         if self.coords_id is None:

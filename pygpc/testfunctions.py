@@ -7,6 +7,35 @@ import scipy.special
 from pygpc.AbstractModel import AbstractModel
 
 
+class PeaksSingle(AbstractModel):
+    """
+    Two-dimensional peaks function.
+
+    y = Peaks(x)
+
+    Parameters
+    ----------
+    p["x"]: [N x 2] np.ndarray
+        Input data
+
+    Returns
+    -------
+    y: [N x 1] np.ndarray
+        Output data
+    """
+
+    def __init__(self, p, context):
+        super(PeaksSingle, self).__init__(p, context)
+
+    def simulate(self, process_id):
+        y = (3.0 * (1 - self.p["x1"]) ** 2. * np.exp(-(self.p["x1"] ** 2) - (self.p["x2"] + 1) ** 2)
+             - 10.0 * (self.p["x1"] / 5.0 - self.p["x1"] ** 3 - self.p["x2"] ** 5)
+             * np.exp(-self.p["x1"] ** 2 - self.p["x2"] ** 2) - 1.0 / 3
+             * np.exp(-(self.p["x1"] + 1) ** 2 - self.p["x2"] ** 2))
+
+        return y
+
+
 class Peaks(AbstractModel):
     """
     Two-dimensional peaks function.
