@@ -42,6 +42,8 @@ class GPC(object):
         boolean value to determine if to print out the progress into the standard output
     fn_results : string, optional, default=None
         If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+    n_cpu : int, optional, default=1
+        Number of threads to use for parallel evaluation of the model function.
     """
 
     def __init__(self, problem, fn_results):
@@ -64,6 +66,7 @@ class GPC(object):
         self.gpu = None
         self.verbose = True
         self.fn_results = fn_results
+        self.n_cpu = 1
 
     def init_gpc_matrix(self):
         """
@@ -341,15 +344,15 @@ class GPC(object):
             # determine indices of old grid points in updated gpc matrix
             idx_coords_old = np.empty(len(self.gpc_matrix_coords_id))*np.nan
             for i, coords_id_old in enumerate(self.gpc_matrix_coords_id):
-                for j, coords_id_new in enumerate(self.basis.coords_id):
+                for j, coords_id_new in enumerate(self.grid.coords_id):
                     if coords_id_old == coords_id_new:
                         idx_coords_old[i] = j
                         break
 
             # determine indices of old basis functions in updated gpc matrix
             idx_b_old = np.empty(len(self.gpc_matrix_b_id))*np.nan
-            for i, b_id_old in enumerate(self.gpc_matrix_coords_id):
-                for j, b_id_new in enumerate(self.basis.coords_id):
+            for i, b_id_old in enumerate(self.gpc_matrix_b_id):
+                for j, b_id_new in enumerate(self.basis.b_id):
                     if b_id_old == b_id_new:
                         idx_b_old[i] = j
                         break
@@ -358,40 +361,42 @@ class GPC(object):
             self.gpc_matrix = self.gpc_matrix[~np.isnan(idx_coords_old), :]
             self.gpc_matrix = self.gpc_matrix[:, ~np.isnan(idx_b_old)]
 
-            idx_coords_old = idx_coords_old[~np.isnan(idx_coords_old)]
-            idx_b_old = idx_b_old[~np.isnan(idx_b_old)]
+            idx_coords_old = idx_coords_old[~np.isnan(idx_coords_old)].astype(int)
+            idx_b_old = idx_b_old[~np.isnan(idx_b_old)].astype(int)
 
             # indices of new coords and basis in updated gpc matrix (values have to be computed there)
-            idx_coords_new = np.array(list(set(np.arange(len(self.grid.coords_id))) - set(idx_coords_old)))
-            idx_b_new = np.array(list(set(np.arange(len(self.basis.b_id))) - set(idx_b_old)))
+            idx_coords_new = np.array(list(set(np.arange(len(self.grid.coords_id))) - set(idx_coords_old))).astype(int)
+            idx_b_new = np.array(list(set(np.arange(len(self.basis.b_id))) - set(idx_b_old))).astype(int)
 
             # write old results at correct location in updated gpc matrix
-            idx = get_cartesian_product([idx_coords_old, idx_b_old])
-            idx_row = np.reshape(idx[:, 0], self.gpc_matrix.shape)
-            idx_col = np.reshape(idx[:, 1], self.gpc_matrix.shape)
+            idx = get_cartesian_product([idx_coords_old, idx_b_old]).astype(int)
+            idx_row = np.reshape(idx[:, 0], self.gpc_matrix.shape).astype(int)
+            idx_col = np.reshape(idx[:, 1], self.gpc_matrix.shape).astype(int)
 
             gpc_matrix_updated[idx_row, idx_col] = self.gpc_matrix
 
             # determine new columns (new basis functions) with old grid
-            idx = get_cartesian_product([idx_coords_old, idx_b_new])
-            idx_row = np.reshape(idx[:, 0], (idx_coords_old.size, idx_b_new.size))
-            idx_col = np.reshape(idx[:, 1], (idx_coords_old.size, idx_b_new.size))
+            idx = get_cartesian_product([idx_coords_old, idx_b_new]).astype(int)
+            if idx.any():
+                idx_row = np.reshape(idx[:, 0], (idx_coords_old.size, idx_b_new.size)).astype(int)
+                idx_col = np.reshape(idx[:, 1], (idx_coords_old.size, idx_b_new.size)).astype(int)
 
-            gpc_matrix_updated[idx_row, idx_col] = self.calc_gpc_matrix(b=[self.basis.b[i] for i in idx_b_new],
-                                                                        x=self.grid.coords_norm[idx_coords_old, :])
+                gpc_matrix_updated[idx_row, idx_col] = self.calc_gpc_matrix(b=[self.basis.b[i] for i in idx_b_new],
+                                                                            x=self.grid.coords_norm[idx_coords_old, :])
 
             # determine new rows (new grid points) with all basis functions
-            idx = get_cartesian_product([idx_coords_new, np.arange(len(self.basis.b))])
-            idx_row = np.reshape(idx[:, 0], (idx_coords_new.size, len(self.basis.b)))
-            idx_col = np.reshape(idx[:, 1], (idx_coords_new.size, len(self.basis.b)))
+            idx = get_cartesian_product([idx_coords_new, np.arange(len(self.basis.b))]).astype(int)
+            if idx.any():
+                idx_row = np.reshape(idx[:, 0], (idx_coords_new.size, len(self.basis.b))).astype(int)
+                idx_col = np.reshape(idx[:, 1], (idx_coords_new.size, len(self.basis.b))).astype(int)
 
-            gpc_matrix_updated[idx_row, idx_col] = self.calc_gpc_matrix(b=self.basis.b,
-                                                                        x=self.grid.coords_norm[idx_coords_new, :])
+                gpc_matrix_updated[idx_row, idx_col] = self.calc_gpc_matrix(b=self.basis.b,
+                                                                            x=self.grid.coords_norm[idx_coords_new, :])
 
             # overwrite old attributes
             self.gpc_matrix = gpc_matrix_updated
-            self.gpc_matrix_coords_id = self.grid.coords_id
-            self.gpc_matrix_b_id = self.basis.b_id
+            self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
+            self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
 
     def solve(self, sim_results, solver=None, settings=None, gpc_matrix=None):
         """
@@ -419,7 +424,7 @@ class GPC(object):
         coeffs: ndarray of float [n_coeffs x n_out]
             gPC coefficients
         """
-        if not gpc_matrix:
+        if gpc_matrix is None:
             gpc_matrix = self.gpc_matrix
 
         # use default solver if not specified
@@ -460,7 +465,7 @@ class GPC(object):
                         grid_pdf_fit = False
                         break
                 elif (self.problem.pdf_type[i_dim] == 'norm') or (self.problem.pdf_type[i_dim] == 'normal'):
-                    if not (self.grid.gridtype[i_dim] == 'hermite'):
+                    if not (self.grid.grid_type[i_dim] == 'hermite'):
                         grid_pdf_fit = False
                         break
 

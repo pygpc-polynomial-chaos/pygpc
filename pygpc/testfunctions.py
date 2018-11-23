@@ -15,8 +15,12 @@ class PeaksSingle(AbstractModel):
 
     Parameters
     ----------
-    p["x"]: [N x 2] np.ndarray
-        Input data
+    p["x1"]: float
+        Parameter 1
+    p["x2"]: float
+        Parameter 2
+    p["x3"]: float
+        Parameter 3
 
     Returns
     -------
@@ -28,12 +32,12 @@ class PeaksSingle(AbstractModel):
         super(PeaksSingle, self).__init__(p, context)
 
     def simulate(self, process_id):
-        y = (3.0 * (1 - self.p["x1"]) ** 2. * np.exp(-(self.p["x1"] ** 2) - (self.p["x2"] + 1) ** 2)
-             - 10.0 * (self.p["x1"] / 5.0 - self.p["x1"] ** 3 - self.p["x2"] ** 5)
-             * np.exp(-self.p["x1"] ** 2 - self.p["x2"] ** 2) - 1.0 / 3
-             * np.exp(-(self.p["x1"] + 1) ** 2 - self.p["x2"] ** 2))
+        y = (3.0 * (1 - self.p["x1"]) ** 2. * np.exp(-(self.p["x1"] ** 2) - (self.p["x3"] + 1) ** 2)
+             - 10.0 * (self.p["x1"] / 5.0 - self.p["x1"] ** 3 - self.p["x3"] ** 5)
+             * np.exp(-self.p["x1"] ** 2 - self.p["x3"] ** 2) - 1.0 / 3
+             * np.exp(-(self.p["x1"] + 1) ** 2 - self.p["x3"] ** 2)) + self.p["x2"]
 
-        return y
+        return np.array([y, y])
 
 
 class Peaks(AbstractModel):

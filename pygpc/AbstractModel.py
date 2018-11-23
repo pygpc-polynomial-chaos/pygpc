@@ -43,50 +43,64 @@ class AbstractModel:
                 - fn_results  : location of the hdf5 file to serialize the results to
                 - i_grid      : current iteration in the sub-grid that is processed
                 - max_grid    : size of the current sub-grid that is processed
-                - i_iter      : current main iteration
-                - interaction_oder_current : current interaction order
+                - i_iter      : current main-iteration
+                - i_subiter   : current sub-iteration
                 - lock        : reference to the Lock object that all processes share for synchronization
                 - global_ctr  : reference to the Value object that is shared among all processes to keep track
                                 of the overall progress
                 - seq_number  : sequence number of the task this object represents; necessary to maintain the correct
                                 sequence of results
         """
-        self.fn_results = context['fn_results']
-        self.i_grid = context['i_grid']
-        self.i_iter = context['order']
+
+        self.i_subiter = context['i_subiter']
         self.lock = context['lock']
         self.max_grid = context['max_grid']
-        self.interaction_oder_current = context['interaction_order_current']
         self.global_task_counter = context['global_task_ctr']
         self.seq_number = context['seq_number']
-
+        self.fn_results = context['fn_results']
+        self.i_grid = context['i_grid']
+        self.i_iter = context['i_iter']
+        self.coords = context['coords']
+        self.coords_norm = context['coords_norm']
         self.p = p
 
-    def read_previous_results(self):
+    def read_previous_results(self, coords):
         """
         This functions reads previous serialized results from the hard disk (if present).
         When reading from the array containing the serialized results, the current
         grid-index (i_grid) is considered to maintain the order of the results when the
         SimulationModels are executed in parallel.
 
+        Parameters
+        ----------
+        coords : ndarray [n_sims x dim]
+            Grid coordinates the simulations are conducted with
+
         Returns
         -------
             None :
-                if no serialized results could be found
+                if no serialized results could be found or does not fit to grid
             list :
-                containing the read data
+                data at coords
         """
         if self.fn_results:
             self.lock.acquire()
             try:
                 if os.path.exists(self.fn_results):
+
+                    # read results and coords
                     try:
                         with h5py.File(self.fn_results, 'r') as f:
-                            ds = f['res']
-                            # read data from file at current grid_position
+                            ds = f['results']
                             res = ds[self.i_grid, :]
-                    
-                            return res
+
+                            ds = f['coords']
+                            coords_read = ds[self.i_grid, :]
+
+                            if np.isclose(coords_read, coords).all():
+                                return res.tolist()
+                            else:
+                                return None
 
                     except (KeyError, ValueError):
                         return None
@@ -95,7 +109,7 @@ class AbstractModel:
 
         return None
 
-    def write_results(self, data):
+    def write_results(self, data, coords, coords_norm=None):
         """
         This function writes the data to a file on hard disk.
         When writing the data the current grid-index (i_grid) is considered.
@@ -105,30 +119,86 @@ class AbstractModel:
 
         Parameters
         ----------
-        data : ndarray [m x n]
+        data : ndarray [n_sims x n_out]
             The data to write, the results of n outputs of m simulations
+        coords : ndarray [n_sims x dim]
+            Grid coordinates the simulations are conducted with
+        coords_norm : ndarray [n_sims x dim], optional
+            Normalized grid coordinates [-1, 1] the simulations are conducted with
         """
-        data = np.array(data)
+        if type(data) is list:
+            data = np.array(data)
+
+        if type(data) is float or type(data) is int \
+                or type(data) is np.float64 or type(data) is np.int:
+            data = np.array([[data]])
+
+        if data.ndim == 1:
+            data = data[np.newaxis, :]
+
+        if type(coords) is list:
+            coords = np.array(coords)
+
+        if type(coords) is float or type(coords) is int \
+                or type(coords) is np.float64 or type(coords) is np.int:
+            coords = np.array([[coords]])
+
+        if coords.ndim == 1:
+            coords = coords[np.newaxis, :]
+
+        if coords_norm is not None:
+            if type(coords_norm) is list:
+                coords_norm = np.array(coords_norm)
+
+            if type(coords_norm) is float or type(coords_norm) is int or \
+                    type(coords_norm) is np.float64 or type(coords_norm) is np.int:
+                coords_norm = np.array([[coords_norm]])
+
+            if coords_norm.ndim == 1:
+                coords_norm = coords_norm[np.newaxis, :]
+
         if self.fn_results:
             self.lock.acquire()
             try:
                 require_size = self.i_grid + 1
                 with h5py.File(self.fn_results, 'a') as f:
+
+                    # save results
                     try:
-                        ds = f['res']
+                        ds = f['results']
                         if ds.shape[0] < require_size:   # check if resize is necessary
                             ds.resize(require_size, axis=0)
-                        ds[self.i_grid, :] = data[np.newaxis, :]
+                        ds[self.i_grid, :] = data
                     except (KeyError, ValueError):
-                        ds = f.create_dataset('res', (require_size, len(data)), maxshape=(None, len(data)))
-                        ds[self.i_grid, :] = data[np.newaxis, :]
+                        ds = f.create_dataset('results', (require_size, data.shape[1]),
+                                              maxshape=(None, data.shape[1]),
+                                              dtype='float64')
+                        ds[self.i_grid, :] = data
 
-                # with h5py.File(self.fn_results, 'a') as f:
-                #     if "res" not in f.keys():
-                #         f.create_dataset("res", data=data, maxshape=None)
-                #     else:
-                #         f["res"].resize((f["res"].shape[0] + data.shape[0]), axis=0)
-                #         f["res"][-data.shape[0]:] = data
+                    # save coords
+                    try:
+                        ds = f['coords']
+                        if ds.shape[0] < require_size:   # check if resize is necessary
+                            ds.resize(require_size, axis=0)
+                        ds[self.i_grid, :] = coords
+                    except (KeyError, ValueError):
+                        ds = f.create_dataset('coords', (require_size, coords.shape[1]),
+                                              maxshape=(None, coords.shape[1]),
+                                              dtype='float64')
+                        ds[self.i_grid, :] = coords
+
+                    # save coords_norm
+                    if coords_norm is not None:
+                        try:
+                            ds = f['coords_norm']
+                            if ds.shape[0] < require_size:   # check if resize is necessary
+                                ds.resize(require_size, axis=0)
+                            ds[self.i_grid, :] = coords_norm
+                        except (KeyError, ValueError):
+                            ds = f.create_dataset('coords_norm', (require_size, coords_norm.shape[1]),
+                                                  maxshape=(None, coords_norm.shape[1]),
+                                                  dtype='float64')
+                            ds[self.i_grid, :] = coords_norm
 
             finally:
                 self.lock.release()
@@ -157,7 +227,7 @@ class AbstractModel:
                 more_text = None
 
             display_fancy_bar("It/Sub-it: {}/{} Performing simulation".format(self.i_iter,
-                                                                              self.interaction_oder_current),
+                                                                              self.i_subiter),
                               self.global_task_counter.value,
                               self.max_grid,
                               more_text)

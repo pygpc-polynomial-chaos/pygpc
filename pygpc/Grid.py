@@ -556,7 +556,7 @@ class TensorGrid(Grid):
     Attributes
     ----------
     grid_type: [N_vars] list of str
-        Type of quadrature used to construct tensor grid ('jacobi', 'hermite', 'cc', 'fejer2')
+        Type of quadrature used to construct tensor grid ('jacobi', 'hermite', 'clenshaw_curtis', 'fejer2')
     knots_dim_list: [dim] list of np.ndarray
         Knots of grid in each dimension
     weights_dim_list: [dim] list of np.ndarray
@@ -688,7 +688,7 @@ class SparseGrid(Grid):
         parameters: dict
             Grid parameters
             - grid_type ([N_vars] list of str) ... Type of quadrature rule used to construct sparse grid
-              ('jacobi', 'hermite', 'cc', 'fejer2')
+              ('jacobi', 'hermite', 'clenshaw_curtis', 'fejer2', 'patterson')
             - level ([N_vars] list of int) ... Number of levels in each dimension
             - level_max (int) ... Global combined level maximum
             - interaction_order (int) ...Interaction order of parameters and grid, i.e. the grid points are lying
@@ -710,7 +710,7 @@ class SparseGrid(Grid):
         
         super(SparseGrid, self).__init__(problem)
 
-        self.grid_type = parameters["grid_type"]    # Quadrature rule ('jacobi', 'hermite', 'cc', 'fejer2')
+        self.grid_type = parameters["grid_type"]    # Quadrature rule ('jacobi', 'hermite', 'clenshaw_curtis', 'fejer2')
         self.level = parameters["level"]            # Number of levels in each dimension [dim x 1]
         self.level_max = parameters["level_max"]    # Global combined level maximum
         self.interaction_order = parameters["interaction_order"]        # Interaction order of parameters and grid
@@ -727,7 +727,7 @@ class SparseGrid(Grid):
             self.make_grid = True
 
         # Grid is generated during initialization or coords, coords_norm and weights are added manually
-        if parameters["make_grid"]:
+        if self.make_grid:
             self.calc_multi_indices()
             self.calc_coords_weights()
         else:
@@ -861,7 +861,7 @@ class SparseGrid(Grid):
                         self.order_sequence[i_dim][i_level - 1])
 
                 # Clenshaw Curtis
-                if self.grid_type[i_dim] == 'cc':
+                if self.grid_type[i_dim] == 'clenshaw_curtis':
                     knots_l, weights_l = self.get_quadrature_clenshaw_curtis_1d(
                         self.order_sequence[i_dim][i_level])
                     knots_l_1, weights_l_1 = self.get_quadrature_clenshaw_curtis_1d(
@@ -963,7 +963,7 @@ class SparseGrid(Grid):
         self.weights = weights[keep_point] / 2 ** self.problem.dim
         coords_norm = coords_norm[keep_point]
 
-        # rescale normalized coordinates in case of normal distributions and "fejer2" or "cc" grids
+        # rescale normalized coordinates in case of normal distributions and "fejer2" or "clenshaw_curtis" grids
         # +- 0.675 * sigma -> 50%
         # +- 1.645 * sigma -> 90%
         # +- 1.960 * sigma -> 95%
@@ -1017,15 +1017,29 @@ class RandomGrid(Grid):
         
         if self.seed:
             np.random.seed(self.seed)
-        
-        for i_dim in range(self.problem.dim):
-            if self.problem.pdf_type[i_dim] == "beta":
-                self.coords_norm[:, i_dim] = (np.random.beta(self.problem.pdf_shape[i_dim][0],
-                                                             self.problem.pdf_shape[i_dim][1],
-                                                             [self.n_grid, 1]) * 2.0 - 1)[:, 0]
-            
-            if self.problem.pdf_type[i_dim] == "norm" or self.problem.pdf_type[i_dim] == "normal":
-                self.coords_norm[:, i_dim] = (np.random.normal(0, 1, [self.n_grid, 1]))[:, 0]
+
+        # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
+        if self.seed:
+            for i_grid in range(self.n_grid):
+                for i_dim in range(self.problem.dim):
+
+                    if self.problem.pdf_type[i_dim] == "beta":
+                        self.coords_norm[i_grid, i_dim] = np.random.beta(self.problem.pdf_shape[i_dim][0],
+                                                                         self.problem.pdf_shape[i_dim][1],
+                                                                         1) * 2.0 - 1
+
+                    if self.problem.pdf_type[i_dim] == "norm" or self.problem.pdf_type[i_dim] == "normal":
+                        self.coords_norm[i_grid, i_dim] = np.random.normal(0, 1, 1)
+
+        else:
+            for i_dim in range(self.problem.dim):
+                if self.problem.pdf_type[i_dim] == "beta":
+                    self.coords_norm[:, i_dim] = (np.random.beta(self.problem.pdf_shape[i_dim][0],
+                                                                 self.problem.pdf_shape[i_dim][1],
+                                                                 [self.n_grid, 1]) * 2.0 - 1)[:, 0]
+
+                if self.problem.pdf_type[i_dim] == "norm" or self.problem.pdf_type[i_dim] == "normal":
+                    self.coords_norm[:, i_dim] = (np.random.normal(0, 1, [self.n_grid, 1]))[:, 0]
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -1048,7 +1062,7 @@ class RandomGrid(Grid):
         """
 
         # Number of new grid points
-        n_grid_add = int(self.n_grid - n_grid_new)
+        n_grid_add = int(n_grid_new - self.n_grid)
 
         if n_grid_add > 0:
             # Generate new grid points

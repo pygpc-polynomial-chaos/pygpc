@@ -248,7 +248,7 @@ def get_all_combinations(array, number_elements):
     return np.array([c for c in combinations])
 
 
-def get_normalized_rms_deviation(array, array_ref):
+def get_normalized_rms_deviation(array, array_ref, x_axis=False):
     """
     Determine the normalized root mean square deviation between input data and reference data in [%].
 
@@ -261,47 +261,56 @@ def get_normalized_rms_deviation(array, array_ref):
     array_ref: np.ndarray
         reference data [ (x_ref), y0_ref, y1_ref, y2_ref ... ]
         if array_ref is 1D, all sizes have to match
+    x_axis: boolean, optional, default=False
+        If True, the first column of array and array_ref is interpreted as the x-axis, where the data points are
+        evaluated. If False, the data points are assumed to be at the same location.
 
     Returns
     -------
-    normalized_rms: float
-        normalized root mean square deviation
+    normalized_rms: ndarray of float [array.shape[1]]
+        Normalized root mean square deviation between the columns of array and array_ref
     """
 
-    N_points = array.shape[0]
+    n_points = array.shape[0]
 
-    # handle different array lengths
-    if len(array_ref.shape) == 1:
-        array_ref = array_ref[:, None]
-    if len(array.shape) == 1:
-        array = array[:, None]
+    if x_axis:
+        # handle different array lengths
+        if len(array_ref.shape) == 1:
+            array_ref = array_ref[:, None]
+        if len(array.shape) == 1:
+            array = array[:, None]
 
-    # determine number of input arrays
-    if array_ref.shape[1] == 2:
-        N_data = array.shape[1]-1
+        # determine number of input arrays
+        if array_ref.shape[1] == 2:
+            n_data = array.shape[1]-1
+        else:
+            n_data = array.shape[1]
+
+        # interpolate array on array_ref data if necessary
+        if array_ref.shape[1] == 1:
+            data = array
+            data_ref = array_ref
+        else:
+            # crop reference if it is longer than the axis of the data
+            data_ref = array_ref[(array_ref[:, 0] >= min(array[:, 0])) & (array_ref[:, 0] <= max(array[:, 0])), 1]
+            array_ref = array_ref[(array_ref[:, 0] >= min(array[:, 0])) & (array_ref[:, 0] <= max(array[:, 0])), 0]
+
+            data = np.zeros([len(array_ref), n_data])
+            for i_data in range(n_data):
+                data[:, i_data] = np.interp(array_ref, array[:, 0], array[:, i_data+1])
     else:
-        N_data = array.shape[1]
-    
-    # interpolate array on array_ref data if necessary
-    if array_ref.shape[1] == 1:
-        data = array
         data_ref = array_ref
-    else:
-        # crop reference if it is longer than the axis of the data
-        data_ref = array_ref[(array_ref[:, 0] >= min(array[:, 0])) & (array_ref[:, 0] <= max(array[:, 0])), 1]
-        array_ref = array_ref[(array_ref[:, 0] >= min(array[:, 0])) & (array_ref[:, 0] <= max(array[:, 0])), 0]
+        data = array
 
-        data = np.zeros([len(array_ref), N_data])
-        for i_data in range(N_data):
-            data[:, i_data] = np.interp(array_ref, array[:, 0], array[:, i_data+1])
+    max_min_idx = np.isclose(np.max(data_ref, axis=0), np.min(data_ref, axis=0))
+    delta = np.max(data_ref, axis=0) - np.min(data_ref, axis=0)
 
-    if max(data_ref) == min(data_ref):
-        delta = max(data_ref)
-    else:
-        delta = max(data_ref) - min(data_ref)
+    if max_min_idx.any():
+        delta[max_min_idx] = max(data_ref[max_min_idx])
     
     # determine normalized rms deviation and return
-    normalized_rms = 100 * np.sqrt(1.0/N_points * np.sum((data - data_ref)**2, axis=0)) / delta
+    normalized_rms = 100 * np.sqrt(1.0/n_points * np.sum((data - data_ref)**2, axis=0)) / delta
+
     return normalized_rms
 
 

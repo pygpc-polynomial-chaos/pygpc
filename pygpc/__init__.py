@@ -18,5 +18,7 @@ import Worker
 import Grid                         # ok
 from .Problem import *              # ok
 from .Algorithm import *            # ok
+from .validation import *           # ok
+from .vis import *                  # ok
 import RandomParameter              # ok
 

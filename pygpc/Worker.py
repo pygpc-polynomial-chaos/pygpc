@@ -44,7 +44,7 @@ def run(obj):
     if process_id is None:
         process_id = 0
 
-    res = obj.read_previous_results()
+    res = obj.read_previous_results(obj.coords)
 
     start_time = 0
     end_time = 0
@@ -55,7 +55,7 @@ def run(obj):
         start_time = time.time()
         res = obj.simulate(process_id)
         end_time = time.time()
-        obj.write_results(res)
+        obj.write_results(data=res, coords=obj.coords, coords_norm=obj.coords_norm)
         skip_sim = False
 
     obj.increment_ctr()

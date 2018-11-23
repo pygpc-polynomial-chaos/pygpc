@@ -138,8 +138,8 @@ class Static(Algorithm):
         if "interaction_order" not in self.options.keys():
             self.options["interaction_order"] = self.problem.dim
 
-        if "n_cpu" not in self.options.keys():
-            self.options["n_cpu"] = 1
+        if "n_cpu" in self.options.keys():
+            self.n_cpu = self.options["n_cpu"]
 
     def run(self):
         """
@@ -180,7 +180,7 @@ class Static(Algorithm):
         gpc.init_gpc_matrix()
 
         # Initialize parallel Computation class
-        com = Computation(n_cpu=self.options["n_cpu"])
+        com = Computation(n_cpu=self.n_cpu)
 
         # Run simulations
         iprint("Performing {} simulations!".format(gpc.grid.coords.shape[0]),
@@ -188,7 +188,13 @@ class Static(Algorithm):
 
         start_time = time.time()
 
-        res = com.run(gpc, gpc.grid.coords)
+        res = com.run(model=gpc.problem.model,
+                      problem=gpc.problem,
+                      coords=gpc.grid.coords,
+                      coords_norm=gpc.grid.coords_norm,
+                      i_iter=gpc.order_max,
+                      i_subiter=gpc.interaction_order,
+                      fn_results=gpc.fn_results)
 
         iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec\n',
                tab=1, verbose=self.options["verbose"])
@@ -200,16 +206,15 @@ class Static(Algorithm):
                            solver=self.options["solver"],
                            settings=self.options["settings"])
 
-        # save simulation results, gpc object and gpc coeffs
+        # save gpc object and gpc coeffs
         if self.options["fn_results"]:
             fn = os.path.join(os.path.splitext(self.options["fn_results"])[0])
-            write_gpc_pkl(gpc, fn + '_gpc.pkl')
+            write_gpc_pkl(gpc, fn + '.pkl')
 
-            with h5py.File(fn + '_results.hdf5', 'w') as f:
-                f.create_dataset("res", data=res, chunks=True, maxshape=None)
-
-            with h5py.File(fn + '_coeffs.hdf5', 'w') as f:
-                f.create_dataset("coeffs", data=coeffs, chunks=True, maxshape=None)
+            with h5py.File(self.options["fn_results"], "a") as f:
+                if "coeffs" in f.keys():
+                    del f['coeffs']
+                f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
 
         return gpc, coeffs, res
 
@@ -286,8 +291,8 @@ class RegAdaptive(Algorithm):
         if "seed" not in self.options.keys():
             self.options["seed"] = None
 
-        if "n_cpu" not in self.options.keys():
-            self.options["n_cpu"] = 1
+        if "n_cpu" in self.options.keys():
+            self.n_cpu = self.options["n_cpu"]
 
         if "matrix_ratio" not in self.options.keys():
             self.options["matrix_ratio"] = 1.5
@@ -325,12 +330,12 @@ class RegAdaptive(Algorithm):
         res_complete = None
 
         # Initialize parallel Computation class
-        com = Computation(n_cpu=self.options["n_cpu"])
+        com = Computation(n_cpu=self.n_cpu)
 
         # Initialize Reg gPC object
         gpc = Reg(problem=self.problem,
                   order=self.options["order_start"] * np.ones(self.problem.dim),
-                  order_max=self.options["order_max"],
+                  order_max=self.options["order_start"],
                   interaction_order=self.options["interaction_order"],
                   fn_results=self.options["fn_results"])
 
@@ -381,7 +386,7 @@ class RegAdaptive(Algorithm):
 
                     # extend grid
                     gpc.grid.extend_random_grid(n_grid_new=np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]),
-                                                seed=self.options["seed"])
+                                                seed=None)
 
                     # update gpc matrix
                     gpc.update_gpc_matrix()
@@ -392,7 +397,13 @@ class RegAdaptive(Algorithm):
 
                 start_time = time.time()
 
-                res = com.run(gpc, gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))])
+                res = com.run(model=gpc.problem.model,
+                              problem=gpc.problem,
+                              coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
+                              coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
+                              i_iter=order,
+                              i_subiter=gpc.interaction_order_current,
+                              fn_results=gpc.fn_results)
 
                 iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec\n',
                        tab=1, verbose=self.options["verbose"])
@@ -419,13 +430,6 @@ class RegAdaptive(Algorithm):
                                       '_' + str(order).zfill(2) + "_" + str(gpc.interaction_order_current).zfill(2))
                     write_gpc_pkl(gpc, fn + '_gpc.pkl')
 
-                    with h5py.File(fn + '_results.hdf5', 'a') as f:
-                        if "res" not in f.keys():
-                            f.create_dataset("res", data=res, chunks=True, maxshape=(None,))
-                        else:
-                            f["res"].resize((f["res"].shape[0] + res.shape[0]), axis=0)
-                            f["res"][-res.shape[0]:] = res
-
                 # determine error
                 eps = gpc.loocv(sim_results=res_complete[:, non_nan_mask],
                                 solver=gpc.solver,
@@ -447,6 +451,16 @@ class RegAdaptive(Algorithm):
         coeffs = gpc.solve(sim_results=res_complete,
                            solver=gpc.solver,
                            settings=gpc.settings)
+
+        # save gpc object and gpc coeffs
+        if self.options["fn_results"]:
+            fn = os.path.join(os.path.splitext(self.options["fn_results"])[0])
+            write_gpc_pkl(gpc, fn + '.pkl')
+
+            with h5py.File(self.options["fn_results"], "a") as f:
+                if "coeffs" in f.keys():
+                    del f['coeffs']
+                f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
 
         return gpc, coeffs, res_complete
 

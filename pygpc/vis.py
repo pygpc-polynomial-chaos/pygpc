@@ -249,3 +249,33 @@ def plot_sobol_indices(sobol_rel_order_mean, sobol_rel_1st_order_mean, fn_plot, 
     ax.pie(values, labels=labels, colors=colors,
            autopct='%1.2f%%', shadow=True, explode=[0.1] * len(labels))
     plt.savefig(os.path.splitext(fn_plot)[0] + '_parameters.png', facecolor='#ffffff')
+
+
+def plot_2d_grid(coords, weights=None, fn_plot=None):
+    """
+    Plot 2D grid and save it as fn_plot.pdf
+
+    Parameters
+    ----------
+    coords: ndarray of float [n_grid, 2]
+        Grid points
+    weights: ndarray of float [n_grid], optional, default=None
+        Integration weights
+    fn_plot: str
+        Filename of plot so save
+
+    Returns
+    -------
+    <file> .pdf file
+        Plot of grid-points
+    """
+
+    if weights is not None:
+        weights = np.abs(weights)
+
+    plt.scatter(coords[:, 0], coords[:, 1], s=weights)
+    plt.grid()
+    plt.title(os.path.split(os.path.splitext(fn_plot)[0])[1], fontsize=10)
+    plt.xlabel('y', fontsize=12)
+    plt.ylabel('p(y)', fontsize=12)
+    plt.savefig(os.path.splitext(fn_plot)[0] + '.pdf', facecolor='#ffffff')

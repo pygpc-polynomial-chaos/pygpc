@@ -7,15 +7,18 @@ import unittest
 import pygpc
 from collections import OrderedDict
 import numpy as np
-import scipy.stats
 from scipy.interpolate import griddata
 import sys
-import matplotlib.pyplot as plt
+import os
+
+# temporary output folder
+folder = '/NOBACKUP2/tmp'
+
 
 # first test fixture (class)
 class TestpygpcMethods(unittest.TestCase):
 
-    # setup method called before every testcase
+    # setup method called before every test-case
     def setUp(self):
         pass
 
@@ -41,8 +44,15 @@ class TestpygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    # def test_1_static_gpc_reg_MP(self):
-    #     test_name = 'Test #1 (Method: Regression, Solver: Moore-Penrose, Grid: RandomGrid)'
+    # def test_1_static_gpc_reg_mp_randomgrid(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Regression
+    #     Solver: Moore-Penrose
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_1_static_reg_mp_randomgrid'
     #     print(test_name)
     #
     #     # define model
@@ -51,7 +61,8 @@ class TestpygpcMethods(unittest.TestCase):
     #     # define problem
     #     parameters = OrderedDict()
     #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
-    #     parameters["x2"] = pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
+    #     parameters["x2"] = 1.25
+    #     parameters["x3"] = pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
     #     problem = pygpc.Problem(model, parameters)
     #
     #     # gPC options
@@ -63,7 +74,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["order_max"] = 7
     #     options["interaction_order"] = 2
     #     options["n_cpu"] = 8
-    #     options["fn_results"] = '/NOBACKUP2/tmp/test'
+    #     options["fn_results"] = os.path.join(folder, test_name)
     #
     #     # generate grid
     #     n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
@@ -71,7 +82,10 @@ class TestpygpcMethods(unittest.TestCase):
     #                                            order_inter_max=options["interaction_order"],
     #                                            dim=problem.dim)
     #     grid = pygpc.RandomGrid(problem=problem,
-    #                             parameters={"n_grid": 1.5 * n_coeffs, "seed": None})
+    #                             parameters={"n_grid": 1.5 * n_coeffs, "seed": 1})
+    #
+    #     pygpc.plot_2d_grid(coords=grid.coords,
+    #                        fn_plot=os.path.join(folder, test_name + '_grid'))
     #
     #     # define algorithm
     #     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
@@ -79,41 +93,217 @@ class TestpygpcMethods(unittest.TestCase):
     #     # run gPC algorithm
     #     gpc, coeffs, results = algorithm.run()
     #
-    #     # Apply Monte Carlo method on original model function and gPC approximation for comparison
-    #     com = pygpc.Computation(n_cpu=options["n_cpu"])
-    #     grid_mc = pygpc.RandomGrid(problem=problem, parameters={"n_grid": 1E4, "seed": None})
-    #     y_gpc = gpc.get_approximation(coeffs, grid_mc.coords_norm, output_idx=None)
-    #     y_orig = com.run(gpc, grid_mc.coords)
-    #     nrmsd = pygpc.get_normalized_rms_deviation(y_gpc, y_orig)[0]
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
+    #                                coeffs=coeffs,
+    #                                n_samples=int(1e4),
+    #                                output_idx=0,
+    #                                fn_pdf=os.path.join(folder, test_name))
     #
-    #     print("\t > NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-    #     # Calculating output PDFs
-    #     kde_gpc = scipy.stats.gaussian_kde(y_gpc, bw_method=0.15 / y_gpc.std(ddof=1))
-    #     pdf_x_gpc = np.linspace(y_gpc.min(), y_gpc.max(), 100)
-    #     pdf_y_gpc = kde_gpc(pdf_x_gpc)
-    #     kde_orig = scipy.stats.gaussian_kde(y_orig.transpose(), bw_method=0.15 / y_orig.std(ddof=1))
-    #     pdf_x_orig = np.linspace(y_orig.min(), y_orig.max(), 100)
-    #     pdf_y_orig = kde_orig(pdf_x_orig)
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
     #
-    #     # plot pdfs
-    #     fig = plt.figure()
-    #     ax = fig.add_subplot(111)
-    #     plt.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
-    #     plt.legend(['gpc', 'original'])
-    #     plt.grid()
-    #     plt.title(test_name, fontsize=10)
-    #     plt.xlabel('y', fontsize=12)
-    #     plt.ylabel('p(y)', fontsize=12)
-    #     ax.text(0.05, 0.95, r'$error=%.2f$' % (nrmsd, ) + "%",
-    #             transform=ax.transAxes, fontsize=12, verticalalignment='top',
-    #             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    #     self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
     #
-    #     self.expect_true(nrmsd < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+    #     print("done!\n")
+    #
+    # def test_2_static_gpc_reg_omp_randomgrid(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Regression
+    #     Solver: OMP
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_2_static_reg_omp_randomgrid'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.PeaksSingle
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
+    #     parameters["x2"] = 1.25
+    #     parameters["x3"] = pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["method"] = "reg"
+    #     options["solver"] = "OMP"
+    #     options["order"] = [7, 7]
+    #     options["order_max"] = 7
+    #     options["interaction_order"] = 2
+    #     options["n_cpu"] = 8
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #
+    #     # number of gPC coefficients
+    #     n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
+    #                                            order_glob_max=options["order_max"],
+    #                                            order_inter_max=options["interaction_order"],
+    #                                            dim=problem.dim)
+    #
+    #     # we assume sparsity of 50%
+    #     sparsity = 0.5
+    #     options["settings"] = {"n_coeffs_sparse": np.ceil(sparsity*n_coeffs)}
+    #
+    #     # generate grid
+    #     grid = pygpc.RandomGrid(problem=problem,
+    #                             parameters={"n_grid": options["settings"]["n_coeffs_sparse"]*np.log10(n_coeffs),
+    #                                         "seed": 1})
+    #
+    #     pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
+    #                                coeffs=coeffs,
+    #                                n_samples=int(1e4),
+    #                                output_idx=0,
+    #                                fn_pdf=os.path.join(folder, test_name))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
+    #
+    # def test_3_static_gpc_quad_numint_tensorgrid(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Quadrature
+    #     Solver: NumInt
+    #     Grid: TensorGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_3_static_quad_numint_tensorgrid'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.PeaksSingle
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
+    #     parameters["x2"] = 1.25
+    #     parameters["x3"] = pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["method"] = "quad"
+    #     options["solver"] = "NumInt"
+    #     options["settings"] = None
+    #     options["order"] = [7, 7]
+    #     options["order_max"] = 7
+    #     options["interaction_order"] = 2
+    #     options["n_cpu"] = 8
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #
+    #     # generate grid
+    #     grid = pygpc.TensorGrid(problem=problem,
+    #                             parameters={"grid_type": ["jacobi", "hermite"], "n_dim": options["order"]})
+    #
+    #     pygpc.plot_2d_grid(coords=grid.coords,
+    #                        weights=grid.weights*1e3,
+    #                        fn_plot=os.path.join(folder, test_name + '_grid'))
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
+    #                                coeffs=coeffs,
+    #                                n_samples=int(1e4),
+    #                                output_idx=0,
+    #                                fn_pdf=os.path.join(folder, test_name))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
+    #
+    # def test_4_static_gpc_quad_numint_sparsegrid(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Quadrature
+    #     Solver: NumInt
+    #     Grid: SparseGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_4_static_quad_numint_sparsegrid'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.PeaksSingle
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+    #     parameters["x2"] = 1.25
+    #     parameters["x3"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["method"] = "quad"
+    #     options["solver"] = "NumInt"
+    #     options["settings"] = None
+    #     options["order"] = [7, 7]
+    #     options["order_max"] = 7
+    #     options["interaction_order"] = 2
+    #     options["n_cpu"] = 8
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #
+    #     # generate grid
+    #     grid = pygpc.SparseGrid(problem=problem,
+    #                             parameters={"grid_type": ["jacobi", "jacobi"],
+    #                                         "level": [3, 3],
+    #                                         "level_max": 3,
+    #                                         "interaction_order": options["interaction_order"],
+    #                                         "order_sequence_type": "exp"})
+    #
+    #     pygpc.plot_2d_grid(coords=grid.coords,
+    #                        weights=grid.weights*5e2,
+    #                        fn_plot=os.path.join(folder, test_name + '_grid'))
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
+    #                                coeffs=coeffs,
+    #                                n_samples=int(1e4),
+    #                                output_idx=0,
+    #                                fn_pdf=os.path.join(folder, test_name))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
     #
     #     print("done!\n")
 
-    def test_2_static_gpc_reg_omp(self):
-        test_name = 'Test #2 (Method: Regression, Solver: OMP, Grid: RandomGrid)'
+    def test_5_adaptive_gpc_reg_mp_randomgrid(self):
+        """
+        Algorithm: Adaptive
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: RandomGrid
+        """
+        global folder
+        test_name = 'pygpc_test_5_adaptive_gpc_reg_mp_randomgrid'
         print(test_name)
 
         # define model
@@ -121,75 +311,45 @@ class TestpygpcMethods(unittest.TestCase):
 
         # define problem
         parameters = OrderedDict()
-        parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
-        parameters["x2"] = pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
+        parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+        parameters["x2"] = 1.25
+        parameters["x3"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
         problem = pygpc.Problem(model, parameters)
 
         # gPC options
         options = dict()
-        options["method"] = "reg"
-        options["solver"] = "OMP"
-        options["order"] = [7, 7]
-        options["order_max"] = 7
+        options["order_start"] = 2
+        options["order_end"] = 10
         options["interaction_order"] = 2
+        options["solver"] = "Moore-Penrose"
+        options["settings"] = None
+        options["seed"] = 1
+        options["matrix_ratio"] = 1.5
         options["n_cpu"] = 8
-        options["fn_results"] = '/NOBACKUP2/tmp/test'
-
-        # generate grid
-        n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-                                               order_glob_max=options["order_max"],
-                                               order_inter_max=options["interaction_order"],
-                                               dim=problem.dim)
-
-        # we assume sparsity of 50%
-        sparsity = 0.5
-        options["settings"] = {"n_coeffs_sparse": np.ceil(sparsity*n_coeffs)}
-
-        grid = pygpc.RandomGrid(problem=problem,
-                                parameters={"n_grid": options["settings"]["n_coeffs_sparse"]*np.log10(n_coeffs),
-                                            "seed": None})
+        options["fn_results"] = os.path.join(folder, test_name)
 
         # define algorithm
-        algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+        algorithm = pygpc.RegAdaptive(problem=problem, options=options)
 
         # run gPC algorithm
         gpc, coeffs, results = algorithm.run()
 
-        # Apply Monte Carlo method on original model function and gPC approximation for comparison
-        com = pygpc.Computation(n_cpu=options["n_cpu"])
-        grid_mc = pygpc.RandomGrid(problem=problem, parameters={"n_grid": 1E4, "seed": None})
-        y_gpc = gpc.get_approximation(coeffs, grid_mc.coords_norm, output_idx=None)
-        y_orig = com.run(gpc, grid_mc.coords)
-        nrmsd = pygpc.get_normalized_rms_deviation(y_gpc.flatten(), y_orig)[0]
+        # plot grid
+        pygpc.plot_2d_grid(coords=gpc.grid.coords,
+                           fn_plot=os.path.join(folder, test_name + '_grid'))
 
-        print("\t > NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        # Validate gPC vs original model function
+        nrmsd = pygpc.validate_gpc(gpc=gpc,
+                                   coeffs=coeffs,
+                                   n_samples=int(1e4),
+                                   output_idx=0,
+                                   fn_pdf=os.path.join(folder, test_name))
 
-        # Calculating output PDFs
-        kde_gpc = scipy.stats.gaussian_kde(y_gpc.flatten(), bw_method=0.15 / y_gpc.std(ddof=1))
-        pdf_x_gpc = np.linspace(y_gpc.min(), y_gpc.max(), 100)
-        pdf_y_gpc = kde_gpc(pdf_x_gpc)
-        kde_orig = scipy.stats.gaussian_kde(y_orig.flatten(), bw_method=0.15 / y_orig.std(ddof=1))
-        pdf_x_orig = np.linspace(y_orig.min(), y_orig.max(), 100)
-        pdf_y_orig = kde_orig(pdf_x_orig)
+        print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
-        # plot pdfs
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        plt.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
-        plt.legend(['gpc', 'original'])
-        plt.grid()
-        plt.title(test_name, fontsize=10)
-        plt.xlabel('y', fontsize=12)
-        plt.ylabel('p(y)', fontsize=12)
-        ax.text(0.05, 0.95, r'$error=%.2f$' % (nrmsd, ) + "%",
-                transform=ax.transAxes, fontsize=12, verticalalignment='top',
-                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
-
-        self.expect_true(nrmsd < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
 
         print("done!\n")
-
-
 
     # def test_1_regular_gpc(self):
     #
