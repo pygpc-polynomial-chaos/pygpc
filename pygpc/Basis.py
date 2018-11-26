@@ -1,4 +1,3 @@
-from .misc import get_all_combinations
 from .BasisFunction import *
 from .misc import get_multi_indices_max_order
 import uuid

@@ -142,6 +142,9 @@ class Norm(RandomParameter):
     ----------
     pdf_shape: list of float [2]
         Shape parameters of beta distributed random variable [mean, std]
+    pdf_limits: list of float [2]
+        Upper and lower bound of random variable (default: mean +- 3 * std)
+
     """
     def __init__(self, pdf_shape):
         """
@@ -150,10 +153,11 @@ class Norm(RandomParameter):
         Parameters
         ----------
         pdf_shape: list of float [2]
-            Shape parameters of beta distributed random variable [p, q]
+            Shape parameters of normal distributed random variable [mean, std]
         """
 
-        super(Norm, self).__init__(pdf_type='norm', pdf_shape=pdf_shape, pdf_limits=None)
+        super(Norm, self).__init__(pdf_type='norm', pdf_shape=pdf_shape, pdf_limits=[pdf_shape[0] - 3 * pdf_shape[1],
+                                                                                     pdf_shape[0] + 3 * pdf_shape[1]])
 
     @staticmethod
     def init_basis_function(order):

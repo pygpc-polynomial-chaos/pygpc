@@ -3,153 +3,30 @@
 Functions that provide input and output functionality
 """
 
+from .Grid import *
+import os
 import pickle
 import h5py
-import yaml
 import logging
-from builtins import range
-
-from .Grid import *
-
-
-def write_gpc_yml(obj, fname):
-    """
-    Write gPC infos about input pdfs, polynomials, grid etc. as .yml file.
-
-    write_gpc_yml(obj, fname)
-
-    Parameters
-    ----------
-    obj: gPC or derived class
-        class instance containing gpc data
-    fname: str
-        path to output file
-    """
-
-    # fix extension
-    if fname[-4:] != 'yaml' and fname[-3:] != 'yml':
-        fname += '.yaml'
-
-    # write information to dictionary
-    info = dict(random_vars=obj.random_vars,
-                pdf_type=obj.pdftype.tolist(),
-                pdf_shape=obj.pdfshape,
-                limits=obj.limits,
-                dim=obj.dim,
-                order=obj.order.tolist(),
-                order_max=obj.order_max,
-                interaction_order=obj.interaction_order,
-                grid_coords=obj.grid.coords.tolist(),
-                grid_coords_norm=obj.grid.coords_norm.tolist(),
-                gpc_type=obj.__class__.__name__,
-                grid_type=obj.grid.__class__.__name__)
-
-    # add grid specific attributes to dictionary
-    if obj.grid.__class__.__name__ == 'RandomGrid':
-        info['seed'] = obj.grid.seed
-
-    elif obj.grid.__class__.__name__ == 'TensorGrid':
-        info['N'] = obj.grid.N
-        info['weights'] = obj.grid.weights.tolist()
-
-    elif obj.grid.__class__.__name__ == 'SparseGrid':
-        info['level'] = obj.grid.level
-        info['level_max'] = obj.grid.level_max
-        info['order_sequence_type'] = obj.grid.order_sequence_type
-        info['weights'] = obj.grid.weights.tolist()
-        info['level_sequence'] = obj.grid.level_sequence
-        info['order_sequence'] = obj.grid.order_sequence
-        info['l_level'] = obj.grid.l_level.tolist()
-
-    else:
-        raise NotImplementedError
-
-    # write in file
-    with open(fname, 'w') as f:
-        yaml.dump(info, f, default_flow_style=False)
-
-
-def read_gpc_yml(fname):
-    """
-    Read gPC infos about input pdfs, polynomials, grid etc. as .yml file and initialize gpc object.
-
-    obj = read_gpc_yml(fname)
-
-    Parameters
-    ----------
-    fname: str
-        path to input file
-    """
-
-    # fix extension
-    if fname[-4:] != 'yaml' and fname[-3:] != 'yml':
-        fname += '.yaml'
-
-    # read yml file
-    with open(fname, 'r') as f:
-        info = yaml.load(f)
-
-    # initialize grid object
-    if info['grid_type'] == 'RandomGrid':
-        grid = RandomGrid(pdf_type=info['pdf_type'],
-                          grid_shape=info['pdf_shape'],
-                          limits=info['limits'],
-                          N=0,
-                          seed=info['seed'])
-
-    elif info['grid_type'] == 'TensorGrid':
-        grid = TensorGrid(pdf_type=info['pdf_type'],
-                          grid_type=info['grid_type'],
-                          grid_shape=info['pdf_shape'],
-                          limits=info['limits'],
-                          nodes_dim=info['N'])
-        grid.weights = np.asarray(info['weights'])
-
-    elif info['grid_type'] == 'SparseGrid':
-        grid = SparseGrid(pdf_type=info['pdftype'],
-                          grid_type=info['gridtype'],
-                          grid_shape=info['pdfshape'],
-                          limits=info['limits'],
-                          level=info['level'],
-                          level_max=info['level_max'],
-                          interaction_order=info['interaction_order'],
-                          order_sequence_type=info['order_sequence_type'],
-                          make_grid=False)
-        grid.weights = np.asarray(info['weights'])
-        grid.level_sequence = info['level_sequence']
-        grid.order_sequence = info['order_sequence']
-        grid.l_level = np.asarray(info['l_level'])
-
-    else:
-        raise NotImplementedError
-
-    grid.coords = np.asarray(info['grid_coords'])
-    grid.coords_norm = np.asarray(info['grid_coords_norm'])
-
-    # initialize gpc object
-    obj = eval(info['gpc_type'])(random_vars=info['random_vars'],
-                                 pdftype=info['pdftype'],
-                                 pdfshape=info['pdfshape'],
-                                 limits=info['limits'],
-                                 order=info['order'],
-                                 order_max=info['order_max'],
-                                 interaction_order=info['interaction_order'],
-                                 grid=grid)
-    return obj
 
 
 def write_gpc_pkl(obj, fname):
     """
-    Write gPC object including infos about input pdfs, polynomials, grid etc. as pickle file.
+    Write gPC object including information about the Basis, Problem and Model as pickle file.
 
     write_gpc_obj(obj, fname)
 
     Parameters
     ----------
-    obj: gPC or derived class
-        class instance containing gpc data
+    obj: GPC or derived class
+        Class instance containing the gPC information
     fname: str
         path to output file
+
+    Returns
+    -------
+    <file>: .pkl file
+        File containing the GPC object
     """
 
     with open(fname, 'wb') as output:
@@ -158,7 +35,7 @@ def write_gpc_pkl(obj, fname):
 
 def read_gpc_pkl(fname):
     """
-    Read gPC object including infos about input pdfs, polynomials, grid etc.
+    Read gPC object including information about input pdfs, polynomials, grid etc.
 
     object = read_gpc_obj(fname)
 
@@ -166,6 +43,11 @@ def read_gpc_pkl(fname):
     ----------
     fname: str
         path to input file
+
+    Returns
+    -------
+    obj: GPC Object
+        GPC object containing instances of Basis, Problem and Model.
     """
 
     with open(fname, 'rb') as f:
@@ -180,10 +62,15 @@ def write_data_txt(data, fname):
 
     Parameters
     ----------
-    data: np.ndarray
-        data to save
+    data: ndarray of float
+        Data to save
     fname: str
-        path to output file
+        Path to output file
+
+    Returns
+    -------
+    <file>: .txt file
+        File containing the data (tab delimited)
     """
 
     np.savetxt(fname, data, fmt='%.10e', delimiter='\t', newline='\n', header='', footer='')
@@ -201,6 +88,11 @@ def read_data_hdf5(fname, loc):
         path to input file
     loc: str
         location (folder and name) in hdf5 file (e.g. data/phi)
+
+    Returns
+    -------
+    data: ndarray of float
+        Loaded data from .hdf5 file
     """
 
     with h5py.File(fname, 'r') as f:
@@ -237,9 +129,14 @@ def write_sobol_idx_txt(sobol_idx, fname):
     Parameters
     ----------
     sobol_idx: [N_sobol] list of np.ndarray
-        list of parameter label indices belonging to Sobol indices
+        List of parameter label indices belonging to Sobol indices
     fname: str
-        path to output file
+        Path to output file
+
+    Returns
+    -------
+    <file>: .txt file
+        File containing the sobol index list.
     """
 
     f = open(fname, 'w')
@@ -264,12 +161,12 @@ def read_sobol_idx_txt(fname):
     Parameters
     ----------
     fname: str
-        path to input file
+        Path to input file
 
     Returns
     -------
     sobol_idx: [N_sobol] list of np.array
-        list of parameter label indices belonging to Sobol indices
+        List of parameter label indices belonging to Sobol indices
     """
 
     f = open(fname, 'r')
@@ -279,13 +176,13 @@ def read_sobol_idx_txt(fname):
 
     while line:
 
-        # ignore comments in textfile
+        # ignore comments in text file
         if line[0] == '#':
             line = f.readline().strip('\n')
             continue
 
         else:
-            # read comma separated indices and convert to np.ndarray
+            # read comma separated indices and convert to ndarray
             sobol_idx.append(np.asarray([int(x) for x in line.split(',') if x]))
 
         line = f.readline().strip('\n')
@@ -293,23 +190,7 @@ def read_sobol_idx_txt(fname):
     return sobol_idx
 
 
-def write_value(message, verbose=True):
-    """
-    Function that prints out a message over the python logging module
-
-    iprint(message, verbose=True)
-
-    Parameters
-    ----------
-    message: string
-        String to print in standard output
-    verbose: bool, optional, default=True
-        Determines if string is printed out
-    """
-    console_logger.info(message)
-
-
-def write_log_sobol(fname, sobol_rel_order_mean, sobol_rel_1st_order_mean, sobol_extracted_idx_1st):
+def write_log_sobol(fname, random_vars, sobol_rel_order_mean, sobol_rel_1st_order_mean, sobol_extracted_idx_1st):
     """
     Write average ratios of Sobol indices into logfile.
 
@@ -317,6 +198,8 @@ def write_log_sobol(fname, sobol_rel_order_mean, sobol_rel_1st_order_mean, sobol
     ----------
     fname: str
         Path of logfile
+    random_vars: list of str
+        Labels of random variables
     sobol_rel_order_mean: np.ndarray
         Average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,).
         (over all output quantities)
@@ -349,14 +232,14 @@ def write_log_sobol(fname, sobol_rel_order_mean, sobol_rel_1st_order_mean, sobol
     log.write("Ratio: 1st order Sobol indices of parameters / total variance over all output quantities\n")
     log.write("----------------------------------------------------------------------------------------\n")
 
-    random_vars = []
-    max_len = max([len(self.random_vars[i]) for i in range(len(self.random_vars))])
+    # random_vars = []
+    max_len = max([len(random_vars[i]) for i in range(len(random_vars))])
     for i in range(len(sobol_rel_1st_order_mean)):
         log.write("{}{:s}: {:.4f}\n".format(
-            (max_len - len(self.random_vars[sobol_extracted_idx_1st[i]])) * ' ',
-            self.random_vars[sobol_extracted_idx_1st[i]],
+            (max_len - len(random_vars[sobol_extracted_idx_1st[i]])) * ' ',
+            random_vars[sobol_extracted_idx_1st[i]],
             sobol_rel_1st_order_mean[i]))
-        random_vars.append(self.random_vars[sobol_extracted_idx_1st[i]])
+        # random_vars.append(self.random_vars[sobol_extracted_idx_1st[i]])
 
     log.close()
 
@@ -408,6 +291,8 @@ def iprint(message, verbose=True, tab=None):
         String to print in standard output
     verbose: bool, optional, default=True
         Determines if string is printed out
+    tab: int
+        Number of tabs before message
     """
     if verbose:
         if tab:
@@ -427,6 +312,8 @@ def wprint(message, verbose=True, tab=None):
         String to print in standard output
     verbose: bool, optional, default=True
         Determines if string is printed out
+    tab: int
+        Number of tabs before message
     """
 
     if verbose:

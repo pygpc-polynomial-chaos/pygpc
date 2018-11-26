@@ -698,6 +698,16 @@ class SparseGrid(Grid):
               during initialization
             - verbose (bool, optional, default=True) ... Print output messages into stdout
 
+        Examples
+        --------
+        >>> import pygpc
+        >>> grid = pygpc.SparseGrid(problem=problem,
+        >>>                         parameters={"grid_type": ["jacobi", "jacobi"],
+        >>>                                     "level": [3, 3],
+        >>>                                     "level_max": 3,
+        >>>                                     "interaction_order": 2,
+        >>>                                     "order_sequence_type": "exp"})
+
         Notes
         -----
         Adds Attributes:
@@ -1006,6 +1016,12 @@ class RandomGrid(Grid):
             Grid parameters
             - n_grid (int) ... Number of random samples in grid
             - seed (float) optional, default=None ... Seeding point to replicate random grid
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> grid = pygpc.RandomGrid(problem=problem,
+        >>>                         parameters={"n_grid": 100, "seed": 1})
         """
         super(RandomGrid, self).__init__(problem)
 

@@ -414,7 +414,7 @@ class GPC(object):
         settings: dict
             Solver settings
             - 'Moore-Penrose' ... None
-            - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0
+            - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0 or "sparsity": float 0...1
             - 'NumInt' ... None
         gpc_matrix: ndarray of float [n_grid x n_basis], optional, default: self.gpc_matrix
             GPC matrix to invert
@@ -454,7 +454,14 @@ class GPC(object):
                 sim_results = sim_results[:, np.newaxis]
 
             # determine gPC-coefficients of extended basis using OMP
-            coeffs = fm.algs.OMP(gpc_matrix_fm, sim_results, int(settings["n_coeffs_sparse"]))
+            if "n_coeffs_sparse" in settings.keys():
+                n_coeffs_sparse = int(settings["n_coeffs_sparse"])
+            elif "sparsity" in settings.keys():
+                n_coeffs_sparse = int(np.ceil(gpc_matrix.shape[1]*settings["sparsity"]))
+            else:
+                raise AttributeError("Please specify 'n_coeffs_sparse' or 'sparsity' in solver settings dictionary!")
+
+            coeffs = fm.algs.OMP(gpc_matrix_fm, sim_results, n_coeffs_sparse)
 
         elif solver == 'NumInt':
             # check if quadrature rule (grid) fits to the probability density distribution (pdf)

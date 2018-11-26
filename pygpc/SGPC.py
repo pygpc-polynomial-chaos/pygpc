@@ -441,6 +441,15 @@ class Reg(SGPC):
             All polynomials are ignored, which have an interaction order greater than the specified
         fn_results : string, optional, default=None
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> gpc = pygpc.Reg(problem=problem,
+        >>>                 order=[7, 6],
+        >>>                 order_max=5,
+        >>>                 interaction_order=2,
+        >>>                 fn_results="/tmp/my_results")
         """
         super(Reg, self).__init__(problem, order, order_max, interaction_order, fn_results)
         self.solver = 'Moore-Penrose'   # Default solver
@@ -532,6 +541,15 @@ class Quad(SGPC):
             All polynomials are ignored, which have an interaction order greater than the specified
         fn_results : string, optional, default=None
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> gpc = pygpc.Quad(problem=problem,
+        >>>                 order=[7, 6],
+        >>>                 order_max=5,
+        >>>                 interaction_order=2,
+        >>>                 fn_results="/tmp/my_results")
         """
         super(Quad, self).__init__(problem, order, order_max, interaction_order, fn_results)
         self.solver = 'NumInt'  # Default solver
