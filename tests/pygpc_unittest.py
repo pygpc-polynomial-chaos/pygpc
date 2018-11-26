@@ -12,7 +12,8 @@ import sys
 import os
 
 # temporary output folder
-folder = '/NOBACKUP2/tmp'
+folder = '/home/kporzig/tmp'
+# folder = '/NOBACKUP2/tmp'
 
 
 # first test fixture (class)
@@ -94,23 +95,30 @@ class TestpygpcMethods(unittest.TestCase):
         gpc, coeffs, results = algorithm.run()
 
         # # Validate gPC vs original model function
-        # nrmsd = pygpc.validate_gpc(gpc=gpc,
-        #                            coeffs=coeffs,
-        #                            n_samples=int(1e4),
-        #                            output_idx=0,
-        #                            fn_pdf=os.path.join(folder, test_name))
+        # nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+        #                               coeffs=coeffs,
+        #                               n_samples=int(1e4),
+        #                               output_idx=0,
+        #                               fn_pdf=os.path.join(folder, test_name))
 
         # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
         # Validate gPC vs original model function
-        pygpc.validate_gpc_2d(gpc=gpc,
+        pygpc.validate_gpc_plot(gpc=gpc,
                               coeffs=coeffs,
                               random_vars=["x1", "x3"],
                               n_grid=[25, 10],
                               output_idx=0,
-                              fn_plot=os.path.join(folder, test_name + '_2d'))
+                              fn_out=os.path.join(folder, test_name + '_2d'))
 
-        self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+        pygpc.validate_gpc_plot(gpc=gpc,
+                              coeffs=coeffs,
+                              random_vars=["x1"],
+                              n_grid=[25, 10],
+                              output_idx=0,
+                              fn_out=os.path.join(folder, test_name + '_2d'))
+
+        # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
 
         print("done!\n")
     #
@@ -169,11 +177,11 @@ class TestpygpcMethods(unittest.TestCase):
     #     gpc, coeffs, results = algorithm.run()
     #
     #     # Validate gPC vs original model function
-    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
-    #                                coeffs=coeffs,
-    #                                n_samples=int(1e4),
-    #                                output_idx=0,
-    #                                fn_pdf=os.path.join(folder, test_name))
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_pdf=os.path.join(folder, test_name))
     #
     #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
     #
@@ -228,11 +236,11 @@ class TestpygpcMethods(unittest.TestCase):
     #     gpc, coeffs, results = algorithm.run()
     #
     #     # Validate gPC vs original model function
-    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
-    #                                coeffs=coeffs,
-    #                                n_samples=int(1e4),
-    #                                output_idx=0,
-    #                                fn_pdf=os.path.join(folder, test_name))
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_pdf=os.path.join(folder, test_name))
     #
     #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
     #
@@ -291,11 +299,11 @@ class TestpygpcMethods(unittest.TestCase):
     #     gpc, coeffs, results = algorithm.run()
     #
     #     # Validate gPC vs original model function
-    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
-    #                                coeffs=coeffs,
-    #                                n_samples=int(1e4),
-    #                                output_idx=0,
-    #                                fn_pdf=os.path.join(folder, test_name))
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_pdf=os.path.join(folder, test_name))
     #
     #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
     #
@@ -347,11 +355,11 @@ class TestpygpcMethods(unittest.TestCase):
     #                        fn_plot=os.path.join(folder, test_name + '_grid'))
     #
     #     # Validate gPC vs original model function
-    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
-    #                                coeffs=coeffs,
-    #                                n_samples=int(1e4),
-    #                                output_idx=0,
-    #                                fn_pdf=os.path.join(folder, test_name))
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_pdf=os.path.join(folder, test_name))
     #
     #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
     #
@@ -403,11 +411,11 @@ class TestpygpcMethods(unittest.TestCase):
     #                        fn_plot=os.path.join(folder, test_name + '_grid'))
     #
     #     # Validate gPC vs original model function
-    #     nrmsd = pygpc.validate_gpc(gpc=gpc,
-    #                                coeffs=coeffs,
-    #                                n_samples=int(1e4),
-    #                                output_idx=0,
-    #                                fn_pdf=os.path.join(folder, test_name))
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_pdf=os.path.join(folder, test_name))
     #
     #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
     #

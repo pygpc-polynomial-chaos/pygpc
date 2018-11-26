@@ -2,7 +2,6 @@
 import copy
 from .Grid import *
 from .misc import get_cartesian_product
-from builtins import range
 import numpy as np
 import fastmat as fm
 import scipy.stats
@@ -246,7 +245,7 @@ class GPC(object):
             x = x[:, np.newaxis]
 
         # crop coeffs array if output index is specified
-        if np.any(output_idx):
+        if output_idx is not None:
             output_idx = np.array(output_idx)
             if len(output_idx.shape):
                 output_idx = output_idx[np.newaxis, :]
