@@ -12,6 +12,16 @@ class RandomParameter(object):
     ----------
     pdf_type: str
         Distribution type of random variable ('beta', 'norm')
+    pdf_shape: list of float [2]
+        Shape parameters of beta distributed random variable [p, q]
+    pdf_limits: list of float [2]
+        Lower and upper bounds of random variable [min, max]
+    mean: float
+        Mean value
+    std: float
+        Standard deviation
+    var: float
+        Variance
 
     """
     def __init__(self, pdf_type=None, pdf_shape=None, pdf_limits=None):
@@ -20,8 +30,11 @@ class RandomParameter(object):
         """
 
         self.pdf_type = pdf_type
-        self.pdf_shape = pdf_shape
-        self.pdf_limits = pdf_limits
+        self.pdf_shape = np.array(pdf_shape).astype(float)
+        self.pdf_limits = np.array(pdf_limits).astype(float)
+        self.mean = None
+        self.std = None
+        self.var = None
 
 
 class Beta(RandomParameter):
@@ -32,13 +45,6 @@ class Beta(RandomParameter):
 
     .. math
        pdf = \left(\frac{\Gamma(p)\Gamma(q)}{\Gamma(p+q)}(b-a)^{(p+q-1)}\right)^{-1} (x-a)^{(p-1)} (b-x)^{(q-1)}
-
-    Attributes
-    ----------
-    pdf_shape: list of float [2]
-        Shape parameters of beta distributed random variable [p, q]
-    pdf_limits: list of float [2]
-        Lower and upper bounds of random variable [min, max]
     """
     def __init__(self, pdf_shape, pdf_limits):
         """
@@ -50,9 +56,22 @@ class Beta(RandomParameter):
             Shape parameters of beta distributed random variable [p, q]
         pdf_limits: list of float [2]
             Lower and upper bounds of random variable [min, max]
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> pygpc.RandomParameter.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
         """
 
         super(Beta, self).__init__(pdf_type='beta', pdf_shape=pdf_shape, pdf_limits=pdf_limits)
+
+        self.mean = float(self.pdf_shape[0]) / (self.pdf_shape[0] + self.pdf_shape[1]) * \
+                    (self.pdf_limits[1] - self.pdf_limits[0]) + self.pdf_limits[0]
+        self.std = np.sqrt(self.pdf_shape[0] * self.pdf_shape[1] / \
+                           ((self.pdf_shape[0] + self.pdf_shape[1] + 1) *
+                            (self.pdf_shape[0] + self.pdf_shape[1])**2)) * \
+                   (self.pdf_limits[1] - self.pdf_limits[0])
+        self.var = self.std**2
 
     def init_basis_function(self, order):
         """
@@ -73,12 +92,12 @@ class Beta(RandomParameter):
 
         Parameters
         ----------
-        x: np.ndarray
+        x: ndarray of float [n_x]
             Values of random variable
 
         Returns
         -------
-        pdf: np.ndarray
+        pdf: ndarray of float [n_x]
             Probability density at values x
         """
 
@@ -105,12 +124,12 @@ class Beta(RandomParameter):
 
         Parameters
         ----------
-        x: np.ndarray
+        x: ndarray of float [n_x]
             Values of random variable
 
         Returns
         -------
-        pdf: np.ndarray
+        pdf: ndarray of float [n_x]
             Probability density at values x
         """
 
@@ -154,10 +173,18 @@ class Norm(RandomParameter):
         ----------
         pdf_shape: list of float [2]
             Shape parameters of normal distributed random variable [mean, std]
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
         """
 
         super(Norm, self).__init__(pdf_type='norm', pdf_shape=pdf_shape, pdf_limits=[pdf_shape[0] - 3 * pdf_shape[1],
                                                                                      pdf_shape[0] + 3 * pdf_shape[1]])
+        self.mean = self.pdf_shape[0]
+        self.std = self.pdf_shape[1]
+        self.var = self.std ** 2
 
     @staticmethod
     def init_basis_function(order):
@@ -179,12 +206,12 @@ class Norm(RandomParameter):
 
         Parameters
         ----------
-        x: np.ndarray
+        x: ndarray of float [n_x]
             Values of random variable
 
         Returns
         -------
-        pdf: np.ndarray
+        pdf: ndarray of float [n_x]
             Probability density
         """
 
@@ -200,12 +227,12 @@ class Norm(RandomParameter):
 
         Parameters
         ----------
-        x: np.ndarray
+        x: ndarray of float [n_x]
             Values of random variable
 
         Returns
         -------
-        pdf: np.ndarray
+        pdf: ndarray of float [n_x]
             Probability density
         """
 

@@ -64,15 +64,15 @@ class Problem:
     def __init__(self, model, parameters):
         assert(isinstance(parameters, OrderedDict))
 
-        self.model = model
-        self.parameters = parameters
-        self.parameters_random = []
-        self.params_names = self.parameters.keys()
-        self.dim = 0
-        self.random_vars = []
-        self.pdf_shape = []
-        self.pdf_type = []
-        self.pdf_limits = []
+        self.model = model                              # Model class instance
+        self.parameters = parameters                    # Parameters (constants and random)
+        self.parameters_random = []                     # Parameters (random) - RandomParameter instances
+        self.params_names = self.parameters.keys()      # Names of parameters
+        self.dim = 0                                    # Number of random variables
+        self.random_vars = []                           # Names of random variables
+        self.pdf_type = []                              # All pdf types [n_dim]
+        self.pdf_shape = []                             # All shape parameters [n_dim][2]
+        self.pdf_limits = []                            # All limits [n_dim][2]
 
         for i_p, p in enumerate(self.params_names):
             if isinstance(parameters[p], RandomParameter):

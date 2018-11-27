@@ -43,9 +43,9 @@ class Computation:
         model: Model object
             Model object instance of model to investigate (derived from AbstractModel class, implemented by user)
         problem: Problem class instance
-            GPC Problem under investigation
+            GPC Problem under investigation, includes the parameters of the model (constant and random)
         coords: ndarray of float [n_sims, n_dim]
-            Set of n_sims parameter combinations to run the model with.
+            Set of n_sims parameter combinations to run the model with (only the random parameters!).
         coords_norm: ndarray of float [n_sims, n_dim]
             Set of n_sims parameter combinations to run the model with (normalized coordinates [-1, 1].
         i_iter: int
