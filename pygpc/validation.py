@@ -4,6 +4,7 @@ from .misc import get_normalized_rms_deviation
 from .misc import get_cartesian_product
 from .Visualization import *
 import matplotlib.pyplot as plt
+import matplotlib
 import os
 import scipy.stats
 import matplotlib
@@ -78,17 +79,20 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
             f.create_dataset('pdf/gpc', data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
 
         # plot pdfs
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        plt.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
-        plt.legend(['gpc', 'original'])
-        plt.grid()
-        plt.title(os.path.split(os.path.splitext(fn_out)[0])[1], fontsize=10)
-        plt.xlabel('y', fontsize=12)
-        plt.ylabel('p(y)', fontsize=12)
-        ax.text(0.05, 0.95, r'$error=%.2f$' % (nrmsd[0],) + "%",
-                transform=ax.transAxes, fontsize=12, verticalalignment='top',
-                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+        matplotlib.rc('text', usetex=True)
+        matplotlib.rc('xtick', labelsize=12)
+        matplotlib.rc('ytick', labelsize=12)
+
+        fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
+
+        ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
+        ax1.legend([r'gpc', r'original'], fontsize=12)
+        ax1.grid()
+        ax1.set_xlabel(r'$y$', fontsize=16)
+        ax1.set_ylabel(r'$p(y)$', fontsize=16)
+        ax1.text(0.05, 0.95, r'$error=%.2f$' % (nrmsd[0],) + "%",
+                 transform=ax1.transAxes, fontsize=12, verticalalignment='top',
+                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
         plt.savefig(os.path.splitext(fn_out)[0] + '.pdf', facecolor='#ffffff')
 
     return nrmsd
@@ -178,8 +182,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     y_dif = y_orig - y_gpc
 
     # Plot results
-    from matplotlib import rc
-    rc('text', usetex=True)
+    matplotlib.rc('text', usetex=True)
     matplotlib.rc('xtick', labelsize=13)
     matplotlib.rc('ytick', labelsize=13)
     fs = 14
@@ -194,19 +197,18 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
 
     # One random variable
     if len(random_vars) == 1:
-        fig, (ax1, ax2) = matplotlib.pyplot.subplots(nrows=1, ncols=2,
-                                                     squeeze=True, figsize=(12, 5))
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, squeeze=True, figsize=(12, 5))
 
         ax1.plot(coords, y_orig)
         ax1.plot(coords, y_gpc)
-        ax1.legend(["original", "gPC"], fontsize=fs)
-        ax1.set_xlabel(random_vars[0], fontsize=fs)
-        ax1.set_ylabel("y({})".format(random_vars[0]), fontsize=fs)
+        ax1.legend([r"original", r"gPC"], fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$y(%s)$" % random_vars[0], fontsize=fs)
         ax1.grid()
 
         ax2.plot(coords, y_dif, '--k')
-        ax2.legend(["difference"], fontsize=fs)
-        ax2.set_xlabel(random_vars[0], fontsize=fs)
+        ax2.legend([r"difference"], fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
         ax2.grid()
 
     # Two random variables
@@ -225,9 +227,9 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
                          cmap="jet",
                          vmin=min_all,
                          vmax=max_all)
-        ax1.set_title('Original model', fontsize=fs)
-        ax1.set_xlabel(random_vars[0], fontsize=fs)
-        ax1.set_ylabel(random_vars[1], fontsize=fs)
+        ax1.set_title(r'Original model', fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
 
         # gPC approximation
         # Original model function
@@ -235,9 +237,9 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
                          cmap="jet",
                          vmin=min_all,
                          vmax=max_all)
-        ax2.set_title('gPC approximation', fontsize=fs)
-        ax2.set_xlabel(random_vars[0], fontsize=fs)
-        ax2.set_ylabel(random_vars[1], fontsize=fs)
+        ax2.set_title(r'gPC approximation', fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
 
         # Difference
         min_dif = np.min(y_dif)
@@ -248,9 +250,9 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
                          cmap=b2rcw_cmap,
                          vmin=min_dif,
                          vmax=max_dif)
-        ax3.set_title('Difference (Original vs gPC)', fontsize=fs)
-        ax3.set_xlabel(random_vars[0], fontsize=fs)
-        ax3.set_ylabel(random_vars[1], fontsize=fs)
+        ax3.set_title(r'Difference (Original vs gPC)', fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
 
         fig.colorbar(im1, ax=ax1, orientation='vertical')
         fig.colorbar(im2, ax=ax2, orientation='vertical')

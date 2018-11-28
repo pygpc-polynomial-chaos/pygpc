@@ -2,6 +2,7 @@
 """
 Functions and classes that provide visualisation functionalities
 """
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
@@ -406,12 +407,18 @@ def plot_2d_grid(coords, weights=None, fn_plot=None):
     if weights is not None:
         weights = np.abs(weights)
 
-    plt.scatter(coords[:, 0], coords[:, 1], s=weights)
-    plt.grid()
-    plt.title(os.path.split(os.path.splitext(fn_plot)[0])[1], fontsize=10)
-    plt.xlabel('y', fontsize=12)
-    plt.ylabel('p(y)', fontsize=12)
-    plt.savefig(os.path.splitext(fn_plot)[0] + '.pdf', facecolor='#ffffff')
+    matplotlib.rc('text', usetex=True)
+    matplotlib.rc('xtick', labelsize=12)
+    matplotlib.rc('ytick', labelsize=12)
+
+    fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
+    ax1.scatter(coords[:, 0], coords[:, 1], s=weights)
+    ax1.grid()
+    ax1.set_xlabel('$x_1$', fontsize=16)
+    ax1.set_ylabel('$x_2$', fontsize=16)
+
+    fn = os.path.splitext(fn_plot)[0].encode(encoding="ascii", errors="ignore")
+    plt.savefig("{}".format(fn), facecolor='#ffffff', format="pdf")
 
 
 def plot_beta_pdf_fit(data, a_beta, b_beta, p_beta, q_beta, a_uni=None, b_uni=None,
