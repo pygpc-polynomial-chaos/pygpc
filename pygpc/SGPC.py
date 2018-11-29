@@ -239,7 +239,7 @@ class SGPC(GPC):
         str_out = []
 
         # get maximum length of random_vars label
-        max_len = max([len(self.problem.random_vars[i]) for i in range(len(self.problem.random_vars))])
+        max_len = max([len(p) for p in self.problem.parameters_random])
 
         for i in range(order_max):
             # extract sobol coefficients of order i
@@ -265,8 +265,8 @@ class SGPC(GPC):
                     sobol_rel_1st_order_std.append(0)
 
                     str_out.append("\t{}{}: {:.4f}"
-                                   .format((max_len - len(self.problem.random_vars[sobol_extracted_idx_1st[j]])) * ' ',
-                                           self.problem.random_vars[sobol_extracted_idx_1st[j]],
+                                   .format((max_len - len(self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j]])) * ' ',
+                                           self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j]],
                                            sobol_rel_1st_order_mean[j]))
 
         sobol_rel_order_mean = np.array(sobol_rel_order_mean)
@@ -404,7 +404,7 @@ class Reg(SGPC):
     """
     Regression gPC subclass
 
-    Reg(pdf_type, pdf_shape, limits, order, order_max, interaction_order, grid, random_vars=None)
+    Reg(problem, order, order_max, interaction_order, fn_results=None)
 
     Attributes
     ----------
@@ -451,6 +451,7 @@ class Reg(SGPC):
         >>>                 interaction_order=2,
         >>>                 fn_results="/tmp/my_results")
         """
+
         super(Reg, self).__init__(problem, order, order_max, interaction_order, fn_results)
         self.solver = 'Moore-Penrose'   # Default solver
         self.settings = None            # Default Solver settings

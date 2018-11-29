@@ -544,3 +544,40 @@ def get_multi_indices_max_order(dim, max_order):
             multi_indices = np.vstack([multi_indices, v])
 
     return multi_indices.astype(int)
+
+
+def sample_sphere(n_points, r):
+    """
+    Creates n_points evenly spread in a sphere of radius r.
+
+    Parameters
+    ----------
+    n_points: int
+        Number of points to be spread, must be odd
+    r: float
+        Radius of sphere
+
+    Returns
+    -------
+    points: ndarray of float [N x 3]
+        Evenly spread points in a unit sphere
+    """
+
+    assert n_points % 2 == 1, "The number of points must be odd"
+    points = []
+
+    # The golden ratio
+    phi = (1 + math.sqrt(5)) / 2.
+    n = int((n_points - 1) / 2)
+
+    for i in range(-n, n + 1):
+        lat = math.asin(2 * i / n_points)
+        lon = 2 * math.pi * i / phi
+        x = r * math.cos(lat) * math.cos(lon)
+        y = r * math.cos(lat) * math.sin(lon)
+        z = r * math.sin(lat)
+        points.append((x, y, z))
+
+    points = np.array(points, dtype=float)
+
+    return points

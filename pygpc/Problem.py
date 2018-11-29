@@ -2,23 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
-import numpy as np
 from .RandomParameter import *
 
 
 class Problem:
     """
-    Data wrapper for the gpc problem containing the model to investigate.
-
-    Parameters
-    ----------
-    model: Model object
-        Model object instance of model to investigate (derived from AbstractModel class, implemented by user)
-    parameters: OrderedDict
-        Dictionary containing the model parameters as keys:
-        - constants: value as float or list of float
-        - random variable: namedtuple("RandomParameter", "pdf_type pdf_shape pdf_limits")
-          (e.g. RandomParameter("beta", [5, 5], [0.15, 0.45]))
+    Data wrapper for the gpc problem containing the model to investigate and the associated parameters.
 
     Notes
     -----
@@ -62,48 +51,57 @@ class Problem:
     >>> problem = pygpc.Problem(model, parameters)
     """
     def __init__(self, model, parameters):
+        """
+        Constructor; Initializes Problem instance
+
+        Parameters
+        ----------
+        model: Model object
+            Model object instance of model to investigate (derived from AbstractModel class, implemented by user)
+        parameters: OrderedDict
+            Dictionary containing the model parameters as keys:
+            - constants: value as float or list of float
+            - random variable: namedtuple("RandomParameter", "pdf_type pdf_shape pdf_limits")
+              (e.g. RandomParameter("beta", [5, 5], [0.15, 0.45]))
+        """
         assert(isinstance(parameters, OrderedDict))
 
         self.model = model                              # Model class instance
-        self.parameters = parameters                    # Parameters (constants and random)
-        self.parameters_random = []                     # Parameters (random) - RandomParameter instances
-        self.params_names = self.parameters.keys()      # Names of parameters
-        self.dim = 0                                    # Number of random variables
-        self.random_vars = []                           # Names of random variables
-        self.pdf_type = []                              # All pdf types [n_dim]
-        self.pdf_shape = []                             # All shape parameters [n_dim][2]
-        self.pdf_limits = []                            # All limits [n_dim][2]
+        self.parameters = parameters                    # OrderedDict of parameters (constants and random)
+        self.parameters_random = OrderedDict()          # OrderedDict of parameters (random)
 
-        for i_p, p in enumerate(self.params_names):
-            if isinstance(parameters[p], RandomParameter):
-                self.dim += 1
-                self.parameters_random.append(parameters[p])
-                self.random_vars.append(p)
-                self.pdf_shape.append(parameters[p].pdf_shape)
-                self.pdf_type.append(parameters[p].pdf_type)
-                self.pdf_limits.append(parameters[p].pdf_limits)
+        # extract random parameters
+        for p in self.parameters:
+            if isinstance(self.parameters[p], RandomParameter):
+                self.parameters_random[p] = self.parameters[p]
 
-        self.mean_random_vars = self.get_mean_random_vars_input()
+        self.dim = len(self.parameters_random)
 
-    def get_mean_random_vars_input(self):
+        # test problem definition
+        self.validate()
+
+    def validate(self):
         """
-        Determine the average values of the input random variables from their pdfs.
+        Verifies the problem, by testing if the parameters including the random variables are defined appropriate.
+        In cases, the model may not run correctly for some parameter combinations, the user may change the definition
+        of the random parameters or the constants in model.validate.
 
-        Returns
-        -------
-        mean_random_vars: [N_random_vars] np.ndarray
-            Average values of the input random variables.
+        calls model.validate
+
+        overwrites parameters
         """
-        mean_random_vars = np.zeros(self.dim)
 
-        for i_dim in range(self.dim):
-            if self.pdf_type[i_dim] == 'norm' or self.pdf_type[i_dim] == 'normal':
-                mean_random_vars[i_dim] = self.pdf_shape[i_dim][0]
+        # initialize temporal model object
+        m = self.model(p=self.parameters, context=None)
 
-            if self.pdf_type[i_dim] == 'beta':
-                mean_random_vars[i_dim] = (float(self.pdf_shape[i_dim][0]) /
-                                           (self.pdf_shape[i_dim][0] + self.pdf_shape[i_dim][1])) * \
-                                          (self.pdf_limits[i_dim][1] - self.pdf_limits[i_dim][0]) + \
-                                          (self.pdf_limits[i_dim][0])
+        # call model/problem validation
+        parameters_corrected = self.model.validate(m)
 
-        return mean_random_vars
+        # update parameters and parameters_random in self
+        if parameters_corrected is not None:
+            self.parameters = parameters_corrected
+            self.parameters_random = OrderedDict()
+
+            for p in self.parameters:
+                if isinstance(self.parameters[p], RandomParameter):
+                    self.parameters_random[p] = self.parameters[p]

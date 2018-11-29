@@ -80,7 +80,7 @@ class Jacobi(BasisFunction):
         self.fun_der = np.polyder(self.fun)
 
         # integral of fun and fun_der w.r.t. pdf (numerical integration with corresponding weights)
-        knots, weights = Grid(0).get_quadrature_jacobi_1d(n=10 * self.p["i"], p=self.p["p"] - 1, q=self.p["q"] - 1)
+        knots, weights = Grid([0]).get_quadrature_jacobi_1d(n=10 * self.p["i"], p=self.p["p"] - 1, q=self.p["q"] - 1)
         self.fun_int = np.dot(self.fun(knots), weights)
         self.fun_der_int = np.dot(self.fun_der(knots), weights)
 
@@ -117,7 +117,7 @@ class Hermite(BasisFunction):
             self.fun_int = 1.0
             self.fun_der_int = 0.0
         else:
-            knots, weights = Grid(0).get_quadrature_hermite_1d(n=10 * self.p["i"])
+            knots, weights = Grid([0]).get_quadrature_hermite_1d(n=10 * self.p["i"])
             self.fun_int = np.dot(self.fun(knots), weights)
             self.fun_der_int = np.dot(self.fun_der(knots), weights)
 

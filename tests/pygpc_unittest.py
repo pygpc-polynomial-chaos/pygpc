@@ -56,7 +56,7 @@ class TestpygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.PeaksSingle
+        model = pygpc.testfunctions.Peaks
 
         # define problem
         parameters = OrderedDict()
@@ -81,8 +81,8 @@ class TestpygpcMethods(unittest.TestCase):
                                                order_glob_max=options["order_max"],
                                                order_inter_max=options["interaction_order"],
                                                dim=problem.dim)
-        grid = pygpc.RandomGrid(problem=problem,
-                                parameters={"n_grid": 1.5 * n_coeffs, "seed": 1})
+        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+                                options={"n_grid": 1.5 * n_coeffs, "seed": 1})
 
         pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
 
@@ -134,7 +134,7 @@ class TestpygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.PeaksSingle
+        model = pygpc.testfunctions.Peaks
 
         # define problem
         parameters = OrderedDict()
@@ -164,9 +164,9 @@ class TestpygpcMethods(unittest.TestCase):
         options["settings"] = {"n_coeffs_sparse": np.ceil(sparsity*n_coeffs)}
 
         # generate grid
-        grid = pygpc.RandomGrid(problem=problem,
-                                parameters={"n_grid": options["settings"]["n_coeffs_sparse"]*np.log10(n_coeffs),
-                                            "seed": 1})
+        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+                                options={"n_grid": options["settings"]["n_coeffs_sparse"]*np.log10(n_coeffs),
+                                         "seed": 1})
 
         pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
 
@@ -201,7 +201,7 @@ class TestpygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.PeaksSingle
+        model = pygpc.testfunctions.Peaks
 
         # define problem
         parameters = OrderedDict()
@@ -222,8 +222,8 @@ class TestpygpcMethods(unittest.TestCase):
         options["fn_results"] = os.path.join(folder, test_name)
 
         # generate grid
-        grid = pygpc.TensorGrid(problem=problem,
-                                parameters={"grid_type": ["jacobi", "hermite"], "n_dim": options["order"]})
+        grid = pygpc.TensorGrid(parameters_random=problem.parameters_random,
+                                options={"grid_type": ["jacobi", "hermite"], "n_dim": options["order"]})
 
         pygpc.plot_2d_grid(coords=grid.coords,
                            weights=grid.weights*1e3,
@@ -260,7 +260,7 @@ class TestpygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.PeaksSingle
+        model = pygpc.testfunctions.Peaks
 
         # define problem
         parameters = OrderedDict()
@@ -281,12 +281,12 @@ class TestpygpcMethods(unittest.TestCase):
         options["fn_results"] = os.path.join(folder, test_name)
 
         # generate grid
-        grid = pygpc.SparseGrid(problem=problem,
-                                parameters={"grid_type": ["jacobi", "jacobi"],
-                                            "level": [3, 3],
-                                            "level_max": 3,
-                                            "interaction_order": options["interaction_order"],
-                                            "order_sequence_type": "exp"})
+        grid = pygpc.SparseGrid(parameters_random=problem.parameters_random,
+                                options={"grid_type": ["jacobi", "jacobi"],
+                                         "level": [3, 3],
+                                         "level_max": 3,
+                                         "interaction_order": options["interaction_order"],
+                                         "order_sequence_type": "exp"})
 
         pygpc.plot_2d_grid(coords=grid.coords,
                            weights=grid.weights*5e2,
@@ -303,7 +303,7 @@ class TestpygpcMethods(unittest.TestCase):
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
-                                      fn_out=os.path.join(folder, test_name))
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
@@ -323,7 +323,7 @@ class TestpygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.PeaksSingle
+        model = pygpc.testfunctions.Peaks
 
         # define problem
         parameters = OrderedDict()
@@ -359,7 +359,7 @@ class TestpygpcMethods(unittest.TestCase):
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
-                                      fn_out=os.path.join(folder, test_name))
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
@@ -379,7 +379,7 @@ class TestpygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.PeaksSingle
+        model = pygpc.testfunctions.Peaks
 
         # define problem
         parameters = OrderedDict()
@@ -415,7 +415,7 @@ class TestpygpcMethods(unittest.TestCase):
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
-                                      fn_out=os.path.join(folder, test_name))
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 

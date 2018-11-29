@@ -52,17 +52,19 @@ class AbstractModel:
                                 sequence of results
         """
 
-        self.i_subiter = context['i_subiter']
-        self.lock = context['lock']
-        self.max_grid = context['max_grid']
-        self.global_task_counter = context['global_task_ctr']
-        self.seq_number = context['seq_number']
-        self.fn_results = context['fn_results']
-        self.i_grid = context['i_grid']
-        self.i_iter = context['i_iter']
-        self.coords = context['coords']
-        self.coords_norm = context['coords_norm']
         self.p = p
+
+        if context is not None:
+            self.i_subiter = context['i_subiter']
+            self.lock = context['lock']
+            self.max_grid = context['max_grid']
+            self.global_task_counter = context['global_task_ctr']
+            self.seq_number = context['seq_number']
+            self.fn_results = context['fn_results']
+            self.i_grid = context['i_grid']
+            self.i_iter = context['i_iter']
+            self.coords = context['coords']
+            self.coords_norm = context['coords_norm']
 
     def read_previous_results(self, coords):
         """
@@ -247,5 +249,15 @@ class AbstractModel:
         ----------
         process_id : int
             A unique identifier; no two processes of the pool will run concurrently with the same identifier
+        """
+        pass
+
+    @abstractmethod
+    def validate(self):
+        """
+        This abstract method must be implemented by the subclass.
+        It should perform the validation task depending on the parameters defined in the problem.
+        In cases, the model may not run correctly for some parameter combinations, this function changes the definition
+        of the random parameters and the constants.
         """
         pass

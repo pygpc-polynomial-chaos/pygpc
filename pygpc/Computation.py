@@ -107,7 +107,7 @@ class Computation:
 
             # replace RandomParameters with grid points
             for i in range(0, len(random_var_instances)):
-                parameters[problem.random_vars[i]] = random_var_instances[i]
+                parameters[problem.parameters_random.keys()[i]] = random_var_instances[i]
 
             # append new worker which will evaluate the model with particular parameters from grid
             worker_objs.append(model(parameters, context))

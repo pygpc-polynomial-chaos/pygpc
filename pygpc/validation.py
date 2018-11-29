@@ -4,7 +4,6 @@ from .misc import get_normalized_rms_deviation
 from .misc import get_cartesian_product
 from .Visualization import *
 import matplotlib.pyplot as plt
-import matplotlib
 import os
 import scipy.stats
 import matplotlib
@@ -41,7 +40,8 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
     """
 
     # Create sampling points
-    grid_mc = RandomGrid(problem=gpc.problem, parameters={"n_grid": n_samples, "seed": None})
+    grid_mc = RandomGrid(parameters_random=gpc.problem.parameters_random,
+                         options={"n_grid": n_samples, "seed": None})
 
     # Evaluate gPC approximation at grid points
     y_gpc = gpc.get_approximation(coeffs, grid_mc.coords_norm, output_idx=None)
@@ -86,7 +86,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
         fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
 
         ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
-        ax1.legend([r'gpc', r'original'], fontsize=12)
+        ax1.legend([r'gpc', r'original'], fontsize=14)
         ax1.grid()
         ax1.set_xlabel(r'$y$', fontsize=16)
         ax1.set_ylabel(r'$p(y)$', fontsize=16)
@@ -144,9 +144,9 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     idx = []
 
     # sort random_vars according to gpc.parameters
-    for i_p, p in enumerate(gpc.problem.random_vars):
+    for i_p, p in enumerate(gpc.problem.parameters_random.keys()):
         if p not in random_vars:
-            grid[:, i_p] = gpc.problem.parameters[p].mean
+            grid[:, i_p] = gpc.problem.parameters_random[p].mean
 
         else:
             idx.append([i for i in range(len(random_vars)) if p == random_vars[i]][0])
@@ -156,17 +156,17 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
 
     if coords is None:
         x = []
-        for i, r in enumerate(random_vars):
-            x.append(np.linspace(gpc.problem.parameters[r].pdf_limits[0],
-                                 gpc.problem.parameters[r].pdf_limits[1],
-                                 n_grid[i]))
+        for i_p, p in enumerate(random_vars):
+            x.append(np.linspace(gpc.problem.parameters_random[p].pdf_limits[0],
+                                 gpc.problem.parameters_random[p].pdf_limits[1],
+                                 n_grid[i_p]))
 
         coords = get_cartesian_product(x)
 
     grid[:, (grid == 0).all(axis=0)] = coords
 
     # Normalize grid
-    grid_norm = Grid(problem=gpc.problem).get_normalized_coordinates(grid)
+    grid_norm = Grid(parameters_random=gpc.problem.parameters_random).get_normalized_coordinates(grid)
 
     # Evaluate gPC expansion on grid
     y_gpc = gpc.get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx)

@@ -75,7 +75,7 @@ class Basis:
 
         """
 
-        self.dim = len(order)
+        self.dim = problem.dim
 
         if self.dim == 1:
             multi_indices = np.linspace(0, order_max, order_max + 1, dtype=int)[:, np.newaxis]
@@ -107,8 +107,9 @@ class Basis:
         self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
 
         for i_basis in range(self.n_basis):
-            for i_dim, p in enumerate(problem.parameters_random):   # RandomParameter objects
-                self.b[i_basis][i_dim] = p.init_basis_function(order=multi_indices[i_basis, i_dim])
+            for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects
+                self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(
+                    order=multi_indices[i_basis, i_dim])
 
         # Generate unique IDs of basis functions
         self.b_id = [uuid.uuid4() for _ in range(self.n_basis)]

@@ -96,7 +96,7 @@ class GPC(object):
             GPC matrix where the columns correspond to the basis functions and the rows the to the sample coordinates
         """
 
-        iprint('Constructing gPC matrix...', verbose=self.verbose)
+        iprint('Constructing gPC matrix...', verbose=self.verbose, tab=1)
         gpc_matrix = np.ones([x.shape[0], len(b)])
 
         if not self.gpu:
@@ -209,13 +209,15 @@ class GPC(object):
         np.random.seed()
 
         # generate temporary grid with random samples for each random input variable [n_samples x dim]
-        grid = RandomGrid(problem=self.problem, parameters={"n_grid": n_samples, "seed": None})
+        grid = RandomGrid(parameters_random=self.problem.parameters_random,
+                          options={"n_grid": n_samples, "seed": None})
 
         # if output index list is not provided, sample all gpc outputs
         if output_idx is None:
             n_out = 1 if coeffs.ndim == 1 else coeffs.shape[1]
             output_idx = np.arange(n_out)
             # output_idx = output_idx[np.newaxis, :]
+
         pce = self.get_approximation(coeffs=coeffs, x=grid.coords_norm, output_idx=output_idx)
 
         return grid.coords_norm, pce
@@ -308,7 +310,8 @@ class GPC(object):
         """
 
         # Generate new grid points
-        new_grid_points = RandomGrid(problem=self.problem, parameters={"n_grid": idx.size, "seed": seed})
+        new_grid_points = RandomGrid(parameters_random=self.problem.parameters_random,
+                                     options={"n_grid": idx.size, "seed": seed})
 
         # replace old grid points
         self.grid.coords[idx, :] = new_grid_points.coords
@@ -465,13 +468,13 @@ class GPC(object):
         elif solver == 'NumInt':
             # check if quadrature rule (grid) fits to the probability density distribution (pdf)
             grid_pdf_fit = True
-            for i_dim in range(self.problem.dim):
-                if self.problem.pdf_type[i_dim] == 'beta':
-                    if not (self.grid.grid_type[i_dim] == 'jacobi'):
+            for i_p, p in enumerate(self.problem.parameters_random):
+                if self.problem.parameters_random[p].pdf_type == 'beta':
+                    if not (self.grid.grid_type[i_p] == 'jacobi'):
                         grid_pdf_fit = False
                         break
-                elif (self.problem.pdf_type[i_dim] == 'norm') or (self.problem.pdf_type[i_dim] == 'normal'):
-                    if not (self.grid.grid_type[i_dim] == 'hermite'):
+                elif self.problem.parameters_random[p].pdf_type in ['norm', 'normal']:
+                    if not (self.grid.grid_type[i_p] == 'hermite'):
                         grid_pdf_fit = False
                         break
 
@@ -479,9 +482,9 @@ class GPC(object):
             if not grid_pdf_fit:
                 joint_pdf = np.ones(self.grid.coords_norm.shape)
 
-                for i_dim in range(self.problem.dim):
-                    joint_pdf[:, i_dim] = \
-                        self.problem.parameters_random[i_dim].pdf_norm(x=self.grid.coords_norm[:, i_dim])
+                for i_p, p in enumerate(self.problem.parameters_random):
+                    joint_pdf[:, i_p] = \
+                        self.problem.parameters_random[p].pdf_norm(x=self.grid.coords_norm[:, i_p])
 
                 joint_pdf = np.array([np.prod(joint_pdf, axis=1)]).transpose()
 

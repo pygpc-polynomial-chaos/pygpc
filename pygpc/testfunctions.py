@@ -7,7 +7,7 @@ import scipy.special
 from pygpc.AbstractModel import AbstractModel
 
 
-class PeaksSingle(AbstractModel):
+class Peaks(AbstractModel):
     """
     Two-dimensional peaks function.
 
@@ -29,7 +29,10 @@ class PeaksSingle(AbstractModel):
     """
 
     def __init__(self, p, context):
-        super(PeaksSingle, self).__init__(p, context)
+        super(Peaks, self).__init__(p, context)
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
         y = (3.0 * (1 - self.p["x1"]) ** 2. * np.exp(-(self.p["x1"] ** 2) - (self.p["x3"] + 1) ** 2)
@@ -38,35 +41,6 @@ class PeaksSingle(AbstractModel):
              * np.exp(-(self.p["x1"] + 1) ** 2 - self.p["x3"] ** 2)) + self.p["x2"]
 
         return np.array([y, y])
-
-
-class Peaks(AbstractModel):
-    """
-    Two-dimensional peaks function.
-
-    y = Peaks(x)
-
-    Parameters
-    ----------
-    p["x"]: [N x 2] np.ndarray
-        Input data
-
-    Returns
-    -------
-    y: [N x 1] np.ndarray
-        Output data
-    """
-    def __init__(self, p, context):
-        super(Peaks, self).__init__(p, context)
-
-    def simulate(self, process_id):
-
-        y = (3.0 * (1 - self.p["x"][:, 0]) ** 2. * np.exp(-(self.p["x"][:, 0] ** 2) - (self.p["x"][:, 1] + 1) ** 2)
-             - 10.0 * (self.p["x"][:, 0] / 5.0 - self.p["x"][:, 0] ** 3 - self.p["x"][:, 1] ** 5)
-             * np.exp(-self.p["x"][:, 0] ** 2 - self.p["x"][:, 1] ** 2) - 1.0 / 3
-             * np.exp(-(self.p["x"][:, 0] + 1) ** 2 - self.p["x"][:, 1] ** 2))
-    
-        return y
 
 
 class Lim2002(AbstractModel):
@@ -99,12 +73,15 @@ class Lim2002(AbstractModel):
     def __init__(self, p, context):
         super(Lim2002, self).__init__(p, context)
 
+    def validate(self):
+        pass
+
     def simulate(self, process_id):
 
-        y = (9 + 5.0 / 2 * self.p["x"][:, 0] - 35.0 / 2 * self.p["x"][:, 1] + 5.0
-             / 2 * self.p["x"][:, 0] * self.p["x"][:, 1] + 19 * self.p["x"][:, 1] ** 2
-             - 15.0 / 2 * self.p["x"][:, 0] ** 3 - 5.0 / 2 * self.p["x"][:, 0] * self.p["x"][:, 1] ** 2
-             - 11.0 / 2 * self.p["x"][:, 1] ** 4 + self.p["x"][:, 0] ** 3 * self.p["x"][:, 1] ** 2)
+        y = (9 + 5.0 / 2 * self.p["x1"] - 35.0 / 2 * self.p["x2"] + 5.0
+             / 2 * self.p["x1"] * self.p["x2"] + 19 * self.p["x2"] ** 2
+             - 15.0 / 2 * self.p["x1"] ** 3 - 5.0 / 2 * self.p["x1"] * self.p["x2"] ** 2
+             - 11.0 / 2 * self.p["x2"] ** 4 + self.p["x1"] ** 3 * self.p["x2"] ** 2)
     
         return y
 
@@ -150,9 +127,12 @@ class Ishigami(AbstractModel):
     def __init__(self, p, context):
         super(Ishigami, self).__init__(p, context)
 
+    def validate(self):
+        pass
+
     def simulate(self, process_id):
-        y = (np.sin(self.p["x"][:, 0]) + self.p["a"] * np.sin(self.p["x"][:, 1]) ** 2
-             + self.p["b"] * self.p["x"][:, 2] ** 4 * np.sin(self.p["x"][:, 0]))
+        y = (np.sin(self.p["x1"]) + self.p["a"] * np.sin(self.p["x2"]) ** 2
+             + self.p["b"] * self.p["x3"] ** 4 * np.sin(self.p["x1"]))
     
         return y
 
@@ -163,11 +143,11 @@ class Sphere0Fun(AbstractModel):
 
     Parameters
     ----------
-    p["x"]: [N_input x N_dims] np.ndarray
+    p["x"]:  ndarray of float [N_input x N_dims]
         input data
-    p["a"]: [N_dims] np.ndarray
+    p["a"]: ndarray of float [N_dims]
         lower bound of input data
-    p["b"]: [N_dims] np.ndarray
+    p["b"]: ndarray of float [N_dims]
         upper bound of input data
 
     Returns
@@ -178,6 +158,9 @@ class Sphere0Fun(AbstractModel):
 
     def __init__(self, p, context):
         super(Sphere0Fun, self).__init__(p, context)
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 
@@ -202,17 +185,20 @@ class SphereFun(AbstractModel):
 
     Parameters
     ----------
-    p["x"]: [N_input x N_dims] np.ndarray
+    p["x"]: ndarray of float [N_input x N_dims]
         Input data
 
     Returns
     -------
-    y [N_input x 1] np.ndarray
+    y: ndarray of float [N_input x 1]
         Output data
     """
 
     def __init__(self, p, context):
         super(SphereFun, self).__init__(p, context)
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 
@@ -233,14 +219,14 @@ class GFunction(AbstractModel):
 
     Parameters
     ----------
-    p["x"]: [N_input x N_dims] np.ndarray
+    p["x"]: ndarray of float [N_input x N_dims]
         Input data
-    p["a"]: [N_dims] np.ndarray
+    p["a"]: ndarray of float [N_dims]
         Importance factor of dimensions
 
     Returns
     -------
-    y: [N_input x 1] np.ndarray
+    y: ndarray of float [N_input x 1]
         Output data
 
     Notes
@@ -252,6 +238,9 @@ class GFunction(AbstractModel):
 
     def __init__(self, p, context):
         super(GFunction, self).__init__(p, context)
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 
@@ -276,12 +265,12 @@ class OakleyOhagan2004(AbstractModel):
 
     Parameters
     ----------
-    p["x"]: [N_input x 15] np.ndarray
+    p["x"]: ndarray of float [N_input x 15]
         Input data, xi ~ N(mu=0, sigma=1), for all i = 1, 2,..., 15.
 
     Returns
     -------
-    y: [N_input x 1] np.ndarray
+    y: ndarray of float [N_input x 1]
         Output data
 
     Notes
@@ -292,6 +281,9 @@ class OakleyOhagan2004(AbstractModel):
     """
     def __init__(self, p, context):
         super(OakleyOhagan2004, self).__init__(p, context)
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 
@@ -319,12 +311,12 @@ class Welch1992(AbstractModel):
 
     Parameters
     ----------
-    p["x"]: [N_input x 20] np.ndarray
+    p["x1...x20"]: float
         Input data, xi ~ U(-0.5, 0.5), for all i = 1,..., 20.
 
     Returns
     -------
-    y: [N_input x 1] np.ndarray
+    y: ndarray of float [1]
         Output data
 
     Notes
@@ -336,14 +328,17 @@ class Welch1992(AbstractModel):
     def __init__(self, p, context):
         super(Welch1992, self).__init__(p, context)
 
+    def validate(self):
+        pass
+
     def simulate(self, process_id):
 
-        y = (5.0 * self.p["x"][:, 11] / (1 + self.p["x"][:, 0]) + 5 * (self.p["x"][:, 3] - self.p["x"][:, 19]) ** 2
-             + self.p["x"][:, 4] + 40 * self.p["x"][:, 18] ** 3 + 5 * self.p["x"][:, 18] + 0.05 * self.p["x"][:, 1]
-             + 0.08 * self.p["x"][:, 2] - 0.03 * self.p["x"][:, 5] + 0.03 * self.p["x"][:, 6]
-             - 0.09 * self.p["x"][:, 8] - 0.01 * self.p["x"][:, 9] - 0.07 * self.p["x"][:, 10]
-             + 0.25 * self.p["x"][:, 12] ** 2 - 0.04 * self.p["x"][:, 13]
-             + 0.06 * self.p["x"][:, 14] - 0.01 * self.p["x"][:, 16] - 0.03 * self.p["x"][:, 17])
+        y = (5.0 * self.p["x12"] / (1 + self.p["x1"]) + 5 * (self.p["x4"] - self.p["x20"]) ** 2
+             + self.p["x5"] + 40 * self.p["x19"] ** 3 + 5 * self.p["x19"] + 0.05 * self.p["x2"]
+             + 0.08 * self.p["x3"] - 0.03 * self.p["x6"] + 0.03 * self.p["x7"]
+             - 0.09 * self.p["x9"] - 0.01 * self.p["x10"] - 0.07 * self.p["x11"]
+             + 0.25 * self.p["x13"] ** 2 - 0.04 * self.p["x14"]
+             + 0.06 * self.p["x15"] - 0.01 * self.p["x17"] - 0.03 * self.p["x18"])
     
         return y
 
@@ -354,22 +349,30 @@ class WingWeight(AbstractModel):
 
     Parameters
     ----------
-    p["x"]: [N_input x 10] np.ndarray
-        Input data and limits:
-        - x1(Sw)     [150, 200]
-        - x2(Wfw)    [220, 300]
-        - x3(A)      [6, 10]
-        - x4(Lambda) [-10, 10]
-        - x5(q)      [16, 45]
-        - x6(lambda) [0.5, 1]
-        - x7(tc)     [0.08, 0.18]
-        - x8(Nz)     [2.5, 6]
-        - x9(Wdg)    [1700, 2500]
-        - x10(Wp)    [0.025, 0.08]
+    p["x1"]: float
+        x1(Sw) [150, 200]
+    p["x2"]: float
+        x2(Wfw) [220, 300]
+    p["x3"]: float
+        x3(A) [6, 10]
+    p["x4"]: float
+        x4(Lambda) [-10, 10]
+    p["x5"]: float
+        x5(q) [16, 45]
+    p["x6"]: float
+        x6(lambda) [0.5, 1]
+    p["x7"]: float
+        x7(tc) [0.08, 0.18]
+    p["x8"]: float
+        x8(Nz) [2.5, 6]
+    p["x9"]: float
+        x9(Wdg) [1700, 2500]
+    p["x10"]: float
+        x10(Wp) [0.025, 0.08]
 
     Returns
     -------
-    y: [N_input x 1] np.ndarray
+    y: float
         output data
 
     Notes
@@ -381,13 +384,16 @@ class WingWeight(AbstractModel):
     def __init__(self, p, context):
             super(WingWeight, self).__init__(p, context)
 
+    def validate(self):
+        pass
+
     def simulate(self, process_id):
-        y = (0.036 * self.p["x"][:, 0] ** 0.758 * self.p["x"][:, 1] ** 0.0035
-             * (self.p["x"][:, 2] / np.cos(self.p["x"][:, 3]) ** 2) ** 0.6
-             * self.p["x"][:, 4] ** 0.006 * self.p["x"][:, 5] ** 0.04
-             * (100 * self.p["x"][:, 6] / np.cos(self.p["x"][:, 3])) ** -0.3
-             * (self.p["x"][:, 7] * self.p["x"][:, 8]) ** 0.49
-             + self.p["x"][:, 0] * self.p["x"][:, 9])
+        y = (0.036 * self.p["x1"] ** 0.758 * self.p["x2"] ** 0.0035
+             * (self.p["x3"] / np.cos(self.p["x4"]) ** 2) ** 0.6
+             * self.p["x5"] ** 0.006 * self.p["x6"] ** 0.04
+             * (100 * self.p["x7"] / np.cos(self.p["x4"])) ** -0.3
+             * (self.p["x8"] * self.p["x9"]) ** 0.49
+             + self.p["x1"] * self.p["x10"])
     
         return y
 
@@ -399,21 +405,25 @@ class SphereModel(AbstractModel):
 
     Parameters
     ----------
-    p["conductivities"]: [3] list
-        Conductivity of the 3 layers (innermost to outermost), in (S/m)
-    p["radii"]: [3] list
+    p["sigma_1"]: float
+        Conductivity of the innermost layer, in (S/m)
+    p["sigma_2"]: float
+        Conductivity of the intermediate layer, in (S/m)
+    p["sigma_3"]: float
+        Conductivity of the outermost layer, in (S/m)
+    p["radii"]: list [3]
         Radius of each of the 3 layers (innermost to outermost), in (mm)
-    p["anode_pos"]: [3 x 1] np.ndarray
+    p["anode_pos"]: ndarray of float [3 x 1]
         Position of the anode_pos, in (mm)
-    p["cathode_pos"]: [3 x 1] np.ndarray
+    p["cathode_pos"]: ndarray of float [3 x 1]
         Position of cathode_pos, in (mm)
-    p["p"]: [N x 3] np.ndarray
+    p["p"]: ndarray of float [N x 3]
         Positions where the potential should be calculated, in (mm)
 
     Returns
     -------
-    potential: [N x 1] np.ndarray
-        values of the electric potential, in (V)
+    potential: ndarray of float [N x 1]
+        Values of the electric potential, in (V)
 
     Notes
     -----
@@ -426,6 +436,9 @@ class SphereModel(AbstractModel):
 
         # number of of legendre polynomials to use
         self.nbr_polynomials = 50
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 
@@ -544,11 +557,11 @@ class PotentialHomogeneousDipole(AbstractModel):
         Radius of sphere in (mm)
     p["conductivity"]: float
         Conductivity of medium in (S/m)
-    p["dipole_pos"]: [3 x 1] np.ndarray
+    p["dipole_pos"]: ndarray of float [3 x 1]
         Position of dipole in (mm)
-    p["dipole_moment"]: [3 x 1] np.ndarray
+    p["dipole_moment"]: ndarray of float [3 x 1]
         Moment of dipole in (Cm)
-    p["detector_positions"]: [n x 3] np.ndarray
+    p["detector_positions"]: ndarray of float [n x 3]
         Position of detectors, will be projected into the sphere surface in (mm)
 
     Returns
@@ -564,6 +577,9 @@ class PotentialHomogeneousDipole(AbstractModel):
 
     def __init__(self, p, context):
         super(PotentialHomogeneousDipole, self).__init__(p, context)
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 
@@ -612,16 +628,16 @@ class BfieldOutsideSphere(AbstractModel):
     ----------
     p["sphere_radius"]: float
         Radius of sphere in (mm)
-    p["dipole_pos"]: [3 x 1] np.ndarray
+    p["dipole_pos"]: ndarray of float [3 x 1]
         Position of dipole in (mm)
-    p["dipole_moment"]: [3 x 1] np.ndarray
+    p["dipole_moment"]: ndarray of float [3 x 1]
         Moment of dipole in (Ams)
-    p["detector_positions"]: [n x 3] np.ndarray
+    p["detector_positions"]: ndarray of float [n x 3]
         Position of detectors, must lie outside sphere
 
     Returns
     -------
-    B: [N x 3] np.ndarray
+    B: ndarray of float [N x 3]
         B-fields in detector positions
 
     Notes
@@ -632,6 +648,9 @@ class BfieldOutsideSphere(AbstractModel):
 
     def __init__(self, p, context):
         super(BfieldOutsideSphere, self).__init__(p, context)
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 
@@ -667,48 +686,6 @@ class BfieldOutsideSphere(AbstractModel):
         return b
 
 
-class FibonacciSphere(AbstractModel):
-    """
-    Creates N points evenly spread in a unit sphere.
-
-    Parameters
-    ----------
-    p["nr_points"]: int
-        Number of points to be spread, must be odd
-    p["R"]: float, optional, default=1
-        Radius of sphere
-
-    Returns
-    -------
-    points: [N x 3] np.ndarray
-        Evenly spread points in a unit sphere
-    """
-
-    def __init__(self, p, context):
-        super(FibonacciSphere, self).__init__(p, context)
-
-    def simulate(self, process_id):
-
-        assert self.p["nr_points"] % 2 == 1, "The number of points must be odd"
-        points = []
-
-        # The golden ratio
-        phi = (1 + math.sqrt(5)) / 2.
-        n = int((self.p["nr_points"] - 1) / 2)
-
-        for i in range(-n, n + 1):
-            lat = math.asin(2 * i / self.p["nr_points"])
-            lon = 2 * math.pi * i / phi
-            x = self.p["R"] * math.cos(lat) * math.cos(lon)
-            y = self.p["R"] * math.cos(lat) * math.sin(lon)
-            z = self.p["R"] * math.sin(lat)
-            points.append((x, y, z))
-
-        points = np.array(points, dtype=float)
-
-        return points
-
-
 class TMSEfieldSphere(AbstractModel):
     """
     Calculate the E-field in a sphere caused by external magnetic dipoles after Heller and van Hulsteyn (1992).
@@ -716,13 +693,13 @@ class TMSEfieldSphere(AbstractModel):
 
     Parameters
     ----------
-    p["dipole_pos"]: [M x 3] np.ndarray
+    p["dipole_pos"]: ndarray of float [M x 3]
         Position of dipoles, must be outside sphere
-    p["dipole_moment"]: [m x 3] np.ndarray
+    p["dipole_moment"]: ndarray of float [m x 3]
         Moment of dipoles
     p["didt"]: float
         Variation rate of current in the coil
-    p["positions"]: [N x 3] np.ndarray
+    p["positions"]: ndarray of float [N x 3]
         Position where fields should be calculated, must lie inside sphere in (mm)
 
     Returns
@@ -738,6 +715,9 @@ class TMSEfieldSphere(AbstractModel):
 
     def __init__(self, p, context):
         super(TMSEfieldSphere, self).__init__(p, context)
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 
@@ -775,22 +755,22 @@ class PotentialDipole3Layers(AbstractModel):
 
     Parameters
     ----------
-    p["radii"]: [3]list
+    p["radii"]: list [3]
         Radius of each of the 3 layers (innermost to outermost) in (mm)
     p["cond_brain_scalp"]: float
         Conductivity of the brain and scalp layers in (S/m)
     p["cond_skull"]: float
         Conductivity of the skull layer in (S/m)
-    p["dipole_pos"]: [3 x 1] np.ndarray
+    p["dipole_pos"]: ndarray of float [3 x 1]
         Position of the dipole, in (mm)
-    p["dipole_moment"]: [3 x 1] np.ndarray
+    p["dipole_moment"]: ndarray of float [3 x 1]
         Moment of dipole, in (Cm)
-    p["surface_points"]: [N x 3] np.ndarray
+    p["surface_points"]: ndarray of float [N x 3]
         List of positions where the potential should be calculated in (mm)
 
     Returns
     -------
-    potential: [N x 1] np.ndarray
+    potential: ndarray of float [N x 1]
         Values of the electric potential, in (V)
 
     Notes
@@ -805,6 +785,9 @@ class PotentialDipole3Layers(AbstractModel):
 
         # Number of of legendre polynomials to use (default = 100)
         self.nbr_polynomials = 100
+
+    def validate(self):
+        pass
 
     def simulate(self, process_id):
 

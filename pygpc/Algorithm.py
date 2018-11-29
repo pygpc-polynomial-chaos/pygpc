@@ -313,9 +313,9 @@ class RegAdaptive(Algorithm):
                   fn_results=self.options["fn_results"])
 
         # Initialize Grid object
-        gpc.grid = RandomGrid(problem=self.problem,
-                              parameters={"n_grid": np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis),
-                                          "seed": self.options["seed"]})
+        gpc.grid = RandomGrid(parameters_random=self.problem.parameters_random,
+                              options={"n_grid": np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis),
+                                       "seed": self.options["seed"]})
 
         gpc.interaction_order_current = self.options["interaction_order"]
         gpc.solver = self.options["solver"]
@@ -353,8 +353,9 @@ class RegAdaptive(Algorithm):
                     b_added = [[0 for _ in range(self.problem.dim)] for _ in range(multi_indices_added.shape[0])]
 
                     for i_basis in range(multi_indices_added.shape[0]):
-                        for i_dim, p in enumerate(self.problem.parameters_random):  # RandomParameter objects
-                            b_added[i_basis][i_dim] = p.init_basis_function(order=multi_indices_added[i_basis, i_dim])
+                        for i_p, p in enumerate(self.problem.parameters_random):  # Ordered Dict of RandomParameter
+                            b_added[i_basis][i_p] = self.problem.parameters_random[p].init_basis_function(
+                                order=multi_indices_added[i_basis, i_p])
 
                     # extend basis
                     gpc.basis.extend_basis(b_added)
