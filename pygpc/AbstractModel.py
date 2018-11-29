@@ -111,7 +111,7 @@ class AbstractModel:
 
         return None
 
-    def write_results(self, data, coords, coords_norm=None):
+    def write_results(self, data_dict):
         """
         This function writes the data to a file on hard disk.
         When writing the data the current grid-index (i_grid) is considered.
@@ -121,87 +121,39 @@ class AbstractModel:
 
         Parameters
         ----------
-        data : ndarray [n_sims x n_out]
-            The data to write, the results of n outputs of m simulations
-        coords : ndarray [n_sims x dim]
-            Grid coordinates the simulations are conducted with
-        coords_norm : ndarray [n_sims x dim], optional
-            Normalized grid coordinates [-1, 1] the simulations are conducted with
+        data_dict : dict of ndarray
+            Dictionary, containing the data to write in an .hdf5 file. The keys are the dataset names.
         """
-        if type(data) is list:
-            data = np.array(data)
-
-        if type(data) is float or type(data) is int \
-                or type(data) is np.float64 or type(data) is np.int:
-            data = np.array([[data]])
-
-        if data.ndim == 1:
-            data = data[np.newaxis, :]
-
-        if type(coords) is list:
-            coords = np.array(coords)
-
-        if type(coords) is float or type(coords) is int \
-                or type(coords) is np.float64 or type(coords) is np.int:
-            coords = np.array([[coords]])
-
-        if coords.ndim == 1:
-            coords = coords[np.newaxis, :]
-
-        if coords_norm is not None:
-            if type(coords_norm) is list:
-                coords_norm = np.array(coords_norm)
-
-            if type(coords_norm) is float or type(coords_norm) is int or \
-                    type(coords_norm) is np.float64 or type(coords_norm) is np.int:
-                coords_norm = np.array([[coords_norm]])
-
-            if coords_norm.ndim == 1:
-                coords_norm = coords_norm[np.newaxis, :]
 
         if self.fn_results:
             self.lock.acquire()
             try:
                 require_size = self.i_grid + 1
                 with h5py.File(self.fn_results, 'a') as f:
+                    for d in data_dict:
 
-                    # save results
-                    try:
-                        ds = f['results']
-                        if ds.shape[0] < require_size:   # check if resize is necessary
-                            ds.resize(require_size, axis=0)
-                        ds[self.i_grid, :] = data
-                    except (KeyError, ValueError):
-                        ds = f.create_dataset('results', (require_size, data.shape[1]),
-                                              maxshape=(None, data.shape[1]),
-                                              dtype='float64')
-                        ds[self.i_grid, :] = data
+                        if type(data_dict[d]) is list:
+                            data_dict[d] = np.array(data_dict[d])
 
-                    # save coords
-                    try:
-                        ds = f['coords']
-                        if ds.shape[0] < require_size:   # check if resize is necessary
-                            ds.resize(require_size, axis=0)
-                        ds[self.i_grid, :] = coords
-                    except (KeyError, ValueError):
-                        ds = f.create_dataset('coords', (require_size, coords.shape[1]),
-                                              maxshape=(None, coords.shape[1]),
-                                              dtype='float64')
-                        ds[self.i_grid, :] = coords
+                        if type(data_dict[d]) is float or type(data_dict[d]) is int \
+                                or type(data_dict[d]) is np.float64 or type(data_dict[d]) is np.int:
+                            data_dict[d] = np.array([[data_dict[d]]])
 
-                    # save coords_norm
-                    if coords_norm is not None:
+                        if data_dict[d].ndim == 1:
+                            data_dict[d] = data_dict[d][np.newaxis, :]
+
                         try:
-                            ds = f['coords_norm']
-                            if ds.shape[0] < require_size:   # check if resize is necessary
-                                ds.resize(require_size, axis=0)
-                            ds[self.i_grid, :] = coords_norm
-                        except (KeyError, ValueError):
-                            ds = f.create_dataset('coords_norm', (require_size, coords_norm.shape[1]),
-                                                  maxshape=(None, coords_norm.shape[1]),
-                                                  dtype='float64')
-                            ds[self.i_grid, :] = coords_norm
+                            ds = f[d]
 
+                            if ds.shape[0] < require_size:  # check if resize is necessary
+                                ds.resize(require_size, axis=0)
+                            ds[self.i_grid, :] = data_dict[d]
+
+                        except (KeyError, ValueError):
+                            ds = f.create_dataset(d, (require_size, data_dict[d].shape[1]),
+                                                  maxshape=(None, data_dict[d].shape[1]),
+                                                  dtype='float64')
+                            ds[self.i_grid, :] = data_dict[d]
             finally:
                 self.lock.release()
 

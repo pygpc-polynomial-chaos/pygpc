@@ -53,9 +53,24 @@ def run(obj):
     # skip if there was no data row for that i_grid or if it was prematurely inserted (= all zero)
     if res is None or not np.any(res):
         start_time = time.time()
-        res = obj.simulate(process_id)
+        out = obj.simulate(process_id)
+
+        data_dict = dict()
+        data_dict["grid/coords"] = obj.coords
+        data_dict["grid/coords_norm"] = obj.coords_norm
+
+        if type(out) is tuple:
+            res = out[0]
+            if len(out) == 2:
+                for o in out[1]:
+                    data_dict[o] = out[1][o]
+        else:
+            res = out
+
+        data_dict["results"] = res
+
         end_time = time.time()
-        obj.write_results(data=res, coords=obj.coords, coords_norm=obj.coords_norm)
+        obj.write_results(data_dict=data_dict)
         skip_sim = False
 
     obj.increment_ctr()

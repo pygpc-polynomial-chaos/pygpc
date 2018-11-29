@@ -24,8 +24,10 @@ class Peaks(AbstractModel):
 
     Returns
     -------
-    y: [N x 1] np.ndarray
+    y: ndarray of float [N x 1]
         Output data
+    misc: dict
+        Additional data, will be saved under its keys in the .hdf5 file during gPC simulations
     """
 
     def __init__(self, p, context):
@@ -40,7 +42,9 @@ class Peaks(AbstractModel):
              * np.exp(-self.p["x1"] ** 2 - self.p["x3"] ** 2) - 1.0 / 3
              * np.exp(-(self.p["x1"] + 1) ** 2 - self.p["x3"] ** 2)) + self.p["x2"]
 
-        return np.array([y, y])
+        additional_data = {"additional_data_1": [1, 2, 3], "additional_data_2/subfolder": [0.2]}
+
+        return np.array([y, y]), additional_data
 
 
 class Lim2002(AbstractModel):
