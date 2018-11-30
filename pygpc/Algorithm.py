@@ -29,6 +29,10 @@ class Algorithm(object):
         self.problem = problem
         self.options = options
 
+        # Generate results folder if it doesn't exist
+        if not os.path.exists(os.path.split(self.options["fn_results"])[0]):
+            os.makedirs(os.path.split(self.options["fn_results"])[0])
+
 
 class Static(Algorithm):
     """
@@ -317,7 +321,7 @@ class RegAdaptive(Algorithm):
                               options={"n_grid": np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis),
                                        "seed": self.options["seed"]})
 
-        gpc.interaction_order_current = self.options["interaction_order"]
+        gpc.interaction_order_current = min(self.options["interaction_order"], self.options["order_start"])
         gpc.solver = self.options["solver"]
         gpc.settings = self.options["settings"]
 

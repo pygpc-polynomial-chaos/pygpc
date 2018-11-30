@@ -40,22 +40,23 @@ class AbstractModel:
             Dictionary containing the model parameters
         context : dictionary
             dictionary that contains information about this worker's context
-                - fn_results  : location of the hdf5 file to serialize the results to
-                - i_grid      : current iteration in the sub-grid that is processed
-                - max_grid    : size of the current sub-grid that is processed
-                - i_iter      : current main-iteration
-                - i_subiter   : current sub-iteration
-                - lock        : reference to the Lock object that all processes share for synchronization
-                - global_ctr  : reference to the Value object that is shared among all processes to keep track
-                                of the overall progress
-                - seq_number  : sequence number of the task this object represents; necessary to maintain the correct
-                                sequence of results
+            - lock        : reference to the Lock object that all processes share for synchronization
+            - max_grid    : size of the current sub-grid that is processed
+            - global_task_counter  : reference to the Value object that is shared among all processes to keep track
+                                     of the overall progress
+            - seq_number  : sequence number of the task this object represents; necessary to maintain the correct
+                            sequence of results
+            - fn_results  : location of the hdf5 file to serialize the results to
+            - i_grid      : current iteration in the sub-grid that is processed
+            - i_iter      : current main-iteration
+            - i_subiter   : current sub-iteration
+            - coords      : parameters of particular simulation in original parameter space
+            - coords_norm : parameters of particular simulation in normalized parameter space
         """
 
         self.p = p
 
         if context is not None:
-            self.i_subiter = context['i_subiter']
             self.lock = context['lock']
             self.max_grid = context['max_grid']
             self.global_task_counter = context['global_task_ctr']
@@ -63,6 +64,7 @@ class AbstractModel:
             self.fn_results = context['fn_results']
             self.i_grid = context['i_grid']
             self.i_iter = context['i_iter']
+            self.i_subiter = context['i_subiter']
             self.coords = context['coords']
             self.coords_norm = context['coords_norm']
 
@@ -75,7 +77,7 @@ class AbstractModel:
 
         Parameters
         ----------
-        coords : ndarray [n_sims x dim]
+        coords : ndarray of float [n_sims x dim]
             Grid coordinates the simulations are conducted with
 
         Returns
@@ -125,7 +127,7 @@ class AbstractModel:
             Dictionary, containing the data to write in an .hdf5 file. The keys are the dataset names.
         """
 
-        if self.fn_results:
+        if self.fn_results:     # full filename
             self.lock.acquire()
             try:
                 require_size = self.i_grid + 1

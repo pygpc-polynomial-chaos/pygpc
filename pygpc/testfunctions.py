@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import warnings
-import math
 import scipy.special
 
 from pygpc.AbstractModel import AbstractModel
