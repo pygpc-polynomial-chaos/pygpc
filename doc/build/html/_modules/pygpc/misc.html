@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pygpc.misc &mdash; pygpc 2018 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2018',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" >
+    <link rel="search" title="Search" href="../../search.html" >
+    <link rel="top" title="pygpc 2018 documentation" href="../../index.html" >
+    <link rel="up" title="pygpc" href="../pygpc.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../../index.html">
+      <img style="border: 0;" alt="SciPy" src="../../_static/img/scipy_org_logo.gif"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">pygpc</a></li>
+	
+          <li class="active"><a href="../index.html" >Module code</a></li>
+          <li class="active"><a href="../pygpc.html" accesskey="U">pygpc</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for pygpc.misc</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions and classes that provide data and methods with general usage in the pygpc package</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">range</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">pool</span>
+
+
+<div class="viewcode-block" id="NonDaemonicProcess"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.NonDaemonicProcess">[docs]</a><span class="k">class</span> <span class="nc">NonDaemonicProcess</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class to create a non daemonic process.</span>
+<span class="sd">    From https://stackoverflow.com/questions/6974695/python-process-pool-non-daemonic</span>
+<span class="sd">    make &#39;daemon&#39; attribute always return False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_daemon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_set_daemon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="n">daemon</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_daemon</span><span class="p">,</span> <span class="n">_set_daemon</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NonDaemonicPool"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.NonDaemonicPool">[docs]</a><span class="k">class</span> <span class="nc">NonDaemonicPool</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">Pool</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class to create a non daemonic pool.</span>
+<span class="sd">    We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool</span>
+<span class="sd">    because the latter is only a wrapper function, not a proper class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Process</span> <span class="o">=</span> <span class="n">NonDaemonicProcess</span></div>
+
+
+<div class="viewcode-block" id="display_fancy_bar"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.display_fancy_bar">[docs]</a><span class="k">def</span> <span class="nf">display_fancy_bar</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_i</span><span class="p">,</span> <span class="n">more_text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># TODO: improve?</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display a simple progess bar.</span>
+<span class="sd">    Call for each iteration and start with i=1.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    text: str</span>
+<span class="sd">       text to display in front of actual iteration</span>
+<span class="sd">    i: str or int</span>
+<span class="sd">       actual iteration</span>
+<span class="sd">    n_i: int</span>
+<span class="sd">       number of iterations</span>
+<span class="sd">    more_text: str, optional, default=None</span>
+<span class="sd">       text that displayed at an extra line.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    fancy_bar(&#39;Run&#39;,7,10):</span>
+<span class="sd">    Run 07 from 10 [================================        ] 70%</span>
+
+<span class="sd">    fancy_bar(Run,9,10,&#39;Some more text&#39;):</span>
+<span class="sd">    Some more text</span>
+<span class="sd">    Run 09 from 10 [======================================= ] 90%</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_i</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
+
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fill_width</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">n_i</span><span class="p">))</span>
+
+    <span class="c1"># terminal codes, working on windows as well?</span>
+    <span class="n">cursor_two_up</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[2A&#39;</span>
+    <span class="n">erase_line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[2K&#39;</span>
+
+    <span class="k">if</span> <span class="n">more_text</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">((</span><span class="n">cursor_two_up</span> <span class="o">+</span> <span class="n">erase_line</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">more_text</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="n">fill_width</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; from &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_i</span><span class="p">))</span>
+    <span class="c1"># this prints [50-spaces], i% * =</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; [</span><span class="si">%-40s</span><span class="s2">] </span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="nb">int</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="mf">2.5</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_i</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_cartesian_product"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_cartesian_product">[docs]</a><span class="k">def</span> <span class="nf">get_cartesian_product</span><span class="p">(</span><span class="n">array_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a cartesian product of input arrays.</span>
+
+<span class="sd">    cartesian_product = get_cartesian_product(array_list)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_list : list of np.ndarray</span>
+<span class="sd">        arrays to compute the cartesian product with</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cartesian_product : np.ndarray</span>
+<span class="sd">        array containing the cartesian products</span>
+<span class="sd">        (M, len(arrays))</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    get_cartesian_product(([1, 2, 3], [4, 5], [6, 7])) =</span>
+
+<span class="sd">    array([[1, 4, 6],</span>
+<span class="sd">           [1, 4, 7],</span>
+<span class="sd">           [1, 5, 6],</span>
+<span class="sd">           [1, 5, 7],</span>
+<span class="sd">           [2, 4, 6],</span>
+<span class="sd">           [2, 4, 7],</span>
+<span class="sd">           [2, 5, 6],</span>
+<span class="sd">           [2, 5, 7],</span>
+<span class="sd">           [3, 4, 6],</span>
+<span class="sd">           [3, 4, 7],</span>
+<span class="sd">           [3, 5, 6],</span>
+<span class="sd">           [3, 5, 7]])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cartesian_product</span> <span class="o">=</span> <span class="p">[</span><span class="n">element</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">array_list</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cartesian_product</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_rotation_matrix"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">get_rotation_matrix</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate rotation matrix from euler angles.</span>
+
+<span class="sd">    rotation_matrix = get_rotation_matrix(theta)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    theta : list of float</span>
+<span class="sd">        list of euler angles</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rotation_matrix : [3,3] np.ndarray</span>
+<span class="sd">        rotation matrix computed from euler angles</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">r_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+                    <span class="p">])</span>
+
+    <span class="n">r_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">])],</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+                    <span class="p">])</span>
+
+    <span class="n">r_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="p">])</span>
+
+    <span class="n">rotation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r_z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r_y</span><span class="p">,</span> <span class="n">r_x</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">rotation_matrix</span></div>
+
+    
+<div class="viewcode-block" id="get_list_multi_delete"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_list_multi_delete">[docs]</a><span class="k">def</span> <span class="nf">get_list_multi_delete</span><span class="p">(</span><span class="n">input_list</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="c1"># TODO: improve?</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delete multiple entries from list.</span>
+
+<span class="sd">    input_list = get_list_multi_delete(input_list, index)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_list : list</span>
+<span class="sd">        simple list</span>
+<span class="sd">    index : list of integer</span>
+<span class="sd">        list of indices to delete</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    input_list : list</span>
+<span class="sd">        input list without entries specified in index</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">list_index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">input_list</span><span class="p">[</span><span class="n">list_index</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">input_list</span></div>
+
+
+<div class="viewcode-block" id="get_array_unique_rows"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_array_unique_rows">[docs]</a><span class="k">def</span> <span class="nf">get_array_unique_rows</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute unique rows of array and delete rows that are redundant.</span>
+
+<span class="sd">    unique = get_array_unique_rows(array)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array: np.ndarray</span>
+<span class="sd">        matrix with k redundant rows</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    unique: np.ndarray</span>
+<span class="sd">        matrix without k redundant rows</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_set_combinations"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_set_combinations">[docs]</a><span class="k">def</span> <span class="nf">get_set_combinations</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">number_elements</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute all k-tuples (e_1, e_2, ..., e_k) of combinations of the set of elements of the input array where</span>
+<span class="sd">    e_n+1 &gt; e_n.</span>
+
+<span class="sd">    combinations = get_set_combinations(array, number_elements)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array: np.ndarray</span>
+<span class="sd">        array to perform the combinatorial problem with</span>
+<span class="sd">    number_elements: int</span>
+<span class="sd">        number of elements in tuple</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    combinations: np.ndarray</span>
+<span class="sd">        array of combination vectors</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">combinations</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">number_elements</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="get_multi_indices"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_multi_indices">[docs]</a><span class="k">def</span> <span class="nf">get_multi_indices</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">max_order</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes all multi-indices with a maximum overall order of max_order.</span>
+
+<span class="sd">    multi_indices = get_multi_indices(length, max_order)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    length : int</span>
+<span class="sd">        length of multi-index tuples</span>
+<span class="sd">    max_order : int</span>
+<span class="sd">        maximum overall interaction order</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    multi_indices: np.ndarray</span>
+<span class="sd">        array of multi-indices</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">multi_indices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i_max_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># Chose (length-1) the splitting points of the array [0:(length+max_order)]</span>
+        <span class="c1"># 1:length+max_order-1</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">get_set_combinations</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">length</span> <span class="o">+</span> <span class="n">i_max_order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">s1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="p">(</span><span class="n">length</span> <span class="o">+</span> <span class="n">i_max_order</span><span class="p">)</span> <span class="o">+</span> <span class="n">s1</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">s1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s2</span><span class="p">]))</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">i_max_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">multi_indices</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">multi_indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_normalized_rms"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_normalized_rms">[docs]</a><span class="k">def</span> <span class="nf">get_normalized_rms</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine the normalized root mean square deviation between input data and reference data in [%].</span>
+
+<span class="sd">    normalized_rms = get_normalized_rms(array, ref)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array: np.ndarray</span>
+<span class="sd">        input data [ (x), y0, y1, y2 ... ]</span>
+<span class="sd">    ref: np.ndarray</span>
+<span class="sd">        reference data [ (xref), yref ]</span>
+<span class="sd">        if ref is 1D, all sizes have to match</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    normalized_rms: float</span>
+<span class="sd">        normalized root mean square deviation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">N_points</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># determine number of input arrays</span>
+    <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">N_data</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">N_data</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># interpolate array on ref data if necessary</span>
+    <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">array</span>
+        <span class="n">data_ref</span> <span class="o">=</span> <span class="n">ref</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># crop reference if it is longer than the axis of the data</span>
+        <span class="n">array_ref</span> <span class="o">=</span> <span class="n">ref</span><span class="p">[(</span><span class="n">ref</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ref</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])),</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">data_ref</span> <span class="o">=</span> <span class="n">ref</span><span class="p">[(</span><span class="n">ref</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ref</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])),</span> <span class="mi">1</span><span class="p">]</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">array_ref</span><span class="p">),</span> <span class="n">N_data</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i_data</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_data</span><span class="p">):</span>
+            <span class="n">data</span><span class="p">[:,</span> <span class="n">i_data</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">array_ref</span><span class="p">,</span> <span class="n">array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">array</span><span class="p">[:,</span> <span class="n">i_data</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data_ref</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data_ref</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+        <span class="n">delta</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">data_ref</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">data_ref</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data_ref</span><span class="p">)</span>
+    
+    <span class="c1"># determine normalized rms deviation and return</span>
+    <span class="n">normalized_rms</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">N_points</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">data</span> <span class="o">-</span> <span class="n">data_ref</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">delta</span>
+    <span class="k">return</span> <span class="n">normalized_rms</span></div>
+
+
+<div class="viewcode-block" id="get_betapdf_fit"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_betapdf_fit">[docs]</a><span class="k">def</span> <span class="nf">get_betapdf_fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">beta_tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">uni_intervall</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fit data to a beta distribution in the interval [a, b].</span>
+
+<span class="sd">    beta_parameters, moments, p_value, uni_parameters = get_betapdf_fit(data, beta_tolerance=0, uni_intervall=0)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: np.ndarray</span>
+<span class="sd">        data to fit</span>
+<span class="sd">    beta_tolerance: float, optional, default=0</span>
+<span class="sd">        tolerance interval to calculate the bounds of beta distribution</span>
+<span class="sd">        from observed data, e.g. 0.2 (+-20% tolerance)</span>
+<span class="sd">    uni_intervall: float, optional, default=0</span>
+<span class="sd">        uniform distribution interval defined as fraction of</span>
+<span class="sd">        beta distribution interval</span>
+<span class="sd">        range: [0...1], e.g. 0.90 (90%)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    beta_parameters: [4] list of float</span>
+<span class="sd">        2 shape parameters and limits</span>
+<span class="sd">        [p, q, a, b]</span>
+<span class="sd">    moments: [4] list of float</span>
+<span class="sd">        [data_mean, data_std, beta_mean, beta_std]</span>
+<span class="sd">    p_value: float</span>
+<span class="sd">        p-value of the Kolmogorov Smirnov test</span>
+<span class="sd">    uni_parameters: [2] list of float</span>
+<span class="sd">        limits a and b</span>
+<span class="sd">        [a, b]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">data_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">data_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+    <span class="c1"># fit beta distribution to data</span>
+    <span class="k">if</span> <span class="n">beta_tolerance</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># use user beta_tolerance of to set limits of distribution</span>
+        <span class="n">data_range</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">a_beta</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">-</span><span class="n">beta_tolerance</span><span class="o">*</span><span class="n">data_range</span>
+        <span class="n">b_beta</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="n">beta_tolerance</span><span class="o">*</span><span class="n">data_range</span>
+        <span class="n">p_beta</span><span class="p">,</span> <span class="n">q_beta</span><span class="p">,</span> <span class="n">a_beta</span><span class="p">,</span> <span class="n">ab_beta</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">floc</span><span class="o">=</span><span class="n">a_beta</span><span class="p">,</span> <span class="n">fscale</span><span class="o">=</span><span class="n">b_beta</span><span class="o">-</span><span class="n">a_beta</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># let scipy.stats.beta.fit determine the limits</span>
+        <span class="n">p_beta</span><span class="p">,</span> <span class="n">q_beta</span><span class="p">,</span> <span class="n">a_beta</span><span class="p">,</span> <span class="n">ab_beta</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">b_beta</span> <span class="o">=</span> <span class="n">a_beta</span> <span class="o">+</span> <span class="n">ab_beta</span>
+    
+    <span class="n">beta_mean</span><span class="p">,</span> <span class="n">beta_var</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">stats</span><span class="p">(</span><span class="n">p_beta</span><span class="p">,</span> <span class="n">q_beta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">a_beta</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">(</span><span class="n">b_beta</span><span class="o">-</span><span class="n">a_beta</span><span class="p">),</span> <span class="n">moments</span><span class="o">=</span><span class="s1">&#39;mv&#39;</span><span class="p">)</span>
+    <span class="n">beta_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">beta_var</span><span class="p">)</span>
+    
+    <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data_mean</span><span class="p">,</span> <span class="n">data_std</span><span class="p">,</span> <span class="n">beta_mean</span><span class="p">,</span> <span class="n">beta_std</span><span class="p">])</span>
+
+    <span class="c1"># determine kernel density estimates using Gaussian kernel</span>
+    <span class="n">kde</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">gaussian_kde</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bw_method</span><span class="o">=</span><span class="mf">0.05</span><span class="o">/</span><span class="n">data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">kde_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">a_beta</span><span class="p">,</span> <span class="n">b_beta</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">kde_y</span> <span class="o">=</span> <span class="n">kde</span><span class="p">(</span><span class="n">kde_x</span><span class="p">)</span>
+    
+    <span class="c1"># perform Kolmogorov Smirnov test</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">kstest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">p_beta</span><span class="p">,</span> <span class="n">q_beta</span><span class="p">,</span> <span class="n">a_beta</span><span class="p">,</span> <span class="n">ab_beta</span><span class="p">])</span>
+
+    <span class="n">beta_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p_beta</span><span class="p">,</span> <span class="n">q_beta</span><span class="p">,</span> <span class="n">a_beta</span><span class="p">,</span> <span class="n">b_beta</span><span class="p">])</span>
+
+    <span class="c1"># determine limits of uniform distribution [a_uni, b_uni] covering the</span>
+    <span class="c1"># interval uni_intervall of the beta distribution</span>
+    <span class="k">if</span> <span class="n">uni_intervall</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">a_uni</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">ppf</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">uni_intervall</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p_beta</span><span class="p">,</span> <span class="n">q_beta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">a_beta</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">b_beta</span> <span class="o">-</span> <span class="n">a_beta</span><span class="p">)</span>
+        <span class="n">b_uni</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">ppf</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">uni_intervall</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p_beta</span><span class="p">,</span> <span class="n">q_beta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">a_beta</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">b_beta</span> <span class="o">-</span> <span class="n">a_beta</span><span class="p">)</span>
+        <span class="n">uni_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a_uni</span><span class="p">,</span> <span class="n">b_uni</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">uni_parameters</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">beta_parameters</span><span class="p">,</span> <span class="n">moments</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">uni_parameters</span></div>
+
+
+<div class="viewcode-block" id="mutcoh"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.mutcoh">[docs]</a><span class="k">def</span> <span class="nf">mutcoh</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the mutual coherence of a matrix A. It can also be referred as the cosine</span>
+<span class="sd">    of the smallest angle between two columns.</span>
+<span class="sd">      </span>
+<span class="sd">    mutual_coherence = mutcoh(array)</span>
+<span class="sd"> </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array: np.ndarray</span>
+<span class="sd">        input matrix</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mutual_coherence: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">s_sqrt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">mutual_coherence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mf">1.0</span><span class="o">*</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">s_sqrt</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">mutual_coherence</span></div>
+
+
+<div class="viewcode-block" id="wrap_function"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.wrap_function">[docs]</a><span class="k">def</span> <span class="nf">wrap_function</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function wrapper to call anonymous function with variable number of arguments (tuple).</span>
+
+<span class="sd">    wrap_function(fn, x, args)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn: function</span>
+<span class="sd">        anonymous function to call</span>
+<span class="sd">    x: tuple</span>
+<span class="sd">        parameters of function</span>
+<span class="sd">    args: tuple</span>
+<span class="sd">        arguments of function</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    function_wrapper: function</span>
+<span class="sd">        wrapped function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">function_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">wrapper_args</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">wrapper_args</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="n">args</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">function_wrapper</span></div>
+
+
+<div class="viewcode-block" id="get_num_coeffs"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_num_coeffs">[docs]</a><span class="k">def</span> <span class="nf">get_num_coeffs</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">dim</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the number of PCE coefficients by the used order and dimension.</span>
+
+<span class="sd">    num_coeffs = (order+dim)! / (order! * dim!)</span>
+
+<span class="sd">    num_coeffs = get_num_coeffs(order , dim)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    order: int</span>
+<span class="sd">        global order of expansion</span>
+<span class="sd">    dim: int</span>
+<span class="sd">        number of random variables</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    num_coeffs: int</span>
+<span class="sd">        number of coefficients and polynomials</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="n">dim</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_num_coeffs_sparse"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_num_coeffs_sparse">[docs]</a><span class="k">def</span> <span class="nf">get_num_coeffs_sparse</span><span class="p">(</span><span class="n">order_dim_max</span><span class="p">,</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_inter_max</span><span class="p">,</span> <span class="n">dim</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the number of PCE coefficients for a specific maximum order in each dimension order_dim_max,</span>
+<span class="sd">    maximum order of interacting polynomials order_glob_max and the interaction order order_inter_max.</span>
+
+<span class="sd">    num_coeffs_sparse = get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    order_dim_max: int or np.ndarray</span>
+<span class="sd">        maximum order in each dimension</span>
+<span class="sd">    order_glob_max: int</span>
+<span class="sd">        maximum global order of interacting polynomials</span>
+<span class="sd">    order_inter_max: int</span>
+<span class="sd">        interaction order</span>
+<span class="sd">    dim: int</span>
+<span class="sd">        number of random variables</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    num_coeffs_sparse: int</span>
+<span class="sd">        number of coefficients and polynomials</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">order_dim_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">order_dim_max</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">order_dim_max</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">order_dim_max</span> <span class="o">=</span> <span class="n">order_dim_max</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+
+    <span class="c1"># generate multi-index list up to maximum order</span>
+    <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order_dim_max</span><span class="p">,</span> <span class="n">order_dim_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">get_multi_indices</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">order_glob_max</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i_dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+        <span class="c1"># add multi-indexes to list when not yet included</span>
+        <span class="k">if</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">order_glob_max</span><span class="p">:</span>
+            <span class="n">poly_add_dim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">order_glob_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="n">i_dim</span><span class="p">],</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">order_glob_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">poly_add_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">poly_add_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="p">])</span>
+            <span class="n">poly_add_all</span><span class="p">[:,</span> <span class="n">i_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">poly_add_dim</span>
+            <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">poly_idx</span><span class="p">,</span> <span class="n">poly_add_all</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)])</span>
+
+        <span class="c1"># delete multi-indexes from list when they exceed individual max order of parameter</span>
+        <span class="k">elif</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">order_glob_max</span><span class="p">:</span>
+            <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">poly_idx</span><span class="p">[</span><span class="n">poly_idx</span><span class="p">[:,</span> <span class="n">i_dim</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="n">i_dim</span><span class="p">],</span> <span class="p">:]</span>
+
+    <span class="c1"># Consider interaction order (filter out multi-indices exceeding it)</span>
+    <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">poly_idx</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">poly_idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">order_inter_max</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">poly_idx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_pdf_beta"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_pdf_beta">[docs]</a><span class="k">def</span> <span class="nf">get_pdf_beta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the probability density function of the beta distribution in the interval [a,b].</span>
+
+<span class="sd">    pdf = (gamma(p)*gamma(q)/gamma(p+q).*(b-a)**(p+q-1))**(-1) *</span>
+<span class="sd">              (x-a)**(p-1) * (b-x)**(q-1);</span>
+
+<span class="sd">    pdf = get_pdf_beta(x, p, q, a, b)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: np.ndarray</span>
+<span class="sd">        values of random variable</span>
+<span class="sd">    a: float</span>
+<span class="sd">        min boundary</span>
+<span class="sd">    b: float</span>
+<span class="sd">        max boundary</span>
+<span class="sd">    p: float</span>
+<span class="sd">        parameter defining the distribution shape</span>
+<span class="sd">    q: float</span>
+<span class="sd">        parameter defining the distribution shape</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdf: np.ndarray</span>
+<span class="sd">        probability density</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">/</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">q</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">q</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<span class="c1"># def plot(interactive=True, filename=None, xlabel=&quot;$x$&quot;, ylabel=&quot;$p(x)$&quot;):</span>
+<span class="c1">#     if not interactive:</span>
+<span class="c1">#         plt.ioff()</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         plt.ion()</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.figure(1)</span>
+<span class="c1">#     plt.clf()</span>
+<span class="c1">#     plt.rc(&#39;text&#39;, usetex=True)</span>
+<span class="c1">#     plt.rc(&#39;font&#39;, size=18)</span>
+<span class="c1">#     ax = plt.gca()</span>
+<span class="c1">#     # legendtext = [r&quot;e-pdf&quot;, r&quot;$\beta$-pdf&quot;]</span>
+<span class="c1">#     legendtext = [r&quot;$\beta$-pdf&quot;]</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot histogram of data</span>
+<span class="c1">#     n, bins, patches = plt.hist(data, bins=16, normed=1, color=[1, 1, 0.6], alpha=0.5)</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot beta pdf (kernel density estimate)</span>
+<span class="c1">#     # plt.plot(kde_x, kde_y, &#39;r--&#39;, linewidth=2)</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot beta pdf (fitted)</span>
+<span class="c1">#     beta_x = np.linspace(a_beta, b_beta, 100)</span>
+<span class="c1">#     beta_y = scipy.stats.beta.pdf(beta_x, p_beta, q_beta, loc=a_beta, scale=b_beta - a_beta)</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.plot(beta_x, beta_y, linewidth=2, color=[0, 0, 1])</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot uniform pdf</span>
+<span class="c1">#     uni_y = 0</span>
+<span class="c1">#     if uni_intervall &gt; 0:</span>
+<span class="c1">#         uni_x = np.hstack([a_beta, a_uni - 1E-6 * (b_uni - a_uni),</span>
+<span class="c1">#                            np.linspace(a_uni, b_uni, 100), b_uni + 1E-6 * (b_uni - a_uni), b_beta])</span>
+<span class="c1">#         uni_y = np.hstack([0, 0, 1.0 / (b_uni - a_uni) * np.ones(100), 0, 0])</span>
+<span class="c1">#         plt.plot(uni_x, uni_y, linewidth=2, color=&#39;r&#39;)</span>
+<span class="c1">#         legendtext.append(&quot;u-pdf&quot;)</span>
+<span class="c1">#</span>
+<span class="c1">#         # configure plot</span>
+<span class="c1">#     plt.legend(legendtext, fontsize=18, loc=&quot;upper left&quot;)</span>
+<span class="c1">#     plt.grid(True)</span>
+<span class="c1">#     plt.xlabel(xlabel, fontsize=22)</span>
+<span class="c1">#     plt.ylabel(ylabel, fontsize=22)</span>
+<span class="c1">#     ax.set_xlim(a_beta - 0.05 * (b_beta - a_beta), b_beta + 0.05 * (b_beta - a_beta))</span>
+<span class="c1">#     ax.set_ylim(0, 1.1 * max([max(n), max(beta_y[np.logical_not(beta_y == np.inf)]), max(uni_y)]))</span>
+<span class="c1">#</span>
+<span class="c1">#     if interactive &gt; 0:</span>
+<span class="c1">#         plt.show()</span>
+<span class="c1">#</span>
+<span class="c1">#     # save plot</span>
+<span class="c1">#     if filename:</span>
+<span class="c1">#         plt.savefig(filename + &quot;.pdf&quot;, format=&#39;pdf&#39;, bbox_inches=&#39;tight&#39;, pad_inches=0.01 * 4)</span>
+<span class="c1">#         plt.savefig(filename + &quot;.png&quot;, format=&#39;png&#39;, bbox_inches=&#39;tight&#39;, pad_inches=0.01 * 4, dpi=600)</span>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Konstantin Weise.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
