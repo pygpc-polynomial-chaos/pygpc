@@ -2,7 +2,6 @@
 """
 Functions and classes that provide visualisation functionalities
 """
-import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
@@ -407,9 +406,9 @@ def plot_2d_grid(coords, weights=None, fn_plot=None):
     if weights is not None:
         weights = np.abs(weights)
 
-    matplotlib.rc('text', usetex=True)
-    matplotlib.rc('xtick', labelsize=12)
-    matplotlib.rc('ytick', labelsize=12)
+    mpl.rc('text', usetex=True)
+    mpl.rc('xtick', labelsize=12)
+    mpl.rc('ytick', labelsize=12)
 
     fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
     ax1.scatter(coords[:, 0], coords[:, 1], s=weights)
