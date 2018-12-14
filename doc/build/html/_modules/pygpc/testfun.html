@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pygpc.testfun &mdash; pygpc 2018 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2018',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" >
+    <link rel="search" title="Search" href="../../search.html" >
+    <link rel="top" title="pygpc 2018 documentation" href="../../index.html" >
+    <link rel="up" title="pygpc" href="../pygpc.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../../index.html">
+      <img style="border: 0;" alt="SciPy" src="../../_static/img/scipy_org_logo.gif"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">pygpc</a></li>
+	
+          <li class="active"><a href="../index.html" >Module code</a></li>
+          <li class="active"><a href="../pygpc.html" accesskey="U">pygpc</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for pygpc.testfun</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Testfunctions and electromagnetic field calculations</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.special</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+
+<span class="c1"># TODO: Change SI note in docstrings</span>
+
+
+<div class="viewcode-block" id="peaks"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.peaks">[docs]</a><span class="k">def</span> <span class="nf">peaks</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Two-dimensional peaks function.</span>
+
+<span class="sd">    y = peaks(x)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N x 2] np.ndarray</span>
+<span class="sd">        input data</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y: [N x 1] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">-</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">5.0</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">3</span>
+         <span class="o">-</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="lim_2002"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.lim_2002">[docs]</a><span class="k">def</span> <span class="nf">lim_2002</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Two-dimensional test function of Lim et al</span>
+
+<span class="sd">    This function is a polynomial in two dimensions, with terms up to degree</span>
+<span class="sd">    5. It is nonlinear, and it is smooth despite being complex, which is</span>
+<span class="sd">    common for computer experiment functions (Lim et al., 2002).</span>
+
+<span class="sd">    Lim, Y. B., Sacks, J., Studden, W. J., &amp; Welch, W. J. (2002). Design</span>
+<span class="sd">    and analysis of computer experiments when the output is highly correlated</span>
+<span class="sd">    over the input space. Canadian Journal of Statistics, 30(1), 109-126.</span>
+
+<span class="sd">    f(x) = 9 + 5/2*x1 - 35/2*x2 + 5/2*x1*x2 + 19*x2^2 - 15/2*x1^3</span>
+<span class="sd">           - 5/2*x1*x2^2 - 11/2*x2^4 + x1^3*x2^2</span>
+
+<span class="sd">    y = lim_2002(x)</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N x 2] np.ndarray</span>
+<span class="sd">        input data</span>
+<span class="sd">        xi is element of [0, 1], for all i = 1, 2</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y: [N x 1] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span> <span class="o">+</span> <span class="mf">5.0</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">35.0</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">5.0</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">19</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+         <span class="o">-</span> <span class="mf">15.0</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">-</span> <span class="mf">5.0</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mf">11.0</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">4</span>
+         <span class="o">+</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="ishigami"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.ishigami">[docs]</a><span class="k">def</span> <span class="nf">ishigami</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Three-dimensional test function of Ishigami</span>
+
+<span class="sd">    The Ishigami function of Ishigami &amp; Homma (1990) is used as an example</span>
+<span class="sd">    for uncertainty and sensitivity analysis methods, because it exhibits</span>
+<span class="sd">    strong nonlinearity and nonmonotonicity. It also has a peculiar</span>
+<span class="sd">    dependence on x3, as described by Sobol&#39; &amp; Levitan (1999).</span>
+
+<span class="sd">    Ishigami, T., &amp; Homma, T. (1990, December). An importance quantification</span>
+<span class="sd">    technique in uncertainty analysis for computer models. In Uncertainty</span>
+<span class="sd">    Modeling and Analysis, 1990. Proceedings., First International Symposium</span>
+<span class="sd">    on (pp. 398-403). IEEE.</span>
+
+<span class="sd">    Sobol&#39;, I. M., &amp; Levitan, Y. L. (1999). On the use of variance reducing</span>
+<span class="sd">    multipliers in Monte Carlo computations of a global sensitivity index.</span>
+<span class="sd">    Computer Physics Communications, 117(1), 52-61.</span>
+
+<span class="sd">    f(x) = sin(x1) + a*sin(x2)^2 + b*x3^4*sin(x1)</span>
+
+<span class="sd">    y = ishigami(x,a,b)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N x 3] np.ndarray</span>
+<span class="sd">        input data</span>
+<span class="sd">        xi ~ Uniform[-pi, pi], for all i = 1, 2, 3</span>
+<span class="sd">    a: float</span>
+<span class="sd">        shape parameter</span>
+<span class="sd">    b: float</span>
+<span class="sd">        shape parameter</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y: [N x 1] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="sphere_zero_mean"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.sphere_zero_mean">[docs]</a><span class="k">def</span> <span class="nf">sphere_zero_mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    N-dimensional sphere function with zero mean.</span>
+
+<span class="sd">    y = sphere_zero_mean(x,a,b)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N_input x N_dims] np.ndarray</span>
+<span class="sd">        input data</span>
+<span class="sd">    a: [N_dims] np.ndarray</span>
+<span class="sd">        lower bound of input data</span>
+<span class="sd">    b: [N_dims] np.ndarray</span>
+<span class="sd">        upper bound of input data</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y: [N_input] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
+
+    <span class="c1"># zero mean   </span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">a</span> <span class="o">**</span> <span class="mi">3</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">))</span>
+
+    <span class="c1"># sphere function</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">c2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.sphere">[docs]</a><span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    N-dimensional sphere function.</span>
+<span class="sd">        </span>
+<span class="sd">    y = sphere(x)</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N_input x N_dims] np.ndarray</span>
+<span class="sd">        input data</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y [N_input x 1] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="g_function"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.g_function">[docs]</a><span class="k">def</span> <span class="nf">g_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    N-dimensional g-function used by Saltelli and Sobol</span>
+
+<span class="sd">    this test function is used as an integrand for various numerical</span>
+<span class="sd">    estimation methods, including sensitivity analysis methods, because it</span>
+<span class="sd">    is fairly complex, and its sensitivity indices can be expressed</span>
+<span class="sd">    analytically. The exact value of the integral with this function as an</span>
+<span class="sd">    integrand is 1.</span>
+
+<span class="sd">    Saltelli, Andrea; Sobol, I. M. (1995): Sensitivity analysis for nonlinear</span>
+<span class="sd">    mathematical models: numerical experience. In: Mathematical models and</span>
+<span class="sd">    computer experiment 7 (11), S. 16-28.</span>
+<span class="sd">        </span>
+<span class="sd">    y = g_function(x, a)</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N_input x N_dims] np.ndarray</span>
+<span class="sd">        input data</span>
+<span class="sd">    a: [N_dims] np.ndarray</span>
+<span class="sd">        importance factor of dimensions</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y: [N_input x 1] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
+
+    <span class="c1"># g-function</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="oakley_ohagan_2004"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.oakley_ohagan_2004">[docs]</a><span class="k">def</span> <span class="nf">oakley_ohagan_2004</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    15-dimensional test function of OAKLEY &amp; O&#39;HAGAN (2004)</span>
+
+<span class="sd">    This function&#39;s a-coefficients are chosen so that 5 of the input</span>
+<span class="sd">    variables contribute significantly to the output variance, 5 have a</span>
+<span class="sd">    much smaller effect, and the remaining 5 have almost no effect on the</span>
+<span class="sd">    output variance.</span>
+
+<span class="sd">    Oakley, J. E., &amp; O&#39;Hagan, A. (2004). Probabilistic sensitivity analysis</span>
+<span class="sd">    of complex models: a Bayesian approach. Journal of the Royal Statistical</span>
+<span class="sd">    Society: Series B (Statistical Methodology), 66(3), 751-769.</span>
+
+<span class="sd">    y = oakley_ohagan_2004(x)</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N_input x 15] np.ndarray</span>
+<span class="sd">        input data</span>
+<span class="sd">        xi ~ N(mu=0, sigma=1), for all i = 1, 2,..., 15.</span>
+<span class="sd">                </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y: [N_input x 1] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># load coefficients</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_M.txt&#39;</span><span class="p">)</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a1.txt&#39;</span><span class="p">)</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a2.txt&#39;</span><span class="p">)</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a3.txt&#39;</span><span class="p">)</span>
+
+    <span class="c1"># function</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">a2</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">a3</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="welch_1992"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.welch_1992">[docs]</a><span class="k">def</span> <span class="nf">welch_1992</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    20-dimensional test function of WELCH (1992)</span>
+
+<span class="sd">    For input variable screening purposes, it can be found that some input</span>
+<span class="sd">    variables of this function have a very high effect on the output,</span>
+<span class="sd">    compared to other input variables. As Welch et al. (1992) point out,</span>
+<span class="sd">    interactions and nonlinear effects make this function challenging.</span>
+
+<span class="sd">    Welch, W. J., Buck, R. J., Sacks, J., Wynn, H. P., Mitchell, T. J., &amp;</span>
+<span class="sd">    Morris, M. D. (1992). Screening, predicting, and computer experiments.</span>
+<span class="sd">    Technometrics, 34(1), 15-25.</span>
+<span class="sd">        </span>
+<span class="sd">    y = welch_1992(x)</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N_input x 20] np.ndarray</span>
+<span class="sd">        input data</span>
+<span class="sd">        xi ~ U(-0.5, 0.5), for all i = 1,..., 20.</span>
+<span class="sd">                </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y: [N_input x 1] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">11</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">19</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="mi">40</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">18</span><span class="p">]</span> <span class="o">**</span> <span class="mi">3</span>
+         <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">18</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.08</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span>
+         <span class="o">-</span> <span class="mf">0.09</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.07</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">12</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mf">0.04</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">13</span><span class="p">]</span>
+         <span class="o">+</span> <span class="mf">0.06</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">14</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">16</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">17</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="wing_weight"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.wing_weight">[docs]</a><span class="k">def</span> <span class="nf">wing_weight</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    10-dimensional test function which models a light aircraft wing</span>
+<span class="sd">        </span>
+<span class="sd">    Forrester, A., Sobester, A., &amp; Keane, A. (2008). Engineering design via</span>
+<span class="sd">    surrogate modelling: a practical guide. Wiley.</span>
+<span class="sd">        </span>
+<span class="sd">    y  = wing_weight(x)</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: [N_input x 10] np.ndarray</span>
+<span class="sd">        input data</span>
+<span class="sd">        x1(Sw)  is element of [150, 200]</span>
+<span class="sd">        x2(Wfw) is element of [220, 300]</span>
+<span class="sd">        x3(A)   is element of [6, 10]</span>
+<span class="sd">        x4(Lambda)   is element of [-10, 10]</span>
+<span class="sd">        x5(q)   is element of [16, 45]</span>
+<span class="sd">        x6(lambda)   is element of [0.5, 1]</span>
+<span class="sd">        x7(tc)  is element of [0.08, 0.18]</span>
+<span class="sd">        x8(Nz)  is element of [2.5, 6]</span>
+<span class="sd">        x9(Wdg) is element of [1700, 2500]</span>
+<span class="sd">        x10(Wp) is element of [0.025, 0.08]</span>
+<span class="sd">                </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y: [N_input x 1] np.ndarray</span>
+<span class="sd">        output data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.036</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mf">0.758</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mf">0.0035</span>
+         <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">**</span> <span class="mf">0.006</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">**</span> <span class="mf">0.04</span>
+         <span class="o">*</span> <span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]))</span> <span class="o">**</span> <span class="o">-</span><span class="mf">0.3</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">])</span> <span class="o">**</span> <span class="mf">0.49</span>
+         <span class="o">+</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="calc_potentials_3layers_surface_electrodes"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.calc_potentials_3layers_surface_electrodes">[docs]</a><span class="k">def</span> <span class="nf">calc_potentials_3layers_surface_electrodes</span><span class="p">(</span><span class="n">conductivities</span><span class="p">,</span> <span class="n">radii</span><span class="p">,</span> <span class="n">anode_pos</span><span class="p">,</span> <span class="n">cathode_pos</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">nbr_polynomials</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the electric potential in a 3-layered sphere caused by point-like electrodes.</span>
+
+<span class="sd">    S.Rush, D.Driscol EEG electrode sensitivity--an application of reciprocity</span>
+
+<span class="sd">    potential = calc_potentials_3layers_surface_electrodes(conductivities, radii, anode_pos, cathode_pos, p,</span>
+<span class="sd">                                                            nbr_polynomials=50):</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conductivities: [3] list</span>
+<span class="sd">        conductivity of the 3 layers (innermost to outermost), in S/m</span>
+<span class="sd">    radii: [3] list</span>
+<span class="sd">        radius of each of the 3 layers (innermost to outermost), in mm</span>
+<span class="sd">    anode_pos: [3 x 1] np.ndarray</span>
+<span class="sd">        position of the anode_pos, in mm</span>
+<span class="sd">    cathode_pos: [3 x 1] np.ndarray</span>
+<span class="sd">        position of cathode_pos, in mm</span>
+<span class="sd">    p: [N x 3] np.ndarray</span>
+<span class="sd">        list of positions where the poteitial should be calculated, in mm</span>
+<span class="sd">    nbr_polynomials: int, optional, default=50</span>
+<span class="sd">        number of of legendre polynomials to use</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    potential: [N x 1] np.ndarray</span>
+<span class="sd">        values of the electric potential, in V</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">radii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">radii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">radii</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">conductivities</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">anode_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">cathode_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+
+    <span class="n">b_over_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">conductivities</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">conductivities</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">s_over_t</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">conductivities</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">conductivities</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">radius_brain</span> <span class="o">=</span> <span class="n">radii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-3</span>
+    <span class="n">radius_skull</span> <span class="o">=</span> <span class="n">radii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-3</span>
+    <span class="n">radius_skin</span> <span class="o">=</span> <span class="n">radii</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-3</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">p</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-3</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">p</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">p_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">cathode_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cathode_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">cathode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">cathode_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span>
+                   <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">cathode_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cathode_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">cathode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">cathode_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)),</span>
+                   <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">cathode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cathode_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">anode_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">anode_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">anode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">anode_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span>
+                 <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">anode_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">anode_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">anode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">anode_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)),</span>
+                 <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">anode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">anode_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="p">(((</span><span class="n">b_over_s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">s_over_t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+                                                  <span class="p">(</span><span class="n">b_over_s</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s_over_t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+                                                              <span class="n">radius_brain</span> <span class="o">/</span> <span class="n">radius_skull</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+                                                  <span class="p">(</span><span class="n">s_over_t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">b_over_s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+                                                              <span class="n">radius_skull</span> <span class="o">/</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+                                                  <span class="p">(</span><span class="n">b_over_s</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">s_over_t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+                                                              <span class="n">radius_brain</span> <span class="o">/</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># All of the bellow are modified: division by raidus_skin moved to the</span>
+    <span class="c1"># coefficients calculations due to numerical constraints</span>
+    <span class="c1"># THIS IS DIFFERENT FROM THE PAPER (there&#39;s a sum instead of difference)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">A</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">b_over_s</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">A</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">b_over_s</span><span class="p">)</span> <span class="o">*</span> \
+                  <span class="n">radius_brain</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">A</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> \
+                  <span class="p">(((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">b_over_s</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">s_over_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+                   <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">b_over_s</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s_over_t</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">radius_brain</span> <span class="o">/</span> <span class="n">radius_skull</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">((</span><span class="n">n</span> <span class="o">*</span> <span class="n">A</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> \
+                  <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s_over_t</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">b_over_s</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius_skull</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+                   <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">b_over_s</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">s_over_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="n">s_over_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius_brain</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">brain_region</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">radius_brain</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">skull_region</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">radius_brain</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">radius_skull</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">skin_region</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">radius_skull</span><span class="p">)</span>
+                           <span class="o">*</span> <span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">radius_skin</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">inside_sphere</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">radius_skin</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">outside_sphere</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">radius_skin</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">cos_theta_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">cathode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> \
+                  <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">cathode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> \
+                  <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">cathode_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">cos_theta_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">anode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> \
+                  <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">anode_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> \
+                  <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">p_r</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">anode_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">potential</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+
+    <span class="n">coefficients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbr_polynomials</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+
+    <span class="c1"># accelerate</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nbr_polynomials</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span>
+        <span class="n">coefficients</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">brain_region</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span>
+            <span class="n">A</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">p_r</span><span class="p">[</span><span class="n">brain_region</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">**</span> <span class="n">n</span><span class="p">))</span>
+
+        <span class="n">coefficients</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">skull_region</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">S</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p_r</span><span class="p">[</span><span class="n">skull_region</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">**</span> <span class="n">n</span> <span class="o">+</span>
+                                                       <span class="n">U</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p_r</span><span class="p">[</span><span class="n">skull_region</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">coefficients</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">skin_region</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">T</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p_r</span><span class="p">[</span><span class="n">skin_region</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">**</span> <span class="n">n</span>
+                                                      <span class="o">+</span> <span class="n">W</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p_r</span><span class="p">[</span><span class="n">skin_region</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">radius_skin</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">potential</span><span class="p">[</span><span class="n">inside_sphere</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">legendre</span><span class="o">.</span><span class="n">legval</span><span class="p">(</span><span class="n">cos_theta_a</span><span class="p">[</span><span class="n">inside_sphere</span><span class="p">],</span> <span class="n">coefficients</span><span class="p">[:,</span> <span class="n">inside_sphere</span><span class="p">],</span> <span class="n">tensor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">legendre</span><span class="o">.</span><span class="n">legval</span><span class="p">(</span><span class="n">cos_theta_b</span><span class="p">[</span><span class="n">inside_sphere</span><span class="p">],</span> <span class="n">coefficients</span><span class="p">[:,</span> <span class="n">inside_sphere</span><span class="p">],</span> <span class="n">tensor</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+    <span class="n">potential</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">conductivities</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">radius_skin</span><span class="p">)</span>
+
+    <span class="n">potential</span><span class="p">[</span><span class="n">outside_sphere</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">potential</span></div>
+    <span class="c1"># plot_scatter(points_cart[:,0],points_cart[:,1],points_cart[:,2],potential)</span>
+
+
+<div class="viewcode-block" id="calc_potential_homogeneous_dipole"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.calc_potential_homogeneous_dipole">[docs]</a><span class="k">def</span> <span class="nf">calc_potential_homogeneous_dipole</span><span class="p">(</span><span class="n">sphere_radius</span><span class="p">,</span> <span class="n">conductivity</span><span class="p">,</span> <span class="n">dipole_pos</span><span class="p">,</span> <span class="n">dipole_moment</span><span class="p">,</span> <span class="n">detector_positions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the surface potential generated by a dipole inside a homogeneous conducting sphere.</span>
+
+<span class="sd">    Dezhong Yao, Electric Potential Produced by a Dipole in a Homogeneous</span>
+<span class="sd">    Conducting Sphere</span>
+
+<span class="sd">    potential = calc_potential_homogeneous_dipole(sphere_radius, conductivity, dipole_pos, dipole_moment,</span>
+<span class="sd">                                                  detector_positions):</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sphere_radius: float</span>
+<span class="sd">        radius of sphere, in mm</span>
+<span class="sd">    conductivity: float</span>
+<span class="sd">        conductivity of medium, in S/m</span>
+<span class="sd">    dipole_pos: [3 x 1] np.ndarray</span>
+<span class="sd">        position of dipole, in mm</span>
+<span class="sd">    dipole_moment: [3 x 1] np.ndarray</span>
+<span class="sd">        moment of dipole, in C.m</span>
+<span class="sd">    detector_positions: [n x 3] np.ndarray</span>
+<span class="sd">        position of detectors, will be projected into the sphere surface, in mm</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    potential: [n x 1] np.ndarray</span>
+<span class="sd">       potential at the points</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">detector_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">detector_positions</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">detector_positions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">sphere_radius</span>
+
+    <span class="n">sphere_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float128</span><span class="p">(</span><span class="n">sphere_radius</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">)</span>
+    <span class="n">dipole_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float128</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span>
+    <span class="n">dipole_moment</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dipole_moment</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float128</span><span class="p">)</span>
+    <span class="n">detector_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detector_positions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float128</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">sphere_radius</span>
+    <span class="n">r0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">detector_positions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_pos</span> <span class="o">-</span> <span class="n">detector_positions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Some points are not in the surface!!&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">cos_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detector_positions</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float128</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cos_phi</span> <span class="o">=</span> <span class="n">dipole_pos</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">detector_positions</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> \
+                  <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">detector_positions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">second_term</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">rp</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">R</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> \
+                  <span class="p">(</span><span class="n">detector_positions</span> <span class="o">+</span> <span class="p">(</span><span class="n">detector_positions</span> <span class="o">*</span> <span class="n">r0</span> <span class="o">*</span> <span class="n">cos_phi</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">R</span> <span class="o">*</span> <span class="n">dipole_pos</span><span class="p">)</span> <span class="o">/</span>
+                   <span class="p">(</span><span class="n">R</span> <span class="o">+</span> <span class="n">rp</span> <span class="o">-</span> <span class="n">r0</span> <span class="o">*</span> <span class="n">cos_phi</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">])</span>
+    <span class="n">potential</span> <span class="o">=</span> <span class="n">dipole_moment</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">detector_positions</span> <span class="o">-</span> <span class="n">dipole_pos</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">rp</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span>
+                           <span class="n">second_term</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">potential</span> <span class="o">/=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">conductivity</span>
+    <span class="k">return</span> <span class="n">potential</span></div>
+
+
+<div class="viewcode-block" id="calc_B_field_outside_sphere"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.calc_B_field_outside_sphere">[docs]</a><span class="k">def</span> <span class="nf">calc_B_field_outside_sphere</span><span class="p">(</span><span class="n">sphere_radius</span><span class="p">,</span> <span class="n">dipole_pos</span><span class="p">,</span> <span class="n">dipole_moment</span><span class="p">,</span> <span class="n">detector_positions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the B field outside a sphere, does not depend on conductivity.</span>
+<span class="sd">    Dipole in SI units, positions in mm</span>
+
+<span class="sd">    J.Savras - Basic mathematical and electromagnetic concepts of the biomagnetic inverse problem</span>
+
+<span class="sd">    B = calc_B_field_outside_sphere(sphere_radius, dipole_pos, dipole_moment, detector_positions)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sphere_radius: float</span>
+<span class="sd">        radius of sphere</span>
+<span class="sd">    dipole_pos: [3 x 1] np.ndarray</span>
+<span class="sd">        position of dipole</span>
+<span class="sd">    dipole_moment: [3 x 1] np.ndarray</span>
+<span class="sd">        moment of dipole</span>
+<span class="sd">    detector_positions: [n x 3] np.ndarray</span>
+<span class="sd">        position of detectors, must lie outside sphere</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    B: [N x 3] np.ndarray</span>
+<span class="sd">        array with B fields in detector positions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span>
+    <span class="n">moment</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dipole_moment</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">detector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detector_positions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span>
+
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">detector_positions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">sphere_radius</span><span class="p">),</span> <span class="s2">&quot;All points must be outside the sphere&quot;</span>
+
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">sphere_radius</span><span class="p">),</span> <span class="s2">&quot;Dipole must be outside sphere&quot;</span>
+
+    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">detector_positions</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">detector</span><span class="p">):</span>
+        <span class="n">norm_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="n">r_0</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="n">norm_r0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="n">r_0</span>
+        <span class="n">norm_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+        <span class="n">F</span> <span class="o">=</span> <span class="n">norm_a</span> <span class="o">*</span> <span class="p">(</span><span class="n">norm_r</span> <span class="o">*</span> <span class="n">norm_a</span> <span class="o">+</span> <span class="n">norm_r</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">r_0</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+
+        <span class="n">grad_F</span> <span class="o">=</span> <span class="p">(</span><span class="n">norm_r</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm_a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">norm_a</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">a</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">norm_a</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">norm_r</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> \
+                 <span class="p">(</span><span class="n">norm_a</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">norm_r</span> <span class="o">+</span> <span class="n">norm_a</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">a</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="o">*</span> <span class="n">r_0</span>
+
+        <span class="n">B</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1e-7</span><span class="p">)</span> <span class="o">/</span> \
+                   <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">F</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">F</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">moment</span><span class="p">,</span> <span class="n">r_0</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">moment</span><span class="p">,</span> <span class="n">r_0</span><span class="p">),</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">grad_F</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">B</span></div>
+
+
+<div class="viewcode-block" id="calc_fibonacci_sphere"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.calc_fibonacci_sphere">[docs]</a><span class="k">def</span> <span class="nf">calc_fibonacci_sphere</span><span class="p">(</span><span class="n">nr_points</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates N points around evenly spread through a unit sphere.</span>
+
+<span class="sd">    points = calc_fibonacci_sphere(nr_points, R=1)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nr_points: int</span>
+<span class="sd">        number of points to be spread, must be odd</span>
+<span class="sd">    R: float, optional, default=1</span>
+<span class="sd">        radius of sphere</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    points: [N x 3] np.ndarray</span>
+<span class="sd">        evenly spread points through a unit sphere</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">nr_points</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;The number of points must be odd&quot;</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># The golden ratio</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">nr_points</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">nr_points</span><span class="p">)</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">phi</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">points</span></div>
+
+
+<div class="viewcode-block" id="calc_tms_E_field"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.calc_tms_E_field">[docs]</a><span class="k">def</span> <span class="nf">calc_tms_E_field</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">,</span> <span class="n">dipole_moment</span><span class="p">,</span> <span class="n">didt</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the E field in a sphere caused by external magnetic dipoles.</span>
+<span class="sd">    Dipole in SI units, positions in mm</span>
+<span class="sd">    Everything should be in SI</span>
+<span class="sd">    Independent of conductivity, see references</span>
+
+<span class="sd">    L. Heller and D. van Hulsteyn, Brain stimulation using electromagnetic sources: theoretical aspects</span>
+
+<span class="sd">    E = calc_tms_E_field(dipole_pos, dipole_moment, didt, positions)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dipole_pos: [M x 3] np.ndarray</span>
+<span class="sd">        position of dipoles, must be outside sphere</span>
+<span class="sd">    dipole_moment: [m x 3] np.ndarray</span>
+<span class="sd">        moment of dipoles</span>
+<span class="sd">    didt: float</span>
+<span class="sd">        variation rate of current in the coil</span>
+<span class="sd">    positions: [N x 3] np.ndarray</span>
+<span class="sd">        position where fields should be calculated, must lie inside sphere</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    E: [N x 3] np.ndarray</span>
+<span class="sd">        array with E-fields at detector positions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dipole_pos</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">dipole_moment</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;List of dipole position and moments should have the same&#39;</span>
+                         <span class="s1">&#39;lengths&#39;</span><span class="p">)</span>
+    <span class="n">mu0_4pi</span> <span class="o">=</span> <span class="mf">1e-7</span>
+
+    <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">positions</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span>
+    <span class="n">dm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">dipole_moment</span><span class="p">)</span>
+
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">positions</span>
+
+    <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">r2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">dp</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">r2</span> <span class="o">-</span> <span class="n">r1</span>
+        <span class="n">norm_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+
+        <span class="n">norm_r1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">norm_r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+
+        <span class="n">r2_dot_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">r2</span> <span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">F</span> <span class="o">=</span> <span class="n">norm_a</span> <span class="o">*</span> <span class="p">(</span><span class="n">norm_r2</span> <span class="o">*</span> <span class="n">norm_a</span> <span class="o">+</span> <span class="n">r2_dot_a</span><span class="p">)</span>
+        <span class="n">grad_F</span> <span class="o">=</span> <span class="p">(</span><span class="n">norm_a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">norm_r2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">norm_a</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">norm_r2</span> <span class="o">+</span> <span class="n">r2_dot_a</span> <span class="o">/</span> <span class="n">norm_a</span><span class="p">)</span> \
+                 <span class="o">*</span> <span class="n">r2</span> <span class="o">-</span> <span class="p">(</span><span class="n">norm_a</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">norm_r2</span> <span class="o">+</span> <span class="n">r2_dot_a</span> <span class="o">/</span> <span class="n">norm_a</span><span class="p">)</span> <span class="o">*</span> <span class="n">r1</span>
+        <span class="n">E</span> <span class="o">+=</span> <span class="o">-</span><span class="n">didt</span> <span class="o">*</span> <span class="n">mu0_4pi</span> <span class="o">/</span> <span class="n">F</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> \
+             <span class="p">(</span><span class="n">F</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">grad_F</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">))</span>
+
+        <span class="c1"># Why use -didt? Take a look at the appendix 1 of the reference. It says &quot;negative</span>
+        <span class="c1"># time rate of change&quot;</span>
+    <span class="k">return</span> <span class="n">E</span></div>
+
+
+<div class="viewcode-block" id="calc_potential_dipole_3layers"><a class="viewcode-back" href="../../pygpc.html#pygpc.testfun.calc_potential_dipole_3layers">[docs]</a><span class="k">def</span> <span class="nf">calc_potential_dipole_3layers</span><span class="p">(</span><span class="n">radii</span><span class="p">,</span> <span class="n">cond_brain_scalp</span><span class="p">,</span> <span class="n">cond_skull</span><span class="p">,</span> <span class="n">dipole_pos</span><span class="p">,</span> <span class="n">dipole_moment</span><span class="p">,</span>
+                                  <span class="n">surface_points</span><span class="p">,</span> <span class="n">nbr_polynomials</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the electric potential in a 3-layered sphere caused by a dipole</span>
+<span class="sd">    Calculations assumes dimensions in SI units</span>
+
+<span class="sd">    Ary, James P., Stanley A. Klein, and Derek H. Fender.</span>
+<span class="sd">    &quot;Location of sources of evoked scalp potentials: corrections for skull and scalp thicknesses.&quot;</span>
+<span class="sd">    Biomedical Engineering 28.6 (1981).</span>
+<span class="sd">    eq. 2 and 2a</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    radii: [3]list</span>
+<span class="sd">        radius of each of the 3 layers (innermost to outermost), in mm</span>
+<span class="sd">    cond_brain_scalp: float</span>
+<span class="sd">        conductivity of the brain and scalp layers, in S/m</span>
+<span class="sd">    cond_skull: float</span>
+<span class="sd">        conductivity of the skull layer, in S/m</span>
+<span class="sd">    dipole_pos: [3 x 1] np.ndarray</span>
+<span class="sd">        position of the dipole, in mm</span>
+<span class="sd">    dipole_moment: [3 x 1] np.ndarray</span>
+<span class="sd">        moment of dipole, in C x m</span>
+<span class="sd">    surface_points: [N x 3] np.ndarray</span>
+<span class="sd">        list of positions where the poteitial should be calculated, in mm</span>
+<span class="sd">    nbr_polynomials: int</span>
+<span class="sd">        number of of legendre polynomials to use (default = 100)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    potential: [N x 1] np.ndarray</span>
+<span class="sd">        values of the electric potential, in V</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">radii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">radii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">radii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">radii</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dipole_moment</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">surface_points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">radii</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;Dipole must be inside inner sphere&quot;</span>
+
+    <span class="n">xi</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cond_skull</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">cond_brain_scalp</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">radii</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">)</span>
+    <span class="n">f1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">radii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">)</span> <span class="o">/</span> <span class="n">R</span>
+    <span class="n">f2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">radii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">)</span> <span class="o">/</span> <span class="n">R</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span> <span class="o">/</span> <span class="n">R</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">surface_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">R</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Some points are not in the surface!!&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">r_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dipole_moment</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">r_dir</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">r_dir</span> <span class="o">=</span> <span class="n">dipole_pos</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_pos</span><span class="p">)</span>
+    <span class="n">m_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dipole_moment</span><span class="p">,</span> <span class="n">r_dir</span><span class="p">)</span>
+    <span class="n">cos_alpha</span> <span class="o">=</span> <span class="n">surface_points</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">R</span> <span class="o">*</span> <span class="mf">1e-3</span>
+
+    <span class="n">t_dir</span> <span class="o">=</span> <span class="n">dipole_moment</span> <span class="o">-</span> <span class="n">m_r</span> <span class="o">*</span> <span class="n">r_dir</span>
+    <span class="c1"># if the dipole is radial only</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dipole_moment</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r_dir</span><span class="p">,</span> <span class="n">dipole_moment</span><span class="p">))):</span>
+        <span class="c1"># try to set an axis in x, if the dipole is not in x</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">r_dir</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])),</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">t_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="c1"># otherwise, set it in y</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">t_dir</span> <span class="o">=</span> <span class="n">t_dir</span> <span class="o">-</span> <span class="n">r_dir</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">t_dir</span><span class="p">)</span>
+    <span class="n">t_dir</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">t_dir</span><span class="p">)</span>
+    <span class="n">t2_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">r_dir</span><span class="p">,</span> <span class="n">t_dir</span><span class="p">)</span>
+    <span class="n">m_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dipole_moment</span><span class="p">,</span> <span class="n">t_dir</span><span class="p">)</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">surface_points</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">t2_dir</span><span class="p">),</span> <span class="n">surface_points</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">t_dir</span><span class="p">))</span>
+    <span class="n">cos_beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">d</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">d_n</span> <span class="o">=</span> <span class="p">((</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">n</span> <span class="o">*</span> <span class="n">xi</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> \
+              <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">xi</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">f2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> \
+              <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">xi</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">f1</span> <span class="o">/</span> <span class="n">f2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d_n</span>
+
+    <span class="n">potential</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">surface_points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+
+    <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">nbr_polynomials</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">surface_points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">ca</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cos_alpha</span><span class="p">):</span>
+        <span class="n">P</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ii</span><span class="p">],</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">lpmn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nbr_polynomials</span><span class="p">,</span> <span class="n">ca</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nbr_polynomials</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span>
+        <span class="n">potential</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span>
+            <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span> <span class="o">*</span> <span class="n">b</span> <span class="o">**</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">xi</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">*</span>
+            <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">m_r</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">m_t</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">))</span>
+        <span class="c1"># Why should it be a minus there?</span>
+
+    <span class="n">potential</span> <span class="o">/=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">cond_brain_scalp</span> <span class="o">*</span> <span class="n">R</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">potential</span></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Konstantin Weise.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
