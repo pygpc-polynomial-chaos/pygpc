@@ -14,6 +14,5 @@ setup(name='pygpc',
                         'pyyaml',
                         'dill',
                         'matplotlib',
-                        'dispy',
                         'dispy'],
       zip_safe=False)
