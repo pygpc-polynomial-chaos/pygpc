@@ -142,7 +142,7 @@ def compute_cluster(algorithms, nodes):
     Computes Algorithm instances on compute cluster composed of nodes. The first node is also the dispy-scheduler.
     Afterwards, the dispy-nodes are started on every node. On every node, screen sessions are started with the names
     "scheduler" and "node", where the scheduler and the nodes are residing, respectively.
-    They can be accessed by "screen -rD scheduler" or "screen -rD node" when connected to the machines.
+    They can be accessed by "screen -rD scheduler" or "screen -rD node" when connected via ssh to the machines.
 
     Parameters
     ----------
@@ -165,13 +165,13 @@ def compute_cluster(algorithms, nodes):
             print("Starting dispy scheduler on " + n)
             subprocess.Popen("ssh -tt " + n + " killall screen", shell=True)
             subprocess.Popen("ssh -tt " + n + " screen -R scheduler -d -m python "
-                             + os.path.join(dispy.__path__, "dispyscheduler.py &"), shell=True)
+                             + os.path.join(dispy.__path__[0], "dispyscheduler.py &"), shell=True)
 
         time.sleep(5)
 
         print("Starting dispy node on " + n)
         subprocess.Popen("ssh -tt " + n + " screen -d -m -R node python "
-                         + os.path.join(dispy.__path__, "dispynode.py --clean &"), shell=True)
+                         + os.path.join(dispy.__path__[0], "dispynode.py --clean &"), shell=True)
 
     time.sleep(5)
 
@@ -179,9 +179,12 @@ def compute_cluster(algorithms, nodes):
 
     time.sleep(5)
 
-    # build job list
+    # build job list and start computations
     jobs = []
     for a in algorithms:
         job = cluster.submit(a)
         job.id = a
         jobs.append(job)
+
+    # wait until cluster finished the computations
+    cluster.wait()
