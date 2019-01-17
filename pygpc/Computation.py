@@ -7,6 +7,7 @@ import time
 import numpy as np
 import dispy
 import os
+import re
 
 
 class Computation:
@@ -158,22 +159,54 @@ def compute_cluster(algorithms, nodes):
     dispy.MsgTimeout = 90
 
     for n in nodes:
-        subprocess.Popen("ssh -tt " + n + " killall screen", shell=True)
+        # screen/dispy output will be send to devnull, to keep the terminal window clean
+        with open(os.devnull, 'w') as f:
 
-        # start scheduler on first node
-        if n == nodes[0]:
-            print("Starting dispy scheduler on " + n)
-            subprocess.Popen("ssh -tt " + n + " killall screen", shell=True)
-            subprocess.Popen("ssh -tt " + n + " screen -R scheduler -d -m python "
-                             + os.path.join(dispy.__path__[0], "dispyscheduler.py &"), shell=True)
+            # get PIDs for old scheduler and node screens and kill them
+            regexp_pid = "\t(\d*)."  # after \tab, get digits until '.'
 
-        time.sleep(5)
+            for name in ["scheduler", "node"]:
+                # get screen -list output for correct screen, which also has the pid
+                stdout, stderr = subprocess.Popen(['ssh', n, 'screen -list | grep {}'.format(name)],
+                                                  stdout=subprocess.PIPE,
+                                                  stderr=subprocess.PIPE).communicate()
+                try:
+                    pid = re.search(regexp_pid, stdout).group(0)[:-1]  # remove last char (.)
+                    subprocess.Popen(['ssh', n, 'kill', pid]).communicate()
+                except AttributeError:
+                    # no 'scheduler' or 'node' screen session found on host
+                    pass
 
-        print("Starting dispy node on " + n)
-        subprocess.Popen("ssh -tt " + n + " screen -d -m -R node python "
-                         + os.path.join(dispy.__path__[0], "dispynode.py --clean &"), shell=True)
+            # start scheduler on first node
+            if n == nodes[0]:
+                print("Starting dispy scheduler on " + n)
 
-    time.sleep(5)
+                # subprocess.Popen("ssh -tt " + n + " screen -R scheduler -d -m python "
+                #                  + os.path.join(dispy.__path__[0], "dispyscheduler.py &"), shell=True)
+
+                # ssh -tt: pseudo terminal allocation
+                #
+                # screen
+                #        -R scheduler: Reconnect or create session with name scheduler
+                #        -d detach (is it needed?)
+                #        -m "ignore $STY variable, do create a new screen session" ??
+                #
+                # subprocess
+                #        -shell: False. If True, opens new shell and does not return
+                #                If true, do not use [] argument passing style.
+                #        -stdout: devnull. Pipe leads to flooded terminal.
+                #
+
+                subprocess.Popen(["ssh -tt", n, "screen -R scheduler -d -m python "
+                                 + os.path.join(dispy.__path__[0], "dispyscheduler.py &")], shell=False, stdout=f)
+                time.sleep(5)
+
+            print("Starting dispy node on " + n)
+            # subprocess.Popen("ssh -tt " + n + " screen -d -m -R node python "
+            #                  + os.path.join(dispy.__path__[0], "dispynode.py --clean &"), shell=True)
+            subprocess.Popen(["ssh -tt", n, " screen -R node -d -m python "
+                             + os.path.join(dispy.__path__[0], "dispynode.py --clean &")], shell=False, stdout=f)
+            time.sleep(5)
 
     cluster = dispy.SharedJobCluster(_algorithm_run, scheduler_node=nodes[0], reentrant=True, port=0)
 

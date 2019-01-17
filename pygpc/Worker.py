@@ -60,13 +60,17 @@ def run(obj):
         data_dict["grid/coords_norm"] = obj.coords_norm
 
         if type(out) is tuple:
+            # results (nparray)
             res = out[0]
+            # additional data (dict)
             if len(out) == 2:
                 for o in out[1]:
                     data_dict[o] = out[1][o]
         else:
+            # results (nparray), no additional data
             res = out
 
+        # add results to data_dict
         data_dict["results"] = res
 
         end_time = time.time()
