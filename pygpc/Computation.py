@@ -197,15 +197,15 @@ def compute_cluster(algorithms, nodes):
                 #        -stdout: devnull. Pipe leads to flooded terminal.
                 #
 
-                subprocess.Popen(["ssh -tt", n, "screen -R scheduler -d -m python "
-                                 + os.path.join(dispy.__path__[0], "dispyscheduler.py &")], shell=False, stdout=f)
+                subprocess.Popen(["ssh -tt " + n + " screen -R scheduler -d -m python " +
+                                 os.path.join(dispy.__path__[0], "dispyscheduler.py &")], shell=False, stdout=f)
                 time.sleep(5)
 
             print("Starting dispy node on " + n)
             # subprocess.Popen("ssh -tt " + n + " screen -d -m -R node python "
             #                  + os.path.join(dispy.__path__[0], "dispynode.py --clean &"), shell=True)
-            subprocess.Popen(["ssh -tt", n, " screen -R node -d -m python "
-                             + os.path.join(dispy.__path__[0], "dispynode.py --clean &")], shell=False, stdout=f)
+            subprocess.Popen(["ssh -tt" + n + " screen -R node -d -m python " +
+                             os.path.join(dispy.__path__[0], "dispynode.py --clean &")], shell=False, stdout=f)
             time.sleep(5)
 
     cluster = dispy.SharedJobCluster(_algorithm_run, scheduler_node=nodes[0], reentrant=True, port=0)

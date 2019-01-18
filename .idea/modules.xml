@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../pyfempp/.idea/pyfempp.iml" filepath="$PROJECT_DIR$/../pyfempp/.idea/pyfempp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pygpc.iml" filepath="$PROJECT_DIR$/.idea/pygpc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../scripts/.idea/scripts.iml" filepath="$PROJECT_DIR$/../scripts/.idea/scripts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../studies/.idea/studies.iml" filepath="$PROJECT_DIR$/../studies/.idea/studies.iml" />
+    </modules>
+  </component>
+</project>

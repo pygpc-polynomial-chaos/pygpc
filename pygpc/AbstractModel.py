@@ -133,13 +133,13 @@ class AbstractModel:
                 require_size = self.i_grid + 1
                 with h5py.File(self.fn_results, 'a') as f:
                     for d in data_dict:
-
+                        # always flatten arrays because it has to be saved for every grid point
                         if type(data_dict[d]) is list:
-                            data_dict[d] = np.array(data_dict[d])
+                            data_dict[d] = np.array(data_dict[d]).flatten()
 
                         if type(data_dict[d]) is float or type(data_dict[d]) is int \
                                 or type(data_dict[d]) is np.float64 or type(data_dict[d]) is np.int:
-                            data_dict[d] = np.array([[data_dict[d]]])
+                            data_dict[d] = np.array([[data_dict[d]]]).flatten()
 
                         if data_dict[d].ndim == 1:
                             data_dict[d] = data_dict[d][np.newaxis, :]
