@@ -1,3 +1,4 @@
+lmfit
 numpy
 scipy
 h5py

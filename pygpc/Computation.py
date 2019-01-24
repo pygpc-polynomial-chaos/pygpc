@@ -14,6 +14,7 @@ class Computation:
     """
     Computation class to run the model
     """
+
     def __init__(self, n_cpu):
         """
         Constructor; Initializes Computation class
@@ -170,9 +171,11 @@ def compute_cluster(algorithms, nodes):
                 stdout, stderr = subprocess.Popen(['ssh', n, 'screen -list | grep {}'.format(name)],
                                                   stdout=subprocess.PIPE,
                                                   stderr=subprocess.PIPE).communicate()
+                subprocess.Popen(['ssh', n, 'screen', "-wipe"]).communicate()
                 try:
                     pid = re.search(regexp_pid, stdout).group(0)[:-1]  # remove last char (.)
                     subprocess.Popen(['ssh', n, 'kill', pid]).communicate()
+
                 except AttributeError:
                     # no 'scheduler' or 'node' screen session found on host
                     pass
@@ -196,16 +199,19 @@ def compute_cluster(algorithms, nodes):
                 #                If true, do not use [] argument passing style.
                 #        -stdout: devnull. Pipe leads to flooded terminal.
                 #
-
-                subprocess.Popen(["ssh -tt " + n + " screen -R scheduler -d -m python " +
-                                 os.path.join(dispy.__path__[0], "dispyscheduler.py &")], shell=False, stdout=f)
+                # "export", "TERM=screen", "&&",
+                #
+                subprocess.Popen(["ssh", "-tt", n,
+                                  "screen", "-dmS", "scheduler",
+                                  "python " + os.path.join(dispy.__path__[0], "dispyscheduler.py")],
+                                  shell=False, stdout=f)
                 time.sleep(5)
 
             print("Starting dispy node on " + n)
-            # subprocess.Popen("ssh -tt " + n + " screen -d -m -R node python "
-            #                  + os.path.join(dispy.__path__[0], "dispynode.py --clean &"), shell=True)
-            subprocess.Popen(["ssh -tt" + n + " screen -R node -d -m python " +
-                             os.path.join(dispy.__path__[0], "dispynode.py --clean &")], shell=False, stdout=f)
+            subprocess.Popen(["ssh", "-tt", n,
+                              "screen", "-dmS", "node",
+                              "python " + os.path.join(dispy.__path__[0], "dispynode.py --clean")],
+                              shell=False, stdout=f)
             time.sleep(5)
 
     cluster = dispy.SharedJobCluster(_algorithm_run, scheduler_node=nodes[0], reentrant=True, port=0)

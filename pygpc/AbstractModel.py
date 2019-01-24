@@ -133,29 +133,57 @@ class AbstractModel:
                 require_size = self.i_grid + 1
                 with h5py.File(self.fn_results, 'a') as f:
                     for d in data_dict:
-                        # always flatten arrays because it has to be saved for every grid point
-                        if type(data_dict[d]) is list:
+                        # change list or single str to np.array
+                        if type(data_dict[d]) is list or type(data_dict[d]) is str:
                             data_dict[d] = np.array(data_dict[d]).flatten()
 
+                        # change single numbers to np.array
                         if type(data_dict[d]) is float or type(data_dict[d]) is int \
                                 or type(data_dict[d]) is np.float64 or type(data_dict[d]) is np.int:
                             data_dict[d] = np.array([[data_dict[d]]]).flatten()
 
+                        # always flatten data because it has to be saved for every grid point
+                        if data_dict[d].ndim > 1:
+                            data_dict[d] = data_dict[d].flatten()
+
+                        # add axes such that it can be added to previous array
                         if data_dict[d].ndim == 1:
                             data_dict[d] = data_dict[d][np.newaxis, :]
 
+                        # check datatype
+                        if type(data_dict[d][0][0]) is np.float64 or type(data_dict[d][0]) is float:
+                            dtype='float64'
+                        elif type(data_dict[d][0][0]) is np.int64:
+                            dtype = 'int'
+                        elif type(data_dict[d][0][0]) is np.string_:
+                            dtype = 'str'
+                        else:
+                            dtype='float64'
+
                         try:
                             ds = f[d]
-
-                            if ds.shape[0] < require_size:  # check if resize is necessary
-                                ds.resize(require_size, axis=0)
-                            ds[self.i_grid, :] = data_dict[d]
+                            # append
+                            # for strings, the whole array has to be rewritten
+                            if dtype is "str":
+                                ds = f[d][:]
+                                del f[d]
+                                ds = np.append(ds, data_dict[d])
+                                f.create_dataset(d, data=ds)
+                            else:
+                                # change size of array and write data in it
+                                if ds.shape[0] < require_size:  # check if resize is necessary
+                                    ds.resize(require_size, axis=0)
+                                ds[self.i_grid, :] = data_dict[d]
 
                         except (KeyError, ValueError):
-                            ds = f.create_dataset(d, (require_size, data_dict[d].shape[1]),
-                                                  maxshape=(None, data_dict[d].shape[1]),
-                                                  dtype='float64')
-                            ds[self.i_grid, :] = data_dict[d]
+                            # create
+                            if dtype is "str":
+                                f.create_dataset(d, data=data_dict[d])
+                            else:
+                                ds = f.create_dataset(d, (require_size, data_dict[d].shape[1]),
+                                                      maxshape=(None, data_dict[d].shape[1]),
+                                                      dtype=dtype)
+                                ds[self.i_grid, :] = data_dict[d]
             finally:
                 self.lock.release()
 
