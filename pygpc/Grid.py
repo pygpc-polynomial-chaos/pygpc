@@ -524,12 +524,12 @@ class Grid(object):
 
         Parameters
         ----------
-        coords: [N_samples x dim] np.ndarray
+        coords : [N_samples x dim] np.ndarray
             Denormalized coordinates xi in original parameter space
 
         Returns
         -------
-        coords_norm: [N_samples x dim] np.ndarray
+        coords_norm : [N_samples x dim] np.ndarray
             Normalized [-1, 1] coordinates xi
         """
         coords_norm = np.zeros(coords.shape)
