@@ -558,11 +558,11 @@ class TensorGrid(Grid):
 
     Attributes
     ----------
-    grid_type: [N_vars] list of str
+    grid_type : [N_vars] list of str
         Type of quadrature used to construct tensor grid ('jacobi', 'hermite', 'clenshaw_curtis', 'fejer2')
     knots_dim_list: [dim] list of np.ndarray
         Knots of grid in each dimension
-    weights_dim_list: [dim] list of np.ndarray
+    weights_dim_list : [dim] list of np.ndarray
         Weights of grid in each dimension
     """
 
