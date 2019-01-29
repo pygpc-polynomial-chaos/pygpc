@@ -39,7 +39,8 @@ class Computation:
 
         self.i_grid = 0
 
-    def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None):
+    def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
+            print_func_time=False):
         """
         Runs model evaluations for parameter combinations specified in coords array
 
@@ -59,6 +60,8 @@ class Computation:
             Index of sub-iteration
         fn_results : string, optional, default=None
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+        print_func_time : bool
+            Print time of single function evaluation
 
         Returns
         -------
@@ -98,7 +101,7 @@ class Computation:
             parameters = copy.deepcopy(problem.parameters)
             # setup context (let the process know which iteration, interaction order etc.)
             context = {
-                'global_task_ctr': self.global_task_counter,
+                'global_task_counter': self.global_task_counter,
                 'lock': self.global_lock,
                 'seq_number': seq_num,
                 'i_grid': self.i_grid,
@@ -107,7 +110,8 @@ class Computation:
                 'i_subiter': i_subiter,
                 'fn_results': fn_results,
                 'coords': np.array(random_var_instances),
-                'coords_norm': c_norm
+                'coords_norm': c_norm,
+                'print_func_time': print_func_time
             }
 
             # replace RandomParameters with grid points
@@ -139,7 +143,7 @@ class Computation:
         self.process_pool.join()
 
 
-def compute_cluster(algorithms, nodes):
+def compute_cluster(algorithms, nodes, start_scheduler=True):
     """
     Computes Algorithm instances on compute cluster composed of nodes. The first node is also the dispy-scheduler.
     Afterwards, the dispy-nodes are started on every node. On every node, screen sessions are started with the names
@@ -152,6 +156,9 @@ def compute_cluster(algorithms, nodes):
         Algorithm instances initialized with different gPC problems and/or models
     nodes : str or list of str
         Node names
+    start_scheduler : bool
+        Starts a scheduler on the first machine in the nodes list or not. Set this to False if a scheduler is already
+        running somewhere on the cluster.
     """
 
     def _algorithm_run(f):
@@ -181,7 +188,7 @@ def compute_cluster(algorithms, nodes):
                     pass
 
             # start scheduler on first node
-            if n == nodes[0]:
+            if start_scheduler:
                 print("Starting dispy scheduler on " + n)
 
                 # subprocess.Popen("ssh -tt " + n + " screen -R scheduler -d -m python "

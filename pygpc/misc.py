@@ -47,8 +47,8 @@ def display_fancy_bar(text, i, n_i, more_text=None):
     if not text.endswith(' '):
         text += ' '
 
-    if i == '1':
-        sys.stdout.write('\n')
+    # if i == '1':
+        # sys.stdout.write('')
 
     sys.stdout.write('\r')
     fill_width = len(str(n_i))

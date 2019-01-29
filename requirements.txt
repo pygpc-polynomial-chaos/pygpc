@@ -1,3 +1,4 @@
+pandas
 lmfit
 numpy
 scipy

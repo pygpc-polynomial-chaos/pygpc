@@ -133,7 +133,7 @@ class SGPC(GPC):
             Boolean mask which contains unique multi indices.
         """
 
-        iprint("Determining Sobol indices...")
+        iprint("Determining Sobol indices...", tab=0)
 
         # handle (N,) arrays
         if len(coeffs.shape) == 1:
@@ -253,7 +253,7 @@ class SGPC(GPC):
                                               var[not_nan_mask]))
 
             iprint("Ratio: Sobol indices order {} / total variance: {:.4f} +- {:.4f}"
-                   .format(i+1, sobol_rel_order_mean[i], sobol_rel_order_std[i]), tab=1, verbose=self.verbose)
+                   .format(i+1, sobol_rel_order_mean[i], sobol_rel_order_std[i]), tab=0, verbose=self.verbose)
 
             # for first order indices, determine ratios of all random variables
             if i == 0:
@@ -457,9 +457,9 @@ class Reg(SGPC):
         self.settings = None            # Default Solver settings
         self.relative_error_loocv = []
 
-    def loocv(self, sim_results, solver, settings):
+    def loocv(self, sim_results, solver, settings, n_loocv=100):
         """
-        Perform leave one out cross validation of gPC with maximal 100 points
+        Perform leave one out cross validation of gPC multiple times with n_loocv points
         and add result to self.relative_error_loocv.
 
         relative_error_loocv = SGPC.loocv(sim_results)
@@ -478,6 +478,9 @@ class Reg(SGPC):
             - 'Moore-Penrose' ... None
             - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0
             - 'NumInt' ... None
+        n_loocv : int
+            Number of LOOCV iterations to estimate error.
+            In every iteration, one random point is omitted from the analysis.
 
         Returns
         -------
@@ -486,7 +489,7 @@ class Reg(SGPC):
         """
 
         # define number of performed cross validations (max 100)
-        n_loocv_points = np.min((sim_results.shape[0], 100))
+        n_loocv_points = np.min((sim_results.shape[0], n_loocv))
 
         # make list of indices, which are randomly sampled
         loocv_point_idx = random.sample(list(range(sim_results.shape[0])), n_loocv_points)
@@ -501,7 +504,8 @@ class Reg(SGPC):
             coeffs_loo = self.solve(sim_results=sim_results[mask, :],
                                     solver=solver,
                                     settings=settings,
-                                    gpc_matrix=self.gpc_matrix[mask, :])
+                                    gpc_matrix=self.gpc_matrix[mask, :],
+                                    verbose=False)
 
             sim_results_temp = sim_results[loocv_point_idx[i], :]
             relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(self.gpc_matrix[loocv_point_idx[i], :],
@@ -511,7 +515,7 @@ class Reg(SGPC):
 
         # store result in relative_error_loocv
         self.relative_error_loocv.append(np.mean(relative_error))
-        iprint(" (" + str(time.time() - start) + ")")
+        iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
 
         return self.relative_error_loocv[-1]
 

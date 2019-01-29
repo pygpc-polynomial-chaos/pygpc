@@ -745,8 +745,7 @@ class SparseGrid(Grid):
             self.calc_coords_weights()
         else:
             iprint('Sparse grid initialized but not generated. Please add coords / coords_norm and weights manually'
-                   'by calling mygrid.set_grid().',
-                   verbose=self.verbose)
+                   'by calling mygrid.set_grid().',tab=0, verbose=self.verbose)
 
         # Determine total number of grid points
         self.n_grid = self.coords.shape[0]
@@ -785,7 +784,7 @@ class SparseGrid(Grid):
                     self.order_sequence.append(np.linspace(1, self.level[i_p] + 1, self.level[i_p] + 1).tolist())
 
                 elif self.grid_type[i_p] == 'patterson':  # start with order = 1 @ level = 0 [1,3,7,15,31,...]
-                    iprint("Not possible in case of Gauss-Patterson grid.", verbose=self.verbose)
+                    iprint("Not possible in case of Gauss-Patterson grid.", tab=0, verbose=self.verbose)
 
                 else:                                       # start with
                     self.order_sequence.append(np.linspace(1, self.level[i_p] + 1, self.level[i_p] + 1).tolist())
@@ -840,7 +839,7 @@ class SparseGrid(Grid):
             Cubature lookup table for weights
         """
         # make cubature lookup table for knots (dl_k) and weights (dl_w) [max(l) x dim]
-        iprint("Generating difference grids...", tab=1, verbose=self.verbose)
+        iprint("Generating difference grids...", tab=0, verbose=self.verbose)
         dl_k = [[0 for _ in range(self.dim)] for _ in range(int(np.amax(self.level) + 1))]
         dl_w = [[0 for _ in range(self.dim)] for _ in range(int(np.amax(self.level) + 1))]
         knots_l, weights_l, knots_l_1, weights_l_1 = 0, 0, 0, 0
@@ -912,7 +911,7 @@ class SparseGrid(Grid):
             Tensor product of weights
         """
         # make list of all tensor products according to multi-index list "l"
-        iprint("Generating sub-grids...", tab=1, verbose=self.verbose)
+        iprint("Generating sub-grids...", tab=0, verbose=self.verbose)
         dl_k, dl_w = self.calc_grid()
         l_level = self.calc_l_level()
         dll_k = []
@@ -949,7 +948,7 @@ class SparseGrid(Grid):
         epsilon_k = 1E-6
         coords_norm = []
 
-        iprint("Merging sub-grids...", tab=1, verbose=self.verbose)
+        iprint("Merging sub-grids...", tab=0, verbose=self.verbose)
 
         while any(point_number_list < 0):
             not_found = point_number_list < 0
@@ -969,7 +968,7 @@ class SparseGrid(Grid):
             weights[i_point] = np.sum(dll_w[point_number_list == i_point])
 
         # filter for very small weights
-        iprint("Filter grid for very small weights...", tab=1, verbose=self.verbose)
+        iprint("Filter grid for very small weights...", tab=0, verbose=self.verbose)
         epsilon_w = 1E-8 / self.dim
         keep_point = np.abs(weights) > epsilon_w
         self.weights = weights[keep_point] / 2 ** self.dim
@@ -986,7 +985,7 @@ class SparseGrid(Grid):
                 coords_norm[:, i_p] = coords_norm[:, i_p] * 1.960
 
         # denormalize grid to original parameter space
-        iprint("Denormalizing grid for computations...", tab=1, verbose=self.verbose)
+        iprint("Denormalizing grid for computations...", tab=0, verbose=self.verbose)
         self.coords_norm = coords_norm
         self.coords = self.get_denormalized_coordinates(coords_norm)
 
@@ -1074,6 +1073,7 @@ class RandomGrid(Grid):
         ----------
         n_grid_new: float
             Total number of grid points in extended random grid (old points are kept)
+            (n_grid_add = n_grid_new - n_grid_old)
         seed: float, optional, default=None
             Random seeding point
         """

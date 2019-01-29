@@ -76,7 +76,7 @@ class GPC(object):
         self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
         self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
 
-    def calc_gpc_matrix(self, b, x):
+    def calc_gpc_matrix(self, b, x, verbose=False):
         """
         Construct the gPC matrix.
 
@@ -89,6 +89,8 @@ class GPC(object):
             Multiplying all elements in a row at location xi = (x1, x2, ..., x_dim) yields the global basis function.
         x: ndarray of float [n_x x n_dim]
             Coordinates of x = (x1, x2, ..., x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1])
+        verbose: bool
+            boolean value to determine if to print out the progress into the standard output
 
         Returns
         -------
@@ -96,7 +98,7 @@ class GPC(object):
             GPC matrix where the columns correspond to the basis functions and the rows the to the sample coordinates
         """
 
-        iprint('Constructing gPC matrix...', verbose=self.verbose, tab=1)
+        iprint('Constructing gPC matrix...', verbose=verbose, tab=0)
         gpc_matrix = np.ones([x.shape[0], len(b)])
 
         if not self.gpu:
@@ -380,46 +382,54 @@ class GPC(object):
             # determine new columns (new basis functions) with old grid
             idx = get_cartesian_product([idx_coords_old, idx_b_new]).astype(int)
             if idx.any():
+                iprint('Adding columns to gPC matrix...', tab=0, verbose=True)
+
                 idx_row = np.reshape(idx[:, 0], (idx_coords_old.size, idx_b_new.size)).astype(int)
                 idx_col = np.reshape(idx[:, 1], (idx_coords_old.size, idx_b_new.size)).astype(int)
 
                 gpc_matrix_updated[idx_row, idx_col] = self.calc_gpc_matrix(b=[self.basis.b[i] for i in idx_b_new],
-                                                                            x=self.grid.coords_norm[idx_coords_old, :])
+                                                                            x=self.grid.coords_norm[idx_coords_old, :],
+                                                                            verbose=False)
 
             # determine new rows (new grid points) with all basis functions
             idx = get_cartesian_product([idx_coords_new, np.arange(len(self.basis.b))]).astype(int)
             if idx.any():
+                iprint('Adding rows to gPC matrix...', tab=0, verbose=True)
+
                 idx_row = np.reshape(idx[:, 0], (idx_coords_new.size, len(self.basis.b))).astype(int)
                 idx_col = np.reshape(idx[:, 1], (idx_coords_new.size, len(self.basis.b))).astype(int)
 
                 gpc_matrix_updated[idx_row, idx_col] = self.calc_gpc_matrix(b=self.basis.b,
-                                                                            x=self.grid.coords_norm[idx_coords_new, :])
+                                                                            x=self.grid.coords_norm[idx_coords_new, :],
+                                                                            verbose=False)
 
             # overwrite old attributes
             self.gpc_matrix = gpc_matrix_updated
             self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
 
-    def solve(self, sim_results, solver=None, settings=None, gpc_matrix=None):
+    def solve(self, sim_results, solver=None, settings=None, gpc_matrix=None, verbose=False):
         """
         Determines gPC coefficients
 
         Parameters
         ----------
-        sim_results: [N_grid x N_out] np.ndarray of float
+        sim_results : [N_grid x N_out] np.ndarray of float
             results from simulations with N_out output quantities
-        solver: str
+        solver : str
             Solver to determine the gPC coefficients
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
             - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
             - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
-        settings: dict
+        settings : dict
             Solver settings
             - 'Moore-Penrose' ... None
             - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0 or "sparsity": float 0...1
             - 'NumInt' ... None
-        gpc_matrix: ndarray of float [n_grid x n_basis], optional, default: self.gpc_matrix
+        gpc_matrix : ndarray of float [n_grid x n_basis], optional, default: self.gpc_matrix
             GPC matrix to invert
+        verbose : bool
+            boolean value to determine if to print out the progress into the standard output
 
         Returns
         -------
@@ -437,14 +447,14 @@ class GPC(object):
         if solver is None:
             settings = self.settings
 
-        iprint("Determine gPC coefficients using '{}' solver...".format(solver), tab=1, verbose=self.verbose)
+        iprint("Determine gPC coefficients using '{}' solver...".format(solver), tab=0, verbose=verbose)
 
         if solver == 'Moore-Penrose':
             # determine pseudoinverse of gPC matrix
-            gpc_matrix_inv = np.linalg.pinv(gpc_matrix)
+            self.gpc_matrix_inv = np.linalg.pinv(gpc_matrix)
 
             try:
-                coeffs = np.dot(gpc_matrix_inv, sim_results)
+                coeffs = np.dot(self.gpc_matrix_inv, sim_results)
             except ValueError:
                 raise AttributeError("Please check format of parameter sim_results: [n_grid x n_out] np.ndarray.")
 

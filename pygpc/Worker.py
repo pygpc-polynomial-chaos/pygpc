@@ -78,6 +78,13 @@ def run(obj):
         skip_sim = False
 
     obj.increment_ctr()
-    obj.print_progress(func_time=end_time - start_time, read_from_file=skip_sim)
+
+    # determine function time
+    if obj.print_func_time:
+        func_time = end_time - start_time
+    else:
+        func_time = None
+
+    obj.print_progress(func_time=func_time, read_from_file=skip_sim, )
 
     return obj.get_seq_number(), res

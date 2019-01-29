@@ -57,16 +57,21 @@ class AbstractModel:
         self.p = p
 
         if context is not None:
-            self.lock = context['lock']
-            self.max_grid = context['max_grid']
-            self.global_task_counter = context['global_task_ctr']
-            self.seq_number = context['seq_number']
-            self.fn_results = context['fn_results']
-            self.i_grid = context['i_grid']
-            self.i_iter = context['i_iter']
-            self.i_subiter = context['i_subiter']
-            self.coords = context['coords']
-            self.coords_norm = context['coords_norm']
+            for key in context.keys():
+                setattr(self, key, context[key])
+
+
+        # if context is not None:
+        #     self.lock = context['lock']
+        #     self.max_grid = context['max_grid']
+        #     self.global_task_counter = context['global_task_ctr']
+        #     self.seq_number = context['seq_number']
+        #     self.fn_results = context['fn_results']
+        #     self.i_grid = context['i_grid']
+        #     self.i_iter = context['i_iter']
+        #     self.i_subiter = context['i_subiter']
+        #     self.coords = context['coords']
+        #     self.coords_norm = context['coords_norm']
 
     def read_previous_results(self, coords):
         """

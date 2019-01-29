@@ -99,7 +99,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
 
 
 def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, data_original=None,
-                      fn_out=None):
+                      fn_out=None, n_cpu=None):
     """
     Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
     calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
@@ -124,6 +124,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         If available, data of original model function at grid
     fn_out : str
         Filename of plot comparing original vs gPC model
+    n_cpu : int, default=gpc.n_cpu
+        Number of CPU cores to use to calculate results of original model on grid.
 
     Returns
     -------
@@ -138,6 +140,9 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
 
     if type(n_grid) is not list:
         n_grid = n_grid.tolist()
+
+    if n_cpu is None:
+        n_cpu = gpc.n_cpu
 
     # Create grid such that it includes the mean values of other random variables
     grid = np.zeros((np.prod(n_grid), len(gpc.problem.parameters_random)))
@@ -173,7 +178,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
 
     # Evaluate original model function on grid
     if data_original is None:
-        com = Computation(n_cpu=gpc.n_cpu)
+        com = Computation(n_cpu=n_cpu)
         y_orig = com.run(model=gpc.problem.model, problem=gpc.problem, coords=grid)[:, output_idx]
     else:
         y_orig = data_original

@@ -120,6 +120,9 @@ class Static(Algorithm):
         if "n_cpu" in self.options.keys():
             self.n_cpu = self.options["n_cpu"]
 
+        if "print_func_time" not in self.options.keys():
+            self.options["print_func_time"] = False
+
     def run(self):
         """
         Runs static gPC algorithm to solve problem.
@@ -163,7 +166,7 @@ class Static(Algorithm):
 
         # Run simulations
         iprint("Performing {} simulations!".format(gpc.grid.coords.shape[0]),
-               tab=1, verbose=self.options["verbose"])
+               tab=0, verbose=self.options["verbose"])
 
         start_time = time.time()
 
@@ -173,17 +176,19 @@ class Static(Algorithm):
                       coords_norm=gpc.grid.coords_norm,
                       i_iter=gpc.order_max,
                       i_subiter=gpc.interaction_order,
-                      fn_results=gpc.fn_results)
+                      fn_results=gpc.fn_results,
+                      print_func_time=self.options["print_func_time"])
 
-        iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec\n',
-               tab=1, verbose=self.options["verbose"])
+        iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+               tab=0, verbose=self.options["verbose"])
 
         com.close()
 
         # Compute gpc coefficients
         coeffs = gpc.solve(sim_results=res,
                            solver=self.options["solver"],
-                           settings=self.options["settings"])
+                           settings=self.options["settings"],
+                           verbose=True)
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
@@ -287,6 +292,12 @@ class RegAdaptive(Algorithm):
         if self.options["solver"] == "OMP" and "settings" not in self.options.keys():
             raise AssertionError("Please specify correct solver settings for OMP in 'settings'")
 
+        if "print_func_time" not in self.options.keys():
+            self.options["print_func_time"] = False
+
+        if "n_loocv" not in self.options.keys():
+            self.options["n_loocv"] = 100
+
     def run(self):
         """
         Runs adaptive gPC algorithm to solve problem.
@@ -331,20 +342,25 @@ class RegAdaptive(Algorithm):
         # Main iterations (order)
         while (eps > self.options["eps"]) and order < self.options["order_end"]:
 
-            print("Order #{}".format(order))
-            print("==========")
+            iprint("\n")
+            iprint("Order #{}".format(order), tab=0, verbose=self.options["verbose"])
+            iprint("==========", tab=0, verbose=self.options["verbose"])
 
             # determine new possible basis for next main iteration
             multi_indices_all_new = get_multi_indices_max_order(self.problem.dim, order)
             multi_indices_all_new = multi_indices_all_new[np.sum(multi_indices_all_new, axis=1) == order]
 
-            # sub-iterations (interaction orders)
-            while (gpc.interaction_order_current <= self.options["interaction_order"]) and eps > self.options["eps"]:
+            interaction_order_current_max = np.min([order, self.options["interaction_order"]])
 
+            # sub-iterations (interaction orders)
+            while (gpc.interaction_order_current <= self.options["interaction_order"] and
+                   gpc.interaction_order_current <= interaction_order_current_max) and eps > self.options["eps"]:
+
+                iprint("\n")
                 iprint("Sub-iteration #{}".format(gpc.interaction_order_current),
-                       tab=1, verbose=self.options["verbose"])
+                       tab=0, verbose=self.options["verbose"])
                 iprint("================",
-                       tab=1, verbose=self.options["verbose"])
+                       tab=0, verbose=self.options["verbose"])
 
                 if order != self.options["order_start"]:
 
@@ -373,7 +389,7 @@ class RegAdaptive(Algorithm):
 
                 # run simulations
                 iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
-                       tab=1, verbose=self.options["verbose"])
+                       tab=0, verbose=self.options["verbose"])
 
                 start_time = time.time()
 
@@ -383,10 +399,11 @@ class RegAdaptive(Algorithm):
                               coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
                               i_iter=order,
                               i_subiter=gpc.interaction_order_current,
-                              fn_results=gpc.fn_results)
+                              fn_results=gpc.fn_results,
+                              print_func_time=self.options["print_func_time"])
 
-                iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec\n',
-                       tab=1, verbose=self.options["verbose"])
+                iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+                       tab=0, verbose=self.options["verbose"])
 
                 # Append result to solution matrix (RHS)
                 if i_grid == 0:
@@ -396,13 +413,13 @@ class RegAdaptive(Algorithm):
 
                 i_grid = gpc.grid.coords.shape[0]
 
-                # Determine location of NaN in results
+                # Determine QOIs with NaN in results
                 non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
-                n_nan = non_nan_mask.size
+                n_nan = res_complete.shape[1]-non_nan_mask.size
 
                 if n_nan > 0:
                     iprint("In {}/{} output quantities NaN's were found.".format(n_nan, res_complete.shape[1]),
-                           tab=1, verbose=self.options["verbose"])
+                           tab=0, verbose=self.options["verbose"])
 
                 # save gpc object and append results for this sub-iteration
                 if self.options["fn_results"]:
@@ -413,8 +430,10 @@ class RegAdaptive(Algorithm):
                 # determine error
                 eps = gpc.loocv(sim_results=res_complete[:, non_nan_mask],
                                 solver=gpc.solver,
-                                settings=gpc.settings)
-                iprint("-> error = {}".format(eps), tab=1, verbose=self.options["verbose"])
+                                settings=gpc.settings,
+                                n_loocv=self.options["n_loocv"])
+
+                iprint("-> error = {}".format(eps), tab=0, verbose=self.options["verbose"])
 
                 # increase current interaction order
                 gpc.interaction_order_current = gpc.interaction_order_current + 1
@@ -430,7 +449,8 @@ class RegAdaptive(Algorithm):
         # determine gpc coefficients
         coeffs = gpc.solve(sim_results=res_complete,
                            solver=gpc.solver,
-                           settings=gpc.settings)
+                           settings=gpc.settings,
+                           verbose=True)
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
