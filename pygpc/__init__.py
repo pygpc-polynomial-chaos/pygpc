@@ -17,6 +17,7 @@ from .io import *
 from .Problem import *              # ok
 from .Algorithm import *            # ok
 from .validation import *           # ok
-from .Visualization import *                  # ok
+from .Visualization import *        # ok
+from .postprocessing import *       # ok
 import RandomParameter              # ok
 

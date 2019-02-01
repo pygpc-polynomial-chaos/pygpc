@@ -163,7 +163,7 @@ class GPC(object):
             n_out = coeffs.shape[1]
 
         # if output index array is not provided, determine pdfs of all outputs
-        if not output_idx:
+        if output_idx is None:
             output_idx = np.linspace(0, n_out - 1, n_out)
             output_idx = output_idx[np.newaxis, :]
 
@@ -178,7 +178,7 @@ class GPC(object):
         pdf_y = np.zeros([100, n_out])
 
         for i_out in range(n_out):
-            kde = scipy.stats.gaussian_kde(samples_out.transpose(), bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
+            kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
             pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
             pdf_y[:, i_out] = kde(pdf_x[:, i_out])
 
@@ -248,11 +248,10 @@ class GPC(object):
         if len(x.shape) == 1:
             x = x[:, np.newaxis]
 
-        # crop coeffs array if output index is specified
         if output_idx is not None:
-            output_idx = np.array(output_idx)
-            if len(output_idx.shape):
-                output_idx = output_idx[np.newaxis, :]
+            # convert to 1d array
+            output_idx = np.asarray(output_idx).flatten()
+            # crop coeffs array if output index is specified
             coeffs = coeffs[:, output_idx]
 
         if not self.gpu:

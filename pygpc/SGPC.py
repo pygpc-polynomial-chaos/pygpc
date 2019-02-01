@@ -133,7 +133,7 @@ class SGPC(GPC):
             Boolean mask which contains unique multi indices.
         """
 
-        iprint("Determining Sobol indices...", tab=0)
+        # iprint("Determining Sobol indices...", tab=0)
 
         # handle (N,) arrays
         if len(coeffs.shape) == 1:
@@ -188,7 +188,7 @@ class SGPC(GPC):
 
         return sobol, sobol_idx, sobol_idx_bool
 
-    def get_sobol_composition(self, sobol, sobol_idx, sobol_idx_bool):
+    def get_sobol_composition(self, sobol, sobol_idx_bool):
         """
         Determine average ratios of Sobol indices over all output quantities:
         (i) over all orders and (e.g. 1st: 90%, 2nd: 8%, 3rd: 2%)
@@ -201,8 +201,6 @@ class SGPC(GPC):
         ----------
         sobol: ndarray of float [n_sobol x n_out]
             Unnormalized sobol_indices
-        sobol_idx: list of ndarray [n_sobol x (n_sobol_included)]
-            Parameter combinations in rows of sobol.
         sobol_idx_bool: list of ndarray of bool
             Boolean mask which contains unique multi indices.
 
@@ -222,6 +220,8 @@ class SGPC(GPC):
             variance
             (over all output quantities)
         """
+
+        sobol_idx = [np.argwhere(sobol_idx_bool[i, :]).flatten() for i in range(sobol_idx_bool.shape[0])]
 
         # get max order
         order_max = np.max(np.sum(sobol_idx_bool, axis=1))
@@ -243,7 +243,7 @@ class SGPC(GPC):
 
         for i in range(order_max):
             # extract sobol coefficients of order i
-            sobol_extracted, sobol_extracted_idx = self.get_extracted_sobol_order(sobol, sobol_idx, i + 1)
+            sobol_extracted, sobol_extracted_idx = self.get_extracted_sobol_order(sobol, sobol_idx_bool, i + 1)
 
             # determine average sobol index over all elements
             sobol_rel_order_mean.append(np.sum(np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten()) /
@@ -281,7 +281,7 @@ class SGPC(GPC):
                sobol_rel_1st_order_mean, sobol_rel_1st_order_std
 
     @staticmethod
-    def get_extracted_sobol_order(sobol, sobol_idx, order=1):
+    def get_extracted_sobol_order(sobol, sobol_idx_bool, order=1):
         """
         Extract Sobol indices with specified order from Sobol data.
 
@@ -291,8 +291,8 @@ class SGPC(GPC):
         ----------
         sobol: ndarray of float [n_sobol x n_out]
             Sobol indices of n_out output quantities
-        sobol_idx: list or ndarray of int [n_sobol]
-            Parameter label indices belonging to Sobol indices
+        sobol_idx_bool: list of ndarray of bool
+            Boolean mask which contains unique multi indices.
         order: int, optional, default=1
             Sobol index order to extract
 
@@ -303,6 +303,8 @@ class SGPC(GPC):
         sobol_idx_n_order: ndarray of int
             Parameter label indices belonging to n-th order Sobol indices
         """
+
+        sobol_idx = [np.argwhere(sobol_idx_bool[i, :]).flatten() for i in range(sobol_idx_bool.shape[0])]
 
         # make mask of nth order sobol indices
         mask = [index for index, sobol_element in enumerate(sobol_idx) if sobol_element.shape[0] == order]

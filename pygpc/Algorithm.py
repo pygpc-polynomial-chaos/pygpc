@@ -192,10 +192,9 @@ class Static(Algorithm):
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
-            fn = os.path.join(os.path.splitext(self.options["fn_results"])[0])
-            write_gpc_pkl(gpc, fn + '.pkl')
+            write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
 
-            with h5py.File(self.options["fn_results"], "a") as f:
+            with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
                 if "coeffs" in f.keys():
                     del f['coeffs']
                 f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
@@ -279,9 +278,6 @@ class RegAdaptive(Algorithm):
 
         if "matrix_ratio" not in self.options.keys():
             self.options["matrix_ratio"] = 1.5
-
-        if not self.options["fn_results"].endswith('.hdf5'):
-            self.options["fn_results"] = os.path.splitext(self.options["fn_results"])[0] + ".hdf5"
 
         if "solver" not in self.options.keys():
             raise AssertionError("Please specify 'Moore-Penrose' or 'OMP' as solver for adaptive algorithm.")
@@ -425,7 +421,7 @@ class RegAdaptive(Algorithm):
                 if self.options["fn_results"]:
                     fn = os.path.join(os.path.splitext(self.options["fn_results"])[0] +
                                       '_' + str(order).zfill(2) + "_" + str(gpc.interaction_order_current).zfill(2))
-                    write_gpc_pkl(gpc, fn + '_gpc.pkl')
+                    write_gpc_pkl(gpc, fn + '.pkl')
 
                 # determine error
                 eps = gpc.loocv(sim_results=res_complete[:, non_nan_mask],
@@ -454,10 +450,9 @@ class RegAdaptive(Algorithm):
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
-            fn = os.path.join(os.path.splitext(self.options["fn_results"])[0])
-            write_gpc_pkl(gpc, fn + '.pkl')
+            write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
 
-            with h5py.File(self.options["fn_results"], "a") as f:
+            with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
                 if "coeffs" in f.keys():
                     del f['coeffs']
                 f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")

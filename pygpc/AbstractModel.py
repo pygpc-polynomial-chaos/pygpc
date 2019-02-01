@@ -99,7 +99,7 @@ class AbstractModel:
 
                     # read results and coords
                     try:
-                        with h5py.File(self.fn_results, 'r') as f:
+                        with h5py.File(self.fn_results + ".hdf5", 'r') as f:
                             ds = f['results']
                             res = ds[self.i_grid, :]
 
@@ -136,7 +136,7 @@ class AbstractModel:
             self.lock.acquire()
             try:
                 require_size = self.i_grid + 1
-                with h5py.File(self.fn_results, 'a') as f:
+                with h5py.File(self.fn_results + ".hdf5", 'a') as f:
                     for d in data_dict:
                         # change list or single str to np.array
                         if type(data_dict[d]) is list or type(data_dict[d]) is str:
