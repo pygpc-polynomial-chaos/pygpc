@@ -93,6 +93,13 @@ class TestpygpcMethods(unittest.TestCase):
         # run gPC algorithm
         gpc, coeffs, results = algorithm.run()
 
+        # Post-process gPC
+        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True)
+
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
                                       coeffs=coeffs,
@@ -124,7 +131,7 @@ class TestpygpcMethods(unittest.TestCase):
         self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
 
         print("done!\n")
-    #
+
     # def test_2_static_gpc_reg_omp_randomgrid(self):
     #     """
     #     Algorithm: Static
@@ -179,6 +186,13 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     # run gPC algorithm
     #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
     #
     #     # Validate gPC vs original model function
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
@@ -238,6 +252,13 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     # run gPC algorithm
     #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
     #
     #     # Validate gPC vs original model function
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
@@ -302,6 +323,13 @@ class TestpygpcMethods(unittest.TestCase):
     #     # run gPC algorithm
     #     gpc, coeffs, results = algorithm.run()
     #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
     #     # Validate gPC vs original model function
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
     #                                   coeffs=coeffs,
@@ -314,7 +342,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
     #
     #     print("done!\n")
-
+    #
     # def test_5_adaptive_gpc_reg_mp_randomgrid(self):
     #     """
     #     Algorithm: Adaptive
@@ -359,6 +387,13 @@ class TestpygpcMethods(unittest.TestCase):
     #     pygpc.plot_2d_grid(coords=gpc.grid.coords,
     #                        fn_plot=os.path.join(folder, test_name + '_grid'))
     #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
     #     # Validate gPC vs original model function
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
     #                                   coeffs=coeffs,
@@ -371,7 +406,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
     #
     #     print("done!\n")
-
+    #
     # def test_6_adaptive_gpc_reg_omp_randomgrid(self):
     #     """
     #     Algorithm: Adaptive
@@ -414,6 +449,13 @@ class TestpygpcMethods(unittest.TestCase):
     #     # plot grid
     #     pygpc.plot_2d_grid(coords=gpc.grid.coords,
     #                        fn_plot=os.path.join(folder, test_name + '_grid'))
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
     #
     #     # Validate gPC vs original model function
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
