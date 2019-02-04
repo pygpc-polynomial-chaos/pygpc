@@ -417,8 +417,21 @@ class RegAdaptive(Algorithm):
                     iprint("In {}/{} output quantities NaN's were found.".format(n_nan, res_complete.shape[1]),
                            tab=0, verbose=self.options["verbose"])
 
-                # save gpc object and append results for this sub-iteration
+                # determine gpc coefficients
+                coeffs = gpc.solve(sim_results=res_complete,
+                                   solver=gpc.solver,
+                                   settings=gpc.settings,
+                                   verbose=True)
+
+                # save gpc object and coeffs for this sub-iteration
                 if self.options["fn_results"]:
+                    with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
+                        if "coeffs" in f.keys():
+                            del f['coeffs']
+                        f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+
+                    write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
+
                     fn = os.path.join(os.path.splitext(self.options["fn_results"])[0] +
                                       '_' + str(order).zfill(2) + "_" + str(gpc.interaction_order_current).zfill(2))
                     write_gpc_pkl(gpc, fn + '.pkl')

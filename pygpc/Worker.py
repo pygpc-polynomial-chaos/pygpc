@@ -41,6 +41,9 @@ def run(obj):
     """
     global process_id
 
+    if 'process_id' not in globals():
+        process_id = 0
+
     if process_id is None:
         process_id = 0
 

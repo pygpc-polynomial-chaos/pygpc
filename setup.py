@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
-setup(name='pygpc',
+setup(name='PySense',
       version='0.1',
-      description='polynomial chaos expansion',
+      description='Sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='konstantin.weise@tu-ilmenau.de',
       license='GPL3',
-      packages=['pygpc'],
+      packages=find_packages(),
       install_requires=['numpy',
                         'scipy',
                         'sklearn',

@@ -8,6 +8,7 @@ import numpy as np
 import dispy
 import os
 import re
+from .io import iprint
 
 
 class Computation:
@@ -92,13 +93,17 @@ class Computation:
         # -> As a result we have the same keys in the dictionary but
         #    no RandomParameters anymore but a sample from the defined PDF.
         for j, random_var_instances in enumerate(grid_new):
+            iprint("Creating worker object #{}".format(j), tab=0)
 
             if coords_norm is None:
                 c_norm = None
             else:
                 c_norm = coords_norm[j, :]
 
+            start = time.time()
             parameters = copy.deepcopy(problem.parameters)
+            iprint("copy time: {}".format(time.time()-start), tab=0)
+
             # setup context (let the process know which iteration, interaction order etc.)
             context = {
                 'global_task_counter': self.global_task_counter,
@@ -119,13 +124,27 @@ class Computation:
                 parameters[problem.parameters_random.keys()[i]] = random_var_instances[i]
 
             # append new worker which will evaluate the model with particular parameters from grid
+            start = time.time()
             worker_objs.append(model(parameters, context))
+            iprint("Init and append model: {}".format(time.time()-start), tab=0)
 
             self.i_grid += 1
             seq_num += 1
 
-        # The map-function deals with chunking the data
-        res_new_list = self.process_pool.map(Worker.run, worker_objs)
+        # start model evaluations
+        if self.n_cpu == 0:
+            raise NotImplementedError("n_cpu = 0 (function parallelization) not implemented yet")
+
+        elif self.n_cpu == 1:
+            res_new_list = []
+
+            for i in range(len(worker_objs)):
+                res_new_list.append(Worker.run(worker_objs[i]))
+
+        else:
+            # The map-function deals with chunking the data
+            # TODO: Bottleneck here? manual chunking better?
+            res_new_list = self.process_pool.map(Worker.run, worker_objs)
 
         # Initialize the result array with the correct size and set the elements according to their order
         # (the first element in 'res' might not necessarily be the result of the first Process/i_grid)
