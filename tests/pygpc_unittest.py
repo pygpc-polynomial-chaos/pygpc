@@ -61,9 +61,9 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     # define problem
     #     parameters = OrderedDict()
-    #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
     #     parameters["x2"] = 1.25
-    #     parameters["x3"] = pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
+    #     parameters["x3"] = pygpc.Norm(pdf_shape=[0.1, 0.15])
     #     problem = pygpc.Problem(model, parameters)
     #
     #     # gPC options
@@ -149,9 +149,9 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     # define problem
     #     parameters = OrderedDict()
-    #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
     #     parameters["x2"] = 1.25
-    #     parameters["x3"] = pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
+    #     parameters["x3"] = pygpc.Norm(pdf_shape=[0.1, 0.15])
     #     problem = pygpc.Problem(model, parameters)
     #
     #     # gPC options
@@ -223,9 +223,9 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     # define problem
     #     parameters = OrderedDict()
-    #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
     #     parameters["x2"] = 1.25
-    #     parameters["x3"] = pygpc.RandomParameter.Norm(pdf_shape=[0.1, 0.15])
+    #     parameters["x3"] = pygpc.Norm(pdf_shape=[0.1, 0.15])
     #     problem = pygpc.Problem(model, parameters)
     #
     #     # gPC options
@@ -289,9 +289,9 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     # define problem
     #     parameters = OrderedDict()
-    #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
     #     parameters["x2"] = 1.25
-    #     parameters["x3"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+    #     parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
     #     problem = pygpc.Problem(model, parameters)
     #
     #     # gPC options
@@ -359,9 +359,9 @@ class TestpygpcMethods(unittest.TestCase):
 
         # define problem
         parameters = OrderedDict()
-        parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
         parameters["x2"] = 1.25
-        parameters["x3"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
         problem = pygpc.Problem(model, parameters)
 
         # gPC options
@@ -423,9 +423,9 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     # define problem
     #     parameters = OrderedDict()
-    #     parameters["x1"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
     #     parameters["x2"] = 1.25
-    #     parameters["x3"] = pygpc.RandomParameter.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+    #     parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
     #     problem = pygpc.Problem(model, parameters)
     #
     #     # gPC options

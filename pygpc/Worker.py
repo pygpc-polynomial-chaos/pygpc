@@ -1,17 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
- This is a wrapper script to be called by the 'multiprocessing.map' function
- to calculate the model functions in parallel.
-
-@author: Benjamin Kalloch
-"""
 import time
 import numpy as np
 
 
 def init(queue):
     """
+    This is a wrapper script to be called by the 'multiprocessing.map' function
+    to calculate the model functions in parallel.
+
     This function will be called upon initialization of the process.
     It sets a global variable denoting the ID of this process that can
     be read by any function of this process

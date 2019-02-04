@@ -92,17 +92,13 @@ class Computation:
         # entries of the dictionary
         # -> As a result we have the same keys in the dictionary but
         #    no RandomParameters anymore but a sample from the defined PDF.
+
         for j, random_var_instances in enumerate(grid_new):
-            iprint("Creating worker object #{}".format(j), tab=0)
 
             if coords_norm is None:
                 c_norm = None
             else:
                 c_norm = coords_norm[j, :]
-
-            start = time.time()
-            parameters = copy.deepcopy(problem.parameters)
-            iprint("copy time: {}".format(time.time()-start), tab=0)
 
             # setup context (let the process know which iteration, interaction order etc.)
             context = {
@@ -119,14 +115,16 @@ class Computation:
                 'print_func_time': print_func_time
             }
 
+            parameters = dict()
+            for key in problem.parameters:
+                parameters[key] = problem.parameters[key]
+
             # replace RandomParameters with grid points
             for i in range(0, len(random_var_instances)):
                 parameters[problem.parameters_random.keys()[i]] = random_var_instances[i]
 
             # append new worker which will evaluate the model with particular parameters from grid
-            start = time.time()
             worker_objs.append(model(parameters, context))
-            iprint("Init and append model: {}".format(time.time()-start), tab=0)
 
             self.i_grid += 1
             seq_num += 1

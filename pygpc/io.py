@@ -3,7 +3,8 @@
 Functions that provide input and output functionality
 """
 
-from .Grid import *
+# from .Grid import *
+import numpy as np
 import os
 import pickle
 import h5py
@@ -244,13 +245,13 @@ def write_log_sobol(fname, random_vars, sobol_rel_order_mean, sobol_rel_1st_orde
     log.close()
 
 
-# initialize logger
-file_logger = logging.getLogger('gPC')
-file_logger.setLevel(logging.DEBUG)
-file_logger_handler = logging.FileHandler('gPC.log')
-file_logger_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
-file_logger_handler.setFormatter(file_logger_formatter)
-file_logger.addHandler(file_logger_handler)
+# # initialize logger
+# file_logger = logging.getLogger('gPC')
+# file_logger.setLevel(logging.DEBUG)
+# file_logger_handler = logging.FileHandler('gPC.log')
+# file_logger_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
+# file_logger_handler.setFormatter(file_logger_formatter)
+# file_logger.addHandler(file_logger_handler)
 
 console_logger = logging.getLogger('gPC_console_output')
 console_logger.setLevel(logging.DEBUG)
@@ -259,24 +260,24 @@ console_logger_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(me
 console_logger_handler.setFormatter(console_logger_formatter)
 console_logger.addHandler(console_logger_handler)
 
-file_logger.disabled = False
+# file_logger.disabled = False
 console_logger.disabled = False
 
 
-def activate_terminal_output():
-    console_logger.disabled = False
-
-
-def activate_logfile_output():
-    file_logger.disabled = False
-
-
-def deactivate_terminal_output():
-    console_logger.disabled = True
-
-
-def deactivate_logfile_output():
-    file_logger.disabled = True
+# def activate_terminal_output():
+#     console_logger.disabled = False
+#
+#
+# def activate_logfile_output():
+#     file_logger.disabled = False
+#
+#
+# def deactivate_terminal_output():
+#     console_logger.disabled = True
+#
+#
+# def deactivate_logfile_output():
+#     file_logger.disabled = True
 
 
 def iprint(message, verbose=True, tab=None):

@@ -1,19 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
- This wrapper script encapsulates the OpenFOAM simulation for usage with the PyGPC framework.
-
- *Inputs*
-   - 1st parameter MUST be the list of conductivities this simulation should be conducted with
-   - additional parameters are optional
-
- *Outputs*
-   - The simulation results for every mesh element
-     (order of the results does not matter, but must be consistent across consecutive calls)
-
-@author: Benjamin Kalloch
-"""
-
 import numpy as np
 import os
 import h5py

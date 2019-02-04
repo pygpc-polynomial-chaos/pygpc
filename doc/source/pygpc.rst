@@ -1,26 +1,117 @@
 pygpc package
 =============
 
-.. automodule:: pygpc
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 Submodules
 ----------
 
-pygpc.gpc module
-----------------
+pygpc.AbstractModel module
+--------------------------
 
-.. automodule:: pygpc.gpc
+.. automodule:: pygpc.AbstractModel
     :members:
     :undoc-members:
     :show-inheritance:
 
-pygpc.grid module
+pygpc.Algorithm module
+----------------------
+
+.. automodule:: pygpc.Algorithm
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.Basis module
+------------------
+
+.. automodule:: pygpc.Basis
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.BasisFunction module
+--------------------------
+
+.. automodule:: pygpc.BasisFunction
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.Computation module
+------------------------
+
+.. automodule:: pygpc.Computation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.EGPC module
 -----------------
 
-.. automodule:: pygpc.grid
+.. automodule:: pygpc.EGPC
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.GPC module
+----------------
+
+.. automodule:: pygpc.GPC
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.Grid module
+-----------------
+
+.. automodule:: pygpc.Grid
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.Problem module
+--------------------
+
+.. automodule:: pygpc.Problem
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.RandomParameter module
+----------------------------
+
+.. automodule:: pygpc.RandomParameter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.SGPC module
+-----------------
+
+.. automodule:: pygpc.SGPC
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.Visualization module
+--------------------------
+
+.. automodule:: pygpc.Visualization
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.Worker module
+-------------------
+
+.. automodule:: pygpc.Worker
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.io module
+---------------
+
+.. automodule:: pygpc.io
     :members:
     :undoc-members:
     :show-inheritance:
@@ -33,60 +124,35 @@ pygpc.misc module
     :undoc-members:
     :show-inheritance:
 
-pygpc.ni module
+pygpc.postprocessing module
+---------------------------
+
+.. automodule:: pygpc.postprocessing
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.testfunctions module
+--------------------------
+
+.. automodule:: pygpc.testfunctions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.validation module
+-----------------------
+
+.. automodule:: pygpc.validation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
 ---------------
 
-.. automodule:: pygpc.ni
+.. automodule:: pygpc
     :members:
     :undoc-members:
     :show-inheritance:
-
-pygpc.postproc module
----------------------
-
-.. automodule:: pygpc.postproc
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pygpc.quad module
------------------
-
-.. automodule:: pygpc.quad
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pygpc.reg module
-----------------
-
-.. automodule:: pygpc.reg
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pygpc.rw module
----------------
-
-.. automodule:: pygpc.rw
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pygpc.testfun module
---------------------
-
-.. automodule:: pygpc.testfun
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pygpc.vis module
-----------------
-
-.. automodule:: pygpc.vis
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
