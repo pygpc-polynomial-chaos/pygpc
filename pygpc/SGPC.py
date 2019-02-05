@@ -219,6 +219,13 @@ class SGPC(GPC):
             Standard deviation of the proportion of the random variables of the 1st order Sobol indices to the total
             variance
             (over all output quantities)
+        sobol_rel_2nd_order_mean: ndarray of float [n_out]
+            Average proportion of the random variables of the 2nd order Sobol indices to the total variance,
+            (over all output quantities)
+        sobol_rel_2nd_order_std: ndarray of float [n_out]
+            Standard deviation of the proportion of the random variables of the 2nd order Sobol indices to the total
+            variance
+            (over all output quantities)
         """
 
         sobol_idx = [np.argwhere(sobol_idx_bool[i, :]).flatten() for i in range(sobol_idx_bool.shape[0])]
@@ -236,6 +243,8 @@ class SGPC(GPC):
         sobol_rel_order_std = []
         sobol_rel_1st_order_mean = []
         sobol_rel_1st_order_std = []
+        sobol_rel_2nd_order_mean = []
+        sobol_rel_2nd_order_std = []
         str_out = []
 
         # get maximum length of random_vars label
@@ -255,9 +264,8 @@ class SGPC(GPC):
             iprint("Ratio: Sobol indices order {} / total variance: {:.4f} +- {:.4f}"
                    .format(i+1, sobol_rel_order_mean[i], sobol_rel_order_std[i]), tab=0, verbose=self.verbose)
 
-            # for first order indices, determine ratios of all random variables
+            # for 1st order indices, determine ratios of all random variables
             if i == 0:
-                # deep copy
                 sobol_extracted_idx_1st = sobol_extracted_idx[:]
                 for j in range(sobol_extracted.shape[0]):
                     sobol_rel_1st_order_mean.append(np.sum(sobol_extracted[j, not_nan_mask].flatten())
@@ -265,12 +273,20 @@ class SGPC(GPC):
                     sobol_rel_1st_order_std.append(0)
 
                     str_out.append("\t{}{}: {:.4f}"
-                                   .format((max_len - len(self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j]])) * ' ',
-                                           self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j]],
+                                   .format((max_len - len(self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j][0]])) * ' ',
+                                           self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j][0]],
                                            sobol_rel_1st_order_mean[j]))
+
+            # for 2nd order indices, determine ratios of all random variables
+            if i == 1:
+                for j in range(sobol_extracted.shape[0]):
+                    sobol_rel_2nd_order_mean.append(np.sum(sobol_extracted[j, not_nan_mask].flatten())
+                                                    / np.sum(var[not_nan_mask]))
+                    sobol_rel_2nd_order_std.append(0)
 
         sobol_rel_order_mean = np.array(sobol_rel_order_mean)
         sobol_rel_1st_order_mean = np.array(sobol_rel_1st_order_mean)
+        sobol_rel_2nd_order_mean = np.array(sobol_rel_2nd_order_mean)
 
         # print output of 1st order Sobol indices ratios of parameters
         if self.verbose:
@@ -278,7 +294,8 @@ class SGPC(GPC):
                 print(str_out[j])
 
         return sobol_rel_order_mean, sobol_rel_order_std, \
-               sobol_rel_1st_order_mean, sobol_rel_1st_order_std
+               sobol_rel_1st_order_mean, sobol_rel_1st_order_std, \
+               sobol_rel_2nd_order_mean, sobol_rel_2nd_order_std
 
     @staticmethod
     def get_extracted_sobol_order(sobol, sobol_idx_bool, order=1):
@@ -311,7 +328,7 @@ class SGPC(GPC):
 
         # extract from dataset
         sobol_n_order = sobol[mask, :]
-        sobol_idx_n_order = np.vstack(sobol_idx[mask])
+        sobol_idx_n_order = np.array([sobol_idx[m] for m in mask])
 
         # sort sobol indices according to parameter indices in ascending order
         sort_idx = np.argsort(sobol_idx_n_order, axis=0)[:, 0]

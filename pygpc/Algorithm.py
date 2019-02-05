@@ -338,7 +338,6 @@ class RegAdaptive(Algorithm):
         # Main iterations (order)
         while (eps > self.options["eps"]) and order < self.options["order_end"]:
 
-            iprint("\n")
             iprint("Order #{}".format(order), tab=0, verbose=self.options["verbose"])
             iprint("==========", tab=0, verbose=self.options["verbose"])
 
@@ -352,7 +351,6 @@ class RegAdaptive(Algorithm):
             while (gpc.interaction_order_current <= self.options["interaction_order"] and
                    gpc.interaction_order_current <= interaction_order_current_max) and eps > self.options["eps"]:
 
-                iprint("\n")
                 iprint("Sub-iteration #{}".format(gpc.interaction_order_current),
                        tab=0, verbose=self.options["verbose"])
                 iprint("================",

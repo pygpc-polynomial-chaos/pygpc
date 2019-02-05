@@ -335,6 +335,9 @@ def plot_sobol_indices(sobol_rel_order_mean, sobol_rel_1st_order_mean, fn_plot, 
         String labels of the random variables
     """
 
+    # combine parameters < "perc_limit_show" in %
+    perc_limit_show = 0.03
+
     # set the global colors
     mpl.rcParams['text.color'] = '000000'
     mpl.rcParams['figure.facecolor'] = '111111'
@@ -344,10 +347,10 @@ def plot_sobol_indices(sobol_rel_order_mean, sobol_rel_1st_order_mean, fn_plot, 
 
     cmap = plt.cm.rainbow
 
-    # make bar plot of order ratios
+    # make pie plot of order ratios
     labels = ['order=' + str(i) for i in range(1, len(sobol_rel_order_mean) + 1)]
-    mask = np.where(sobol_rel_order_mean >= 0.05)[0]
-    mask_not = np.where(sobol_rel_order_mean < 0.05)[0]
+    mask = np.where(sobol_rel_order_mean >= perc_limit_show)[0]
+    mask_not = np.where(sobol_rel_order_mean < perc_limit_show)[0]
     labels = [labels[idx] for idx in mask]
     if mask_not.any():
         labels.append('misc.')
@@ -364,9 +367,9 @@ def plot_sobol_indices(sobol_rel_order_mean, sobol_rel_1st_order_mean, fn_plot, 
            autopct='%1.2f%%', shadow=True, explode=[0.1] * len(labels))
     plt.savefig(os.path.splitext(fn_plot)[0] + '_order.png', facecolor='#ffffff')
 
-    # make bar plot of 1st order parameter ratios
-    mask = np.where(sobol_rel_1st_order_mean >= 0.05)[0]
-    mask_not = np.where(sobol_rel_1st_order_mean < 0.05)[0]
+    # make pie plot of 1st order parameter ratios
+    mask = np.where(sobol_rel_1st_order_mean >= perc_limit_show)[0]
+    mask_not = np.where(sobol_rel_1st_order_mean < perc_limit_show)[0]
     labels = [random_vars[idx] for idx in mask]
     if mask_not.any():
         labels.append('misc.')

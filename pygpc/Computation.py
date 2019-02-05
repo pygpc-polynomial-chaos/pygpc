@@ -2,13 +2,12 @@ import multiprocessing
 import multiprocessing.pool
 import subprocess
 import Worker
-import copy
 import time
 import numpy as np
 import dispy
 import os
 import re
-from .io import iprint
+from collections import OrderedDict
 
 
 class Computation:
@@ -115,7 +114,7 @@ class Computation:
                 'print_func_time': print_func_time
             }
 
-            parameters = dict()
+            parameters = OrderedDict()
             for key in problem.parameters:
                 parameters[key] = problem.parameters[key]
 
