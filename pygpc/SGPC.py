@@ -148,7 +148,7 @@ class SGPC(GPC):
 
         # Generate boolean matrix of all basis functions where order > 0 = True
         # size: [n_basis x dim]
-        multi_indices = np.array([map(lambda _b:_b.p["i"], b_row) for b_row in self.basis.b])
+        multi_indices = np.array([list(map(lambda _b:_b.p["i"], b_row)) for b_row in self.basis.b])
         sobol_mask = multi_indices != 0
 
         # look for unique combinations (i.e. available sobol combinations)
@@ -363,8 +363,8 @@ class SGPC(GPC):
         b_int_global = np.zeros([self.problem.dim, self.basis.n_basis])
 
         # construct matrix with integral expressions [n_basis x dim]
-        b_int = np.array([map(lambda _b: _b.fun_int, b_row) for b_row in self.basis.b])
-        b_int_der = np.array([map(lambda _b: _b.fun_der_int, b_row) for b_row in self.basis.b])
+        b_int = np.array([list(map(lambda _b: _b.fun_int, b_row)) for b_row in self.basis.b])
+        b_int_der = np.array([list(map(lambda _b: _b.fun_der_int, b_row)) for b_row in self.basis.b])
 
         for i_sens in range(self.problem.dim):
             # replace column with integral expressions from derivative of parameter[i_dim]
@@ -403,8 +403,8 @@ class SGPC(GPC):
         b_x_global = np.zeros([self.problem.dim, self.basis.n_basis])
 
         # evaluate fun(x) and fun_der(x) at point of operation x [n_basis x dim]
-        b_x = np.array([map(lambda _b: _b.fun(x), b_row) for b_row in self.basis.b])
-        b_der_x = np.array([map(lambda _b: _b.fun_der(x), b_row) for b_row in self.basis.b])
+        b_x = np.array([list(map(lambda _b: _b.fun(x), b_row)) for b_row in self.basis.b])
+        b_der_x = np.array([list(map(lambda _b: _b.fun_der(x), b_row)) for b_row in self.basis.b])
 
         for i_sens in range(self.problem.dim):
             # replace column with integral expressions from derivative of parameter[i_dim]

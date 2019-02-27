@@ -127,7 +127,7 @@ class Basis:
         to normalize basis functions <psi^2> = int(psi^2*p)dx
         """
         # read individual normalization factors from function objects
-        self.b_norm = np.array([map(lambda x:x.fun_norm, _b) for _b in self.b])
+        self.b_norm = np.array([list(map(lambda x:x.fun_norm, _b)) for _b in self.b])
 
         # determine global normalization factor of basis function
         self.b_norm_basis = np.prod(self.b_norm, axis=1)

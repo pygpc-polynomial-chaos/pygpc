@@ -419,8 +419,10 @@ def plot_2d_grid(coords, weights=None, fn_plot=None):
     ax1.set_xlabel('$x_1$', fontsize=16)
     ax1.set_ylabel('$x_2$', fontsize=16)
 
-    fn = os.path.splitext(fn_plot)[0].encode(encoding="ascii", errors="ignore")
-    plt.savefig("{}".format(fn), facecolor='#ffffff', format="pdf")
+    # fn = os.path.splitext(fn_plot)[0].encode(encoding="ascii", errors="ignore")
+    fn = os.path.splitext(fn_plot)[0]
+    # plt.savefig("{}".format(fn), facecolor='#ffffff', format="pdf")
+    plt.savefig(fn, facecolor='#ffffff', format="pdf")
 
 
 def plot_beta_pdf_fit(data, a_beta, b_beta, p_beta, q_beta, a_uni=None, b_uni=None,

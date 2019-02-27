@@ -4,3 +4,6 @@
 # ignore pycharm folder
 **/.idea
 .idea/
+
+# ignore error log
+error.txt

@@ -1,4 +1,4 @@
-from Computation import *
+from pygpc.Computation import *
 from .Grid import *
 from .misc import get_normalized_rms_deviation
 from .misc import get_cartesian_product

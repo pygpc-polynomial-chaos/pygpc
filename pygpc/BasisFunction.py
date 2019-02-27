@@ -104,7 +104,7 @@ class Hermite(BasisFunction):
         super(Hermite, self).__init__(p)
 
         # normalization factor of polynomial (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
-        self.fun_norm = scipy.special.factorial(p["i"])
+        self.fun_norm = np.float(scipy.special.factorial(p["i"]))
 
         # define basis function
         self.fun = scipy.special.hermitenorm(p["i"], monic=False) / np.sqrt(self.fun_norm)

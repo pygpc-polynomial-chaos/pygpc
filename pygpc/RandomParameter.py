@@ -1,7 +1,7 @@
 import scipy.special
 import scipy.stats
 import numpy as np
-from BasisFunction import *
+from .BasisFunction import *
 
 
 class RandomParameter(object):

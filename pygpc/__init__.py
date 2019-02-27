@@ -3,16 +3,16 @@ A package that provides submodules to perform polynomial chaos uncertainty analy
 """
 
 from .misc import *
-# import GPC
-# import SGPC
-# import EGPC
-import testfunctions
-# import Visualization
-# import AbstractModel
-# import Basis
-# import BasisFunction
-# import Worker
-# import Grid                         # ok
+import pygpc.GPC
+import pygpc.SGPC
+import pygpc.EGPC
+import pygpc.testfunctions
+import pygpc.Visualization
+import pygpc.AbstractModel
+import pygpc.Basis
+import pygpc.BasisFunction
+import pygpc.Worker
+import pygpc.Grid                       # ok
 from .io import *                   # ok
 from .Problem import *              # ok
 from .Algorithm import *            # ok
