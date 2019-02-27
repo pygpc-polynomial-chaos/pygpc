@@ -3,7 +3,7 @@ import numpy as np
 from .io import read_gpc_pkl
 
 
-def get_sensitivities_hdf5(fn_gpc, output_idx=None, calc_sobol=True, calc_global_sens=False, calc_pdf=False):
+def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_global_sens=False, calc_pdf=False):
     """
     Post-processes the gPC expansion and adds mean, standard deviation, relative standard deviation, variance, Sobol
     indices, global derivative based sensitivity coefficients and probability density functions of output quantities to
@@ -83,50 +83,22 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=None, calc_sobol=True, calc_global
     with h5py.File(fn_gpc + ".hdf5", 'a') as f:
 
         try:
-            del f["sens/mean"]
+            del f["sens"]
         except KeyError:
             pass
+
         f.create_dataset(data=mean, name="sens/mean")
-
-        try:
-            del f["sens/std"]
-        except KeyError:
-            pass
         f.create_dataset(data=std, name="sens/std")
-
-        try:
-            del f["sens/rstd"]
-        except KeyError:
-            pass
         f.create_dataset(data=rstd, name="sens/rstd")
-
-        try:
-            del f["sens/var"]
-        except KeyError:
-            pass
         f.create_dataset(data=var, name="sens/var")
 
         if calc_sobol:
-            try:
-                del f["sens/sobol"]
-                del f["sens/sobol_idx_bool"]
-            except KeyError:
-                pass
             f.create_dataset(data=sobol, name="sens/sobol")
             f.create_dataset(data=sobol_idx_bool, name="sens/sobol_idx_bool")
 
         if calc_global_sens:
-            try:
-                del f["sens/global_sens"]
-            except KeyError:
-                pass
             f.create_dataset(data=global_sens, name="sens/global_sens")
 
         if calc_pdf:
-            try:
-                del f["sens/pdf_x"]
-                del f["sens/pdf_y"]
-            except KeyError:
-                pass
             f.create_dataset(data=pdf_x, name="sens/pdf_x")
             f.create_dataset(data=pdf_y, name="sens/pdf_y")
