@@ -13,7 +13,7 @@ import os
 import subprocess
 
 # temporary output folder
-folder = '/NOBACKUP2/lpossner-temp'
+folder = '/NOBACKUP2/tmp'
 
 
 # first test fixture (class)
@@ -79,11 +79,12 @@ class TestpygpcMethods(unittest.TestCase):
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-                                                 order_glob_max=options["order_max"],
-                                                 order_inter_max=options["interaction_order"],
-                                                 dim=problem.dim)
+                                               order_glob_max=options["order_max"],
+                                               order_inter_max=options["interaction_order"],
+                                               dim=problem.dim)
+
         grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                  options={"n_grid": 1.5 * n_coeffs, "seed": 1})
+                                options={"n_grid": 1.5 * n_coeffs, "seed": 1})
 
         pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
 
@@ -95,38 +96,35 @@ class TestpygpcMethods(unittest.TestCase):
 
         # Post-process gPC
         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                       output_idx=None,
-                                       calc_sobol=True,
-                                       calc_global_sens=True,
-                                       calc_pdf=True)
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True)
 
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                        coeffs=coeffs,
-                                        n_samples=int(1e4),
-                                        output_idx=0,
-                                        fn_out=os.path.join(folder, test_name + '_validation_mc'))
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
-        subprocess.Popen("/data/pt_01756/software/git/scripts/gpc/run_gpc_sensitivity_analysis.py -f {} -g -p".format(
-                          options["fn_results"]), shell=True)
-
         # Validate gPC vs original model function (2D-slice)
         pygpc.validate_gpc_plot(gpc=gpc,
-                                  coeffs=coeffs,
-                                  random_vars=["x3", "x1"],
-                                  n_grid=[10, 25],
-                                  output_idx=[0, 1],
-                                  fn_out=os.path.join(folder, test_name + '_validation_2d'))
+                                coeffs=coeffs,
+                                random_vars=["x3", "x1"],
+                                n_grid=[10, 25],
+                                output_idx=[0, 1],
+                                fn_out=os.path.join(folder, test_name + '_validation_2d'))
 
         # Validate gPC vs original model function (1D-slice)
         pygpc.validate_gpc_plot(gpc=gpc,
-                                  coeffs=coeffs,
-                                  random_vars=["x3"],
-                                  n_grid=[125],
-                                  output_idx=[0, 1],
-                                  fn_out=os.path.join(folder, test_name + '_validation_1d'))
+                                coeffs=coeffs,
+                                random_vars=["x3"],
+                                n_grid=[125],
+                                output_idx=[0, 1],
+                                fn_out=os.path.join(folder, test_name + '_validation_1d'))
 
         self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
 
@@ -166,9 +164,9 @@ class TestpygpcMethods(unittest.TestCase):
 
         # number of gPC coefficients
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-                                                 order_glob_max=options["order_max"],
-                                                 order_inter_max=options["interaction_order"],
-                                                 dim=problem.dim)
+                                               order_glob_max=options["order_max"],
+                                               order_inter_max=options["interaction_order"],
+                                               dim=problem.dim)
 
         # we assume sparsity of 50%
         sparsity = 0.5
@@ -176,8 +174,8 @@ class TestpygpcMethods(unittest.TestCase):
 
         # generate grid
         grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                  options={"n_grid": options["settings"]["n_coeffs_sparse"]*np.log10(n_coeffs),
-                                           "seed": 1})
+                                options={"n_grid": options["settings"]["n_coeffs_sparse"]*np.log10(n_coeffs),
+                                         "seed": 1})
 
         pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
 
@@ -189,17 +187,17 @@ class TestpygpcMethods(unittest.TestCase):
 
         # Post-process gPC
         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                       output_idx=None,
-                                       calc_sobol=True,
-                                       calc_global_sens=True,
-                                       calc_pdf=True)
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True)
 
         # Validate gPC vs original model function
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                        coeffs=coeffs,
-                                        n_samples=int(1e4),
-                                        output_idx=0,
-                                        fn_out=os.path.join(folder, test_name) + '_validation_mc')
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      fn_out=os.path.join(folder, test_name) + '_validation_mc')
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
@@ -241,11 +239,11 @@ class TestpygpcMethods(unittest.TestCase):
 
         # generate grid
         grid = pygpc.TensorGrid(parameters_random=problem.parameters_random,
-                                  options={"grid_type": ["jacobi", "hermite"], "n_dim": options["order"]})
+                                options={"grid_type": ["jacobi", "hermite"], "n_dim": options["order"]})
 
         pygpc.plot_2d_grid(coords=grid.coords,
-                             weights=grid.weights*1e3,
-                             fn_plot=os.path.join(folder, test_name + '_grid'))
+                           weights=grid.weights*1e3,
+                           fn_plot=os.path.join(folder, test_name + '_grid'))
 
         # define algorithm
         algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
@@ -255,17 +253,17 @@ class TestpygpcMethods(unittest.TestCase):
 
         # Post-process gPC
         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                       output_idx=None,
-                                       calc_sobol=True,
-                                       calc_global_sens=True,
-                                       calc_pdf=True)
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True)
 
         # Validate gPC vs original model function
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                        coeffs=coeffs,
-                                        n_samples=int(1e4),
-                                        output_idx=0,
-                                        fn_out=os.path.join(folder, test_name) + '_validation_mc')
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      fn_out=os.path.join(folder, test_name) + '_validation_mc')
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
@@ -307,15 +305,15 @@ class TestpygpcMethods(unittest.TestCase):
 
         # generate grid
         grid = pygpc.SparseGrid(parameters_random=problem.parameters_random,
-                                  options={"grid_type": ["jacobi", "jacobi"],
-                                           "level": [3, 3],
-                                           "level_max": 3,
-                                           "interaction_order": options["interaction_order"],
-                                           "order_sequence_type": "exp"})
+                                options={"grid_type": ["jacobi", "jacobi"],
+                                         "level": [3, 3],
+                                         "level_max": 3,
+                                         "interaction_order": options["interaction_order"],
+                                         "order_sequence_type": "exp"})
 
         pygpc.plot_2d_grid(coords=grid.coords,
-                             weights=grid.weights*5e2,
-                             fn_plot=os.path.join(folder, test_name + '_grid'))
+                           weights=grid.weights*5e2,
+                           fn_plot=os.path.join(folder, test_name + '_grid'))
 
         # define algorithm
         algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
@@ -325,17 +323,17 @@ class TestpygpcMethods(unittest.TestCase):
 
         # Post-process gPC
         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                       output_idx=None,
-                                       calc_sobol=True,
-                                       calc_global_sens=True,
-                                       calc_pdf=True)
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True)
 
         # Validate gPC vs original model function
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                        coeffs=coeffs,
-                                        n_samples=int(1e4),
-                                        output_idx=0,
-                                        fn_out=os.path.join(folder, test_name + '_validation_mc'))
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
@@ -385,21 +383,21 @@ class TestpygpcMethods(unittest.TestCase):
 
         # plot grid
         pygpc.plot_2d_grid(coords=gpc.grid.coords,
-                             fn_plot=os.path.join(folder, test_name + '_grid'))
+                           fn_plot=os.path.join(folder, test_name + '_grid'))
 
         # Post-process gPC
         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                       output_idx=None,
-                                       calc_sobol=True,
-                                       calc_global_sens=True,
-                                       calc_pdf=True)
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True)
 
         # Validate gPC vs original model function
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                        coeffs=coeffs,
-                                        n_samples=int(1e4),
-                                        output_idx=0,
-                                        fn_out=os.path.join(folder, test_name + '_validation_mc'))
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
@@ -448,21 +446,21 @@ class TestpygpcMethods(unittest.TestCase):
 
         # plot grid
         pygpc.plot_2d_grid(coords=gpc.grid.coords,
-                             fn_plot=os.path.join(folder, test_name + '_grid'))
+                           fn_plot=os.path.join(folder, test_name + '_grid'))
 
         # Post-process gPC
         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                       output_idx=None,
-                                       calc_sobol=True,
-                                       calc_global_sens=True,
-                                       calc_pdf=True)
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True)
 
         # Validate gPC vs original model function
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                        coeffs=coeffs,
-                                        n_samples=int(1e4),
-                                        output_idx=0,
-                                        fn_out=os.path.join(folder, test_name + '_validation_mc'))
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
