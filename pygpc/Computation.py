@@ -8,13 +8,13 @@ import dispy
 import os
 import re
 from collections import OrderedDict
+from .RandomParameter import *
 
 
-class Computation:
+class Computation(object):
     """
     Computation class to run the model
     """
-
     def __init__(self, n_cpu):
         """
         Constructor; Initializes Computation class
@@ -22,6 +22,20 @@ class Computation:
         # Setting up parallelization (setup thread pool)
         n_cpu_available = multiprocessing.cpu_count()
         self.n_cpu = min(n_cpu, n_cpu_available)
+
+        self.i_grid = 0
+
+
+class ComputationPoolMap(Computation):
+    """
+    Computation sub-class to run the model using a processing pool for parallelization
+    """
+
+    def __init__(self, n_cpu):
+        """
+        Constructor; Initializes ComputationPoolMap class
+        """
+        super(ComputationPoolMap, self).__init__(n_cpu)
 
         # Use a process queue to assign persistent, unique IDs to the processes in the pool
         self.process_manager = multiprocessing.Manager()
@@ -36,8 +50,6 @@ class Computation:
 
         # Necessary to synchronize read/write access to serialized results
         self.global_lock = self.process_manager.RLock()
-
-        self.i_grid = 0
 
     def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
             print_func_time=False):
@@ -129,10 +141,7 @@ class Computation:
             seq_num += 1
 
         # start model evaluations
-        if self.n_cpu == 0:
-            raise NotImplementedError("n_cpu = 0 (function parallelization) not implemented yet")
-
-        elif self.n_cpu == 1:
+        if self.n_cpu == 1:
             res_new_list = []
 
             for i in range(len(worker_objs)):
@@ -140,7 +149,6 @@ class Computation:
 
         else:
             # The map-function deals with chunking the data
-            # TODO: Bottleneck here? manual chunking better?
             res_new_list = self.process_pool.map(Worker.run, worker_objs)
 
         # Initialize the result array with the correct size and set the elements according to their order
@@ -157,6 +165,113 @@ class Computation:
         """ Closes the pool """
         self.process_pool.close()
         self.process_pool.join()
+
+
+class ComputationFuncPar(Computation):
+    """
+    Computation sub-class to run the model using a the models internal parallelization
+    """
+
+    def __init__(self, n_cpu):
+        """
+        Constructor; Initializes ComputationPoolMap class
+        """
+        super(ComputationFuncPar, self).__init__(n_cpu)
+
+        # Global counter used by all threads to keep track of the progress
+        self.global_task_counter = 0
+
+    def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
+            print_func_time=False):
+        """
+        Runs model evaluations for parameter combinations specified in coords array
+
+        Parameters
+        ----------
+        model: Model object
+            Model object instance of model to investigate (derived from AbstractModel class, implemented by user)
+        problem: Problem class instance
+            GPC Problem under investigation, includes the parameters of the model (constant and random)
+        coords: ndarray of float [n_sims, n_dim]
+            Set of n_sims parameter combinations to run the model with (only the random parameters!).
+        coords_norm: ndarray of float [n_sims, n_dim]
+            Set of n_sims parameter combinations to run the model with (normalized coordinates [-1, 1].
+        i_iter: int
+            Index of main-iteration
+        i_subiter: int
+            Index of sub-iteration
+        fn_results : string, optional, default=None
+            If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+        print_func_time : bool
+            Print time of single function evaluation
+
+        Returns
+        -------
+        res: ndarray of float [n_sims x n_out]
+            n_sims simulation results of the n_out output quantities of the model under investigation.
+        """
+        if i_iter is None:
+            i_iter = "N/A"
+
+        if i_subiter is None:
+            i_subiter = "N/A"
+
+        n_grid = coords.shape[0]
+
+        # i_grid is now a range [min_idx, max_idx]
+        self.i_grid = [np.max(self.i_grid), np.max(self.i_grid) + n_grid]
+
+        # assign the instances of the random_vars to the respective
+        # replace random vars of the Problem with single instances
+        # determined by the PyGPC framework:
+        # assign the instances of the random_vars to the respective
+        # entries of the dictionary
+        # -> As a result we have the same keys in the dictionary but
+        #    no RandomParameters anymore but a sample from the defined PDF.
+
+        if coords_norm is None:
+            c_norm = None
+        else:
+            c_norm = coords_norm
+
+        # setup context (let the process know which iteration, interaction order etc.)
+        context = {
+            'global_task_counter': None,
+            'lock': None,
+            'seq_number': None,
+            'i_grid': self.i_grid,
+            'max_grid': n_grid,
+            'i_iter': i_iter,
+            'i_subiter': i_subiter,
+            'fn_results': fn_results,
+            'coords': coords,
+            'coords_norm': c_norm,
+            'print_func_time': print_func_time
+        }
+
+        parameters = OrderedDict()
+        i_random_parameter = 0
+
+        for key in problem.parameters:
+
+            if isinstance(problem.parameters[key], RandomParameter):
+                # replace RandomParameters with grid points
+                parameters[key] = coords[:, i_random_parameter]
+                i_random_parameter += 1
+
+            else:
+                # copy constant parameters n_grid times
+                parameters[key] = problem.parameters[key] * np.ones(n_grid)
+
+        # generate worker, which will evaluate the model (here only one for all grid points in coords)
+        worker_objs = model(parameters, context)
+
+        # start model evaluations
+        res = Worker.run(worker_objs)
+
+        res = np.array(res)
+
+        return res
 
 
 def compute_cluster(algorithms, nodes, start_scheduler=True):

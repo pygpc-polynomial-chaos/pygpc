@@ -44,6 +44,7 @@ def run(obj):
     if process_id is None:
         process_id = 0
 
+    # TODO: handle whole matrices here instead of only rows
     res = obj.read_previous_results(obj.coords)
 
     start_time = 0
@@ -55,6 +56,7 @@ def run(obj):
         start_time = time.time()
         out = obj.simulate(process_id)
 
+        # dictionary containing the results, the coords and (optionally) the additional data
         data_dict = dict()
         data_dict["grid/coords"] = obj.coords
         data_dict["grid/coords_norm"] = obj.coords_norm
@@ -64,6 +66,7 @@ def run(obj):
             res = out[0]
             # additional data (dict)
             if len(out) == 2:
+                # TODO: transform list of dict to dict containing the lists
                 for o in out[1]:
                     data_dict[o] = out[1][o]
         else:
@@ -74,6 +77,8 @@ def run(obj):
         data_dict["results"] = res
 
         end_time = time.time()
+
+        # TODO: write now matrices instead of rows
         obj.write_results(data_dict=data_dict)
         skip_sim = False
 

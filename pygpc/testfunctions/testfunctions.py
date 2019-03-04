@@ -14,19 +14,19 @@ class Peaks(AbstractModel):
 
     Parameters
     ----------
-    p["x1"]: float
+    p["x1"]: float or ndarray of float [n_grid]
         Parameter 1
-    p["x2"]: float
+    p["x2"]: float or ndarray of float [n_grid]
         Parameter 2
-    p["x3"]: float
+    p["x3"]: float or ndarray of float [n_grid]
         Parameter 3
 
     Returns
     -------
-    y: ndarray of float [N x 1]
+    y: ndarray of float [n_grid x n_out]
         Output data
-    misc: dict
-        Additional data, will be saved under its keys in the .hdf5 file during gPC simulations
+    misc: dict or list of dict [n_grid]
+        Additional data, will be saved under its keys in the .hdf5 file during gPC simulations for every grid point
     """
 
     def __init__(self, p, context):
@@ -43,7 +43,14 @@ class Peaks(AbstractModel):
 
         additional_data = {"additional_data_1": [1, 2, 3], "additional_data_2/subfolder": [0.2]}
 
-        return np.array([y, y]), additional_data
+        # two output variables for testing
+        if y.size > 1:
+            y_out = np.array([y, 2*y]).transpose()
+            additional_data = y.size * [additional_data]
+        else:
+            y_out = np.array([y, 2*y])
+
+        return y_out, additional_data
 
 
 class Lim2002(AbstractModel):

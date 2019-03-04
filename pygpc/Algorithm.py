@@ -162,7 +162,10 @@ class Static(Algorithm):
         gpc.init_gpc_matrix()
 
         # Initialize parallel Computation class
-        com = Computation(n_cpu=self.n_cpu)
+        if self.n_cpu == 0:
+            com = ComputationFuncPar(n_cpu=self.n_cpu)
+        else:
+            com = ComputationPoolMap(n_cpu=self.n_cpu)
 
         # Run simulations
         iprint("Performing {} simulations!".format(gpc.grid.coords.shape[0]),
@@ -314,7 +317,10 @@ class RegAdaptive(Algorithm):
         res_complete = None
 
         # Initialize parallel Computation class
-        com = Computation(n_cpu=self.n_cpu)
+        if self.n_cpu == 0:
+            com = ComputationFuncPar(n_cpu=self.n_cpu)
+        else:
+            com = ComputationPoolMap(n_cpu=self.n_cpu)
 
         # Initialize Reg gPC object
         gpc = Reg(problem=self.problem,

@@ -46,25 +46,13 @@ class AbstractModel:
             for key in context.keys():
                 setattr(self, key, context[key])
 
-
-        # if context is not None:
-        #     self.lock = context['lock']
-        #     self.max_grid = context['max_grid']
-        #     self.global_task_counter = context['global_task_ctr']
-        #     self.seq_number = context['seq_number']
-        #     self.fn_results = context['fn_results']
-        #     self.i_grid = context['i_grid']
-        #     self.i_iter = context['i_iter']
-        #     self.i_subiter = context['i_subiter']
-        #     self.coords = context['coords']
-        #     self.coords_norm = context['coords_norm']
-
     def read_previous_results(self, coords):
         """
-        This functions reads previous serialized results from the hard disk (if present).
-        When reading from the array containing the serialized results, the current
+        This functions reads previous results from the hard disk (if present).
+        When reading from the array containing the results, the current
         grid-index (i_grid) is considered to maintain the order of the results when the
-        SimulationModels are executed in parallel.
+        SimulationModels are executed in parallel. If the function evaluated the results in parallel
+        internally, i_grid is a range [i_grid_min, i_grid_max].
 
         Parameters
         ----------
@@ -79,7 +67,8 @@ class AbstractModel:
                 data at coords
         """
         if self.fn_results:
-            self.lock.acquire()
+            if self.lock:
+                self.lock.acquire()
             try:
                 if os.path.exists(self.fn_results):
 
@@ -100,7 +89,8 @@ class AbstractModel:
                     except (KeyError, ValueError):
                         return None
             finally:
-                self.lock.release()
+                if self.lock:
+                    self.lock.release()
 
         return None
 
