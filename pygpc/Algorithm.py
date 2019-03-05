@@ -162,10 +162,7 @@ class Static(Algorithm):
         gpc.init_gpc_matrix()
 
         # Initialize parallel Computation class
-        if self.n_cpu == 0:
-            com = ComputationFuncPar(n_cpu=self.n_cpu)
-        else:
-            com = ComputationPoolMap(n_cpu=self.n_cpu)
+        com = Computation(n_cpu=self.n_cpu)
 
         # Run simulations
         iprint("Performing {} simulations!".format(gpc.grid.coords.shape[0]),
@@ -201,6 +198,7 @@ class Static(Algorithm):
                 if "coeffs" in f.keys():
                     del f['coeffs']
                 f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+                f.create_dataset("gpc_matrix", data=gpc.gpc_matrix, maxshape=None, dtype="float64")
 
         return gpc, coeffs, res
 
@@ -317,10 +315,7 @@ class RegAdaptive(Algorithm):
         res_complete = None
 
         # Initialize parallel Computation class
-        if self.n_cpu == 0:
-            com = ComputationFuncPar(n_cpu=self.n_cpu)
-        else:
-            com = ComputationPoolMap(n_cpu=self.n_cpu)
+        com = Computation(n_cpu=self.n_cpu)
 
         # Initialize Reg gPC object
         gpc = Reg(problem=self.problem,
@@ -439,6 +434,9 @@ class RegAdaptive(Algorithm):
                     fn = os.path.join(os.path.splitext(self.options["fn_results"])[0] +
                                       '_' + str(order).zfill(2) + "_" + str(gpc.interaction_order_current).zfill(2))
                     write_gpc_pkl(gpc, fn + '.pkl')
+
+                # save gpc matrix in .hdf5 file
+                gpc.save_gpc_matrix_hdf5()
 
                 # determine error
                 eps = gpc.loocv(sim_results=res_complete[:, non_nan_mask],

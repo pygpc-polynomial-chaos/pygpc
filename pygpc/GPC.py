@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
+import h5py
 from .Grid import *
 from .misc import get_cartesian_product
 import numpy as np
@@ -406,6 +407,41 @@ class GPC(object):
             self.gpc_matrix = gpc_matrix_updated
             self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
+
+    def save_gpc_matrix_hdf5(self):
+        """
+        Save gPC matrix in .hdf5 file <"fn_results" + ".hdf5"> under the key "gpc_matrix".
+        If a gpc matrix is already present, check for equality and save only appended rows and columns
+        """
+        with h5py.File(self.fn_results + ".hdf5", "a") as f:
+            try:
+                gpc_matrix_hdf5 = f["gpc_matrix"][:]
+                n_rows_old = gpc_matrix_hdf5.shape[0]
+                n_cols_old = gpc_matrix_hdf5.shape[1]
+
+                if (self.gpc_matrix[0:n_rows_old, 0:n_cols_old] == gpc_matrix_hdf5).all():
+                    # resize dataset and save new columns and rows
+                    f["gpc_matrix"].resize(self.gpc_matrix.shape[1], axis=1)
+                    f["gpc_matrix"][:, n_cols_old:] = self.gpc_matrix[0:n_rows_old, n_cols_old:]
+
+                    f["gpc_matrix"].resize(self.gpc_matrix.shape[0], axis=0)
+                    f["gpc_matrix"][n_rows_old:, :] = self.gpc_matrix[n_rows_old:, :]
+
+                else:
+                    del f["gpc_matrix"]
+                    f.create_dataset("gpc_matrix", (self.gpc_matrix.shape[0],
+                                                    self.gpc_matrix.shape[1]),
+                                     maxshape=(None, None),
+                                     dtype="float64",
+                                     data=self.gpc_matrix)
+
+            except KeyError:
+                # save whole matrix if not existent
+                f.create_dataset("gpc_matrix", (self.gpc_matrix.shape[0],
+                                                self.gpc_matrix.shape[1]),
+                                 maxshape=(None, None),
+                                 dtype="float64",
+                                 data=self.gpc_matrix)
 
     def solve(self, sim_results, solver=None, settings=None, gpc_matrix=None, verbose=False):
         """

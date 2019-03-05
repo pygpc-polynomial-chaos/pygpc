@@ -41,7 +41,13 @@ class Peaks(AbstractModel):
              * np.exp(-self.p["x1"] ** 2 - self.p["x3"] ** 2) - 1.0 / 3
              * np.exp(-(self.p["x1"] + 1) ** 2 - self.p["x3"] ** 2)) + self.p["x2"]
 
-        additional_data = {"additional_data_1": [1, 2, 3], "additional_data_2/subfolder": [0.2]}
+        additional_data = {"additional_data/list_mult_int": [1, 2, 3],
+                           "additional_data/list_single_float": [0.2],
+                           "additional_data/list_single_str": ["test"],
+                           "additional_data/list_mult_str": ["test1", "test2"],
+                           "additional_data/single_float": 0.2,
+                           "additional_data/single_int": 2,
+                           "additional_data/single_str": "test"}
 
         # two output variables for testing
         if y.size > 1:

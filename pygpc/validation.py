@@ -51,6 +51,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
 
     # Evaluate original model at grid points
     com = Computation(n_cpu=gpc.n_cpu)
+
     y_orig = com.run(model=gpc.problem.model, problem=gpc.problem, coords=grid_mc.coords)
 
     if y_orig.ndim == 1:

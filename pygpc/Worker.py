@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import time
 import numpy as np
+from .misc import list2dict
 
 
 def init(queue):
@@ -60,25 +61,52 @@ def run(obj):
         data_dict = dict()
         data_dict["grid/coords"] = obj.coords
         data_dict["grid/coords_norm"] = obj.coords_norm
+        n_sim = obj.coords.shape[0]
 
         if type(out) is tuple:
             # results (nparray)
             res = out[0]
             # additional data (dict)
             if len(out) == 2:
-                # TODO: transform list of dict to dict containing the lists
-                for o in out[1]:
-                    data_dict[o] = out[1][o]
+                # in case of function parallelization transform list of dict to dict containing the lists
+                if type(out[1]) is list:
+                    additional_data = list2dict(out[1])
+                else:
+                    additional_data = out[1]
+
+                for o in additional_data:
+                    # make entries of additional data to list of list [n_grid][n_data[o]]
+
+                    # make single entries to list
+                    if type(additional_data[o]) is not list:
+                        additional_data[o] = [[additional_data[o]]]
+
+                    if n_sim == 1:
+                        if type(additional_data[o][0]) is not list:
+                            additional_data[o] = [additional_data[o]]
+                    else:
+                        if type(additional_data[o][0]) is not list:
+                            additional_data[o] = [[k] for k in additional_data[o]]
+
+                    data_dict[o] = np.array(additional_data[o])
+
+                    if n_sim == 1 and data_dict[o].shape[0] != 1:
+                        data_dict[o] = data_dict[o].transpose()
         else:
             # results (nparray), no additional data
             res = out
+
+        # make res to a 2D ndarray [n_sim x n_out]
+        if n_sim == 1 and res.ndim == 1:
+            res = res[np.newaxis, :]
+        elif n_sim == 1 and res.shape[0] > 1 and res.ndim == 2:
+            res = res.transpose()
 
         # add results to data_dict
         data_dict["results"] = res
 
         end_time = time.time()
 
-        # TODO: write now matrices instead of rows
         obj.write_results(data_dict=data_dict)
         skip_sim = False
 

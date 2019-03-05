@@ -70,19 +70,21 @@ class AbstractModel:
             if self.lock:
                 self.lock.acquire()
             try:
-                if os.path.exists(self.fn_results):
+                if os.path.exists(self.fn_results + ".hdf5"):
 
                     # read results and coords
                     try:
                         with h5py.File(self.fn_results + ".hdf5", 'r') as f:
-                            ds = f['results']
-                            res = ds[self.i_grid, :]
 
-                            ds = f['coords']
-                            coords_read = ds[self.i_grid, :]
+                            if type(self.i_grid) is list:
+                                res = f['results'][self.i_grid[0]:self.i_grid[1], :]
+                                coords_read = f['grid/coords'][self.i_grid[0]:self.i_grid[1], :]
+                            else:
+                                res = f['results'][self.i_grid, :]
+                                coords_read = f['grid/coords'][self.i_grid, :]
 
                             if np.isclose(coords_read, coords).all():
-                                return res.tolist()
+                                return res  #.tolist()
                             else:
                                 return None
 
@@ -109,34 +111,40 @@ class AbstractModel:
         """
 
         if self.fn_results:     # full filename
-            self.lock.acquire()
+            if self.lock:
+                self.lock.acquire()
             try:
-                require_size = self.i_grid + 1
+                # get new size of array
+                if type(self.i_grid) is list:
+                    require_size = np.max(self.i_grid)
+                else:
+                    require_size = self.i_grid + 1
+
                 with h5py.File(self.fn_results + ".hdf5", 'a') as f:
                     for d in data_dict:
-                        # change list or single str to np.array
-                        if type(data_dict[d]) is list or type(data_dict[d]) is str:
-                            data_dict[d] = np.array(data_dict[d]).flatten()
+                        # # change list or single str to np.array
+                        # if type(data_dict[d]) is list or type(data_dict[d]) is str:
+                        #     data_dict[d] = np.array(data_dict[d]).flatten()
 
                         # change single numbers to np.array
-                        if type(data_dict[d]) is float or type(data_dict[d]) is int \
-                                or type(data_dict[d]) is np.float64 or type(data_dict[d]) is np.int:
-                            data_dict[d] = np.array([[data_dict[d]]]).flatten()
+                        # if type(data_dict[d]) is float or type(data_dict[d]) is int \
+                        #         or type(data_dict[d]) is np.float64 or type(data_dict[d]) is np.int:
+                        #     data_dict[d] = np.array([[data_dict[d]]]).flatten()
 
-                        # always flatten data because it has to be saved for every grid point
-                        if data_dict[d].ndim > 1:
-                            data_dict[d] = data_dict[d].flatten()
+                        # # always flatten data because it has to be saved for every grid point
+                        # if data_dict[d].ndim > 1:
+                        #     data_dict[d] = data_dict[d].flatten()
 
                         # add axes such that it can be added to previous array
-                        if data_dict[d].ndim == 1:
-                            data_dict[d] = data_dict[d][np.newaxis, :]
+                        # if data_dict[d].ndim == 1:
+                        #     data_dict[d] = data_dict[d][np.newaxis, :]
 
                         # check datatype
                         if type(data_dict[d][0][0]) is np.float64 or type(data_dict[d][0]) is float:
                             dtype='float64'
                         elif type(data_dict[d][0][0]) is np.int64:
                             dtype = 'int'
-                        elif type(data_dict[d][0][0]) is np.string_:
+                        elif type(data_dict[d][0][0]) is np.string_ or type(data_dict[d][0][0]) is np.str_:
                             dtype = 'str'
                         else:
                             dtype='float64'
@@ -148,56 +156,75 @@ class AbstractModel:
                             if dtype is "str":
                                 ds = f[d][:]
                                 del f[d]
-                                ds = np.append(ds, data_dict[d])
-                                f.create_dataset(d, data=ds)
+                                ds = np.vstack((ds, data_dict[d]))
+                                f.create_dataset(d, data=ds.astype("|S5"))
                             else:
                                 # change size of array and write data in it
                                 if ds.shape[0] < require_size:  # check if resize is necessary
                                     ds.resize(require_size, axis=0)
-                                ds[self.i_grid, :] = data_dict[d]
+                                if type(self.i_grid) is list:
+                                    ds[self.i_grid[0]:self.i_grid[1], :] = data_dict[d]
+                                else:
+                                    ds[self.i_grid, :] = data_dict[d]
 
                         except (KeyError, ValueError):
                             # create
                             if dtype is "str":
-                                f.create_dataset(d, data=data_dict[d])
+                                f.create_dataset(d, data=data_dict[d].astype("|S5"))
                             else:
                                 ds = f.create_dataset(d, (require_size, data_dict[d].shape[1]),
                                                       maxshape=(None, data_dict[d].shape[1]),
                                                       dtype=dtype)
-                                ds[self.i_grid, :] = data_dict[d]
+                                if type(self.i_grid) is list:
+                                    ds[self.i_grid[0]:self.i_grid[1], :] = data_dict[d]
+                                else:
+                                    ds[self.i_grid, :] = data_dict[d]
             finally:
-                self.lock.release()
+                if self.lock:
+                    self.lock.release()
 
     def increment_ctr(self):
         """
         This functions increments the global counter by 1.
         """
-        self.lock.acquire()
+        if self.lock:
+            self.lock.acquire()
         try:
-            self.global_task_counter.value += 1
+            if self.lock:
+                self.global_task_counter.value += 1
+            else:
+                self.global_task_counter += 1
         finally:
-            self.lock.release()
+            if self.lock:
+                self.lock.release()
 
     def print_progress(self, func_time=None, read_from_file=False):
         """
         This function prints the progress according to the current context and global_counter.
         """
-        self.lock.acquire()
+        if self.lock:
+            self.lock.acquire()
         try:
             if func_time:
                 more_text = "Function evaluation took: " + repr(func_time) + "s"
             elif read_from_file:
-                more_text = "Read data row from " + self.fn_results
+                more_text = "Read data from " + self.fn_results + ".hdf5"
             else:
                 more_text = None
 
+            if self.lock:
+                global_task_counter = self.global_task_counter.value
+            else:
+                global_task_counter = self.global_task_counter
+
             display_fancy_bar("It/Sub-it: {}/{} Performing simulation".format(self.i_iter,
                                                                               self.i_subiter),
-                              self.global_task_counter.value,
+                              global_task_counter,
                               self.max_grid,
                               more_text)
         finally:
-            self.lock.release()
+            if self.lock:
+                self.lock.release()
 
     def get_seq_number(self):
         return self.seq_number

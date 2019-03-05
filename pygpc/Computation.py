@@ -11,22 +11,30 @@ from collections import OrderedDict
 from .RandomParameter import *
 
 
-class Computation(object):
+def Computation(n_cpu):
     """
-    Computation class to run the model
+    Helper function to initialize the Computation class.
+    n_cpu = 0 : use this if the model is capable of to evaluate several parameterizations in parallel
+    n_cpu = 1 : the model is called in serial for every paramerization.
+    n_cpu > 1 : A multiprocessing.Pool will be opened and n_cpu parameterizations are calculated in parallel
+
+    Parameter
+    ---------
+    n_cpu : int
+        Number of CPU cores to use
+
+    Returns
+    -------
+    obj : object instance of Computation class
+        Object instance of Computation class
     """
-    def __init__(self, n_cpu):
-        """
-        Constructor; Initializes Computation class
-        """
-        # Setting up parallelization (setup thread pool)
-        n_cpu_available = multiprocessing.cpu_count()
-        self.n_cpu = min(n_cpu, n_cpu_available)
-
-        self.i_grid = 0
+    if n_cpu == 0:
+        return ComputationFuncPar(n_cpu)
+    else:
+        return ComputationPoolMap(n_cpu)
 
 
-class ComputationPoolMap(Computation):
+class ComputationPoolMap:
     """
     Computation sub-class to run the model using a processing pool for parallelization
     """
@@ -35,7 +43,11 @@ class ComputationPoolMap(Computation):
         """
         Constructor; Initializes ComputationPoolMap class
         """
-        super(ComputationPoolMap, self).__init__(n_cpu)
+        # Setting up parallelization (setup thread pool)
+        n_cpu_available = multiprocessing.cpu_count()
+        self.n_cpu = min(n_cpu, n_cpu_available)
+
+        self.i_grid = 0
 
         # Use a process queue to assign persistent, unique IDs to the processes in the pool
         self.process_manager = multiprocessing.Manager()
@@ -109,7 +121,7 @@ class ComputationPoolMap(Computation):
             if coords_norm is None:
                 c_norm = None
             else:
-                c_norm = coords_norm[j, :]
+                c_norm = coords_norm[j, :][np.newaxis, :]
 
             # setup context (let the process know which iteration, interaction order etc.)
             context = {
@@ -121,7 +133,7 @@ class ComputationPoolMap(Computation):
                 'i_iter': i_iter,
                 'i_subiter': i_subiter,
                 'fn_results': fn_results,
-                'coords': np.array(random_var_instances),
+                'coords': np.array(random_var_instances)[np.newaxis, :],
                 'coords_norm': c_norm,
                 'print_func_time': print_func_time
             }
@@ -157,7 +169,7 @@ class ComputationPoolMap(Computation):
         for result in res_new_list:
             res[result[0]] = result[1]
 
-        res = np.array(res)
+        res = np.vstack(res)
 
         return res
 
@@ -167,7 +179,7 @@ class ComputationPoolMap(Computation):
         self.process_pool.join()
 
 
-class ComputationFuncPar(Computation):
+class ComputationFuncPar:
     """
     Computation sub-class to run the model using a the models internal parallelization
     """
@@ -176,7 +188,11 @@ class ComputationFuncPar(Computation):
         """
         Constructor; Initializes ComputationPoolMap class
         """
-        super(ComputationFuncPar, self).__init__(n_cpu)
+        # Setting up parallelization (setup thread pool)
+        n_cpu_available = multiprocessing.cpu_count()
+        self.n_cpu = min(n_cpu, n_cpu_available)
+
+        self.i_grid = 0
 
         # Global counter used by all threads to keep track of the progress
         self.global_task_counter = 0
@@ -218,7 +234,7 @@ class ComputationFuncPar(Computation):
 
         n_grid = coords.shape[0]
 
-        # i_grid is now a range [min_idx, max_idx]
+        # i_grid indices is now a range [min_idx, max_idx]
         self.i_grid = [np.max(self.i_grid), np.max(self.i_grid) + n_grid]
 
         # assign the instances of the random_vars to the respective
@@ -236,7 +252,7 @@ class ComputationFuncPar(Computation):
 
         # setup context (let the process know which iteration, interaction order etc.)
         context = {
-            'global_task_counter': None,
+            'global_task_counter': self.global_task_counter,
             'lock': None,
             'seq_number': None,
             'i_grid': self.i_grid,
@@ -269,9 +285,13 @@ class ComputationFuncPar(Computation):
         # start model evaluations
         res = Worker.run(worker_objs)
 
-        res = np.array(res)
+        res = np.array(res[1])
 
         return res
+
+    def close(self):
+        """ Closes the pool """
+        pass
 
 
 def compute_cluster(algorithms, nodes, start_scheduler=True):

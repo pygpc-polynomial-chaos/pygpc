@@ -581,3 +581,30 @@ def sample_sphere(n_points, r):
     points = np.array(points, dtype=float)
 
     return points
+
+
+def list2dict(l):
+    """
+    Transform list of dicts with same keys to dict of list
+
+    Parameters
+    ----------
+    l : list of dict
+        List containing dictionaries with same keys
+
+    Returns
+    -------
+    d : dict of lists
+        Dictionary containing the entries in a list
+    """
+
+    n = len(l)
+    keys = l[0].keys()
+    d = dict()
+
+    for key in keys:
+        d[key] = [0 for _ in range(n)]
+        for i in range(n):
+            d[key][i] = l[i][key]
+
+    return d
