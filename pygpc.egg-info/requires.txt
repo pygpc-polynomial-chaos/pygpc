@@ -1,5 +1,0 @@
-sklearn
-h5py
-pyyaml
-dill
-matplotlib

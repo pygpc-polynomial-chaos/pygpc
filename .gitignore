@@ -7,3 +7,11 @@
 
 # ignore error log
 error.txt
+
+# ignore build and dist folder
+build/
+dist/
+
+# ignore egg folders
+pygpc3.egg-info/
+pygpc.egg-info
