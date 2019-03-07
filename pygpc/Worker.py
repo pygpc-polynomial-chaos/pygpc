@@ -45,7 +45,6 @@ def run(obj):
     if process_id is None:
         process_id = 0
 
-    # TODO: handle whole matrices here instead of only rows
     res = obj.read_previous_results(obj.coords)
 
     start_time = 0
