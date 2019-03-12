@@ -171,9 +171,6 @@ class GPC(object):
         # sample gPC expansion
         samples_in, samples_out = self.get_samples(n_samples=n_samples, coeffs=coeffs, output_idx=output_idx)
 
-        if n_out == 1:
-            samples_out = samples_out[:, np.newaxis]
-
         # determine kernel density estimates using Gaussian kernel
         pdf_x = np.zeros([100, n_out])
         pdf_y = np.zeros([100, n_out])

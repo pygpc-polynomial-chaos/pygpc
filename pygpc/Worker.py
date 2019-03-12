@@ -45,7 +45,6 @@ def run(obj):
     if process_id is None:
         process_id = 0
 
-    # TODO: handle whole matrices here instead of only rows
     res = obj.read_previous_results(obj.coords)
 
     start_time = 0
@@ -66,6 +65,7 @@ def run(obj):
         if type(out) is tuple:
             # results (nparray)
             res = out[0]
+
             # additional data (dict)
             if len(out) == 2:
                 # in case of function parallelization transform list of dict to dict containing the lists

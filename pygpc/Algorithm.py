@@ -198,6 +198,9 @@ class Static(Algorithm):
                 if "coeffs" in f.keys():
                     del f['coeffs']
                 f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+
+                if "gpc_matrix" in f.keys():
+                    del f['gpc_matrix']
                 f.create_dataset("gpc_matrix", data=gpc.gpc_matrix, maxshape=None, dtype="float64")
 
         return gpc, coeffs, res
