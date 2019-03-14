@@ -1,18 +1,20 @@
 import pygpc
 import numpy as np
 from collections import OrderedDict
-from examples.MyModel import MyModel
+from examples.PyRates_Model import MyModel
+from datetime import datetime
 
-fn_results = "/nobackup/spanien1/salomon/PyGPC/temp/MyAnalysis"
+
+id_ = datetime.now().strftime("%d%m%y-%H%M%S")
+fn_results = f'/nobackup/spanien1/salomon/PyGPC/PyRates_GPC/{id_}'
 
 # define model
 model = MyModel
 
 # define problem (the parameter names have to be the same as in the model)
 parameters = OrderedDict()
-parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[10, 30])
-parameters["x2"] = 1.25
-parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[10, 30])
+parameters["k_i"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[15., 20.])
+parameters["k_e"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[15., 20.])
 problem = pygpc.Problem(model, parameters)
 
 # gPC options
@@ -23,9 +25,9 @@ options["interaction_order"] = 2
 options["solver"] = "Moore-Penrose"
 options["settings"] = None
 options["seed"] = 1
-options["matrix_ratio"] = 1.5
-options["eps"] = 1e-2
-options["n_cpu"] = 1    # n_cpu = 0; the model is capable of to compute multiple grid-points in parallel
+options["matrix_ratio"] = 2
+options["eps"] = 1e-3
+options["n_cpu"] = 0    # n_cpu = 0; the model is capable of to compute multiple grid-points in parallel
 options["fn_results"] = fn_results
 options["print_func_time"] = True
 
@@ -47,19 +49,20 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              calc_pdf=True)
 
 # # Validate gPC vs original model function (Monte Carlo)
-# nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-#                               coeffs=coeffs,
-#                               n_samples=int(1e4),
-#                               output_idx=0,
-#                               fn_out=options["fn_results"] + '_validation_mc')
+nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+                              coeffs=coeffs,
+                              n_samples=int(1e4),
+                              output_idx=0,
+                              fn_out=options["fn_results"] + '_validation_mc')
 
-# # Validate gPC vs original model function (2D-slice)
-# pygpc.validate_gpc_plot(gpc=gpc,
-#                         coeffs=coeffs,
-#                         random_vars=["x3", "x1"],
-#                         n_grid=[10, 25],
-#                         output_idx=[0],
-#                         fn_out=options["fn_results"] + '_validation_2d')
+# Validate gPC vs original model function (2D-slice)
+pygpc.validate_gpc_plot(gpc=gpc,
+                        coeffs=coeffs,
+                        random_vars=["k_i", "k_e"],
+                        n_grid=[21, 21],
+                        output_idx=[0],
+                        fn_out=options["fn_results"] + '_validation_2d',
+                        n_cpu=0)
 
 # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 

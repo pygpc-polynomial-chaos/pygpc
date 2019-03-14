@@ -65,6 +65,7 @@ def run(obj):
         if type(out) is tuple:
             # results (nparray)
             res = out[0]
+
             # additional data (dict)
             if len(out) == 2:
                 # in case of function parallelization transform list of dict to dict containing the lists

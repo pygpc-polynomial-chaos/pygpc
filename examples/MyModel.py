@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pygpc.AbstractModel import AbstractModel
-
+import numpy as np
 
 class MyModel(AbstractModel):
     """
@@ -34,8 +34,11 @@ class MyModel(AbstractModel):
     def simulate(self, process_id):
 
         y = self.p["x1"] * self.p["x2"] * self.p["x3"]
+        # y = y[:, np.newaxis]
 
-        additional_data = {"additional_data/info_1": [1, 2, 3],
-                           "additional_data/info_2": ["some additional information"]}
+        additional_data = [{"additional_data/info_1": [1, 2, 3],
+                            "additional_data/info_2": ["some additional information"]}]
+        # additional_data = y.shape[0] * additional_data
+        y = np.array([y])
 
         return y, additional_data

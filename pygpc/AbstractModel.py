@@ -154,10 +154,11 @@ class AbstractModel:
                             # append
                             # for strings, the whole array has to be rewritten
                             if dtype is "str":
-                                ds = f[d][:]
+                                # ds = f[d][:]
+                                ds = f[d]
                                 del f[d]
                                 ds = np.vstack((ds, data_dict[d]))
-                                f.create_dataset(d, data=ds.astype("|S5"))
+                                f.create_dataset(d, data=ds.astype("|S"))
                             else:
                                 # change size of array and write data in it
                                 if ds.shape[0] < require_size:  # check if resize is necessary
@@ -170,7 +171,7 @@ class AbstractModel:
                         except (KeyError, ValueError):
                             # create
                             if dtype is "str":
-                                f.create_dataset(d, data=data_dict[d].astype("|S5"))
+                                f.create_dataset(d, data=data_dict[d].astype("|S"))
                             else:
                                 ds = f.create_dataset(d, (require_size, data_dict[d].shape[1]),
                                                       maxshape=(None, data_dict[d].shape[1]),

@@ -15,3 +15,9 @@ dist/
 # ignore egg folders
 pygpc3.egg-info/
 pygpc.egg-info
+
+# ignore pycache
+**/__pycache__
+
+# ignore *.pyc
+*.pyc
