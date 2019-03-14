@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from pygpc.AbstractModel import AbstractModel
+from pyrates.utility import grid_search
+import numpy as np
+import scipy.signal as sp
 
 
 class MyModel(AbstractModel):
@@ -33,11 +36,36 @@ class MyModel(AbstractModel):
 
     def simulate(self, process_id):
 
-        # map = self.p["map"]
+        param_map = {'k_e': {'var': [('Op_e.0', 'k_ee'), ('Op_i.0', 'k_ie')],
+                             'nodes': ['E.0', 'I.0']},
+                     'k_i': {'var': [('Op_e.0', 'k_ei'), ('Op_i.0', 'k_ii')],
+                             'nodes': ['E.0', 'I.0']}
+                     }
 
-        y = self.p["x1"] * self.p["x2"] * self.p["x3"]
+        if type(self.p['k_e']) == float:
+            self.p['k_e'] = [self.p['k_e']]
+        if type(self.p['k_i']) == float:
+            self.p['k_i'] = [self.p['k_i']]
+        param_grid = {'k_e': self.p['k_e'], 'k_i': self.p['k_i']}
 
-        additional_data = {"additional_data/info_1": [1, 2, 3],
-                           "additional_data/info_2": ["some additional information"]}
+        simulation_time = 2.
+        results = grid_search(circuit_template="/data/hu_salomon/PycharmProjects/PyRates/models/Montbrio/Montbrio.EI_Circuit",
+                              param_map=param_map,
+                              param_grid=param_grid,
+                              dt=1e-5,
+                              simulation_time=simulation_time,
+                              inputs={},
+                              outputs={"r": ("E", "Op_e.0", "r")},
+                              sampling_step_size=1e-3, permute_grid=False)
+
+        y = np.zeros((len(self.p["k_e"]), 1))
+        for i_grid, (k_e, k_i) in enumerate(zip(self.p['k_e'], self.p['k_i'])):
+            data = np.array(results[k_e][k_i])
+            peaks = sp.argrelextrema(data, np.greater)
+            y[i_grid, 0] = int(len(peaks[0]) / simulation_time)
+
+        additional_data = [{"additional_data/info_1": [1, 2, 3],
+                            "additional_data/info_2": ["some additional information"]}]
+        additional_data = y.shape[0] * additional_data
 
         return y, additional_data
