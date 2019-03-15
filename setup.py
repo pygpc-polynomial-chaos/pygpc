@@ -12,5 +12,7 @@ setup(name='pygpc',
                         'sklearn',
                         'h5py',
                         'matplotlib',
-                        'dispy'],
+                        'dispy',
+                        'pytest',
+                        'numpy'],
       zip_safe=False)

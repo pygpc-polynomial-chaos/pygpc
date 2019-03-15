@@ -25,7 +25,7 @@ options["settings"] = None
 options["seed"] = 1
 options["matrix_ratio"] = 1.5
 options["eps"] = 1e-2
-options["n_cpu"] = 1    # n_cpu = 0; the model is capable of to compute multiple grid-points in parallel
+options["n_cpu"] = 0    # n_cpu = 0; the model is capable of to compute multiple grid-points in parallel
 options["fn_results"] = fn_results
 options["print_func_time"] = True
 
@@ -53,13 +53,13 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
 #                               output_idx=0,
 #                               fn_out=options["fn_results"] + '_validation_mc')
 
-# # Validate gPC vs original model function (2D-slice)
-# pygpc.validate_gpc_plot(gpc=gpc,
-#                         coeffs=coeffs,
-#                         random_vars=["x3", "x1"],
-#                         n_grid=[10, 25],
-#                         output_idx=[0],
-#                         fn_out=options["fn_results"] + '_validation_2d')
+# Validate gPC vs original model function (2D-slice)
+pygpc.validate_gpc_plot(gpc=gpc,
+                        coeffs=coeffs,
+                        random_vars=["x3", "x1"],
+                        n_grid=[10, 25],
+                        output_idx=[0],
+                        fn_out=options["fn_results"] + '_validation_2d')
 
 # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
