@@ -413,16 +413,21 @@ class GPC(object):
         with h5py.File(self.fn_results + ".hdf5", "a") as f:
             try:
                 gpc_matrix_hdf5 = f["gpc_matrix"][:]
-                n_rows_old = gpc_matrix_hdf5.shape[0]
-                n_cols_old = gpc_matrix_hdf5.shape[1]
+                n_rows_hdf5 = gpc_matrix_hdf5.shape[0]
+                n_cols_hdf5 = gpc_matrix_hdf5.shape[1]
 
-                if (self.gpc_matrix[0:n_rows_old, 0:n_cols_old] == gpc_matrix_hdf5).all():
-                    # resize dataset and save new columns and rows
-                    f["gpc_matrix"].resize(self.gpc_matrix.shape[1], axis=1)
-                    f["gpc_matrix"][:, n_cols_old:] = self.gpc_matrix[0:n_rows_old, n_cols_old:]
+                n_rows_current = self.gpc_matrix.shape[0]
+                n_cols_current = self.gpc_matrix.shape[1]
 
-                    f["gpc_matrix"].resize(self.gpc_matrix.shape[0], axis=0)
-                    f["gpc_matrix"][n_rows_old:, :] = self.gpc_matrix[n_rows_old:, :]
+                # save only new rows and cols if current matrix > saved matrix
+                if n_rows_current >= n_rows_hdf5 and n_cols_current >= n_cols_hdf5:
+                    if (self.gpc_matrix[0:n_rows_hdf5, 0:n_cols_hdf5] == gpc_matrix_hdf5).all():
+                        # resize dataset and save new columns and rows
+                        f["gpc_matrix"].resize(self.gpc_matrix.shape[1], axis=1)
+                        f["gpc_matrix"][:, n_cols_hdf5:] = self.gpc_matrix[0:n_rows_hdf5, n_cols_hdf5:]
+
+                        f["gpc_matrix"].resize(self.gpc_matrix.shape[0], axis=0)
+                        f["gpc_matrix"][n_rows_hdf5:, :] = self.gpc_matrix[n_rows_hdf5:, :]
 
                 else:
                     del f["gpc_matrix"]

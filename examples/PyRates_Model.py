@@ -48,7 +48,7 @@ class MyModel(AbstractModel):
             self.p['k_i'] = [self.p['k_i']]
         param_grid = {'k_e': self.p['k_e'], 'k_i': self.p['k_i']}
 
-        simulation_time = 2.
+        simulation_time = 10.
         results = grid_search(circuit_template="/data/hu_salomon/PycharmProjects/PyRates/models/Montbrio/Montbrio.EI_Circuit",
                               param_map=param_map,
                               param_grid=param_grid,
