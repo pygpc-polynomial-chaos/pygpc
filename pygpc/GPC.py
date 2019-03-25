@@ -66,7 +66,7 @@ class GPC(object):
         self.gpu = None
         self.verbose = True
         self.fn_results = fn_results
-        self.n_cpu = 1
+        self.n_cpu = None
 
     def init_gpc_matrix(self):
         """

@@ -10,7 +10,7 @@ import matplotlib
 import h5py
 
 
-def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
+def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=None):
     """
     Compares gPC approximation with original model function. Evaluates both at "n_samples" sampling points and
     evaluates the root mean square deviation. It also computes the pdf at the output quantity with output_idx
@@ -26,6 +26,8 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
         Number of samples to validate the gPC approximation
     output_idx : ndarray, optional, default=None [1 x n_out]
         Index of output quantities to consider (if output_idx=None, all output quantities are considered)
+    ncpu : int, optional, default=1
+        Number of CPU cores to use (parallel function evaluations) to evaluate original model function
     fn_out : str
         Filename of validation results and pdf plot comparing original vs gPC model
 
@@ -50,7 +52,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
         y_gpc = y_gpc[:, np.newaxis]
 
     # Evaluate original model at grid points
-    com = Computation(n_cpu=gpc.n_cpu)
+    com = Computation(n_cpu=n_cpu)
 
     y_orig = com.run(model=gpc.problem.model, problem=gpc.problem, coords=grid_mc.coords)
 
@@ -100,7 +102,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, fn_out=None):
 
 
 def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, data_original=None,
-                      fn_out=None, n_cpu=None):
+                      fn_out=None, n_cpu=1):
     """
     Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
     calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
@@ -125,7 +127,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         If available, data of original model function at grid
     fn_out : str
         Filename of plot comparing original vs gPC model (*_QOI_idx_<output_idx>.png is added)
-    n_cpu : int, default=gpc.n_cpu
+    n_cpu : int, default=1
         Number of CPU cores to use to calculate results of original model on grid.
 
     Returns
@@ -142,9 +144,6 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     if n_grid and type(n_grid) is not list:
         n_grid = n_grid.tolist()
 
-    if n_cpu is None:
-        n_cpu = gpc.n_cpu
-
     # Create grid such that it includes the mean values of other random variables
     if coords is None:
         grid = np.zeros((np.prod(n_grid), len(gpc.problem.parameters_random)))
@@ -152,7 +151,6 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         grid = np.zeros((coords.shape[0], len(gpc.problem.parameters_random)))
 
     idx = []
-    random_vars = ["k_e", "k_i"]
 
     # sort random_vars according to gpc.parameters
     for i_p, p in enumerate(gpc.problem.parameters_random.keys()):
@@ -248,7 +246,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
             max_all = np.max(np.array(np.max(y_orig[:, i]), np.max(y_gpc[:, i])))
 
             # Original model function
-            im1 = ax1.pcolor(x1_2d, x2_2d, np.reshape(y_orig[:, i], (x[1].size, x[0].size), order='c'),
+            im1 = ax1.pcolor(x1_2d, x2_2d, np.reshape(y_orig[:, i], (x[1].size, x[0].size), order='f'),
                              cmap="jet",
                              vmin=min_all,
                              vmax=max_all)
@@ -258,7 +256,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
 
             # gPC approximation
             # Original model function
-            im2 = ax2.pcolor(x1_2d, x2_2d, np.reshape(y_gpc[:, i], (x[1].size, x[0].size), order='c'),
+            im2 = ax2.pcolor(x1_2d, x2_2d, np.reshape(y_gpc[:, i], (x[1].size, x[0].size), order='f'),
                              cmap="jet",
                              vmin=min_all,
                              vmax=max_all)
@@ -271,7 +269,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
             max_dif = np.max(y_dif[:, i])
             b2rcw_cmap = make_cmap(b2rcw(min_dif, max_dif))
 
-            im3 = ax3.pcolor(x1_2d, x2_2d, np.reshape(y_dif[:, i], (x[1].size, x[0].size), order='c'),
+            im3 = ax3.pcolor(x1_2d, x2_2d, np.reshape(y_dif[:, i], (x[1].size, x[0].size), order='f'),
                              cmap=b2rcw_cmap,
                              vmin=min_dif,
                              vmax=max_dif)
