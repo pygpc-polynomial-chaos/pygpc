@@ -234,7 +234,7 @@ class RegAdaptive(Algorithm):
         options["fn_results"] : string, optional, default=None
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
         options["eps"] : float, optional, default=1e-3
-            Relative mean error of leave one out cross validation
+            Relative mean error of leave-one-out cross validation
         options["verbose"] : boolean, optional, default=True
             Print output of iterations and sub-iterations (True/False)
         options["seed"] : int, optional, default=None
@@ -244,6 +244,8 @@ class RegAdaptive(Algorithm):
         options["matrix_ratio"]: float, optional, default=1.5
             Ration between the number of model evaluations and the number of basis functions.
             (>1 results in an overdetermined system)
+        options["n_loocv"] : int, optional, default=100
+            Number of leave-one-out cross-validation steps
 
         Examples
         --------

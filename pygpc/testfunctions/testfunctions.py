@@ -2,6 +2,7 @@
 import numpy as np
 import warnings
 import scipy.special
+from scipy.integrate import odeint
 
 from pygpc.AbstractModel import AbstractModel
 
@@ -57,6 +58,282 @@ class Peaks(AbstractModel):
             y_out = np.array([y, 2*y])
 
         return y_out, additional_data
+
+
+class HyperbolicTangent(AbstractModel):
+    """
+    Two-dimensional hyperbolic tangent function [1] to simulate discontinuities. Discontinuity at x1 = 0.
+
+    y = HyperbolicTangent(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        Parameter 1
+    p["x2"]: float or ndarray of float [n_grid]
+        Parameter 2
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x n_out]
+        Output data
+
+    Notes
+    -----
+    .. [1] Ahlfeld, R., Montomoli, F., Carnevale, M., Salvadore, S. (2018).
+       Autonomous Uncertainty Quantification for Discontinuous Models Using Multivariate Pade Approximations.
+       Journal of Turbomachinery, 104, 041004.
+    """
+
+    def __init__(self, p, context):
+        super(HyperbolicTangent, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+        y = np.array(np.tanh(10. * self.p["x1"]) + 0.2 * np.sin(10. * self.p["x1"]) + 0.3 * self.p["x2"] + \
+                     0.1 * np.sin(5. * self.p["x1"]))
+
+        if len(y)>1:
+            y = y[:, np.newaxis]
+
+        return y
+
+
+class MovingParticleFrictionForce(AbstractModel):
+    """
+    Differential equation describing a particle moving under the influence of a
+    potential field and of a friction force [1].
+
+    d^2 X / dt^2 + f * dX/dt = -35/2 * X^3 + 15/2 * X
+
+    with:
+
+    x1 = X
+    x2 = dX/dt
+
+    we get a system of two 1st order ODE
+
+    dx1/dt = x2
+    dx2/dt + f*x2 = -35/2 * x1^3 + 15/2 * x1
+
+    Discontinuity at randomly perturbed initial value x0 = X0 + delta_X * xi = 0.05 - 0.2 * 0.25
+    and two stable fixed points:
+    - X = -sqrt(15/35) for xi < -0.25
+    - X = +sqrt(15/35) for xi > -0.25
+
+    xi is uniform distributed [-1, 1]
+
+    Mean value: 0.163663
+    Standard deviation: 0.633865691
+
+    y = MovingParticleFrictionForce(x)
+
+    Parameters
+    ----------
+    p["x1"]: ndarray of float [1]
+        Pertubation xi of initial value x0 (x0 = X0 + xi)
+
+    Returns
+    -------
+    y: ndarray of float [1 x 1]
+        X(t=10.)
+
+    Notes
+    -----
+    .. [1] Le Maitre, O.P., Knio, O.M., Najm, H.N., Ghanem, R.G. (2004).
+       Uncertainty propagation using Wiener-Haar expansions.
+       Journal of Computational Physics, 197, 28-57.
+    """
+
+    def __init__(self, p, context):
+        super(MovingParticleFrictionForce, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        # System of 1st order DEQ
+        def DEQ(X, t, f):
+            return X[1], -35. / 2. * X[0] ** 3. + 15. / 2. * X[0] - f * X[1]
+
+        # Initial values
+        X0 = 0.05
+        delta_X = 0.2
+        x0 = [X0 + delta_X * self.p["x1"], 0.]
+
+        # Friction coefficient
+        f = 2.
+
+        # Simulation parameters
+        dt = 0.001
+        t_end = 10.
+        t = np.arange(0, t_end, dt)
+
+        # Solve
+        y = odeint(DEQ, x0, t, args=(f,), hmin=dt)
+        y_out = np.array([[y[-1, 0]]])
+
+        return y_out
+
+
+class SurfaceCoverageSpecies(AbstractModel):
+    """
+    Differential equation describing the time-evolution of the surface coverage rho [0, 1] for a given species [1].
+    This problem has one or two fixed points according to the value of the recombination rate beta and it exhibits
+    smooth dependence on the other parameters. The statistics of the solution at t=1 are investigated considering
+    uncertainties in the initial coverage rho_0 and in the reaction parameter beta. Additionally uncertainty
+    in the surface absorption rate alpha can be considered to make the problem 3-dimensional.
+    Gamma=0.01 denotes the desorption rate.
+
+    drho/dt = alpha * (1 - rho) - gamma * rho - beta * (rho - 1)^2 * rho
+
+    y = SurfaceCoverageSpecies(x)
+
+    Parameters
+    ----------
+    p["rho_0"]: ndarray of float [1]
+        Initial value rho(t=0) (uniform distributed [0, 1])
+    p["beta"]: ndarray of float [1]
+        Recombination rate (uniform distributed [0, 20])
+    p["alpha"]: ndarray of float [1]
+        Surface absorption rate (1 or uniform distributed [0.1, 2])
+
+    Returns
+    -------
+    y: ndarray of float [1 x 1]
+        rho(t->1)
+
+    Notes
+    -----
+    .. [1] Le Maitre, O.P., Najm, H.N., Ghanem, R.G., Knio, O.M., (2004).
+       Multi-resolution analysis of Wiener-type uncertainty propagation schemes.
+       Journal of Computational Physics, 197, 502-531.
+    """
+
+    def __init__(self, p, context):
+        super(SurfaceCoverageSpecies, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        # System of 1st order DEQ
+        def DEQ(rho, t, alpha, beta, gamma):
+            return alpha * (1. - rho) - gamma * rho - beta * (rho - 1)**2 * rho
+
+        # Constants
+        gamma = 0.01
+
+        # Simulation parameters
+        dt = 0.01
+        t_end = 1.
+        t = np.arange(0, t_end, dt)
+
+        # Solve
+        y = odeint(DEQ, self.p["rho_0"], t, args=(self.p["alpha"], self.p["beta"], gamma,))
+        y_out = np.array([y[-1]])
+
+        return y_out
+
+
+class Franke(AbstractModel):
+    """
+    Franke function [1] with 2 parameters. It is often used in regression or interpolation analysis.
+    It is defined in the interval [0, 1] x [0, 1]. Hampton and Doostan used in the framework of BASE-PC [2].
+
+    y = Franke(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [0, 1]
+    p["x2"]: float or ndarray of float [n_grid]
+        Second parameter [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. [1] Franke, R., (1979) A Critical Comparison of some Methods for Interpolation of Scattered Data,
+       Tech. rep., DTIC Document
+
+       [2] Hampton, J., Doostan, A., (2018), Basis adaptive sample efficient polynomial chaos (BASE-PC),
+       Journal of Computational Physics, 371, 20-49.
+    """
+
+    def __init__(self, p, context):
+        super(Franke, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        y = 3. / 4. * np.exp(-((9 * self.p["x1"] - 2) ** 2) / 4. - ((9 * self.p["x2"] - 2) ** 2) / 4.) + \
+            3. / 4. * np.exp(-((9 * self.p["x1"] + 1) ** 2) / 49. - (9 * self.p["x2"] + 1) / 10.) + \
+            1. / 2. * np.exp(-((9 * self.p["x1"] - 7) ** 2) / 4. - ((9 * self.p["x2"] - 3) ** 2) / 4.) - \
+            1. / 5. * np.exp(-(9 * self.p["x1"] - 4) ** 2 - (9 * self.p["x2"] - 7) ** 2)
+
+        if type(y) is not np.ndarray:
+            y = np.array([y])
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class ManufactureDecay(AbstractModel):
+    """
+    N-dimensional manufacture decay function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+    Hampton and Doostan used in the framework of BASE-PC [1].
+
+    y = ManufactureDecay(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. [1] Hampton, J., Doostan, A., (2018), Basis adaptive sample efficient polynomial chaos (BASE-PC),
+       Journal of Computational Physics, 371, 20-49.
+    """
+
+    def __init__(self, p, context):
+        super(ManufactureDecay, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        # determine sum in exponent
+        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            s += np.sin(i+1) * self.p[key] / (i+1.)
+
+        # determine output
+        y = np.exp(2 - s)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
 
 
 class Lim2002(AbstractModel):
@@ -116,7 +393,7 @@ class Ishigami(AbstractModel):
     Parameters
     ----------
     p["x"]: [N x 3] np.ndarray
-        input data
+        input data,
         xi ~ Uniform[-pi, pi], for all i = 1, 2, 3
     p["a"]: float
         shape parameter
@@ -130,12 +407,12 @@ class Ishigami(AbstractModel):
 
     Notes
     -----
-    .. [1] Ishigami, T., & Homma, T. (1990, December). An importance quantification
+    .. [1] Ishigami, T., Homma, T. (1990, December). An importance quantification
        technique in uncertainty analysis for computer models. In Uncertainty
        Modeling and Analysis, 1990. Proceedings., First International Symposium
        on (pp. 398-403). IEEE.
 
-       [2] Sobol', I. M., & Levitan, Y. L. (1999). On the use of variance reducing
+       [2] Sobol', I.M., Levitan, Y.L. (1999). On the use of variance reducing
        multipliers in Monte Carlo computations of a global sensitivity index.
        Computer Physics Communications, 117(1), 52-61.
     """
