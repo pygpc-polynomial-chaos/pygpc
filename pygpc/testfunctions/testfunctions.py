@@ -2,9 +2,41 @@
 import numpy as np
 import warnings
 import scipy.special
+import matplotlib.pyplot as plt
 from scipy.integrate import odeint
-
 from pygpc.AbstractModel import AbstractModel
+
+
+def plot_testfunction(testfunction_name, *args):
+    x = []
+    for arg in args:
+        x.append(arg)
+
+    p = dict()
+
+    if len(x) == 2:
+        x1, x2 = np.meshgrid(x[0], x[1])
+        p["x1"] = x1.flatten()
+        p["x2"] = x2.flatten()
+
+    else:
+        p["x1"] = x[0]
+
+    model = []
+    exec ("model = {}(p, None)".format(testfunction_name))
+
+    y = model.simulate(None)
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+    im = plt.pcolor(x1, x2, np.reshape(y, (100, 100), order='f'), cmap="jet")
+
+    plt.title("{} function".format(model.__class__.__name__))
+    ax.set_xlabel(r"$x_1$", fontsize=12)
+    ax.set_ylabel(r"$x_2$", fontsize=12)
+    fig.colorbar(im, ax=ax, orientation='vertical')
+
+    plt.tight_layout()
+    plt.show()
 
 
 class Peaks(AbstractModel):
@@ -92,10 +124,10 @@ class HyperbolicTangent(AbstractModel):
         pass
 
     def simulate(self, process_id):
-        y = np.array(np.tanh(10. * self.p["x1"]) + 0.2 * np.sin(10. * self.p["x1"]) + 0.3 * self.p["x2"] + \
+        y = np.array(np.tanh(10. * self.p["x1"]) + 0.2 * np.sin(10. * self.p["x1"]) + 0.3 * self.p["x2"] +
                      0.1 * np.sin(5. * self.p["x1"]))
 
-        if len(y)>1:
+        if len(y) > 1:
             y = y[:, np.newaxis]
 
         return y
@@ -156,13 +188,13 @@ class MovingParticleFrictionForce(AbstractModel):
     def simulate(self, process_id):
 
         # System of 1st order DEQ
-        def DEQ(X, t, f):
-            return X[1], -35. / 2. * X[0] ** 3. + 15. / 2. * X[0] - f * X[1]
+        def deq(x, t, f):
+            return x[1], -35. / 2. * x[0] ** 3. + 15. / 2. * x[0] - f * x[1]
 
         # Initial values
-        X0 = 0.05
-        delta_X = 0.2
-        x0 = [X0 + delta_X * self.p["x1"], 0.]
+        x0 = 0.05
+        delta_x = 0.2
+        x0 = [x0 + delta_x * self.p["x1"], 0.]
 
         # Friction coefficient
         f = 2.
@@ -173,7 +205,7 @@ class MovingParticleFrictionForce(AbstractModel):
         t = np.arange(0, t_end, dt)
 
         # Solve
-        y = odeint(DEQ, x0, t, args=(f,), hmin=dt)
+        y = odeint(deq, x0, t, args=(f,), hmin=dt)
         y_out = np.array([[y[-1, 0]]])
 
         return y_out
@@ -222,7 +254,7 @@ class SurfaceCoverageSpecies(AbstractModel):
     def simulate(self, process_id):
 
         # System of 1st order DEQ
-        def DEQ(rho, t, alpha, beta, gamma):
+        def deq(rho, t, alpha, beta, gamma):
             return alpha * (1. - rho) - gamma * rho - beta * (rho - 1)**2 * rho
 
         # Constants
@@ -234,7 +266,7 @@ class SurfaceCoverageSpecies(AbstractModel):
         t = np.arange(0, t_end, dt)
 
         # Solve
-        y = odeint(DEQ, self.p["rho_0"], t, args=(self.p["alpha"], self.p["beta"], gamma,))
+        y = odeint(deq, self.p["rho_0"], t, args=(self.p["alpha"], self.p["beta"], gamma,))
         y_out = np.array([y[-1]])
 
         return y_out
@@ -261,11 +293,22 @@ class Franke(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("Franke", x1, x2)
+
     .. [1] Franke, R., (1979) A Critical Comparison of some Methods for Interpolation of Scattered Data,
        Tech. rep., DTIC Document
 
-       [2] Hampton, J., Doostan, A., (2018), Basis adaptive sample efficient polynomial chaos (BASE-PC),
+    .. [2] Hampton, J., Doostan, A., (2018), Basis adaptive sample efficient polynomial chaos (BASE-PC),
        Journal of Computational Physics, 371, 20-49.
+
+
     """
 
     def __init__(self, p, context):
@@ -330,6 +373,339 @@ class ManufactureDecay(AbstractModel):
 
         # determine output
         y = np.exp(2 - s)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class GenzContinuous(AbstractModel):
+    """
+    N-dimensional "continuous" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+
+    y = GenzContinuous(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. [1] Genz, A. (1984), Testing multidimensional integration routines.
+       Proc. of international conference on Tools, methods and languages for scientific
+       and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
+
+    .. [2] https://www.sfu.ca/~ssurjano/cont.html
+    """
+
+    def __init__(self, p, context):
+        super(GenzContinuous, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        n = len(self.p.keys())
+
+        # set constants
+        u = 0.5 * np.ones(n)
+        a = 5 * np.ones(n)
+
+        # determine sum in exponent
+        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            s += a[i] * np.abs(self.p[key] - u[i])
+
+        # determine output
+        y = np.exp(-s)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class GenzCornerPeak(AbstractModel):
+    """
+    N-dimensional "CornerPeak" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+
+    y = GenzCornerPeak(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. [1] Genz, A. (1984), Testing multidimensional integration routines.
+       Proc. of international conference on Tools, methods and languages for scientific
+       and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
+
+    .. [2] https://www.sfu.ca/~ssurjano/copeak.html
+    """
+
+    def __init__(self, p, context):
+        super(GenzCornerPeak, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        n = len(self.p.keys())
+
+        # set constants
+        a = 5 * np.ones(n)
+
+        # determine sum
+        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            s += a[i] * self.p[key]
+
+        # determine output
+        y = (1 + s) ** -(n + 1)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class GenzDiscontinuous(AbstractModel):
+    """
+    N-dimensional "Discontinuous" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+
+    y = GenzDiscontinuous(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. [1] Genz, A. (1984), Testing multidimensional integration routines.
+       Proc. of international conference on Tools, methods and languages for scientific
+       and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
+
+    .. [2] https://www.sfu.ca/~ssurjano/disc.html
+    """
+
+    def __init__(self, p, context):
+        super(GenzDiscontinuous, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        n = len(self.p.keys())
+
+        # set constants
+        u = 0.5 * np.ones(n)
+        a = 5 * np.ones(n)
+
+        mask = np.zeros((len(self.p[self.p.keys()[0]]), n))
+
+        for i, key in enumerate(self.p.keys()):
+            mask[:, i] = self.p[key] > u[i]
+        mask = mask.any(axis=1)
+
+        # determine sum
+        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            s += a[i] * self.p[key]
+
+        # determine output
+        y = np.exp(s)
+        y[mask] = 0.
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class GenzGaussianPeak(AbstractModel):
+    """
+    N-dimensional "GaussianPeak" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+
+    y = GenzGaussianPeak(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. [1] Genz, A. (1984), Testing multidimensional integration routines.
+       Proc. of international conference on Tools, methods and languages for scientific
+       and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
+
+    .. [2] https://www.sfu.ca/~ssurjano/gaussian.html
+    """
+
+    def __init__(self, p, context):
+        super(GenzGaussianPeak, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        n = len(self.p.keys())
+
+        # set constants
+        u = 0.5 * np.ones(n)
+        a = 5 * np.ones(n)
+
+        # determine sum
+        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            s += a[i]**2 * (self.p[key] - u[i])**2
+
+        # determine output
+        y = np.exp(-s)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class GenzOscillatory(AbstractModel):
+    """
+    N-dimensional "Oscillatory" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+
+    y = GenzOscillatory(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. [1] Genz, A. (1984), Testing multidimensional integration routines.
+       Proc. of international conference on Tools, methods and languages for scientific
+       and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
+
+    .. [2] https://www.sfu.ca/~ssurjano/oscil.html
+    """
+
+    def __init__(self, p, context):
+        super(GenzOscillatory, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        n = len(self.p.keys())
+
+        # set constants
+        u = 0.5 * np.ones(n)
+        a = 5 * np.ones(n)
+
+        # determine sum
+        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            s += a[i] * self.p[key]
+
+        # determine output
+        y = np.cos(2 * np.pi * u[0] + s)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class GenzProductPeak(AbstractModel):
+    """
+    N-dimensional "ProductPeak" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+
+    y = GenzProductPeak(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. [1] Genz, A. (1984), Testing multidimensional integration routines.
+       Proc. of international conference on Tools, methods and languages for scientific
+       and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
+
+    .. [2] https://www.sfu.ca/~ssurjano/prpeak.html
+    """
+
+    def __init__(self, p, context):
+        super(GenzProductPeak, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id):
+
+        n = len(self.p.keys())
+
+        # set constants
+        u = 0.5 * np.ones(n)
+        a = 5 * np.ones(n)
+
+        # determine output
+        y = np.ones(np.array(self.p[self.p.keys()[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            y *= 1 / (a[i] ** (-2) + (self.p[key] - u[i]) ** 2)
 
         y_out = y[:, np.newaxis]
 
@@ -412,7 +788,7 @@ class Ishigami(AbstractModel):
        Modeling and Analysis, 1990. Proceedings., First International Symposium
        on (pp. 398-403). IEEE.
 
-       [2] Sobol', I.M., Levitan, Y.L. (1999). On the use of variance reducing
+    .. [2] Sobol', I.M., Levitan, Y.L. (1999). On the use of variance reducing
        multipliers in Monte Carlo computations of a global sensitivity index.
        Computer Physics Communications, 117(1), 52-61.
     """

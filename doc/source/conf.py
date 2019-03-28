@@ -15,7 +15,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
-
+sys.path.append(os.path.abspath('sphinxext'))
 
 # -- Project information -----------------------------------------------------
 
@@ -47,9 +47,13 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'sphinx.ext.imgmath'
+    'sphinx.ext.imgmath',
+    'matplotlib.sphinxext.only_directives',
+    'matplotlib.sphinxext.plot_directive',
 ]
 
+# 'IPython.sphinxext.ipython_directive',
+# 'IPython.sphinxext.ipython_console_highlighting',
 # 'sphinx.ext.intersphinx',
 
 # Napoleon settings

@@ -1,6 +1,13 @@
 pygpc package
 =============
 
+Subpackages
+-----------
+
+.. toctree::
+
+    pygpc.testfunctions
+
 Submodules
 ----------
 
@@ -128,14 +135,6 @@ pygpc.postprocessing module
 ---------------------------
 
 .. automodule:: pygpc.postprocessing
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pygpc.testfunctions module
---------------------------
-
-.. automodule:: pygpc.testfunctions
     :members:
     :undoc-members:
     :show-inheritance:

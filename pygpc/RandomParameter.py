@@ -44,7 +44,7 @@ class Beta(RandomParameter):
     Probability density function:
 
     .. math
-       pdf = \left(\frac{\Gamma(p)\Gamma(q)}{\Gamma(p+q)}(b-a)^{(p+q-1)}\right)^{-1} (x-a)^{(p-1)} (b-x)^{(q-1)}
+       pdf = (\\frac{\Gamma(p)\Gamma(q)}{\Gamma(p+q)}(b-a)^{(p+q-1)})^{-1} (x-a)^{(p-1)} (b-x)^{(q-1)}
     """
     def __init__(self, pdf_shape, pdf_limits):
         """
@@ -154,15 +154,9 @@ class Norm(RandomParameter):
 
     Probability density function
 
-    .. math
-       pdf = \frac{1}{\sqrt{2\pi\sigma^2}}\exp{-\frac{(x-\mu)^2}{2\sigma^2}}
+    .. math::
+       pdf = \\frac{1}{\sqrt{2\pi\sigma^2}}\exp{-\\frac{(x-\mu)^2}{2\sigma^2}}
 
-    Attributes
-    ----------
-    pdf_shape: list of float [2]
-        Shape parameters of beta distributed random variable [mean, std]
-    pdf_limits: list of float [2]
-        Upper and lower bound of random variable (default: mean +- 3 * std)
 
     """
     def __init__(self, pdf_shape):
@@ -173,6 +167,13 @@ class Norm(RandomParameter):
         ----------
         pdf_shape: list of float [2]
             Shape parameters of normal distributed random variable [mean, std]
+
+        Attributes
+        ----------
+        pdf_shape: list of float [2]
+            Shape parameters of beta distributed random variable [mean, std]
+        pdf_limits: list of float [2]
+            Upper and lower bound of random variable (default: mean +- 3 * std)
 
         Examples
         --------

@@ -55,6 +55,9 @@ class Basis:
             Number of random variables, which can interact with each other
             All polynomials are ignored, which have an interaction order greater than specified
 
+        Notes
+        -----
+
         .. math::
            \\begin{tabular}{l*{4}{c}}
             Polynomial Index    & Dimension 1 & Dimension 2 & ... & Dimension M \\\\
@@ -65,8 +68,6 @@ class Basis:
             Basis N           & [Order D1] & [Order D2] & \\vdots & [Order M] \\\\
            \\end{tabular}
 
-        Notes
-        -----
         Adds Attributes:
 
         b: list of BasisFunction object instances [n_basis x n_dim]

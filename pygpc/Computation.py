@@ -18,8 +18,8 @@ def Computation(n_cpu):
     n_cpu = 1 : the model is called in serial for every paramerization.
     n_cpu > 1 : A multiprocessing.Pool will be opened and n_cpu parameterizations are calculated in parallel
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     n_cpu : int
         Number of CPU cores to use
 

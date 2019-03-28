@@ -9,8 +9,8 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
     indices, global derivative based sensitivity coefficients and probability density functions of output quantities to
     .hdf5 file of gPC.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     fn_gpc : str
         Filename of gPC .pkl object and corresponding .hdf5 results file (without file extension)
         (e.g. .../foo/gpc)
@@ -23,8 +23,8 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
     calc_pdf : bool
         Calculate probability density functions of output quantities (default: False)
 
-    Returns:
-    --------
+    Returns
+    -------
     <File> : .hdf5
         Adds datasets "sens/..." to the gPC .hdf5 file
 
@@ -32,6 +32,7 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
     -------
     The content of .hdf5 files can be shown using the tool HDFView
     (https://support.hdfgroup.org/products/java/hdfview/)
+
     ::
         sens
         I---/mean               [n_qoi]                 Mean of QOIs
