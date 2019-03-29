@@ -5,36 +5,74 @@ import scipy.special
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 from pygpc.AbstractModel import AbstractModel
+from collections import OrderedDict
 
 
-def plot_testfunction(testfunction_name, *args):
-    x = []
-    for arg in args:
-        x.append(arg)
+def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=0):
+    """
+    Plot 1D or 2D testfunctions for documentation.
 
-    p = dict()
-    # TODO: passe variablen namen hier an
-    if len(x) == 2:
-        x1, x2 = np.meshgrid(x[0], x[1])
-        p["x1"] = x1.flatten()
-        p["x2"] = x2.flatten()
+    Parameters
+    ----------
+    testfunction_name : str
+        Name of testfunction AbstractModel class
+    parameters : OrdererdDict
+        Dictionary containing the 1D coordinates as ndarrays, where the testfunction is evaluated (will be tensorized)
+    constants : OrderedDict (optional)
+        Dictionary containing the (remaining) parameters treated as constants
+    output_idx : int
+        index of output quantity to plot
+
+    Returns
+    -------
+    <plot> : matplotlib figure
+        Plot showing the QoI of the testfunction in 1D or 2D
+    """
+    # setup parameters
+    p_names = parameters.keys()
+    p = OrderedDict()
+
+    if len(p_names) == 2:
+        x1, x2 = np.meshgrid(parameters[p_names[0]], parameters[p_names[1]])
+        p[p_names[0]] = x1.flatten()
+        p[p_names[1]] = x2.flatten()
 
     else:
-        p["x1"] = x[0]
+        p[p_names[0]] = parameters[p_names[0]].flatten()
+
+    # add constants
+    if type(constants) is dict or type(constants) is OrderedDict:
+        c_names = constants.keys()
+        for c_name in c_names:
+            p[c_name] = np.tile(constants[c_name], (len(p[p_names[0]]), 1))
 
     model = []
-    exec ("model = {}(p, None)".format(testfunction_name))
+    exec ("model = {}(p)".format(testfunction_name))
 
-    y = model.simulate(None)
+    y = model.simulate()
+
+    # omit "additional_data" if present
+    if type(y) is tuple:
+        y = y[0]
 
     fig, ax = plt.subplots(figsize=(6, 5))
-    im = plt.pcolor(x1, x2, np.reshape(y, (100, 100), order='f'), cmap="jet")
+
+    if len(p_names) == 2:
+        im = plt.pcolor(x1,
+                        x2,
+                        np.reshape(y[:, output_idx],
+                                   (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
+                                   order='c'),
+                        cmap="jet")
+        ax.set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
+        fig.colorbar(im, ax=ax, orientation='vertical')
+
+    else:
+        plt.plot(parameters[p_names[0]], y)
+        ax.set_ylabel(r"$y({})$".format(p_names[0]), fontsize=12)
 
     plt.title("{} function".format(model.__class__.__name__))
-    ax.set_xlabel(r"$x_1$", fontsize=12)
-    ax.set_ylabel(r"$x_2$", fontsize=12)
-    fig.colorbar(im, ax=ax, orientation='vertical')
-
+    ax.set_xlabel(r"${}$".format(p_names[0]), fontsize=12)
     plt.tight_layout()
     plt.show()
 
@@ -67,19 +105,28 @@ class Peaks(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("Peaks", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       constants = OrderedDict()
+       constants["x3"] = 0.
+       plot("Peaks", parameters, constants)
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(Peaks, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
+        self.p["x1"] = self.p["x1"].flatten()
+        self.p["x2"] = self.p["x2"].flatten()
+        self.p["x3"] = self.p["x3"].flatten()
+
         y = (3.0 * (1 - self.p["x1"]) ** 2. * np.exp(-(self.p["x1"] ** 2) - (self.p["x3"] + 1) ** 2)
              - 10.0 * (self.p["x1"] / 5.0 - self.p["x1"] ** 3 - self.p["x3"] ** 5)
              * np.exp(-self.p["x1"] ** 2 - self.p["x3"] ** 2) - 1.0 / 3
@@ -95,30 +142,31 @@ class Peaks(AbstractModel):
 
         # two output variables for testing
         if y.size > 1:
-            y_out = np.array([y, 2*y]).transpose()
+            y_out = np.array([y, 2 * y]).transpose()
             additional_data = y.size * [additional_data]
         else:
-            y_out = np.array([y, 2*y])
+            y_out = np.array([y, 2 * y])
 
         return y_out, additional_data
 
-# TODO: add range
+
 class HyperbolicTangent(AbstractModel):
     """
     Two-dimensional hyperbolic tangent function [1] to simulate discontinuities. Discontinuity at x1 = 0.
 
-    y = HyperbolicTangent(x)
+    .. math::
+       y(x_1, x_2) = \\tanh(10 x_1) + 0.2 \sin(10 x_1) + 0.3 x_2 + 0.1 \sin(5 x_1)
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
-        Parameter 1
+        Parameter 1 [-1, 1]
     p["x2"]: float or ndarray of float [n_grid]
-        Parameter 2
+        Parameter 2 [-1, 1]
 
     Returns
     -------
-    y: ndarray of float [n_grid x n_out]
+    y: ndarray of float [n_grid x 1]
         Output data
 
     Notes
@@ -127,23 +175,26 @@ class HyperbolicTangent(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("HyperbolicTangent", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-1, 1, 100)
+       parameters["x2"] = np.linspace(-1, 1, 100)
+
+       plot("HyperbolicTangent", parameters)
 
     .. [1] Ahlfeld, R., Montomoli, F., Carnevale, M., Salvadore, S. (2018).
        Autonomous Uncertainty Quantification for Discontinuous Models Using Multivariate Pade Approximations.
        Journal of Turbomachinery, 104, 041004.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(HyperbolicTangent, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
         y = np.array(np.tanh(10. * self.p["x1"]) + 0.2 * np.sin(10. * self.p["x1"]) + 0.3 * self.p["x2"] +
                      0.1 * np.sin(5. * self.p["x1"]))
 
@@ -152,45 +203,44 @@ class HyperbolicTangent(AbstractModel):
 
         return y
 
-# TODO test with 1D function
+
 class MovingParticleFrictionForce(AbstractModel):
     """
     Differential equation describing a particle moving under the influence of a
     potential field and of a friction force [1].
 
-    d^2 X / dt^2 + f * dX/dt = -35/2 * X^3 + 15/2 * X
+    .. math:: \\frac{d^2 x}{dt^2} + f \\frac{dx}{dt} = -\\frac{35}{2} x^3 + \\frac{15}{2} x
 
     with:
 
-    x1 = X
-    x2 = dX/dt
+    .. math:: x_1 = x
+    .. math:: x_2 = \\frac{dx}{dt}
 
     we get a system of two 1st order ODE
 
-    dx1/dt = x2
-    dx2/dt + f*x2 = -35/2 * x1^3 + 15/2 * x1
+    .. math:: \\frac{d x_1}{dt} = x_2
+    .. math:: \\frac{d x_2}{dt} = -\\frac{35}{2} x_1^3 + \\frac{15}{2} x_1 - f x_2
 
     Discontinuity at randomly perturbed initial value x0 = X0 + delta_X * xi = 0.05 - 0.2 * 0.25
     and two stable fixed points:
-    - X = -sqrt(15/35) for xi < -0.25
-    - X = +sqrt(15/35) for xi > -0.25
+
+    .. math:: x = -\sqrt{15/35} \mathrm{for} \\xi < -0.25
+    .. math:: x = +\sqrt{15/35} \mathrm{for} \\xi > -0.25
 
     xi is uniform distributed [-1, 1]
 
     Mean value: 0.163663
     Standard deviation: 0.633865691
 
-    y = MovingParticleFrictionForce(x)
-
     Parameters
     ----------
-    p["x1"]: ndarray of float [1]
-        Pertubation xi of initial value x0 (x0 = X0 + xi)
+    p["xi"]: ndarray of float [1]
+        Pertubation xi of initial value x0 (x0 = X0 + xi) [-1, 1]
 
     Returns
     -------
     y: ndarray of float [1 x 1]
-        X(t=10.)
+        x(t=10.)
 
     Notes
     -----
@@ -198,23 +248,25 @@ class MovingParticleFrictionForce(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(-1, 1, 100)
-       plot("MovingParticleFrictionForce", x1)
+       parameters = OrderedDict()
+       parameters["xi"] = np.linspace(-1, 1, 100)
+
+       plot("MovingParticleFrictionForce", parameters)
 
     .. [1] Le Maitre, O.P., Knio, O.M., Najm, H.N., Ghanem, R.G. (2004).
        Uncertainty propagation using Wiener-Haar expansions.
        Journal of Computational Physics, 197, 28-57.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(MovingParticleFrictionForce, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         # System of 1st order DEQ
         def deq(x, t, f):
             return x[1], -35. / 2. * x[0] ** 3. + 15. / 2. * x[0] - f * x[1]
@@ -222,7 +274,6 @@ class MovingParticleFrictionForce(AbstractModel):
         # Initial values
         x0 = 0.05
         delta_x = 0.2
-        x0 = [x0 + delta_x * self.p["x1"], 0.]
 
         # Friction coefficient
         f = 2.
@@ -233,12 +284,16 @@ class MovingParticleFrictionForce(AbstractModel):
         t = np.arange(0, t_end, dt)
 
         # Solve
-        y = odeint(deq, x0, t, args=(f,), hmin=dt)
-        y_out = np.array([[y[-1, 0]]])
+        y_out = np.zeros((len(self.p["x1"]), 1))
+
+        for i in range(len(y_out)):
+            x0_init = [x0 + delta_x * self.p["x1"].flatten()[i], 0.]
+            y = odeint(deq, x0_init, t, args=(f,), hmin=dt)
+            y_out[i, 0] = np.array([[y[-1, 0]]])
 
         return y_out
 
-# TODO: was ist wenn variablen anders als x1 usw heissen?
+
 class SurfaceCoverageSpecies(AbstractModel):
     """
     Differential equation describing the time-evolution of the surface coverage rho [0, 1] for a given species [1].
@@ -248,9 +303,7 @@ class SurfaceCoverageSpecies(AbstractModel):
     in the surface absorption rate alpha can be considered to make the problem 3-dimensional.
     Gamma=0.01 denotes the desorption rate.
 
-    drho/dt = alpha * (1 - rho) - gamma * rho - beta * (rho - 1)^2 * rho
-
-    y = SurfaceCoverageSpecies(x)
+    .. math:: \\frac{d\\rho}{dt} = \\alpha (1 - \\rho) - \\gamma \\rho - \\beta (\\rho - 1)^2 \\rho
 
     Parameters
     ----------
@@ -272,27 +325,32 @@ class SurfaceCoverageSpecies(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 20, 100)
-       plot("SurfaceCoverageSpecies", x1, x2)
+       parameters = OrderedDict()
+       parameters["rho_0"] = np.linspace(0, 1, 100)
+       parameters["beta"] = np.linspace(0, 20, 100)
+
+       constants = OrderedDict()
+       constants["alpha"] = 1.
+
+       plot("SurfaceCoverageSpecies", parameters, constants)
 
     .. [1] Le Maitre, O.P., Najm, H.N., Ghanem, R.G., Knio, O.M., (2004).
        Multi-resolution analysis of Wiener-type uncertainty propagation schemes.
        Journal of Computational Physics, 197, 502-531.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(SurfaceCoverageSpecies, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         # System of 1st order DEQ
         def deq(rho, t, alpha, beta, gamma):
-            return alpha * (1. - rho) - gamma * rho - beta * (rho - 1)**2 * rho
+            return alpha * (1. - rho) - gamma * rho - beta * (rho - 1) ** 2 * rho
 
         # Constants
         gamma = 0.01
@@ -303,8 +361,12 @@ class SurfaceCoverageSpecies(AbstractModel):
         t = np.arange(0, t_end, dt)
 
         # Solve
-        y = odeint(deq, self.p["rho_0"], t, args=(self.p["alpha"], self.p["beta"], gamma,))
-        y_out = np.array([y[-1]])
+        y_out = np.zeros((len(self.p["rho_0"]), 1))
+
+        for i in range(len(y_out)):
+            y = odeint(deq, self.p["rho_0"].flatten()[i], t,
+                       args=(self.p["alpha"].flatten()[i], self.p["beta"].flatten()[i], gamma,))
+            y_out[i, 0] = np.array([y[-1]])
 
         return y_out
 
@@ -314,7 +376,11 @@ class Franke(AbstractModel):
     Franke function [1] with 2 parameters. It is often used in regression or interpolation analysis.
     It is defined in the interval [0, 1] x [0, 1]. Hampton and Doostan used in the framework of BASE-PC [2].
 
-    y = Franke(x)
+    .. math::
+       y = \\frac{3}{4} \exp{\\left(-\\frac{(9 x_1 - 2)^2}{4} - \\frac{(9 x_2 - 2)^2}{4}\\right)} +
+       \\frac{3}{4} \exp{\\left(-\\frac{(9 x_1 + 1)^2}{49} - \\frac{(9 x_2 + 1)}{10}\\right)} +
+       \\frac{1}{2} \exp{\\left(-\\frac{(9 x_1 - 7)^2}{4} - \\frac{(9 x_2 - 3)^2}{4}\\right)} +
+       \\frac{1}{5} \exp{\\left(-\\frac{(9 x_1 - 4)^2}{4} - (9 x_2 - 7)^2\\right)}
 
     Parameters
     ----------
@@ -334,10 +400,13 @@ class Franke(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("Franke", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("Franke", parameters)
 
     .. [1] Franke, R., (1979) A Critical Comparison of some Methods for Interpolation of Scattered Data,
        Tech. rep., DTIC Document
@@ -348,14 +417,13 @@ class Franke(AbstractModel):
 
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(Franke, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         y = 3. / 4. * np.exp(-((9 * self.p["x1"] - 2) ** 2) / 4. - ((9 * self.p["x2"] - 2) ** 2) / 4.) + \
             3. / 4. * np.exp(-((9 * self.p["x1"] + 1) ** 2) / 49. - (9 * self.p["x2"] + 1) / 10.) + \
             1. / 2. * np.exp(-((9 * self.p["x1"] - 7) ** 2) / 4. - ((9 * self.p["x2"] - 3) ** 2) / 4.) - \
@@ -374,12 +442,14 @@ class ManufactureDecay(AbstractModel):
     N-dimensional manufacture decay function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
     Hampton and Doostan used in the framework of BASE-PC [1].
 
-    y = ManufactureDecay(x)
+    .. math:: y = \\exp{\\left(2 - \sum_{i=1}^{N} x_i \\frac{\sin(i+1)}{i + 1}\\right)}
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter defined in [0, 1]
 
@@ -394,28 +464,30 @@ class ManufactureDecay(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("ManufactureDecay", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("ManufactureDecay", parameters)
 
     .. [1] Hampton, J., Doostan, A., (2018), Basis adaptive sample efficient polynomial chaos (BASE-PC),
        Journal of Computational Physics, 371, 20-49.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(ManufactureDecay, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         # determine sum in exponent
         s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
-            s += np.sin(i+1) * self.p[key] / (i+1.)
+            s += np.sin(i + 1) * self.p[key] / (i + 1.)
 
         # determine output
         y = np.exp(2 - s)
@@ -429,12 +501,14 @@ class GenzContinuous(AbstractModel):
     """
     N-dimensional "continuous" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
 
-    y = GenzContinuous(x)
+    .. math::  y = \\exp{\\left(- \sum_{i=1}^{N} a_i | x_i - u_i | \\right)}
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter defined in [0, 1]
 
@@ -449,10 +523,13 @@ class GenzContinuous(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("GenzContinuous", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("GenzContinuous", parameters)
 
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
@@ -461,14 +538,13 @@ class GenzContinuous(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/cont.html
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(GenzContinuous, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         n = len(self.p.keys())
 
         # set constants
@@ -493,12 +569,14 @@ class GenzCornerPeak(AbstractModel):
     """
     N-dimensional "CornerPeak" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
 
-    y = GenzCornerPeak(x)
+    .. math:: y = \\left( 1 + \sum_{i=1}^N a_i x_i\\right)^{-(N + 1)}
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter defined in [0, 1]
 
@@ -513,10 +591,13 @@ class GenzCornerPeak(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("GenzCornerPeak", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("GenzCornerPeak", parameters)
 
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
@@ -525,14 +606,13 @@ class GenzCornerPeak(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/copeak.html
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(GenzCornerPeak, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         n = len(self.p.keys())
 
         # set constants
@@ -556,12 +636,14 @@ class GenzDiscontinuous(AbstractModel):
     """
     N-dimensional "Discontinuous" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
 
-    y = GenzDiscontinuous(x)
+    .. math:: y = \exp\\left( \sum_{i=1}^N a_i x_i\\right) \quad \mathrm{if} \quad x_i < u_i \quad \mathrm{else} \quad 0
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter defined in [0, 1]
 
@@ -576,10 +658,13 @@ class GenzDiscontinuous(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("GenzDiscontinuous", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("GenzDiscontinuous", parameters)
 
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
@@ -588,13 +673,13 @@ class GenzDiscontinuous(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/disc.html
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(GenzDiscontinuous, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
 
         n = len(self.p.keys())
 
@@ -627,12 +712,14 @@ class GenzGaussianPeak(AbstractModel):
     """
     N-dimensional "GaussianPeak" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
 
-    y = GenzGaussianPeak(x)
+    .. math:: y = \exp\\left( - \sum_{i=1}^{N} a_i ^2 (x_i - u_i)^2\\right)
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter defined in [0, 1]
 
@@ -647,10 +734,13 @@ class GenzGaussianPeak(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("GenzGaussianPeak", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("GenzGaussianPeak", parameters)
 
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
@@ -659,14 +749,13 @@ class GenzGaussianPeak(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/gaussian.html
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(GenzGaussianPeak, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         n = len(self.p.keys())
 
         # set constants
@@ -677,7 +766,7 @@ class GenzGaussianPeak(AbstractModel):
         s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
-            s += a[i]**2 * (self.p[key] - u[i])**2
+            s += a[i] ** 2 * (self.p[key] - u[i]) ** 2
 
         # determine output
         y = np.exp(-s)
@@ -691,12 +780,14 @@ class GenzOscillatory(AbstractModel):
     """
     N-dimensional "Oscillatory" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
 
-    y = GenzOscillatory(x)
+    .. math:: y = \cos \\left( 2 \pi u_1 + \sum_{i=1}^{N}a_i x_i \\right)
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter defined in [0, 1]
 
@@ -711,10 +802,13 @@ class GenzOscillatory(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("GenzOscillatory", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("GenzOscillatory", parameters)
 
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
@@ -723,14 +817,13 @@ class GenzOscillatory(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/oscil.html
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(GenzOscillatory, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         n = len(self.p.keys())
 
         # set constants
@@ -755,12 +848,14 @@ class GenzProductPeak(AbstractModel):
     """
     N-dimensional "ProductPeak" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
 
-    y = GenzProductPeak(x)
+    .. math:: y = \prod_{i=1}^{N} \\left( a_i^{-2} + (x_i - u_i)^2 \\right)^{-1}
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter defined in [0, 1]
 
@@ -775,10 +870,13 @@ class GenzProductPeak(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("GenzProductPeak", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("GenzProductPeak", parameters)
 
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
@@ -787,14 +885,13 @@ class GenzProductPeak(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/prpeak.html
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(GenzProductPeak, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         n = len(self.p.keys())
 
         # set constants
@@ -811,25 +908,29 @@ class GenzProductPeak(AbstractModel):
 
         return y_out
 
-# TODO: ueberarbeite diese N-dim
+
 class Lim2002(AbstractModel):
     """
     Two-dimensional test function of Lim et al. (2002) [1].
 
     This function is a polynomial in two dimensions, with terms up to degree
     5. It is nonlinear, and it is smooth despite being complex, which is
-    common for computer experiment functions (Lim et al., 2002).
+    common for computer experiment functions.
 
-    f(x) = 9 + 5/2*x1 - 35/2*x2 + 5/2*x1*x2 + 19*x2^2 - 15/2*x1^3 - 5/2*x1*x2^2 - 11/2*x2^4 + x1^3*x2^2
+    .. math::
+       y = 9 + \\frac{5}{2} x_1 - \\frac{35}{2} x_2 + \\frac{5}{2} x_1 x_2 + 19 x_2^2 -
+       \\frac{15}{2} x_1^3 - \\frac{5}{2} x_1 x_2^2 - \\frac{11}{2} x_2^4 + x_1^3 x_2^2
 
     Parameters
     ----------
-    p["x"]: [N x 2] np.ndarray
-        Input data, xi is element of [0, 1], for all i = 1, 2
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["x2"]: float or ndarray of float [n_grid]
+        Second parameter defined in [0, 1]
 
     Returns
     -------
-    y: [N x 1] np.ndarray
+    y: ndarray of float [n_grid x 1]
         Output data
 
     Notes
@@ -838,32 +939,36 @@ class Lim2002(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       plot("Lim2002", x1, x2)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("Lim2002", parameters)
 
     .. [1] Lim, Y. B., Sacks, J., Studden, W. J., & Welch, W. J. (2002). Design
        and analysis of computer experiments when the output is highly correlated
        over the input space. Canadian Journal of Statistics, 30(1), 109-126.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(Lim2002, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         y = (9 + 5.0 / 2 * self.p["x1"] - 35.0 / 2 * self.p["x2"] + 5.0
              / 2 * self.p["x1"] * self.p["x2"] + 19 * self.p["x2"] ** 2
              - 15.0 / 2 * self.p["x1"] ** 3 - 5.0 / 2 * self.p["x1"] * self.p["x2"] ** 2
              - 11.0 / 2 * self.p["x2"] ** 4 + self.p["x1"] ** 3 * self.p["x2"] ** 2)
-    
-        return y
 
-#  TODO: ueberarbeite paras
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
 class Ishigami(AbstractModel):
     """
     Three-dimensional test function of Ishigami.
@@ -872,23 +977,27 @@ class Ishigami(AbstractModel):
     for uncertainty and sensitivity analysis methods, because it exhibits
     strong nonlinearity and nonmonotonicity. It also has a peculiar
     dependence on x3, as described by Sobol' & Levitan (1999) [2].
+    The values of a and b used by Crestaux et al. (2007) [3] and Marrel et al. (2009) [4] are: a = 7 and b = 0.1.
 
-    f(x) = sin(x1) + a*sin(x2)^2 + b*x3^4*sin(x1)
+    .. math:: y = \sin(x_1) + a \sin(x_2)^2 + b x_3^4 \sin(x_1)
 
     Parameters
     ----------
-    p["x"]: [N x 3] np.ndarray
-        input data,
-        xi ~ Uniform[-pi, pi], for all i = 1, 2, 3
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-pi, pi]
+    p["x2"]: float or ndarray of float [n_grid]
+        Second parameter defined in [-pi, pi]
+    p["x3"]: float or ndarray of float [n_grid]
+        Second parameter defined in [-pi, pi]
     p["a"]: float
-        shape parameter
+        shape parameter (a=7)
     p["b"]: float
-        shape parameter
+        shape parameter (b=0.1)
 
     Returns
     -------
-    y: [N x 1] np.ndarray
-        output data
+    y: ndarray of float [n_grid x 1]
+        Output data
 
     Notes
     -----
@@ -896,11 +1005,18 @@ class Ishigami(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(0, 1, 100)
-       x2 = np.linspace(0, 1, 100)
-       x3 = 0
-       plot("Ishigami", x1, x2, x3)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-np.pi, np.pi, 100)
+       parameters["x2"] = np.linspace(-np.pi, np.pi, 100)
+
+       constants = OrderedDict()
+       constants["a"] = 7.
+       constants["b"] = 0.1
+       constants["x3"] = 0.
+
+       plot("Ishigami", parameters, constants)
 
     .. [1] Ishigami, T., Homma, T. (1990, December). An importance quantification
        technique in uncertainty analysis for computer models. In Uncertainty
@@ -910,86 +1026,47 @@ class Ishigami(AbstractModel):
     .. [2] Sobol', I.M., Levitan, Y.L. (1999). On the use of variance reducing
        multipliers in Monte Carlo computations of a global sensitivity index.
        Computer Physics Communications, 117(1), 52-61.
+
+    .. [3] Crestaux, T., Martinez, J.-M., Le Maitre, O., & Lafitte, O. (2007).
+       Polynomial chaos expansion for uncertainties quantification and sensitivity analysis [PowerPoint slides].
+       Retrieved from SAMO 2007 website: http://samo2007.chem.elte.hu/lectures/Crestaux.pdf.
+
+    .. [4] Marrel, A., Iooss, B., Laurent, B., & Roustant, O. (2009).
+       Calculations of sobol indices for the gaussian process metamodel.
+       Reliability Engineering & System Safety, 94(3), 742-751.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(Ishigami, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-        y = (np.sin(self.p["x1"]) + self.p["a"] * np.sin(self.p["x2"]) ** 2
-             + self.p["b"] * self.p["x3"] ** 4 * np.sin(self.p["x1"]))
-    
-        return y
+    def simulate(self, process_id=None):
+        y = (np.sin(self.p["x1"].flatten()) + self.p["a"].flatten() * np.sin(self.p["x2"].flatten()) ** 2
+             + self.p["b"].flatten() * self.p["x3"].flatten() ** 4 * np.sin(self.p["x1"].flatten()))
 
-# TODO: ueberarbeite dim
-class Sphere0Fun(AbstractModel):
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class SphereFun(AbstractModel):
     """
     N-dimensional sphere function with zero mean.
 
     Parameters
     ----------
-    p["x"]:  ndarray of float [N_input x N_dims]
-        input data
-    p["a"]: ndarray of float [N_dims]
-        lower bound of input data
-    p["b"]: ndarray of float [N_dims]
-        upper bound of input data
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [-1, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter [-1, 1]
 
     Returns
     -------
-    y: [N_input] np.ndarray
-        output data
-
-    Notes
-    -----
-    .. plot::
-
-       import numpy as np
-       from pygpc.testfunctions import plot_testfunction as plot
-
-       x1 = np.linspace(-1, 1, 100)
-       x2 = np.linspace(-1, 1, 100)
-       plot("Sphere0Fun", x1, x2, x3)
-    """
-
-    def __init__(self, p, context):
-        super(Sphere0Fun, self).__init__(p, context)
-
-    def validate(self):
-        pass
-
-    def simulate(self, process_id):
-
-        try:
-            n = self.p["x"].shape[1]
-        except IndexError:
-            n = 1
-            self.p["x"] = np.array([self.p["x"]])
-
-        # zero mean
-        c2 = (1.0 * n * (self.p["b"] ** 3 - self.p["a"] ** 3)) / (3 * (self.p["b"] - self.p["a"]))
-
-        # sphere function
-        y = (np.sum(np.square(self.p["x"]), axis=1) - c2)
-    
-        return y
-
-# TODO: ueberarbeite dim
-class SphereFun(AbstractModel):
-    """
-    N-dimensional sphere function.
-
-    Parameters
-    ----------
-    p["x"]: ndarray of float [N_input x N_dims]
-        Input data
-
-    Returns
-    -------
-    y: ndarray of float [N_input x 1]
+    y: ndarray of float [n_grid x 1]
         Output data
 
     Notes
@@ -998,25 +1075,33 @@ class SphereFun(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(-1, 1, 100)
-       x2 = np.linspace(-1, 1, 100)
-       plot("Sphere0Fun", x1, x2, x3)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-1, 1, 100)
+       parameters["x2"] = np.linspace(-1, 1, 100)
+
+       plot("SphereFun", parameters)
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(SphereFun, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
+        # determine output
+        y = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
 
-        y = (np.sum(np.square(self.p["x"]), axis=1))
-    
-        return y
+        for i, key in enumerate(self.p.keys()):
+            y += self.p[key] ** 2
 
-# TODO: ueberarbeite dim
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
 class GFunction(AbstractModel):
     """
     N-dimensional g-function used by Saltelli and Sobol (1995) [1].
@@ -1025,14 +1110,20 @@ class GFunction(AbstractModel):
     estimation methods, including sensitivity analysis methods, because it
     is fairly complex, and its sensitivity indices can be expressed
     analytically. The exact value of the integral with this function as an
-    integrand is 1.
+    integrand is 1. For each index i, a lower value of a_i indicates a higher
+    importance of the input variable xi. The recommended values of a_i by
+    Crestaux et al. (2007) [2] are a_i = (i-2)/2.
 
     Parameters
     ----------
-    p["x"]: ndarray of float [N_input x N_dims]
-        Input data
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter [0, 1]
     p["a"]: ndarray of float [N_dims]
-        Importance factor of dimensions
+        Importance factors of dimensions, typically a_i = (i-2)/2
 
     Returns
     -------
@@ -1045,34 +1136,45 @@ class GFunction(AbstractModel):
 
        import numpy as np
        from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
 
-       x1 = np.linspace(-1, 1, 100)
-       x2 = np.linspace(-1, 1, 100)
-       plot("GFunction", x1, x2, x3)
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       constants = OrderedDict()
+       constants["a"] =  (np.arange(2)+1-2.)/2.
+
+       plot("GFunction", parameters, constants)
 
     .. [1] Saltelli, Andrea; Sobol, I. M. (1995): Sensitivity analysis for nonlinear
        mathematical models: numerical experience. In: Mathematical models and
-       computer experiment 7 (11), S. 16-28.
+       computer experiment 7 (11), pp. 16-28.
+
+    .. [2] Crestaux, T., Martinez, J.-M., Le Maitre, O., & Lafitte, O. (2007).
+       Polynomial chaos expansion for uncertainties quantification and sensitivity analysis [PowerPoint slides].
+       Retrieved from SAMO 2007 website: http://samo2007.chem.elte.hu/lectures/Crestaux.pdf.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(GFunction, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
+        # determine output
+        y = np.ones(np.array(self.p[self.p.keys()[0]]).size)
 
-        try:
-            self.p["x"].shape[1]
-        except IndexError:
-            self.p["x"] = np.array([self.p["x"]])
+        for i, key in enumerate(self.p.keys()):
+            if "x" in key:
+                y *= (np.abs(4.0 * self.p[key] - 2) + self.p["a"][:, i]) / (1.0 + self.p["a"][:, i])
 
-        y = (np.prod((np.abs(4.0 * self.p["x"] - 2) + self.p["a"]) / (1.0 + self.p["a"]), axis=1))
-    
-        return y
+        y_out = y[:, np.newaxis]
 
-# TODO: ueberarbeite dim
+        return y_out
+
+
 class OakleyOhagan2004(AbstractModel):
     """
     15-dimensional test function of Oakley and O'Hagan (2004) [1].
@@ -1084,7 +1186,7 @@ class OakleyOhagan2004(AbstractModel):
 
     Parameters
     ----------
-    p["x"]: ndarray of float [N_input x 15]
+    p["x1...N"]: ndarray of float [n_grid]
         Input data, xi ~ N(mu=0, sigma=1), for all i = 1, 2,..., 15.
 
     Returns
@@ -1098,25 +1200,32 @@ class OakleyOhagan2004(AbstractModel):
        of complex models: a Bayesian approach. Journal of the Royal Statistical
        Society: Series B (Statistical Methodology), 66(3), 751-769.
     """
-    def __init__(self, p, context):
+
+    def __init__(self, p, context=None):
         super(OakleyOhagan2004, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         # load coefficients
         m = np.loadtxt('../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_M.txt')
         a1 = np.loadtxt('../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a1.txt')
         a2 = np.loadtxt('../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a2.txt')
         a3 = np.loadtxt('../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a3.txt')
 
-        # function
-        y = (np.dot(self.p["x"], a1) + np.dot(np.sin(self.p["x"]), a2)
-             + np.dot(np.cos(self.p["x"]), a3) + np.sum(np.multiply(np.dot(self.p["x"], m), self.p["x"]), axis=1))
+        x = np.zeros((self.p[self.p.keys()[0]], 15))
 
-        return y
+        for i, key in enumerate(self.p.keys()):
+            x[:, i] = self.p[key]
+
+        # function
+        y = (np.dot(x, a1) + np.dot(np.sin(x), a2)
+             + np.dot(np.cos(x), a3) + np.sum(np.multiply(np.dot(x, m), x), axis=1))
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
 
 
 class Welch1992(AbstractModel):
@@ -1135,7 +1244,7 @@ class Welch1992(AbstractModel):
 
     Returns
     -------
-    y: ndarray of float [1]
+    y: ndarray of float [n_grid x 1]
         Output data
 
     Notes
@@ -1144,22 +1253,23 @@ class Welch1992(AbstractModel):
        Screening, predicting, and computer experiments. Technometrics, 34(1), 15-25.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(Welch1992, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         y = (5.0 * self.p["x12"] / (1 + self.p["x1"]) + 5 * (self.p["x4"] - self.p["x20"]) ** 2
              + self.p["x5"] + 40 * self.p["x19"] ** 3 + 5 * self.p["x19"] + 0.05 * self.p["x2"]
              + 0.08 * self.p["x3"] - 0.03 * self.p["x6"] + 0.03 * self.p["x7"]
              - 0.09 * self.p["x9"] - 0.01 * self.p["x10"] - 0.07 * self.p["x11"]
              + 0.25 * self.p["x13"] ** 2 - 0.04 * self.p["x14"]
              + 0.06 * self.p["x15"] - 0.01 * self.p["x17"] - 0.03 * self.p["x18"])
-    
-        return y
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
 
 
 class WingWeight(AbstractModel):
@@ -1191,8 +1301,8 @@ class WingWeight(AbstractModel):
 
     Returns
     -------
-    y: float
-        output data
+    y: ndarray of float [n_grid x 1]
+        Output data
 
     Notes
     -----
@@ -1200,21 +1310,23 @@ class WingWeight(AbstractModel):
        Engineering design via surrogate modelling: a practical guide. John Wiley & Sons.
     """
 
-    def __init__(self, p, context):
-            super(WingWeight, self).__init__(p, context)
+    def __init__(self, p, context=None):
+        super(WingWeight, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
         y = (0.036 * self.p["x1"] ** 0.758 * self.p["x2"] ** 0.0035
              * (self.p["x3"] / np.cos(self.p["x4"]) ** 2) ** 0.6
              * self.p["x5"] ** 0.006 * self.p["x6"] ** 0.04
              * (100 * self.p["x7"] / np.cos(self.p["x4"])) ** -0.3
              * (self.p["x8"] * self.p["x9"]) ** 0.49
              + self.p["x1"] * self.p["x10"])
-    
-        return y
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
 
 
 class SphereModel(AbstractModel):
@@ -1241,7 +1353,7 @@ class SphereModel(AbstractModel):
 
     Returns
     -------
-    potential: ndarray of float [N x 1]
+    potential: ndarray of float [1 x n_out]
         Values of the electric potential, in (V)
 
     Notes
@@ -1250,7 +1362,7 @@ class SphereModel(AbstractModel):
        IEEE transactions on biomedical engineering, (1), 15-22.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(SphereModel, self).__init__(p, context)
 
         # number of of legendre polynomials to use
@@ -1259,8 +1371,7 @@ class SphereModel(AbstractModel):
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         assert len(self.p["R"]) == 3
         assert self.p["R"][0] < self.p["R"][1] < self.p["R"][2]
         assert len(self.p["anode_pos"]) == 3
@@ -1279,30 +1390,31 @@ class SphereModel(AbstractModel):
 
         p_r = np.vstack((r, theta, phi)).T
 
-        cathode_pos = (np.sqrt(self.p["cathode_pos"][0]**2 +
-                               self.p["cathode_pos"][1]**2 +
-                               self.p["cathode_pos"][2]**2) * 1e-3,
+        cathode_pos = (np.sqrt(self.p["cathode_pos"][0] ** 2 +
+                               self.p["cathode_pos"][1] ** 2 +
+                               self.p["cathode_pos"][2] ** 2) * 1e-3,
                        np.arccos(self.p["cathode_pos"][2] /
-                                 np.sqrt(self.p["cathode_pos"][0]**2 +
-                                         self.p["cathode_pos"][1]**2 +
-                                         self.p["cathode_pos"][2]**2)),
+                                 np.sqrt(self.p["cathode_pos"][0] ** 2 +
+                                         self.p["cathode_pos"][1] ** 2 +
+                                         self.p["cathode_pos"][2] ** 2)),
                        np.arctan2(self.p["cathode_pos"][1], self.p["cathode_pos"][0]))
 
-        anode_pos = (np.sqrt(self.p["anode_pos"][0]**2 + self.p["anode_pos"][1]**2 + self.p["anode_pos"][2]**2) * 1e-3,
-                     np.arccos(self.p["anode_pos"][2] /
-                               np.sqrt(self.p["anode_pos"][0] ** 2 +
-                                       self.p["anode_pos"][1]**2 +
-                                       self.p["anode_pos"][2]**2)),
-                     np.arctan2(self.p["anode_pos"][1], self.p["anode_pos"][0]))
+        anode_pos = (
+            np.sqrt(self.p["anode_pos"][0] ** 2 + self.p["anode_pos"][1] ** 2 + self.p["anode_pos"][2] ** 2) * 1e-3,
+            np.arccos(self.p["anode_pos"][2] /
+                      np.sqrt(self.p["anode_pos"][0] ** 2 +
+                              self.p["anode_pos"][1] ** 2 +
+                              self.p["anode_pos"][2] ** 2)),
+            np.arctan2(self.p["anode_pos"][1], self.p["anode_pos"][0]))
 
         def a(n):
-            return ((2 * n + 1)**3 / (2 * n)) / (((b_over_s + 1) * n + 1) * ((s_over_t + 1) * n + 1) +
-                                                 (b_over_s - 1) * (s_over_t - 1) * n * (n + 1) *
-                                                 (radius_brain / radius_skull)**(2 * n + 1) +
-                                                 (s_over_t - 1) * (n + 1) * ((b_over_s + 1) * n + 1) *
-                                                 (radius_skull / radius_skin)**(2 * n + 1) +
-                                                 (b_over_s - 1) * (n + 1) * ((s_over_t + 1) * (n + 1) - 1) *
-                                                 (radius_brain / radius_skin)**(2 * n + 1))
+            return ((2 * n + 1) ** 3 / (2 * n)) / (((b_over_s + 1) * n + 1) * ((s_over_t + 1) * n + 1) +
+                                                   (b_over_s - 1) * (s_over_t - 1) * n * (n + 1) *
+                                                   (radius_brain / radius_skull) ** (2 * n + 1) +
+                                                   (s_over_t - 1) * (n + 1) * ((b_over_s + 1) * n + 1) *
+                                                   (radius_skull / radius_skin) ** (2 * n + 1) +
+                                                   (b_over_s - 1) * (n + 1) * ((s_over_t + 1) * (n + 1) - 1) *
+                                                   (radius_brain / radius_skin) ** (2 * n + 1))
 
         # All of the bellow is modified: division by radius_skin moved to the
         # coefficients calculations due to numerical constraints
@@ -1312,17 +1424,17 @@ class SphereModel(AbstractModel):
 
         def u(n):
             return (a(n) * radius_skin) * n * (1 - b_over_s) * \
-                   radius_brain**(2 * n + 1) / (2 * n + 1)
+                   radius_brain ** (2 * n + 1) / (2 * n + 1)
 
         def t(n):
-            return (a(n) / ((2 * n + 1)**2)) * \
+            return (a(n) / ((2 * n + 1) ** 2)) * \
                    (((1 + b_over_s) * n + 1) * ((1 + s_over_t) * n + 1) +
-                    n * (n + 1) * (1 - b_over_s) * (1 - s_over_t) * (radius_brain / radius_skull)**(2 * n + 1))
+                    n * (n + 1) * (1 - b_over_s) * (1 - s_over_t) * (radius_brain / radius_skull) ** (2 * n + 1))
 
         def w(n):
-            return ((n * a(n) * radius_skin) / ((2 * n + 1)**2)) * \
-                   ((1 - s_over_t) * ((1 + b_over_s) * n + 1) * radius_skull**(2 * n + 1) +
-                    (1 - b_over_s) * ((1 + s_over_t) * n + s_over_t) * radius_brain**(2 * n + 1))
+            return ((n * a(n) * radius_skin) / ((2 * n + 1) ** 2)) * \
+                   ((1 - s_over_t) * ((1 + b_over_s) * n + 1) * radius_skull ** (2 * n + 1) +
+                    (1 - b_over_s) * ((1 + s_over_t) * n + s_over_t) * radius_brain ** (2 * n + 1))
 
         brain_region = np.where(p_r[:, 0] <= radius_brain)[0]
         skull_region = np.where(
@@ -1332,12 +1444,12 @@ class SphereModel(AbstractModel):
         inside_sphere = np.where((p_r[:, 0] <= radius_skin))[0]
         outside_sphere = np.where((p_r[:, 0] > radius_skin))[0]
 
-        cos_theta_a = np.cos(cathode_pos[1]) * np.cos(p_r[:, 1]) +\
-            np.sin(cathode_pos[1]) * np.sin(p_r[:, 1]) * \
-            np.cos(p_r[:, 2] - cathode_pos[2])
-        cos_theta_b = np.cos(anode_pos[1]) * np.cos(p_r[:, 1]) +\
-            np.sin(anode_pos[1]) * np.sin(p_r[:, 1]) * \
-            np.cos(p_r[:, 2] - anode_pos[2])
+        cos_theta_a = np.cos(cathode_pos[1]) * np.cos(p_r[:, 1]) + \
+                      np.sin(cathode_pos[1]) * np.sin(p_r[:, 1]) * \
+                      np.cos(p_r[:, 2] - cathode_pos[2])
+        cos_theta_b = np.cos(anode_pos[1]) * np.cos(p_r[:, 1]) + \
+                      np.sin(anode_pos[1]) * np.sin(p_r[:, 1]) * \
+                      np.cos(p_r[:, 2] - anode_pos[2])
 
         potentials = np.zeros((self.p["points"].shape[0]), dtype='float64')
 
@@ -1347,13 +1459,13 @@ class SphereModel(AbstractModel):
         for ii in range(1, self.nbr_polynomials):
             ni = float(ii)
             coefficients[ii, brain_region] = np.nan_to_num(
-                a(ni) * ((p_r[brain_region, 0] / radius_skin)**ni))
+                a(ni) * ((p_r[brain_region, 0] / radius_skin) ** ni))
 
-            coefficients[ii, skull_region] = np.nan_to_num(s(ni) * (p_r[skull_region, 0] / radius_skin)**ni +
-                                                           u(ni) * (p_r[skull_region, 0] * radius_skin)**(-ni - 1))
+            coefficients[ii, skull_region] = np.nan_to_num(s(ni) * (p_r[skull_region, 0] / radius_skin) ** ni +
+                                                           u(ni) * (p_r[skull_region, 0] * radius_skin) ** (-ni - 1))
 
-            coefficients[ii, skin_region] = np.nan_to_num(t(ni) * (p_r[skin_region, 0] / radius_skin)**ni
-                                                          + w(ni) * (p_r[skin_region, 0] * radius_skin)**(-ni - 1))
+            coefficients[ii, skin_region] = np.nan_to_num(t(ni) * (p_r[skin_region, 0] / radius_skin) ** ni
+                                                          + w(ni) * (p_r[skin_region, 0] * radius_skin) ** (-ni - 1))
 
         potentials[inside_sphere] = np.nan_to_num(
             np.polynomial.legendre.legval(cos_theta_a[inside_sphere], coefficients[:, inside_sphere], tensor=False) -
@@ -1362,6 +1474,8 @@ class SphereModel(AbstractModel):
         potentials *= 1.0 / (2 * np.pi * self.p["sigma_3"] * radius_skin)
 
         potentials[outside_sphere] = 0.0
+
+        potentials = potentials[np.newaxis, :]
 
         return potentials
 
@@ -1385,7 +1499,7 @@ class PotentialHomogeneousDipole(AbstractModel):
 
     Returns
     -------
-    potential: [n x 1] np.ndarray
+    potential: ndarray of float [1 x n_out]
        Potential at the points
 
     Notes
@@ -1394,13 +1508,13 @@ class PotentialHomogeneousDipole(AbstractModel):
        IEEE Transactions on Biomedical Engineering, 47(7), 964-966.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(PotentialHomogeneousDipole, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
 
         self.p["detector_positions"] = np.atleast_2d(self.p["detector_positions"])
         assert self.p["detector_positions"].shape[1] == 3
@@ -1435,6 +1549,8 @@ class PotentialHomogeneousDipole(AbstractModel):
 
         potential /= 4 * np.pi * self.p["conductivity"]
 
+        potential = potential[np.newaxis, :]
+
         return potential
 
 
@@ -1456,7 +1572,7 @@ class BfieldOutsideSphere(AbstractModel):
 
     Returns
     -------
-    B: ndarray of float [N x 3]
+    B: ndarray of float [1 x 3*N]
         B-fields in detector positions
 
     Notes
@@ -1465,14 +1581,13 @@ class BfieldOutsideSphere(AbstractModel):
        Physics in Medicine & Biology, 32(1), 11.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(BfieldOutsideSphere, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
-
+    def simulate(self, process_id=None):
         pos = np.array(self.p["dipole_pos"], dtype=float) * 1e-3
         moment = np.array(self.p["dipole_moment"], dtype=float)
         detector = np.array(self.p["detector_positions"], dtype=float) * 1e-3
@@ -1502,6 +1617,8 @@ class BfieldOutsideSphere(AbstractModel):
             b[ii, :] = (4 * np.pi * 1e-7) / \
                        (4 * np.pi * f ** 2) * (f * np.cross(moment, r_0) - np.dot(np.cross(moment, r_0), r) * grad_f)
 
+        b = b.flatten()[np.newaxis, :]
+
         return b
 
 
@@ -1523,7 +1640,7 @@ class TMSEfieldSphere(AbstractModel):
 
     Returns
     -------
-    E: [N x 3] np.ndarray
+    E: ndarray of float [1 x 3*N]
         E-fields at detector positions
 
     Notes
@@ -1532,13 +1649,13 @@ class TMSEfieldSphere(AbstractModel):
        theoretical aspects. Biophysical Journal, 63(1), 129-138.
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(TMSEfieldSphere, self).__init__(p, context)
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
 
         if self.p["dipole_pos"].shape != self.p["dipole_moment"].shape:
             raise ValueError('List of dipole position and moments should have the same'
@@ -1563,7 +1680,9 @@ class TMSEfieldSphere(AbstractModel):
             grad_f = (norm_a ** 2 / norm_r2 + 2 * norm_a + 2 * norm_r2 + r2_dot_a / norm_a) * r2 - \
                      (norm_a + 2 * norm_r2 + r2_dot_a / norm_a) * r1
             e += -self.p["didt"] * mu0_4pi / f ** 2 * (
-                 f * np.cross(r1, m) - np.cross(np.sum(m * grad_f, axis=1)[:, None] * r1, r2))
+                    f * np.cross(r1, m) - np.cross(np.sum(m * grad_f, axis=1)[:, None] * r1, r2))
+
+        e = e.flatten()[np.newaxis, :]
 
         return e
 
@@ -1589,7 +1708,7 @@ class PotentialDipole3Layers(AbstractModel):
 
     Returns
     -------
-    potential: ndarray of float [N x 1]
+    potential: ndarray of float [1 x n_out]
         Values of the electric potential, in (V)
 
     Notes
@@ -1599,7 +1718,7 @@ class PotentialDipole3Layers(AbstractModel):
        eq. 2 and 2a
     """
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         super(PotentialDipole3Layers, self).__init__(p, context)
 
         # Number of of legendre polynomials to use (default = 100)
@@ -1608,7 +1727,7 @@ class PotentialDipole3Layers(AbstractModel):
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
 
         assert len(self.p["radii"]) == 3
         assert self.p["radii"][0] < self.p["radii"][1] < self.p["radii"][2]
@@ -1673,5 +1792,7 @@ class PotentialDipole3Layers(AbstractModel):
                 (ni * m_r * p[0, ii, :] - m_t * p[1, ii, :] * cos_beta))
 
         potential /= 4 * np.pi * self.p["cond_brain_scalp"] * r ** 2
+
+        potential = potential[np.newaxis, :]
 
         return potential

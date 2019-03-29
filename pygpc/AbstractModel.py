@@ -16,7 +16,7 @@ class AbstractModel:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, p, context):
+    def __init__(self, p, context=None):
         """
         Constructor; initialized the SimulationWrapper class with the provided context
 
@@ -231,7 +231,7 @@ class AbstractModel:
         return self.seq_number
 
     @abstractmethod
-    def simulate(self, process_id):
+    def simulate(self, process_id=None):
         """
         This abstract method must be implemented by the subclass.
         It should perform the simulation task depending on the input_values provided to the object on instantiation.
