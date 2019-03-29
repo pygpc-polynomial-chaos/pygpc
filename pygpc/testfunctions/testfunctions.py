@@ -13,7 +13,7 @@ def plot_testfunction(testfunction_name, *args):
         x.append(arg)
 
     p = dict()
-
+    # TODO: passe variablen namen hier an
     if len(x) == 2:
         x1, x2 = np.meshgrid(x[0], x[1])
         p["x1"] = x1.flatten()
@@ -60,6 +60,17 @@ class Peaks(AbstractModel):
         Output data
     misc: dict or list of dict [n_grid]
         Additional data, will be saved under its keys in the .hdf5 file during gPC simulations for every grid point
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("Peaks", x1, x2)
     """
 
     def __init__(self, p, context):
@@ -91,7 +102,7 @@ class Peaks(AbstractModel):
 
         return y_out, additional_data
 
-
+# TODO: add range
 class HyperbolicTangent(AbstractModel):
     """
     Two-dimensional hyperbolic tangent function [1] to simulate discontinuities. Discontinuity at x1 = 0.
@@ -112,6 +123,15 @@ class HyperbolicTangent(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("HyperbolicTangent", x1, x2)
+
     .. [1] Ahlfeld, R., Montomoli, F., Carnevale, M., Salvadore, S. (2018).
        Autonomous Uncertainty Quantification for Discontinuous Models Using Multivariate Pade Approximations.
        Journal of Turbomachinery, 104, 041004.
@@ -132,7 +152,7 @@ class HyperbolicTangent(AbstractModel):
 
         return y
 
-
+# TODO test with 1D function
 class MovingParticleFrictionForce(AbstractModel):
     """
     Differential equation describing a particle moving under the influence of a
@@ -174,6 +194,14 @@ class MovingParticleFrictionForce(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(-1, 1, 100)
+       plot("MovingParticleFrictionForce", x1)
+
     .. [1] Le Maitre, O.P., Knio, O.M., Najm, H.N., Ghanem, R.G. (2004).
        Uncertainty propagation using Wiener-Haar expansions.
        Journal of Computational Physics, 197, 28-57.
@@ -210,7 +238,7 @@ class MovingParticleFrictionForce(AbstractModel):
 
         return y_out
 
-
+# TODO: was ist wenn variablen anders als x1 usw heissen?
 class SurfaceCoverageSpecies(AbstractModel):
     """
     Differential equation describing the time-evolution of the surface coverage rho [0, 1] for a given species [1].
@@ -240,6 +268,15 @@ class SurfaceCoverageSpecies(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 20, 100)
+       plot("SurfaceCoverageSpecies", x1, x2)
+
     .. [1] Le Maitre, O.P., Najm, H.N., Ghanem, R.G., Knio, O.M., (2004).
        Multi-resolution analysis of Wiener-type uncertainty propagation schemes.
        Journal of Computational Physics, 197, 502-531.
@@ -353,6 +390,15 @@ class ManufactureDecay(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("ManufactureDecay", x1, x2)
+
     .. [1] Hampton, J., Doostan, A., (2018), Basis adaptive sample efficient polynomial chaos (BASE-PC),
        Journal of Computational Physics, 371, 20-49.
     """
@@ -399,6 +445,15 @@ class GenzContinuous(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("GenzContinuous", x1, x2)
+
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
        and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
@@ -454,6 +509,15 @@ class GenzCornerPeak(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("GenzCornerPeak", x1, x2)
+
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
        and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
@@ -508,6 +572,15 @@ class GenzDiscontinuous(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("GenzDiscontinuous", x1, x2)
+
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
        and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
@@ -570,6 +643,15 @@ class GenzGaussianPeak(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("GenzGaussianPeak", x1, x2)
+
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
        and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
@@ -625,6 +707,15 @@ class GenzOscillatory(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("GenzOscillatory", x1, x2)
+
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
        and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
@@ -680,6 +771,15 @@ class GenzProductPeak(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("GenzProductPeak", x1, x2)
+
     .. [1] Genz, A. (1984), Testing multidimensional integration routines.
        Proc. of international conference on Tools, methods and languages for scientific
        and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
@@ -711,7 +811,7 @@ class GenzProductPeak(AbstractModel):
 
         return y_out
 
-
+# TODO: ueberarbeite diese N-dim
 class Lim2002(AbstractModel):
     """
     Two-dimensional test function of Lim et al. (2002) [1].
@@ -734,6 +834,15 @@ class Lim2002(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       plot("Lim2002", x1, x2)
+
     .. [1] Lim, Y. B., Sacks, J., Studden, W. J., & Welch, W. J. (2002). Design
        and analysis of computer experiments when the output is highly correlated
        over the input space. Canadian Journal of Statistics, 30(1), 109-126.
@@ -754,7 +863,7 @@ class Lim2002(AbstractModel):
     
         return y
 
-
+#  TODO: ueberarbeite paras
 class Ishigami(AbstractModel):
     """
     Three-dimensional test function of Ishigami.
@@ -783,6 +892,16 @@ class Ishigami(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(0, 1, 100)
+       x2 = np.linspace(0, 1, 100)
+       x3 = 0
+       plot("Ishigami", x1, x2, x3)
+
     .. [1] Ishigami, T., Homma, T. (1990, December). An importance quantification
        technique in uncertainty analysis for computer models. In Uncertainty
        Modeling and Analysis, 1990. Proceedings., First International Symposium
@@ -805,7 +924,7 @@ class Ishigami(AbstractModel):
     
         return y
 
-
+# TODO: ueberarbeite dim
 class Sphere0Fun(AbstractModel):
     """
     N-dimensional sphere function with zero mean.
@@ -823,6 +942,17 @@ class Sphere0Fun(AbstractModel):
     -------
     y: [N_input] np.ndarray
         output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(-1, 1, 100)
+       x2 = np.linspace(-1, 1, 100)
+       plot("Sphere0Fun", x1, x2, x3)
     """
 
     def __init__(self, p, context):
@@ -847,7 +977,7 @@ class Sphere0Fun(AbstractModel):
     
         return y
 
-
+# TODO: ueberarbeite dim
 class SphereFun(AbstractModel):
     """
     N-dimensional sphere function.
@@ -861,6 +991,17 @@ class SphereFun(AbstractModel):
     -------
     y: ndarray of float [N_input x 1]
         Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(-1, 1, 100)
+       x2 = np.linspace(-1, 1, 100)
+       plot("Sphere0Fun", x1, x2, x3)
     """
 
     def __init__(self, p, context):
@@ -875,7 +1016,7 @@ class SphereFun(AbstractModel):
     
         return y
 
-
+# TODO: ueberarbeite dim
 class GFunction(AbstractModel):
     """
     N-dimensional g-function used by Saltelli and Sobol (1995) [1].
@@ -900,6 +1041,15 @@ class GFunction(AbstractModel):
 
     Notes
     -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+
+       x1 = np.linspace(-1, 1, 100)
+       x2 = np.linspace(-1, 1, 100)
+       plot("GFunction", x1, x2, x3)
+
     .. [1] Saltelli, Andrea; Sobol, I. M. (1995): Sensitivity analysis for nonlinear
        mathematical models: numerical experience. In: Mathematical models and
        computer experiment 7 (11), S. 16-28.
@@ -922,7 +1072,7 @@ class GFunction(AbstractModel):
     
         return y
 
-
+# TODO: ueberarbeite dim
 class OakleyOhagan2004(AbstractModel):
     """
     15-dimensional test function of Oakley and O'Hagan (2004) [1].
