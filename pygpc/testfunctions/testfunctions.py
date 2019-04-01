@@ -1055,6 +1055,8 @@ class SphereFun(AbstractModel):
     """
     N-dimensional sphere function with zero mean.
 
+    .. math:: y = \sum_{i=1}^{N}x_i^2
+
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
@@ -1111,8 +1113,13 @@ class GFunction(AbstractModel):
     is fairly complex, and its sensitivity indices can be expressed
     analytically. The exact value of the integral with this function as an
     integrand is 1. For each index i, a lower value of a_i indicates a higher
-    importance of the input variable xi. The recommended values of a_i by
-    Crestaux et al. (2007) [2] are a_i = (i-2)/2.
+    importance of the input variable xi.
+
+    .. math:: \prod_{i=1}^{N}\\frac{|4 x_i - 2| + a_i}{1 + a_i}
+
+    The recommended values of a_i by Crestaux et al. (2007) [2] are:
+
+    .. math:: a_i = \\frac{i-2}{2} \quad \mathrm{for\;all} \quad i=1,...,d
 
     Parameters
     ----------
@@ -1123,7 +1130,7 @@ class GFunction(AbstractModel):
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter [0, 1]
     p["a"]: ndarray of float [N_dims]
-        Importance factors of dimensions, typically a_i = (i-2)/2
+        Importance factors of dimensions
 
     Returns
     -------
@@ -1184,6 +1191,12 @@ class OakleyOhagan2004(AbstractModel):
     much smaller effect, and the remaining 5 have almost no effect on the
     output variance.
 
+    .. math::
+       y = \mathbf{a}_1^T\mathbf{x} + \mathbf{a}_2^T \sin(\mathbf{x}) + \mathbf{a}_3^T \cos(\mathbf{x}) +
+       \mathbf{x}^T\mathbf{M}\mathbf{x}
+
+    The parameter vectors a and matrix M are in /pygpc/pck/data/oakley_ohagan_2004.
+
     Parameters
     ----------
     p["x1...N"]: ndarray of float [n_grid]
@@ -1237,6 +1250,12 @@ class Welch1992(AbstractModel):
     compared to other input variables. As Welch et al. (1992) [1] point out,
     interactions and nonlinear effects make this function challenging.
 
+    .. math::
+       y = \\frac{5 x_{12}}{1 + x_1} + 5 (x_4 - x_{20})^2 + x_5 + 40 x_{19}^3 + 5 x_{19} + 0.05 x_2
+       + 0.08 x_3 - 0.03 x_6 + 0.03 x_7 - 0.09 x_9 - 0.01 x_{10} -
+
+       0.07 x_{11} + 0.25 x_{13}^2 - 0.04 x_{14} + 0.06 x_{15} - 0.01 x_{17} - 0.03 x_{18}
+
     Parameters
     ----------
     p["x1...x20"]: float
@@ -1276,32 +1295,36 @@ class WingWeight(AbstractModel):
     """
     10-dimensional test function which models a light aircraft wing from Forrester et al. (2008) [1]
 
+    .. math::
+       y = \\frac{0.036 x_1^{0.758} x_2^{0.0035} x_3}{\cos(x_4)^2)^{0.6}} x_5^{0.006} x_6^{0.04}
+       \\left( \\frac{100 x_7}{\cos(x_4)}\\right)^{-0.3} (x_8 x_9)^{0.49} + x_1 x_{10}
+
     Parameters
     ----------
-    p["x1"]: float
+    p["x1"]: float or ndarray of float [n_grid]
         x1(Sw) [150, 200]
-    p["x2"]: float
+    p["x2"]: float or ndarray of float [n_grid]
         x2(Wfw) [220, 300]
-    p["x3"]: float
+    p["x3"]: float or ndarray of float [n_grid]
         x3(A) [6, 10]
-    p["x4"]: float
+    p["x4"]: float or ndarray of float [n_grid]
         x4(Lambda) [-10, 10]
-    p["x5"]: float
+    p["x5"]: float or ndarray of float [n_grid]
         x5(q) [16, 45]
-    p["x6"]: float
+    p["x6"]: float or ndarray of float [n_grid]
         x6(lambda) [0.5, 1]
-    p["x7"]: float
+    p["x7"]: float or ndarray of float [n_grid]
         x7(tc) [0.08, 0.18]
-    p["x8"]: float
+    p["x8"]: float or ndarray of float [n_grid]
         x8(Nz) [2.5, 6]
-    p["x9"]: float
+    p["x9"]: float or ndarray of float [n_grid]
         x9(Wdg) [1700, 2500]
-    p["x10"]: float
+    p["x10"]: float or ndarray of float [n_grid]
         x10(Wp) [0.025, 0.08]
 
     Returns
     -------
-    y: ndarray of float [n_grid x 1]
+    y: float or ndarray of float [n_grid x 1]
         Output data
 
     Notes
