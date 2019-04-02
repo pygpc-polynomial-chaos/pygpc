@@ -19,8 +19,14 @@ class SGPC(GPC):
         Maximum individual expansion order [order_1, order_2, ..., order_dim].
         Generates individual polynomials also if maximum expansion order in order_max is exceeded
     order_max: int
-        Maximum global expansion order (sum of all exponents).
-        The maximum expansion order considers the sum of the orders of combined polynomials only
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    order_max_norm: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more.
+        sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
     interaction_order: int
         Number of random variables, which can interact with each other.
         All polynomials are ignored, which have an interaction order greater than the specified
@@ -32,7 +38,7 @@ class SGPC(GPC):
         If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
     """
 
-    def __init__(self, problem, order, order_max, interaction_order, fn_results=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, fn_results=None):
         """
         Constructor; Initializes the SGPC class
 
@@ -44,18 +50,30 @@ class SGPC(GPC):
             Maximum individual expansion order [order_1, order_2, ..., order_dim].
             Generates individual polynomials also if maximum expansion order in order_max is exceeded
         order_max: int
-            Maximum global expansion order (sum of all exponents).
-            The maximum expansion order considers the sum of the orders of combined polynomials only
+            Maximum global expansion order.
+            The maximum expansion order considers the sum of the orders of combined polynomials together with the
+            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+            monomial orders.
+        order_max_norm: float
+            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+            of polynomials in the expansion such that interaction terms are penalized more.
+            sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
         fn_results : string, optional, default=None
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+
+        Notes
+        -----
+        .. [1] Ni, F., Nguyen, P. H., & Cobben, J. F. (2017). Basis-adaptive sparse polynomial chaos expansion
+           for probabilistic power flow. IEEE Transactions on Power Systems, 32(1), 694-704.
         """
         super(SGPC, self).__init__(problem, fn_results)
 
         self.order = order
         self.order_max = order_max
+        self.order_max_norm = order_max_norm
         self.interaction_order = interaction_order
         self.interaction_order_current = interaction_order
 
@@ -63,6 +81,7 @@ class SGPC(GPC):
         self.basis.init_basis_sgpc(problem=problem,
                                    order=order,
                                    order_max=order_max,
+                                   order_max_norm=order_max_norm,
                                    interaction_order=interaction_order)
 
     @staticmethod
@@ -441,7 +460,7 @@ class Reg(SGPC):
         - 'NumInt' ... None
     """
 
-    def __init__(self, problem, order, order_max, interaction_order, fn_results=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, fn_results=None):
         """
         Constructor; Initializes Regression SGPC class
 
@@ -453,13 +472,24 @@ class Reg(SGPC):
             Maximum individual expansion order [order_1, order_2, ..., order_dim].
             Generates individual polynomials also if maximum expansion order in order_max is exceeded
         order_max: int
-            Maximum global expansion order (sum of all exponents).
-            The maximum expansion order considers the sum of the orders of combined polynomials only
+            Maximum global expansion order.
+            The maximum expansion order considers the sum of the orders of combined polynomials together with the
+            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+            monomial orders.
+        order_max_norm: float
+            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+            of polynomials in the expansion such that interaction terms are penalized more.
+            sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
         fn_results : string, optional, default=None
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+
+        Notes
+        -----
+        .. [1] Ni, F., Nguyen, P. H., & Cobben, J. F. (2017). Basis-adaptive sparse polynomial chaos expansion
+           for probabilistic power flow. IEEE Transactions on Power Systems, 32(1), 694-704.
 
         Examples
         --------
@@ -467,76 +497,98 @@ class Reg(SGPC):
         >>> gpc = pygpc.Reg(problem=problem,
         >>>                 order=[7, 6],
         >>>                 order_max=5,
+        >>>                 order_max_norm=1,
         >>>                 interaction_order=2,
         >>>                 fn_results="/tmp/my_results")
         """
 
-        super(Reg, self).__init__(problem, order, order_max, interaction_order, fn_results)
+        super(Reg, self).__init__(problem, order, order_max, order_max_norm, interaction_order, fn_results)
         self.solver = 'Moore-Penrose'   # Default solver
         self.settings = None            # Default Solver settings
         self.relative_error_loocv = []
 
-    def loocv(self, sim_results, solver, settings, n_loocv=100):
+    # TODO: @Lucas: Implement this on the GPU
+    def loocv(self, sim_results, coeffs):
         """
-        Perform leave one out cross validation of gPC multiple times with n_loocv points
-        and add result to self.relative_error_loocv.
+        Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
+        The loocv error is calculated analytically after eq. (35) in [1] but omitting the "1 - " term, i.e. it
+        corresponds to 1 - Q^2.
 
-        relative_error_loocv = SGPC.loocv(sim_results)
+        relative_error_loocv = SGPC.loocv(sim_results, coeffs)
+
+        .. math::
+           \\epsilon_{LOOCV} = \\frac{\\frac{1}{N}\sum_{i=1}^N \\left( \\frac{y(\\xi_i) - \hat{y}(\\xi_i)}{1-h_i} \\right)^2}{\\frac{1}{N-1}\sum_{i=1}^N \\left( y(\\xi_i) - \\bar{y} \\right)^2}
+
+        with
+
+        .. math::
+           \\mathbf{h} = \mathrm{diag}(\\mathbf{\\Psi} (\\mathbf{\\Psi}^T \\mathbf{\\Psi})^{-1} \\mathbf{\\Psi}^T)
 
         Parameters
         ----------
         sim_results: ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
-        solver: str
-            Solver to determine the gPC coefficients
-            - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
-            - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
-            - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
-        settings: dict
-            Solver settings
-            - 'Moore-Penrose' ... None
-            - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0
-            - 'NumInt' ... None
-        n_loocv : int
-            Number of LOOCV iterations to estimate error.
-            In every iteration, one random point is omitted from the analysis.
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
 
         Returns
         -------
         relative_error_loocv: float
             Relative mean error of leave one out cross validation
+
+        Notes
+        -----
+        .. [1] Blatman, G., & Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions
+           for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(2), 183-197.
         """
 
-        # define number of performed cross validations (max 100)
-        n_loocv_points = np.min((sim_results.shape[0], n_loocv))
+        # determine Psi (Psi^T Psi)^-1 Psi^T
+        h = np.dot(np.dot(self.gpc_matrix,
+                          np.linalg.inv(np.dot(self.gpc_matrix.transpose(),
+                                               self.gpc_matrix))),
+                   self.gpc_matrix.transpose())
 
-        # make list of indices, which are randomly sampled
-        loocv_point_idx = random.sample(list(range(sim_results.shape[0])), n_loocv_points)
+        # determine loocv error
+        err = np.mean(((sim_results - np.dot(self.gpc_matrix, coeffs)) /
+                       (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
 
-        start = time.time()
-        relative_error = np.zeros(n_loocv_points)
-        for i in range(n_loocv_points):
-            # get mask of eliminated row
-            mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
-
-            # determine gpc coefficients (this takes a lot of time for large problems)
-            coeffs_loo = self.solve(sim_results=sim_results[mask, :],
-                                    solver=solver,
-                                    settings=settings,
-                                    gpc_matrix=self.gpc_matrix[mask, :],
-                                    verbose=False)
-
-            sim_results_temp = sim_results[loocv_point_idx[i], :]
-            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(self.gpc_matrix[loocv_point_idx[i], :],
-                                                                            coeffs_loo))\
-                                / scipy.linalg.norm(sim_results_temp)
-            display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
-
-        # store result in relative_error_loocv
-        self.relative_error_loocv.append(np.mean(relative_error))
-        iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
+        # normalize
+        self.relative_error_loocv.append(np.mean(err / np.var(sim_results, axis=0, ddof=1)))
 
         return self.relative_error_loocv[-1]
+
+        # # define number of performed cross validations (max 100)
+        # n_loocv_points = np.min((sim_results.shape[0], n_loocv))
+        #
+        # # make list of indices, which are randomly sampled
+        # loocv_point_idx = random.sample(list(range(sim_results.shape[0])), n_loocv_points)
+        #
+        # start = time.time()
+        # relative_error = np.zeros(n_loocv_points)
+        # for i in range(n_loocv_points):
+        #     # get mask of eliminated row
+        #     mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
+        #
+        #     # determine gpc coefficients (this takes a lot of time for large problems)
+        #     coeffs_loo = self.solve(sim_results=sim_results[mask, :],
+        #                             solver=solver,
+        #                             settings=settings,
+        #                             gpc_matrix=self.gpc_matrix[mask, :],
+        #                             verbose=False)
+        #
+        #     sim_results_temp = sim_results[loocv_point_idx[i], :]
+        #     relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(self.gpc_matrix[loocv_point_idx[i], :],
+        #                                                                     coeffs_loo))\
+        #                         / scipy.linalg.norm(sim_results_temp)
+        #     display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
+        #
+        # # store result in relative_error_loocv
+        # self.relative_error_loocv.append(np.mean(relative_error))
+        # iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
+        #
+        # err = self.calc_delta(sim_results, solver, settings)
+        #
+        # return self.relative_error_loocv[-1]
 
 
 class Quad(SGPC):
@@ -544,11 +596,11 @@ class Quad(SGPC):
     Quadrature SGPC sub-class
     """
 
-    def __init__(self, problem, order, order_max, interaction_order, fn_results=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, fn_results=None):
         """
         Constructor; Initializes Quadrature SGPC sub-class
 
-        Quad(problem, order, order_max, interaction_order)
+        Quad(problem, order, order_max, order_max_norm, interaction_order)
 
         Parameters
         ----------
@@ -558,13 +610,24 @@ class Quad(SGPC):
             Maximum individual expansion order [order_1, order_2, ..., order_dim].
             Generates individual polynomials also if maximum expansion order in order_max is exceeded
         order_max: int
-            Maximum global expansion order (sum of all exponents).
-            The maximum expansion order considers the sum of the orders of combined polynomials only
+            Maximum global expansion order.
+            The maximum expansion order considers the sum of the orders of combined polynomials together with the
+            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+            monomial orders.
+        order_max_norm: float
+            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+            of polynomials in the expansion such that interaction terms are penalized more.
+            sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
         fn_results : string, optional, default=None
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+
+        Notes
+        -----
+        .. [1] Ni, F., Nguyen, P. H., & Cobben, J. F. (2017). Basis-adaptive sparse polynomial chaos expansion
+           for probabilistic power flow. IEEE Transactions on Power Systems, 32(1), 694-704.
 
         Examples
         --------
@@ -572,9 +635,10 @@ class Quad(SGPC):
         >>> gpc = pygpc.Quad(problem=problem,
         >>>                 order=[7, 6],
         >>>                 order_max=5,
+        >>>                 order_max_norm=1,
         >>>                 interaction_order=2,
         >>>                 fn_results="/tmp/my_results")
         """
-        super(Quad, self).__init__(problem, order, order_max, interaction_order, fn_results)
+        super(Quad, self).__init__(problem, order, order_max, order_max_norm, interaction_order, fn_results)
         self.solver = 'NumInt'  # Default solver
         self.settings = None    # Default solver settings

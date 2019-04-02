@@ -123,9 +123,12 @@ class Peaks(AbstractModel):
         pass
 
     def simulate(self, process_id=None):
-        self.p["x1"] = self.p["x1"].flatten()
-        self.p["x2"] = self.p["x2"].flatten()
-        self.p["x3"] = self.p["x3"].flatten()
+        if type(self.p["x1"]) is np.ndarray:
+            self.p["x1"] = self.p["x1"].flatten()
+        if type(self.p["x2"]) is np.ndarray:
+            self.p["x2"] = self.p["x2"].flatten()
+        if type(self.p["x3"]) is np.ndarray:
+            self.p["x3"] = self.p["x3"].flatten()
 
         y = (3.0 * (1 - self.p["x1"]) ** 2. * np.exp(-(self.p["x1"] ** 2) - (self.p["x3"] + 1) ** 2)
              - 10.0 * (self.p["x1"] / 5.0 - self.p["x1"] ** 3 - self.p["x3"] ** 5)

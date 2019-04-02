@@ -399,7 +399,7 @@ def get_num_coeffs(order, dim):
     return scipy.special.factorial(order + dim) / (scipy.special.factorial(order) * scipy.special.factorial(dim))
 
 
-def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim):
+def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, order_glob_max_norm=1):
     """
     Calculate the number of gPC coefficients for a specific maximum order in each dimension "order_dim_max",
     global maximum order "order_glob_max" and the interaction order "order_inter_max".
@@ -416,6 +416,9 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim):
         Interaction order
     dim: int
         Number of random variables
+    order_glob_max_norm: float
+        Norm, which defines how the orders are accumulated to derive the total order (default: 1-norm).
+        Values smaller than one restrict higher orders and shrink the basis.
 
     Returns
     -------
@@ -433,7 +436,7 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim):
     if dim == 1:
         poly_idx = np.array([np.linspace(0, order_dim_max, order_dim_max + 1)]).astype(int).transpose()
     else:
-        poly_idx = get_multi_indices_max_order(int(dim), order_glob_max)
+        poly_idx = get_multi_indices_max_order(int(dim), order_glob_max, order_glob_max_norm)
 
     for i_dim in range(dim):
         # add multi-indexes to list when not yet included
@@ -507,7 +510,7 @@ def get_all_combinations(array, number_elements):
     return np.array([c for c in combinations])
 
 
-def get_multi_indices_max_order(dim, max_order):
+def get_multi_indices_max_order(dim, order_max, order_max_norm=1.):
     """
     Computes all multi-indices with a maximum overall order of max_order.
 
@@ -517,31 +520,42 @@ def get_multi_indices_max_order(dim, max_order):
     ----------
     dim : int
         Number of random parameters (length of multi-index tuples)
-    max_order : int
-        Maximum order (over all parameters)
+    order_max: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    order_max_norm: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more.
+        sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
 
     Returns
     -------
     multi_indices: np.ndarray [n_basis x dim]
-        Multi-indices for a classical maximum order gPC
+        Multi-indices for a maximum order gPC assuming a certain order norm.
     """
 
     multi_indices = []
-    for i_max_order in range(max_order + 1):
-        s = get_all_combinations(np.arange(dim + i_max_order - 1) + 1, dim - 1)
+    for i_order_max in range(order_max + 1):
+        s = get_all_combinations(np.arange(dim + i_order_max - 1) + 1, dim - 1)
 
         m = s.shape[0]
 
         s1 = np.zeros([m, 1])
-        s2 = (dim + i_max_order) + s1
+        s2 = (dim + i_order_max) + s1
 
         v = np.diff(np.hstack([s1, s, s2]))
         v = v - 1
 
-        if i_max_order == 0:
+        if i_order_max == 0:
             multi_indices = v
         else:
             multi_indices = np.vstack([multi_indices, v])
+
+    # remove polynomials exceeding order_max considering max_order_norm
+    if order_max_norm != 1:
+        multi_indices = multi_indices[np.linalg.norm(multi_indices, ord=order_max_norm, axis=1) <= (order_max + 1e-6), :]
 
     return multi_indices.astype(int)
 

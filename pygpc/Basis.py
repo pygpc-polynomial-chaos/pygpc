@@ -37,7 +37,7 @@ class Basis:
         self.dim = None
         self.n_basis = 0
 
-    def init_basis_sgpc(self, problem, order, order_max, interaction_order):
+    def init_basis_sgpc(self, problem, order, order_max, order_max_norm, interaction_order):
         """
         Initializes basis functions for standard gPC.
 
@@ -49,14 +49,22 @@ class Basis:
             Maximum individual expansion order
             Generates individual polynomials also if maximum expansion order in order_max is exceeded
         order_max: int
-            Maximum expansion order (sum of all exponents)
-            The maximum expansion order considers the sum of the orders of combined polynomials only
+            Maximum global expansion order.
+            The maximum expansion order considers the sum of the orders of combined polynomials together with the
+            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+            monomial orders.
+        order_max_norm: float
+            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+            of polynomials in the expansion such that interaction terms are penalized more.
+            sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
         interaction_order: int
             Number of random variables, which can interact with each other
             All polynomials are ignored, which have an interaction order greater than specified
 
         Notes
         -----
+        .. [1] Ni, F., Nguyen, P. H., & Cobben, J. F. (2017). Basis-adaptive sparse polynomial chaos expansion
+           for probabilistic power flow. IEEE Transactions on Power Systems, 32(1), 694-704.
 
         .. math::
            \\begin{tabular}{l*{4}{c}}
@@ -81,7 +89,7 @@ class Basis:
         if self.dim == 1:
             multi_indices = np.linspace(0, order_max, order_max + 1, dtype=int)[:, np.newaxis]
         else:
-            multi_indices = get_multi_indices_max_order(self.dim, order_max)
+            multi_indices = get_multi_indices_max_order(self.dim, order_max, order_max_norm)
 
         for i_dim in range(self.dim):
             # add multi-indexes to list when not yet included

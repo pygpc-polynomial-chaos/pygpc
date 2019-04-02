@@ -2224,26 +2224,23 @@ of the random parameters or the constants in model.validate.</p>
 
 <dl class="method">
 <dt id="pygpc.SGPC.Reg.loocv">
-<code class="descname">loocv</code><span class="sig-paren">(</span><em>sim_results</em>, <em>solver</em>, <em>settings</em>, <em>n_loocv=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg.loocv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg.loocv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform leave one out cross validation of gPC multiple times with n_loocv points
-and add result to self.relative_error_loocv.</p>
-<p>relative_error_loocv = SGPC.loocv(sim_results)</p>
-<table class="docutils field-list" frame="void" rules="none">
+<code class="descname">loocv</code><span class="sig-paren">(</span><em>sim_results</em>, <em>coeffs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg.loocv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg.loocv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
+The loocv error is calculated analytically after eq. (35) in [1] but omitting the “1 - ” term, i.e. it
+corresponds to 1 - Q^2.</p>
+<p>relative_error_loocv = SGPC.loocv(sim_results, coeffs)</p>
+<div class="math">
+<p><img src="_images/math/a44beebe84df819e638ee21019d32e5c926cc9e1.png" alt="\epsilon_{LOOCV} = \frac{\frac{1}{N}\sum_{i=1}^N \left( \frac{y(\xi_i) - \hat{y}(\xi_i)}{1-h_i} \right)^2}{\frac{1}{N-1}\sum_{i=1}^N \left( y(\xi_i) - \bar{y} \right)^2}"/></p>
+</div><p>with</p>
+<div class="math">
+<p><img src="_images/math/22fc1ecf32904db42e600d34e33f17e041cc27d6.png" alt="\mathbf{h} = \mathrm{diag}(\mathbf{\Psi} (\mathbf{\Psi}^T \mathbf{\Psi})^{-1} \mathbf{\Psi}^T)"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>sim_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results from n_grid simulations with n_out output quantities</li>
-<li><strong>solver</strong> (<em>str</em>) – Solver to determine the gPC coefficients
-- ‘Moore-Penrose’ … Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
-- ‘OMP’ … Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
-- ‘NumInt’ … Numerical integration, spectral projection (SGPC.Quad)</li>
-<li><strong>settings</strong> (<em>dict</em>) – Solver settings
-- ‘Moore-Penrose’ … None
-- ‘OMP’ … {“n_coeffs_sparse”: int} Number of gPC coefficients != 0
-- ‘NumInt’ … None</li>
-<li><strong>n_loocv</strong> (<em>int</em>) – Number of LOOCV iterations to estimate error.
-In every iteration, one random point is omitted from the analysis.</li>
+<li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_basis x n_out</em><em>]</em>) – GPC coefficients</li>
 </ul>
 </td>
 </tr>
@@ -2253,6 +2250,14 @@ In every iteration, one random point is omitted from the analysis.</li>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
 </td>
 </tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>Blatman, G., &amp; Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions
+for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(2), 183-197.</td></tr>
 </tbody>
 </table>
 </dd></dl>
@@ -2384,7 +2389,7 @@ Current interaction order counter (only used in case of adaptive algorithms)</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>D. Xiu, Fast Numerical Methods for Stochastic Computations: A Review,
@@ -3672,7 +3677,7 @@ and saves the plot as fn_pdf.png and fn_pdf.pdf.</p>
 <code class="descclassname">pygpc.validation.</code><code class="descname">validate_gpc_plot</code><span class="sig-paren">(</span><em>gpc</em>, <em>coeffs</em>, <em>random_vars</em>, <em>n_grid=None</em>, <em>coords=None</em>, <em>output_idx=0</em>, <em>data_original=None</em>, <em>fn_out=None</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/validation.html#validate_gpc_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.validation.validate_gpc_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
 calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
-<a href="#id9"><span class="problematic" id="id10">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
+<a href="#id10"><span class="problematic" id="id11">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3686,7 +3691,7 @@ A cartesian grid is generated based on the limits of the specified random_vars</
 <li><strong>coords</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_dim</em><em>]</em>) – Parameter combinations for the random_vars the comparison is conducted with</li>
 <li><strong>output_idx</strong> (<em>int</em><em> or </em><em>list of int</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Indices of output quantity to consider</li>
 <li><strong>data_original</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_out</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – If available, data of original model function at grid</li>
-<li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id11"><span class="problematic" id="id12">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
+<li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id12"><span class="problematic" id="id13">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
 <li><strong>n_cpu</strong> (<em>int</em><em>, </em><em>default=1</em>) – Number of CPU cores to use to calculate results of original model on grid.</li>
 </ul>
 </td>

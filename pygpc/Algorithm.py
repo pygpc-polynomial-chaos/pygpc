@@ -62,8 +62,14 @@ class Static(Algorithm):
             Maximum individual expansion order [order_1, order_2, ..., order_dim].
             Generates individual polynomials also if maximum expansion order in order_max is exceeded
         options["order_max"]: int
-            Maximum global expansion order (sum of all exponents).
-            The maximum expansion order considers the sum of the orders of combined polynomials only
+            Maximum global expansion order.
+            The maximum expansion order considers the sum of the orders of combined polynomials together with the
+            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+            monomial orders.
+        options["order_max_norm"]: float
+            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+            of polynomials in the expansion such that interaction terms are penalized more.
+            sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
         options["interaction_order"]: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
@@ -71,6 +77,11 @@ class Static(Algorithm):
             Number of threads to use for parallel evaluation of the model function.
         grid: Grid object instance
             Grid object to use for static gPC (RandomGrid, SparseGrid, TensorGrid)
+
+        Notes
+        -----
+        .. [1] Ni, F., Nguyen, P. H., & Cobben, J. F. (2017). Basis-adaptive sparse polynomial chaos expansion
+           for probabilistic power flow. IEEE Transactions on Power Systems, 32(1), 694-704.
 
         Examples
         --------
@@ -123,6 +134,9 @@ class Static(Algorithm):
         if "print_func_time" not in self.options.keys():
             self.options["print_func_time"] = False
 
+        if "order_max_norm" not in self.options.keys():
+            self.options["order_max_norm"] = 1
+
     def run(self):
         """
         Runs static gPC algorithm to solve problem.
@@ -141,6 +155,7 @@ class Static(Algorithm):
             gpc = Reg(problem=self.problem,
                       order=self.options["order"],
                       order_max=self.options["order_max"],
+                      order_max_norm=self.options["order_max_norm"],
                       interaction_order=self.options["interaction_order"],
                       fn_results=self.options["fn_results"])
 
@@ -148,6 +163,7 @@ class Static(Algorithm):
             gpc = Quad(problem=self.problem,
                        order=self.options["order"],
                        order_max=self.options["order_max"],
+                       order_max_norm=self.options["order_max_norm"],
                        interaction_order=self.options["interaction_order"],
                        fn_results=self.options["fn_results"])
 
@@ -326,6 +342,7 @@ class RegAdaptive(Algorithm):
         gpc = Reg(problem=self.problem,
                   order=self.options["order_start"] * np.ones(self.problem.dim),
                   order_max=self.options["order_start"],
+                  order_max_norm=self.options["order_max_norm"],
                   interaction_order=self.options["interaction_order"],
                   fn_results=self.options["fn_results"])
 
@@ -347,9 +364,14 @@ class RegAdaptive(Algorithm):
             iprint("Order #{}".format(order), tab=0, verbose=self.options["verbose"])
             iprint("==========", tab=0, verbose=self.options["verbose"])
 
-            # determine new possible basis for next main iteration
-            multi_indices_all_new = get_multi_indices_max_order(self.problem.dim, order)
-            multi_indices_all_new = multi_indices_all_new[np.sum(multi_indices_all_new, axis=1) == order]
+            # determine new possible set of basis functions for next main iteration
+            multi_indices_all_new = get_multi_indices_max_order(self.problem.dim, order, self.options["order_max_norm"])
+            multi_indices_all_current = np.array([list(map(lambda x:x.p["i"], _b)) for _b in gpc.basis.b])
+
+            idx_old = np.hstack([np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
+                                 for i in range(multi_indices_all_current.shape[0])])
+
+            multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
 
             interaction_order_current_max = np.min([order, self.options["interaction_order"]])
 
@@ -368,6 +390,16 @@ class RegAdaptive(Algorithm):
                     interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
                     multi_indices_added = multi_indices_all_new[
                                           interaction_order_list == gpc.interaction_order_current, :]
+
+                    # continue while loop if no basis function was added because of max norm constraint
+                    if not multi_indices_added.any():
+                        iprint("-> No basis functions to add because of max_norm constraint ... Continuing ... ",
+                               tab=0, verbose=self.options["verbose"])
+
+                        # increase current interaction order
+                        gpc.interaction_order_current = gpc.interaction_order_current + 1
+
+                        continue
 
                     # construct 2D list with new BasisFunction objects
                     b_added = [[0 for _ in range(self.problem.dim)] for _ in range(multi_indices_added.shape[0])]
@@ -445,9 +477,7 @@ class RegAdaptive(Algorithm):
 
                 # determine error
                 eps = gpc.loocv(sim_results=res_complete[:, non_nan_mask],
-                                solver=gpc.solver,
-                                settings=gpc.settings,
-                                n_loocv=self.options["n_loocv"])
+                                coeffs=coeffs)
 
                 iprint("-> error = {}".format(eps), tab=0, verbose=self.options["verbose"])
 
