@@ -55,16 +55,17 @@ class Basis:
             monomial orders.
         order_max_norm: float
             Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more.
-            sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
+            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
         interaction_order: int
             Number of random variables, which can interact with each other
             All polynomials are ignored, which have an interaction order greater than specified
 
         Notes
         -----
-        .. [1] Ni, F., Nguyen, P. H., & Cobben, J. F. (2017). Basis-adaptive sparse polynomial chaos expansion
-           for probabilistic power flow. IEEE Transactions on Power Systems, 32(1), 694-704.
+        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle 
+           regression. Journal of Computational Physics, 230(6), 2345-2367.
 
         .. math::
            \\begin{tabular}{l*{4}{c}}

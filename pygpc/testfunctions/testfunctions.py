@@ -570,7 +570,8 @@ class GenzContinuous(AbstractModel):
 
 class GenzCornerPeak(AbstractModel):
     """
-    N-dimensional "CornerPeak" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+    N-dimensional "CornerPeak" Genz function [1,2]. It is defined in the interval [0, 1] x ... x [0, 1].
+    Used by [3] as testfunction.
 
     .. math:: y = \\left( 1 + \sum_{i=1}^N a_i x_i\\right)^{-(N + 1)}
 
@@ -607,6 +608,10 @@ class GenzCornerPeak(AbstractModel):
        and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
 
     .. [2] https://www.sfu.ca/~ssurjano/copeak.html
+
+    .. [3] Jakeman, J. D., Eldred, M. S., & Sargsyan, K. (2015).
+       Enhancing ℓ1-minimization estimates of polynomial chaos expansions using basis selection.
+       Journal of Computational Physics, 289, 18-34.
     """
 
     def __init__(self, p, context=None):
@@ -906,6 +911,70 @@ class GenzProductPeak(AbstractModel):
 
         for i, key in enumerate(self.p.keys()):
             y *= 1 / (a[i] ** (-2) + (self.p[key] - u[i]) ** 2)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class Ridge(AbstractModel):
+    """
+    N-dimensional "Ridge" function [1] (and also used as testfunction therein).
+    Typically defined in the interval [-4, 4] x ... x [-4, 4].
+
+    .. math::
+       y = \sum_{i=1}^{N}x_i + 0.25 \\left( \sum_{i=1}^{N}x_i \\right)^2 + 0.025 \\left( \sum_{i=1}^{N}x_i \\right)^3
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in e.g. [-4, 4]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in e.g. [-4, 4]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in e.g. [-4, 4]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-4, 4, 100)
+       parameters["x2"] = np.linspace(-4, 4, 100)
+
+       plot("Ridge", parameters)
+
+    .. [1] Tsilifis, P., Huan, X., Safta, C., Sargsyan, K., Lacaze, G., Oefelein, J. C., Najm, H. N., Ghanem, R. G.
+       (2019). Compressive sensing adaptation for polynomial chaos expansions.
+       Journal of Computational Physics, 380, 29-47.
+    """
+
+    def __init__(self, p, context=None):
+        super(Ridge, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None):
+        n = len(self.p.keys())
+
+        # determine sum
+        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            s += self.p[key]
+
+        # determine output
+        y = s + 0.25 * s**2 + 0.025 * s**3
 
         y_out = y[:, np.newaxis]
 

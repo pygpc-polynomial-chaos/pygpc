@@ -480,7 +480,7 @@
     <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="n">dim</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="get_num_coeffs_sparse"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_num_coeffs_sparse">[docs]</a><span class="k">def</span> <span class="nf">get_num_coeffs_sparse</span><span class="p">(</span><span class="n">order_dim_max</span><span class="p">,</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_inter_max</span><span class="p">,</span> <span class="n">dim</span><span class="p">):</span>
+<div class="viewcode-block" id="get_num_coeffs_sparse"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_num_coeffs_sparse">[docs]</a><span class="k">def</span> <span class="nf">get_num_coeffs_sparse</span><span class="p">(</span><span class="n">order_dim_max</span><span class="p">,</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_inter_max</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">order_glob_max_norm</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the number of gPC coefficients for a specific maximum order in each dimension &quot;order_dim_max&quot;,</span>
 <span class="sd">    global maximum order &quot;order_glob_max&quot; and the interaction order &quot;order_inter_max&quot;.</span>
@@ -497,6 +497,9 @@
 <span class="sd">        Interaction order</span>
 <span class="sd">    dim: int</span>
 <span class="sd">        Number of random variables</span>
+<span class="sd">    order_glob_max_norm: float</span>
+<span class="sd">        Norm, which defines how the orders are accumulated to derive the total order (default: 1-norm).</span>
+<span class="sd">        Values smaller than one restrict higher orders and shrink the basis.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -514,7 +517,7 @@
     <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order_dim_max</span><span class="p">,</span> <span class="n">order_dim_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">get_multi_indices_max_order</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">order_glob_max</span><span class="p">)</span>
+        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">get_multi_indices_max_order</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_glob_max_norm</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i_dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
         <span class="c1"># add multi-indexes to list when not yet included</span>
@@ -588,7 +591,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="get_multi_indices_max_order"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_multi_indices_max_order">[docs]</a><span class="k">def</span> <span class="nf">get_multi_indices_max_order</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">max_order</span><span class="p">):</span>
+<div class="viewcode-block" id="get_multi_indices_max_order"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_multi_indices_max_order">[docs]</a><span class="k">def</span> <span class="nf">get_multi_indices_max_order</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">order_max</span><span class="p">,</span> <span class="n">order_max_norm</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes all multi-indices with a maximum overall order of max_order.</span>
 
@@ -598,31 +601,42 @@
 <span class="sd">    ----------</span>
 <span class="sd">    dim : int</span>
 <span class="sd">        Number of random parameters (length of multi-index tuples)</span>
-<span class="sd">    max_order : int</span>
-<span class="sd">        Maximum order (over all parameters)</span>
+<span class="sd">    order_max: int</span>
+<span class="sd">        Maximum global expansion order.</span>
+<span class="sd">        The maximum expansion order considers the sum of the orders of combined polynomials together with the</span>
+<span class="sd">        chosen norm &quot;order_max_norm&quot;. Typically this norm is 1 such that the maximum order is the sum of all</span>
+<span class="sd">        monomial orders.</span>
+<span class="sd">    order_max_norm: float</span>
+<span class="sd">        Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number</span>
+<span class="sd">        of polynomials in the expansion such that interaction terms are penalized more.</span>
+<span class="sd">        sum(a_i^q)^1/q &lt;= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    multi_indices: np.ndarray [n_basis x dim]</span>
-<span class="sd">        Multi-indices for a classical maximum order gPC</span>
+<span class="sd">        Multi-indices for a maximum order gPC assuming a certain order norm.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">multi_indices</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i_max_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">get_all_combinations</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="n">i_max_order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i_order_max</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">get_all_combinations</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="n">i_order_max</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">s1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="n">s2</span> <span class="o">=</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="n">i_max_order</span><span class="p">)</span> <span class="o">+</span> <span class="n">s1</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="n">i_order_max</span><span class="p">)</span> <span class="o">+</span> <span class="n">s1</span>
 
         <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">s1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s2</span><span class="p">]))</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span>
 
-        <span class="k">if</span> <span class="n">i_max_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">i_order_max</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">multi_indices</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span>
+
+    <span class="c1"># remove polynomials exceeding order_max considering max_order_norm</span>
+    <span class="k">if</span> <span class="n">order_max_norm</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">multi_indices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="n">order_max_norm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">order_max</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">),</span> <span class="p">:]</span>
 
     <span class="k">return</span> <span class="n">multi_indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div>
 

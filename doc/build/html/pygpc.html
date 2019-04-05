@@ -381,7 +381,7 @@ to normalize basis functions &lt;psi^2&gt; = int(psi^2*p)dx</p>
 
 <dl class="method">
 <dt id="pygpc.Basis.Basis.init_basis_sgpc">
-<code class="descname">init_basis_sgpc</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>interaction_order</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.init_basis_sgpc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.init_basis_sgpc" title="Permalink to this definition">¶</a></dt>
+<code class="descname">init_basis_sgpc</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.init_basis_sgpc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.init_basis_sgpc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes basis functions for standard gPC.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -391,8 +391,14 @@ to normalize basis functions &lt;psi^2&gt; = int(psi^2*p)dx</p>
 <li><strong>problem</strong> (<em>Problem object</em>) – GPC Problem to analyze</li>
 <li><strong>order</strong> (<em>[</em><em>dim</em><em>] </em><em>list of int</em>) – Maximum individual expansion order
 Generates individual polynomials also if maximum expansion order in order_max is exceeded</li>
-<li><strong>order_max</strong> (<em>int</em>) – Maximum expansion order (sum of all exponents)
-The maximum expansion order considers the sum of the orders of combined polynomials only</li>
+<li><strong>order_max</strong> (<em>int</em>) – Maximum global expansion order.
+The maximum expansion order considers the sum of the orders of combined polynomials together with the
+chosen norm “order_max_norm”. Typically this norm is 1 such that the maximum order is the sum of all
+monomial orders.</li>
+<li><strong>order_max_norm</strong> (<em>float</em>) – Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number
+of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+is also referred to “hyperbolic polynomial chaos expansion” such that sum(a_i^q)^1/q &lt;= p,
+where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).</li>
 <li><strong>interaction_order</strong> (<em>int</em>) – Number of random variables, which can interact with each other
 All polynomials are ignored, which have an interaction order greater than specified</li>
 </ul>
@@ -401,6 +407,13 @@ All polynomials are ignored, which have an interaction order greater than specif
 </tbody>
 </table>
 <p class="rubric">Notes</p>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>Blatman, G., &amp; Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+regression. Journal of Computational Physics, 230(6), 2345-2367.</td></tr>
+</tbody>
+</table>
 <div class="math">
 <p><img src="_images/math/2f4713d5f506bb40cd4a253571ec594b858a7375.png" alt="\begin{tabular}{l*{4}{c}}
  Polynomial Index    &amp; Dimension 1 &amp; Dimension 2 &amp; ... &amp; Dimension M \\
@@ -681,7 +694,7 @@ running somewhere on the cluster.</li>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id1" rules="none">
+<table class="docutils footnote" frame="void" id="id2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>D. Xiu, Fast Numerical Methods for Stochastic Computations: A Review,
@@ -1431,21 +1444,21 @@ The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fouri
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id2" rules="none">
+<table class="docutils footnote" frame="void" id="id3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Davis, P. J., Rabinowitz, P. (2007). Methods of numerical integration.
 Courier Corporation, second edition, ISBN: 0486453391.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
 SIAM Journal on Numerical Analysis, 4(3), 357-362.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+<table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[3]</td><td>Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
@@ -1476,21 +1489,21 @@ The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fouri
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
+<table class="docutils footnote" frame="void" id="id6" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Davis, P. J., Rabinowitz, P. (2007). Methods of numerical integration.
 Courier Corporation, second edition, ISBN: 0486453391.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id6" rules="none">
+<table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
 SIAM Journal on Numerical Analysis, 4(3), 357-362.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id7" rules="none">
+<table class="docutils footnote" frame="void" id="id8" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[3]</td><td>Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
@@ -2163,14 +2176,14 @@ of the random parameters or the constants in model.validate.</p>
 <span id="pygpc-sgpc-module"></span><h2>pygpc.SGPC module<a class="headerlink" href="#module-pygpc.SGPC" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.SGPC.Quad">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Quad</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Quad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Quad" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Quad</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Quad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Quad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.SGPC.SGPC" title="pygpc.SGPC.SGPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.SGPC.SGPC</span></code></a></p>
 <p>Quadrature SGPC sub-class</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pygpc.SGPC.Reg">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Reg</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Reg</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.SGPC.SGPC" title="pygpc.SGPC.SGPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.SGPC.SGPC</span></code></a></p>
 <p>Regression gPC subclass</p>
 <p>Reg(problem, order, order_max, interaction_order, fn_results=None)</p>
@@ -2253,7 +2266,7 @@ corresponds to 1 - Q^2.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Blatman, G., &amp; Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions
@@ -2266,7 +2279,7 @@ for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(
 
 <dl class="class">
 <dt id="pygpc.SGPC.SGPC">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">SGPC</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">SGPC</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.GPC.GPC" title="pygpc.GPC.GPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.GPC.GPC</span></code></a></p>
 <p>Sub-class for standard gPC (SGPC)</p>
 <dl class="attribute">
@@ -2287,13 +2300,32 @@ Generates individual polynomials also if maximum expansion order in order_max is
 <dl class="attribute">
 <dt id="pygpc.SGPC.SGPC.order_max">
 <code class="descname">order_max</code><a class="headerlink" href="#pygpc.SGPC.SGPC.order_max" title="Permalink to this definition">¶</a></dt>
-<dd><p>Maximum global expansion order (sum of all exponents).
-The maximum expansion order considers the sum of the orders of combined polynomials only</p>
+<dd><p>Maximum global expansion order.
+The maximum expansion order considers the sum of the orders of combined polynomials together with the
+chosen norm “order_max_norm”. Typically this norm is 1 such that the maximum order is the sum of all
+monomial orders.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.SGPC.SGPC.order_max_norm">
+<code class="descname">order_max_norm</code><a class="headerlink" href="#pygpc.SGPC.SGPC.order_max_norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number
+of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+is also referred to “hyperbolic polynomial chaos expansion” such that sum(a_i^q)^1/q &lt;= p,
+where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
 </tr>
 </tbody>
 </table>
@@ -2389,7 +2421,7 @@ Current interaction order counter (only used in case of adaptive algorithms)</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
+<table class="docutils footnote" frame="void" id="id10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>D. Xiu, Fast Numerical Methods for Stochastic Computations: A Review,
@@ -3344,7 +3376,7 @@ from observed data, e.g. 0.2 (+-20% tolerance on observed max and min value)</li
 
 <dl class="function">
 <dt id="pygpc.misc.get_multi_indices_max_order">
-<code class="descclassname">pygpc.misc.</code><code class="descname">get_multi_indices_max_order</code><span class="sig-paren">(</span><em>dim</em>, <em>max_order</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_multi_indices_max_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_multi_indices_max_order" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_multi_indices_max_order</code><span class="sig-paren">(</span><em>dim</em>, <em>order_max</em>, <em>order_max_norm=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_multi_indices_max_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_multi_indices_max_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes all multi-indices with a maximum overall order of max_order.</p>
 <p>multi_indices = get_multi_indices_max_order(length, max_order)</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -3353,11 +3385,17 @@ from observed data, e.g. 0.2 (+-20% tolerance on observed max and min value)</li
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dim</strong> (<em>int</em>) – Number of random parameters (length of multi-index tuples)</li>
-<li><strong>max_order</strong> (<em>int</em>) – Maximum order (over all parameters)</li>
+<li><strong>order_max</strong> (<em>int</em>) – Maximum global expansion order.
+The maximum expansion order considers the sum of the orders of combined polynomials together with the
+chosen norm “order_max_norm”. Typically this norm is 1 such that the maximum order is the sum of all
+monomial orders.</li>
+<li><strong>order_max_norm</strong> (<em>float</em>) – Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number
+of polynomials in the expansion such that interaction terms are penalized more.
+sum(a_i^q)^1/q &lt;= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>multi_indices</strong> – Multi-indices for a classical maximum order gPC</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>multi_indices</strong> – Multi-indices for a maximum order gPC assuming a certain order norm.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray [n_basis x dim]</p>
@@ -3423,7 +3461,7 @@ evaluated. If False, the data points are assumed to be at the same location.</li
 
 <dl class="function">
 <dt id="pygpc.misc.get_num_coeffs_sparse">
-<code class="descclassname">pygpc.misc.</code><code class="descname">get_num_coeffs_sparse</code><span class="sig-paren">(</span><em>order_dim_max</em>, <em>order_glob_max</em>, <em>order_inter_max</em>, <em>dim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_num_coeffs_sparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_num_coeffs_sparse" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_num_coeffs_sparse</code><span class="sig-paren">(</span><em>order_dim_max</em>, <em>order_glob_max</em>, <em>order_inter_max</em>, <em>dim</em>, <em>order_glob_max_norm=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_num_coeffs_sparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_num_coeffs_sparse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the number of gPC coefficients for a specific maximum order in each dimension “order_dim_max”,
 global maximum order “order_glob_max” and the interaction order “order_inter_max”.</p>
 <p>num_coeffs_sparse = get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim)</p>
@@ -3436,6 +3474,8 @@ global maximum order “order_glob_max” and the interaction order “order_int
 <li><strong>order_glob_max</strong> (<em>int</em>) – Maximum global order of interacting polynomials</li>
 <li><strong>order_inter_max</strong> (<em>int</em>) – Interaction order</li>
 <li><strong>dim</strong> (<em>int</em>) – Number of random variables</li>
+<li><strong>order_glob_max_norm</strong> (<em>float</em>) – Norm, which defines how the orders are accumulated to derive the total order (default: 1-norm).
+Values smaller than one restrict higher orders and shrink the basis.</li>
 </ul>
 </td>
 </tr>
@@ -3677,7 +3717,7 @@ and saves the plot as fn_pdf.png and fn_pdf.pdf.</p>
 <code class="descclassname">pygpc.validation.</code><code class="descname">validate_gpc_plot</code><span class="sig-paren">(</span><em>gpc</em>, <em>coeffs</em>, <em>random_vars</em>, <em>n_grid=None</em>, <em>coords=None</em>, <em>output_idx=0</em>, <em>data_original=None</em>, <em>fn_out=None</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/validation.html#validate_gpc_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.validation.validate_gpc_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
 calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
-<a href="#id10"><span class="problematic" id="id11">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
+<a href="#id11"><span class="problematic" id="id12">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3691,7 +3731,7 @@ A cartesian grid is generated based on the limits of the specified random_vars</
 <li><strong>coords</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_dim</em><em>]</em>) – Parameter combinations for the random_vars the comparison is conducted with</li>
 <li><strong>output_idx</strong> (<em>int</em><em> or </em><em>list of int</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Indices of output quantity to consider</li>
 <li><strong>data_original</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_out</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – If available, data of original model function at grid</li>
-<li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id12"><span class="problematic" id="id13">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
+<li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id13"><span class="problematic" id="id14">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
 <li><strong>n_cpu</strong> (<em>int</em><em>, </em><em>default=1</em>) – Number of CPU cores to use to calculate results of original model on grid.</li>
 </ul>
 </td>
