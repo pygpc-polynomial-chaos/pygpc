@@ -1,8 +1,3 @@
-from .testfunctions.testfunctions import *
-from .RandomParameter import *
-from .Problem import *
-
-
 class TestBench(object):
     """
     TestBench for gPC algorithms
@@ -38,9 +33,9 @@ class Test(object):
         pass
 
 
-class Test2D(Test):
+class Test2D(TestBench):
     """
-    Test including 2D testfunctions
+    TestBench including 2D testfunctions
     """
     def __init__(self):
         """
@@ -48,26 +43,12 @@ class Test2D(Test):
         """
         super(Test2D, self).__init__()
 
-        self.model = []
-        self.parameters = []
-        self.problem = []
-
         # Peaks
-        #######################################################################
-        # define model
-        self.model.append(Peaks)
-
-        # define parameters
-        self.parameters.append(OrderedDict())
-        self.parameters[-1]["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        self.parameters[-1]["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        self.parameters[-1]["x3"] = 0.
-
-        # define problem
-        self.problem.append(Problem(self.model[-1], self.parameters[-1]))
 
 
-class TestDiscontinuous(Test):
+
+
+class TestDiscontinuous(TestBench):
     """
     Test including discontinuous testfunctions
     """
@@ -77,37 +58,12 @@ class TestDiscontinuous(Test):
         """
         super(TestDiscontinuous, self).__init__()
 
-        self.model = []
-        self.parameters = []
-        self.problem = []
-
         # HyperbolicTangent
-        #######################################################################
-        # define model
-        self.model.append(HyperbolicTangent)
-
-        # define parameters
-        self.parameters.append(OrderedDict())
-        self.parameters[-1]["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
-        self.parameters[-1]["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
-
-        # define problem
-        self.problem.append(Problem(self.model[-1], self.parameters[-1]))
-
         # MovingParticleFrictionForce
-        #######################################################################
-        # define model
-        self.model.append(MovingParticleFrictionForce)
-
-        # define parameters
-        self.parameters.append(OrderedDict())
-        self.parameters[-1]["xi"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
-
-        # define problem
-        self.problem.append(Problem(self.model[-1], self.parameters[-1]))
 
 
-class TestND(Test):
+
+class TestND(TestBench):
     """
     Test including 2D testfunctions
     """
@@ -117,6 +73,3 @@ class TestND(Test):
         """
         super(TestND, self).__init__()
 
-        self.model = []
-        self.parameters = []
-        self.problem = []
