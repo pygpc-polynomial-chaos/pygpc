@@ -99,6 +99,22 @@ pygpc.SGPC module
     :undoc-members:
     :show-inheritance:
 
+pygpc.Test module
+-----------------
+
+.. automodule:: pygpc.Test
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.TestBench module
+----------------------
+
+.. automodule:: pygpc.TestBench
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pygpc.Visualization module
 --------------------------
 

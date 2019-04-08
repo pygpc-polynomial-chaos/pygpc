@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import numpy as np
 import warnings
 import scipy.special
@@ -287,10 +288,10 @@ class MovingParticleFrictionForce(AbstractModel):
         t = np.arange(0, t_end, dt)
 
         # Solve
-        y_out = np.zeros((len(self.p["x1"]), 1))
+        y_out = np.zeros((len(self.p["xi"]), 1))
 
         for i in range(len(y_out)):
-            x0_init = [x0 + delta_x * self.p["x1"].flatten()[i], 0.]
+            x0_init = [x0 + delta_x * self.p["xi"].flatten()[i], 0.]
             y = odeint(deq, x0_init, t, args=(f,), hmin=dt)
             y_out[i, 0] = np.array([[y[-1, 0]]])
 
@@ -1060,7 +1061,7 @@ class Ishigami(AbstractModel):
     p["x2"]: float or ndarray of float [n_grid]
         Second parameter defined in [-pi, pi]
     p["x3"]: float or ndarray of float [n_grid]
-        Second parameter defined in [-pi, pi]
+        Third parameter defined in [-pi, pi]
     p["a"]: float
         shape parameter (a=7)
     p["b"]: float
@@ -1134,7 +1135,7 @@ class SphereFun(AbstractModel):
     p["x1"]: float or ndarray of float [n_grid]
         First parameter [-1, 1]
     p["xi"]: float or ndarray of float [n_grid]
-        i-th parameter defined in [0, 1]
+        i-th parameter defined in [-1, 1]
     p["xN"]: float or ndarray of float [n_grid]
         Nth parameter [-1, 1]
 
@@ -1271,7 +1272,7 @@ class OakleyOhagan2004(AbstractModel):
 
     Parameters
     ----------
-    p["x1...N"]: ndarray of float [n_grid]
+    p["x1...15"]: ndarray of float [n_grid]
         Input data, xi ~ N(mu=0, sigma=1), for all i = 1, 2,..., 15.
 
     Returns
@@ -1294,12 +1295,14 @@ class OakleyOhagan2004(AbstractModel):
 
     def simulate(self, process_id=None):
         # load coefficients
-        m = np.loadtxt('../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_M.txt')
-        a1 = np.loadtxt('../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a1.txt')
-        a2 = np.loadtxt('../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a2.txt')
-        a3 = np.loadtxt('../pckg/data/oakley_ohagan_2004/oakley_ohagan_2004_a3.txt')
+        folder = os.path.join(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0],
+                              "pckg", "data", "oakley_ohagan_2004")
+        m = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_M.txt"))
+        a1 = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_a1.txt"))
+        a2 = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_a2.txt"))
+        a3 = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_a3.txt"))
 
-        x = np.zeros((self.p[self.p.keys()[0]], 15))
+        x = np.zeros((self.p[self.p.keys()[0]].size, 15))
 
         for i, key in enumerate(self.p.keys()):
             x[:, i] = self.p[key]
@@ -1412,12 +1415,11 @@ class WingWeight(AbstractModel):
         pass
 
     def simulate(self, process_id=None):
-        y = (0.036 * self.p["x1"] ** 0.758 * self.p["x2"] ** 0.0035
-             * (self.p["x3"] / np.cos(self.p["x4"]) ** 2) ** 0.6
-             * self.p["x5"] ** 0.006 * self.p["x6"] ** 0.04
-             * (100 * self.p["x7"] / np.cos(self.p["x4"])) ** -0.3
-             * (self.p["x8"] * self.p["x9"]) ** 0.49
-             + self.p["x1"] * self.p["x10"])
+        y = 0.036 * self.p["x1"] ** 0.758 * self.p["x2"] ** 0.0035 * \
+             (self.p["x3"] / np.cos(self.p["x4"]) ** 2) ** 0.6 * \
+             self.p["x5"] ** 0.006 * self.p["x6"] ** 0.04 * \
+             (100 * self.p["x7"] / np.cos(self.p["x4"]))**(-0.3) * \
+             (self.p["x8"] * self.p["x9"])**0.49 + self.p["x1"] * self.p["x10"]
 
         y_out = y[:, np.newaxis]
 

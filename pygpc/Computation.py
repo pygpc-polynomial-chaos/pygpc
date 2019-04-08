@@ -277,7 +277,10 @@ class ComputationFuncPar:
 
             else:
                 # copy constant parameters n_grid times
-                parameters[key] = problem.parameters[key] * np.ones(n_grid)
+                if type(problem.parameters[key]) == float or problem.parameters[key].size == 1:
+                    parameters[key] = problem.parameters[key] * np.ones(n_grid)
+                else:
+                    parameters[key] = np.tile(problem.parameters[key], (n_grid, 1))
 
         # generate worker, which will evaluate the model (here only one for all grid points in coords)
         worker_objs = model(parameters, context)
