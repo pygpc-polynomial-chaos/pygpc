@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="index" title="Index" href="#" >
     <link rel="search" title="Search" href="search.html" >
@@ -192,10 +192,10 @@
         <li><a href="pygpc.html#pygpc.Computation.ComputationPoolMap.close">(pygpc.Computation.ComputationPoolMap method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pygpc.html#pygpc.Computation.Computation">Computation() (in module pygpc.Computation)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pygpc.html#pygpc.Computation.ComputationFuncPar">ComputationFuncPar (class in pygpc.Computation)</a>
 </li>
       <li><a href="pygpc.html#pygpc.Computation.ComputationPoolMap">ComputationPoolMap (class in pygpc.Computation)</a>
@@ -211,6 +211,8 @@
       <li><a href="pygpc.html#pygpc.Visualization.Visualization.create_new_chart">create_new_chart() (pygpc.Visualization.Visualization method)</a>
 </li>
       <li><a href="pygpc.html#pygpc.Visualization.Visualization.create_sub_plot">create_sub_plot() (pygpc.Visualization.Visualization static method)</a>
+</li>
+      <li><a href="pygpc.html#pygpc.Problem.Problem.create_validation_set">create_validation_set() (pygpc.Problem.Problem method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -357,8 +359,6 @@
       <li><a href="pygpc.html#pygpc.misc.get_multi_indices_max_order">get_multi_indices_max_order() (in module pygpc.misc)</a>
 </li>
       <li><a href="pygpc.html#pygpc.Grid.Grid.get_normalized_coordinates">get_normalized_coordinates() (pygpc.Grid.Grid method)</a>
-</li>
-      <li><a href="pygpc.html#pygpc.misc.get_normalized_rms_deviation">get_normalized_rms_deviation() (in module pygpc.misc)</a>
 </li>
       <li><a href="pygpc.html#pygpc.misc.get_num_coeffs">get_num_coeffs() (in module pygpc.misc)</a>
 </li>
@@ -548,7 +548,7 @@
       </ul></li>
       <li><a href="pygpc.html#pygpc.misc.list2dict">list2dict() (in module pygpc.misc)</a>
 </li>
-      <li><a href="pygpc.html#pygpc.SGPC.Reg.loocv">loocv() (pygpc.SGPC.Reg method)</a>
+      <li><a href="pygpc.html#pygpc.GPC.GPC.loocv">loocv() (pygpc.GPC.GPC method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -585,12 +585,16 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pygpc.html#pygpc.Basis.Basis.n_basis">n_basis (pygpc.Basis.Basis attribute)</a>
-</li>
-      <li><a href="pygpc.html#pygpc.GPC.GPC.n_cpu">n_cpu (pygpc.GPC.GPC attribute)</a>
-</li>
-      <li><a href="pygpc.html#pygpc.Grid.Grid.n_grid">n_grid (pygpc.Grid.Grid attribute)</a>
 
       <ul>
+        <li><a href="pygpc.html#pygpc.GPC.GPC.n_basis">(pygpc.GPC.GPC attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pygpc.html#pygpc.GPC.GPC.n_grid">n_grid (pygpc.GPC.GPC attribute)</a>
+
+      <ul>
+        <li><a href="pygpc.html#pygpc.Grid.Grid.n_grid">(pygpc.Grid.Grid attribute)</a>
+</li>
         <li><a href="pygpc.html#pygpc.Grid.RandomGrid.n_grid">(pygpc.Grid.RandomGrid attribute)</a>
 </li>
       </ul></li>
@@ -599,6 +603,8 @@
       <li><a href="pygpc.html#pygpc.GPC.GPC.nan_elm">nan_elm (pygpc.GPC.GPC attribute)</a>
 </li>
       <li><a href="pygpc.html#pygpc.RandomParameter.Norm">Norm (class in pygpc.RandomParameter)</a>
+</li>
+      <li><a href="pygpc.html#pygpc.misc.nrmsd">nrmsd() (in module pygpc.misc)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -612,6 +618,8 @@
         <li><a href="pygpc.testfunctions.html#pygpc.testfunctions.testfunctions.OakleyOhagan2004">(class in pygpc.testfunctions.testfunctions)</a>
 </li>
       </ul></li>
+      <li><a href="pygpc.html#pygpc.GPC.GPC.options">options (pygpc.GPC.GPC attribute)</a>
+</li>
       <li><a href="pygpc.html#pygpc.SGPC.SGPC.order">order (pygpc.SGPC.SGPC attribute)</a>
 </li>
   </ul></td>
@@ -676,10 +684,10 @@
 </li>
       <li><a href="pygpc.html#module-pygpc">pygpc (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pygpc.html#module-pygpc.AbstractModel">pygpc.AbstractModel (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pygpc.html#module-pygpc.Algorithm">pygpc.Algorithm (module)</a>
 </li>
       <li><a href="pygpc.html#module-pygpc.Basis">pygpc.Basis (module)</a>
@@ -715,6 +723,8 @@
       <li><a href="pygpc.testfunctions.html#module-pygpc.testfunctions.testfunctions">pygpc.testfunctions.testfunctions (module)</a>
 </li>
       <li><a href="pygpc.html#module-pygpc.validation">pygpc.validation (module)</a>
+</li>
+      <li><a href="pygpc.html#module-pygpc.ValidationSet">pygpc.ValidationSet (module)</a>
 </li>
       <li><a href="pygpc.html#module-pygpc.Visualization">pygpc.Visualization (module)</a>
 </li>
@@ -931,6 +941,8 @@
       <li><a href="pygpc.html#pygpc.AbstractModel.AbstractModel.validate">validate() (pygpc.AbstractModel.AbstractModel method)</a>
 
       <ul>
+        <li><a href="pygpc.html#pygpc.GPC.GPC.validate">(pygpc.GPC.GPC method)</a>
+</li>
         <li><a href="pygpc.html#pygpc.Problem.Problem.validate">(pygpc.Problem.Problem method)</a>
 </li>
         <li><a href="pygpc.testfunctions.html#pygpc.testfunctions.testfunctions.BfieldOutsideSphere.validate">(pygpc.testfunctions.testfunctions.BfieldOutsideSphere method)</a>
@@ -989,6 +1001,8 @@
       <li><a href="pygpc.html#pygpc.validation.validate_gpc_mc">validate_gpc_mc() (in module pygpc.validation)</a>
 </li>
       <li><a href="pygpc.html#pygpc.validation.validate_gpc_plot">validate_gpc_plot() (in module pygpc.validation)</a>
+</li>
+      <li><a href="pygpc.html#pygpc.ValidationSet.ValidationSet">ValidationSet (class in pygpc.ValidationSet)</a>
 </li>
       <li><a href="pygpc.html#pygpc.RandomParameter.RandomParameter.var">var (pygpc.RandomParameter.RandomParameter attribute)</a>
 </li>
@@ -1070,7 +1084,7 @@
         &copy; Copyright 2018, Konstantin Weise.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
       </li>
     </ul>
     </div>

@@ -1,6 +1,6 @@
 from pygpc.Computation import *
 from .Grid import *
-from .misc import get_normalized_rms_deviation
+from .misc import nrmsd
 from .misc import get_cartesian_product
 from .Visualization import *
 import matplotlib.pyplot as plt
@@ -60,7 +60,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
         y_orig = y_orig[:, np.newaxis]
 
     # Calculate normalized root mean square deviation
-    nrmsd = get_normalized_rms_deviation(y_gpc, y_orig)
+    relative_error_nrmsd = nrmsd(y_gpc, y_orig)
 
     if fn_out:
         # Calculating output PDFs
@@ -77,7 +77,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
             f.create_dataset('results/gpc', data=y_gpc)
             f.create_dataset('grid/coords', data=grid_mc.coords)
             f.create_dataset('grid/coords_norm', data=grid_mc.coords_norm)
-            f.create_dataset('error/nrmsd', data=nrmsd)
+            f.create_dataset('error/nrmsd', data=relative_error_nrmsd)
             f.create_dataset('pdf/original', data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
             f.create_dataset('pdf/gpc', data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
 
@@ -93,12 +93,12 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
         ax1.grid()
         ax1.set_xlabel(r'$y$', fontsize=16)
         ax1.set_ylabel(r'$p(y)$', fontsize=16)
-        ax1.text(0.05, 0.95, r'$error=%.2f$' % (nrmsd[0],) + "%",
+        ax1.text(0.05, 0.95, r'$error=%.2f$' % (relative_error_nrmsd[0],) + "%",
                  transform=ax1.transAxes, fontsize=12, verticalalignment='top',
                  bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
         plt.savefig(os.path.splitext(fn_out)[0] + '.pdf', facecolor='#ffffff')
 
-    return nrmsd
+    return relative_error_nrmsd
 
 
 def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, data_original=None,

@@ -1030,13 +1030,15 @@ class RandomGrid(Grid):
         super(RandomGrid, self).__init__(parameters_random)
 
         self.n_grid = int(options["n_grid"])     # Number of random samples
-        self.seed = options["seed"]              # Seed of random grid (if necessary to reproduce random grid)
+
+        if "seed" in options.keys():
+            self.seed = options["seed"]              # Seed of random grid (if necessary to reproduce random grid)
+            np.random.seed(self.seed)
+        else:
+            self.seed = None
 
         # Generate random samples for each random input variable [n_grid x dim]
         self.coords_norm = np.zeros([self.n_grid, self.dim])
-        
-        if self.seed:
-            np.random.seed(self.seed)
 
         # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
         if self.seed:

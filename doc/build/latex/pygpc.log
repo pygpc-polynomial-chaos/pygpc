@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.11)  8 APR 2019 22:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.12.28)  11 APR 2019 15:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -7,7 +7,7 @@ entering extended mode
 LaTeX2e <2016/02/01>
 Babel <3.9q> and hyphenation patterns for 3 language(s) loaded.
 (./sphinxmanual.cls
-Document Class: sphinxmanual 2018/09/18 v1.8.1 Document class (Sphinx manual)
+Document Class: sphinxmanual 2018/12/22 v1.8.3 Document class (Sphinx manual)
 (/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
 Document Class: report 2014/09/29 v1.4h Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
@@ -453,7 +453,7 @@ Package: fncychap 2007/07/30 v1.34 LaTeX package (Revised chapters)
 \c@AlphaCnt=\count101
 \c@AlphaDecCnt=\count102
 ) (./sphinx.sty
-Package: sphinx 2018/09/18 v1.8.1 LaTeX package (Sphinx markup)
+Package: sphinx 2019/01/12 v1.8.4 LaTeX package (Sphinx markup)
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
 Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
@@ -827,6 +827,7 @@ Package etexcmds Info: Could not find \expanded.
 \sphinxshadowrule=\dimen141
 \spx@notice@border=\dimen142
 \spx@image@box=\box39
+\spx@image@maxheight=\dimen143
 \c@literalblock=\count117
 \sphinxcontinuationbox=\box40
 \sphinxvisiblespacebox=\box41
@@ -852,14 +853,14 @@ Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 \Gm@cnth=\count118
 \Gm@cntv=\count119
 \c@Gm@tempcnt=\count120
-\Gm@bindingoffset=\dimen143
-\Gm@wd@mp=\dimen144
-\Gm@odd@mp=\dimen145
-\Gm@even@mp=\dimen146
-\Gm@layoutwidth=\dimen147
-\Gm@layoutheight=\dimen148
-\Gm@layouthoffset=\dimen149
-\Gm@layoutvoffset=\dimen150
+\Gm@bindingoffset=\dimen144
+\Gm@wd@mp=\dimen145
+\Gm@odd@mp=\dimen146
+\Gm@even@mp=\dimen147
+\Gm@layoutwidth=\dimen148
+\Gm@layoutheight=\dimen149
+\Gm@layouthoffset=\dimen150
+\Gm@layoutvoffset=\dimen151
 \Gm@dimlist=\toks28
 )
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
@@ -905,7 +906,7 @@ Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
 (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/auxhook.sty
 Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
 )
-\@linkdim=\dimen151
+\@linkdim=\dimen152
 \Hy@linkcounter=\count121
 \Hy@pagecounter=\count122
 
@@ -942,10 +943,10 @@ Package hyperref Info: Bookmarks ON on input line 4688.
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 5041.
-\XeTeXLinkMargin=\dimen152
+\XeTeXLinkMargin=\dimen153
 \Fld@menulength=\count125
-\Field@Width=\dimen153
-\Fld@charsize=\dimen154
+\Field@Width=\dimen154
+\Fld@charsize=\dimen155
 Package hyperref Info: Hyper figures OFF on input line 6295.
 Package hyperref Info: Link nesting OFF on input line 6300.
 Package hyperref Info: Hyper index ON on input line 6303.
@@ -985,29 +986,29 @@ Writing index file pygpc.idx
 (./pygpc.aux)
 \openout1 = `pygpc.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 62.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 62.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 68.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 68.
  (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Try loading font information for T1+ptm on input line 62.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 68.
+LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Try loading font information for T1+ptm on input line 68.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ptm.fd
 File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
@@ -1015,13 +1016,13 @@ File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count131
-\scratchdimen=\dimen155
+\scratchdimen=\dimen156
 \scratchbox=\box43
 \nofMPsegments=\count132
 \nofMParguments=\count133
 \everyMPshowfont=\toks29
 \MPscratchCnt=\count134
-\MPscratchDim=\dimen156
+\MPscratchDim=\dimen157
 \MPnumerator=\count135
 \makeMPintoPDFobject=\count136
 \everyMPtoPDFconversion=\toks30
@@ -1075,7 +1076,7 @@ e
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 \AtBeginShipoutBox=\box44
-Package hyperref Info: Link coloring ON on input line 62.
+Package hyperref Info: Link coloring ON on input line 68.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
@@ -1084,56 +1085,56 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count137
 )
-LaTeX Info: Redefining \ref on input line 62.
-LaTeX Info: Redefining \pageref on input line 62.
-LaTeX Info: Redefining \nameref on input line 62.
+LaTeX Info: Redefining \ref on input line 68.
+LaTeX Info: Redefining \pageref on input line 68.
+LaTeX Info: Redefining \nameref on input line 68.
 
 (./pygpc.out) (./pygpc.out)
 \@outlinefile=\write5
 \openout5 = `pygpc.out'.
 
-Package hyperref Info: Option `pageanchor' set `false' on input line 66.
-LaTeX Font Info:    Try loading font information for T1+phv on input line 66.
+Package hyperref Info: Option `pageanchor' set `false' on input line 71.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 71.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 66.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 71.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <24.88> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 66.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 71.
 LaTeX Font Info:    Font shape `T1/phv/bx/it' in size <10> not available
-(Font)              Font shape `T1/phv/b/it' tried instead on input line 66.
+(Font)              Font shape `T1/phv/b/it' tried instead on input line 71.
 LaTeX Font Info:    Font shape `T1/phv/b/it' in size <10> not available
-(Font)              Font shape `T1/phv/b/sl' tried instead on input line 66.
+(Font)              Font shape `T1/phv/b/sl' tried instead on input line 71.
 LaTeX Font Info:    Font shape `T1/phv/bx/it' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/it' tried instead on input line 66.
+(Font)              Font shape `T1/phv/b/it' tried instead on input line 71.
 LaTeX Font Info:    Font shape `T1/phv/b/it' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/sl' tried instead on input line 66.
+(Font)              Font shape `T1/phv/b/sl' tried instead on input line 71.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 66.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 71.
 <<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
-LaTeX Font Info:    Try loading font information for U+msa on input line 66.
+LaTeX Font Info:    Try loading font information for U+msa on input line 71.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 66.
+LaTeX Font Info:    Try loading font information for U+msb on input line 71.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 66.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 71.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 
 Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 66.
+less on input line 72.
 
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 67.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 73.
 (./pygpc.toc
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 2.
@@ -1144,295 +1145,310 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
 
 
 Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 67.
+less on input line 73.
 
 [1
+
 
 
 ]
 
 Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 68.
+less on input line 74.
 
 
 Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 68.
+less on input line 74.
 
 
 Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
-less on input line 68.
+less on input line 74.
 
 Chapter 1.
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 89.
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 95.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 )
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <10> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 89.
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <10> not available
-(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 90.
-LaTeX Font Info:    Try loading font information for TS1+ptm on input line 96.
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 96.
+LaTeX Font Info:    Try loading font information for TS1+ptm on input line 102.
+
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
 
 Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 151.
+less on input line 157.
 
 [1
 
 
 ]
-Overfull \hbox (198.25327pt too wide) in paragraph at lines 159--159
+Overfull \hbox (198.25327pt too wide) in paragraph at lines 165--165
 [] 
  []
 
 
-Overfull \hbox (25.00003pt too wide) detected at line 159
+Overfull \hbox (25.00003pt too wide) detected at line 165
 []
  []
 
-<pygpc-testfunctions-1.pdf, id=171, 433.62pt x 361.35pt>
+<pygpc-testfunctions-1.pdf, id=177, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-1.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-1.pdf>
-Package pdftex.def Info: pygpc-testfunctions-1.pdf used on input line 181.
+Package pdftex.def Info: pygpc-testfunctions-1.pdf used on input line 187.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [2 <./pygpc-testfunctions-1.pdf>]
-<pygpc-testfunctions-2.pdf, id=217, 433.62pt x 361.35pt>
+<pygpc-testfunctions-2.pdf, id=222, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-2.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-2.pdf>
-Package pdftex.def Info: pygpc-testfunctions-2.pdf used on input line 259.
+Package pdftex.def Info: pygpc-testfunctions-2.pdf used on input line 265.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [3] [4 <./pygpc-testfunctions-2.pdf>]
-<pygpc-testfunctions-3.pdf, id=266, 433.62pt x 361.35pt>
+<pygpc-testfunctions-3.pdf, id=271, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-3.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-3.pdf>
-Package pdftex.def Info: pygpc-testfunctions-3.pdf used on input line 323.
+Package pdftex.def Info: pygpc-testfunctions-3.pdf used on input line 329.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [5 <./pygpc-testfunctions-3.pdf>]
-<pygpc-testfunctions-4.pdf, id=308, 433.62pt x 361.35pt>
+<pygpc-testfunctions-4.pdf, id=313, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-4.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-4.pdf>
-Package pdftex.def Info: pygpc-testfunctions-4.pdf used on input line 388.
+Package pdftex.def Info: pygpc-testfunctions-4.pdf used on input line 394.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [6] [7 <./pygpc-testfunctions-4.pdf>]
-<pygpc-testfunctions-5.pdf, id=359, 433.62pt x 361.35pt>
+<pygpc-testfunctions-5.pdf, id=364, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-5.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-5.pdf>
-Package pdftex.def Info: pygpc-testfunctions-5.pdf used on input line 452.
+Package pdftex.def Info: pygpc-testfunctions-5.pdf used on input line 458.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [8 <./pygpc-testfunctions-5.pdf>]
-<pygpc-testfunctions-6.pdf, id=401, 433.62pt x 361.35pt>
+<pygpc-testfunctions-6.pdf, id=406, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-6.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-6.pdf>
-Package pdftex.def Info: pygpc-testfunctions-6.pdf used on input line 516.
+Package pdftex.def Info: pygpc-testfunctions-6.pdf used on input line 522.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [9 <./pygpc-testfunctions-6.pdf>]
-<pygpc-testfunctions-7.pdf, id=445, 433.62pt x 361.35pt>
+<pygpc-testfunctions-7.pdf, id=450, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-7.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-7.pdf>
-Package pdftex.def Info: pygpc-testfunctions-7.pdf used on input line 580.
+Package pdftex.def Info: pygpc-testfunctions-7.pdf used on input line 586.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [10] [11 <./pygpc-testfunctions-7.pdf>]
-<pygpc-testfunctions-8.pdf, id=500, 433.62pt x 361.35pt>
+<pygpc-testfunctions-8.pdf, id=505, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-8.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-8.pdf>
-Package pdftex.def Info: pygpc-testfunctions-8.pdf used on input line 644.
+Package pdftex.def Info: pygpc-testfunctions-8.pdf used on input line 650.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [12 <./pygpc-testfunctions-8.pdf>]
-<pygpc-testfunctions-9.pdf, id=547, 433.62pt x 361.35pt>
+<pygpc-testfunctions-9.pdf, id=552, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-9.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-9.pdf>
-Package pdftex.def Info: pygpc-testfunctions-9.pdf used on input line 705.
+Package pdftex.def Info: pygpc-testfunctions-9.pdf used on input line 711.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [13 <./pygpc-testfunctions-9.pdf>]
-<pygpc-testfunctions-10.pdf, id=594, 433.62pt x 361.35pt>
+<pygpc-testfunctions-10.pdf, id=599, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-10.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-10.pdf>
-Package pdftex.def Info: pygpc-testfunctions-10.pdf used on input line 781.
+Package pdftex.def Info: pygpc-testfunctions-10.pdf used on input line 787.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [14] [15 <./pygpc-testfunctions-10.pdf>]
-<pygpc-testfunctions-11.pdf, id=643, 433.62pt x 361.35pt>
+<pygpc-testfunctions-11.pdf, id=648, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-11.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-11.pdf>
-Package pdftex.def Info: pygpc-testfunctions-11.pdf used on input line 847.
+Package pdftex.def Info: pygpc-testfunctions-11.pdf used on input line 853.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [16 <./pygpc-testfunctions-11.pdf>]
-<pygpc-testfunctions-12.pdf, id=687, 433.62pt x 361.35pt>
+<pygpc-testfunctions-12.pdf, id=692, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-12.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-12.pdf>
-Package pdftex.def Info: pygpc-testfunctions-12.pdf used on input line 912.
+Package pdftex.def Info: pygpc-testfunctions-12.pdf used on input line 918.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [17 <./pygpc-testfunctions-12.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 945--945
+Underfull \hbox (badness 10000) in paragraph at lines 951--951
 []\T1/ptm/m/it/10 p\T1/ptm/m/n/10 , \T1/ptm/m/it/10 con-
  []
 
 
-Overfull \hbox (11.34459pt too wide) in paragraph at lines 945--945
+Overfull \hbox (11.34459pt too wide) in paragraph at lines 951--951
 \T1/ptm/m/it/10 text=None\T1/pcr/m/n/10 ) 
  []
 
-<pygpc-testfunctions-13.pdf, id=732, 433.62pt x 361.35pt>
+<pygpc-testfunctions-13.pdf, id=737, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-13.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-13.pdf>
-Package pdftex.def Info: pygpc-testfunctions-13.pdf used on input line 992.
+Package pdftex.def Info: pygpc-testfunctions-13.pdf used on input line 998.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [18] [19 <./pygpc-testfunctions-13.pdf>]
-<pygpc-testfunctions-14.pdf, id=788, 433.62pt x 361.35pt>
+<pygpc-testfunctions-14.pdf, id=793, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-14.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-14.pdf>
-Package pdftex.def Info: pygpc-testfunctions-14.pdf used on input line 1118.
+Package pdftex.def Info: pygpc-testfunctions-14.pdf used on input line 1124.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [20] [21 <./pygpc-testfunctions-14.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 1151--1151
+Underfull \hbox (badness 10000) in paragraph at lines 1157--1157
 []\T1/ptm/m/it/10 p\T1/ptm/m/n/10 , \T1/ptm/m/it/10 con-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1216--1216
+Underfull \hbox (badness 10000) in paragraph at lines 1222--1222
 []\T1/ptm/m/it/10 p\T1/ptm/m/n/10 , \T1/ptm/m/it/10 con-
  []
 
 
-Overfull \hbox (5.34459pt too wide) in paragraph at lines 1216--1216
+Overfull \hbox (5.34459pt too wide) in paragraph at lines 1222--1222
 \T1/ptm/m/it/10 text=None\T1/pcr/m/n/10 ) 
  []
 
-[22] <pygpc-testfunctions-15.pdf, id=850, 433.62pt x 361.35pt>
+[22] <pygpc-testfunctions-15.pdf, id=855, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-15.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-15.pdf>
-Package pdftex.def Info: pygpc-testfunctions-15.pdf used on input line 1310.
+Package pdftex.def Info: pygpc-testfunctions-15.pdf used on input line 1316.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [23] [24 <./pygpc-testfunctions-15.pdf>]
-<pygpc-testfunctions-16.pdf, id=898, 433.62pt x 361.35pt>
+<pygpc-testfunctions-16.pdf, id=903, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-16.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-16.pdf>
-Package pdftex.def Info: pygpc-testfunctions-16.pdf used on input line 1374.
+Package pdftex.def Info: pygpc-testfunctions-16.pdf used on input line 1380.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [25] [26 <./pygpc-testfunctions-16.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 1476--1476
+Underfull \hbox (badness 10000) in paragraph at lines 1482--1482
 []\T1/ptm/m/it/10 p\T1/ptm/m/n/10 , \T1/ptm/m/it/10 con-
  []
 
-<pygpc-testfunctions-17.pdf, id=948, 433.62pt x 361.35pt>
+<pygpc-testfunctions-17.pdf, id=953, 433.62pt x 361.35pt>
 File: pygpc-testfunctions-17.pdf Graphic file (type pdf)
 
 <use pygpc-testfunctions-17.pdf>
-Package pdftex.def Info: pygpc-testfunctions-17.pdf used on input line 1512.
+Package pdftex.def Info: pygpc-testfunctions-17.pdf used on input line 1518.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
  [27] [28 <./pygpc-testfunctions-17.pdf>]
 [29] [30] [31] [32] [33] [34] [35] [36]
-Underfull \hbox (badness 10000) in paragraph at lines 2428--2429
+Underfull \hbox (badness 10000) in paragraph at lines 2434--2435
 []\T1/pcr/b/n/10 coeffs \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 [N_coeffs x N_out] np.n
 darray, optional,
  []
 
 [37]
-Underfull \hbox (badness 10000) in paragraph at lines 2565--2566
+Underfull \hbox (badness 10000) in paragraph at lines 2571--2572
 []\T1/pcr/b/n/10 coeffs \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 [N_coeffs x N_out] np.n
 darray, optional,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2598--2600
+Underfull \hbox (badness 10000) in paragraph at lines 2604--2606
 []\T1/ptm/m/n/10 sobol, sobol_idx, sobol_rel_order_mean, sobol_rel_order_std, s
 obol_rel_1st_order_mean,
  []
 
 [38]
-Underfull \hbox (badness 10000) in paragraph at lines 2647--2649
+Underfull \hbox (badness 10000) in paragraph at lines 2653--2655
 []\T1/pcr/b/n/10 coeffs \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 [N_coeffs x N_out] np.n
 darray, optional,
  []
 
-[39] [40]
-Underfull \hbox (badness 10000) in paragraph at lines 2986--2987
+[39] [40] [41]
+Underfull \hbox (badness 10000) in paragraph at lines 3018--3019
 []\T1/pcr/b/n/10 output_idx \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 ndarray of int [1 x
  n_out] optional,
  []
 
-[41]
-Underfull \hbox (badness 10000) in paragraph at lines 3067--3068
-[]\T1/pcr/b/n/10 gpc_matrix \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 ndarray of float [n
-_grid x n_basis], optional,
- []
 
-[42] [43] [44] [45] [46]
-LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 3786.
-LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <9> not available
-(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 3789.
- [47] [48]
-Underfull \hbox (badness 10000) in paragraph at lines 3963--3963
-[]\T1/ptm/m/it/10 pdf_type=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 pdf_shape=None\
-T1/ptm/m/n/10 ,
- []
-
-[49]
-Underfull \hbox (badness 10000) in paragraph at lines 4054--4054
-[]\T1/ptm/m/it/10 problem\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der\T1/ptm/m/n/10 
-, \T1/ptm/m/it/10 or-der_max\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der_max_norm\T1
-/ptm/m/n/10 , \T1/ptm/m/it/10 in-ter-ac-tion_order\T1/ptm/m/n/10 ,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 4064--4064
-[]\T1/ptm/m/it/10 problem\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der\T1/ptm/m/n/10 
-, \T1/ptm/m/it/10 or-der_max\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der_max_norm\T1
-/ptm/m/n/10 , \T1/ptm/m/it/10 in-ter-ac-tion_order\T1/ptm/m/n/10 ,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 4119--4122
+Underfull \hbox (badness 10000) in paragraph at lines 3049--3052
 \T1/ptm/m/n/10 Perform leave-one-out cross val-i-da-tion of gPC ap-prox-i-ma-ti
 on and add er-ror value to
  []
 
 
-Underfull \hbox (badness 6236) in paragraph at lines 4133--4134
+Underfull \hbox (badness 6236) in paragraph at lines 3066--3067
 []\T1/pcr/b/n/10 sim_results \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 ndarray of float [
 n_grid x n_out]\T1/ptm/m/n/10 ) ^^U Re-sults from
  []
 
+[42]
+Underfull \hbox (badness 10000) in paragraph at lines 3138--3139
+[]\T1/pcr/b/n/10 gpc_matrix \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 ndarray of float [n
+_grid x n_basis], optional,
+ []
+
+
+Underfull \hbox (badness 6236) in paragraph at lines 3180--3181
+[]\T1/pcr/b/n/10 sim_results \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 ndarray of float [
+n_grid x n_out]\T1/ptm/m/n/10 ) ^^U Re-sults from
+ []
+
+[43] [44] [45] [46] [47]
+LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 3883.
+LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <9> not available
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 3886.
+ [48] [49]
+Underfull \hbox (badness 10000) in paragraph at lines 4080--4080
+[]\T1/ptm/m/it/10 pdf_type=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 pdf_shape=None\
+T1/ptm/m/n/10 ,
+ []
+
 [50]
-Underfull \hbox (badness 10000) in paragraph at lines 4157--4157
+Underfull \hbox (badness 10000) in paragraph at lines 4171--4171
 []\T1/ptm/m/it/10 problem\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der\T1/ptm/m/n/10 
 , \T1/ptm/m/it/10 or-der_max\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der_max_norm\T1
 /ptm/m/n/10 , \T1/ptm/m/it/10 in-ter-ac-tion_order\T1/ptm/m/n/10 ,
  []
 
-[51]
-Underfull \hbox (badness 10000) in paragraph at lines 4363--4365
+
+Underfull \hbox (badness 10000) in paragraph at lines 4181--4181
+[]\T1/ptm/m/it/10 problem\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der\T1/ptm/m/n/10 
+, \T1/ptm/m/it/10 or-der_max\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der_max_norm\T1
+/ptm/m/n/10 , \T1/ptm/m/it/10 in-ter-ac-tion_order\T1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4238--4238
+[]\T1/ptm/m/it/10 problem\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der\T1/ptm/m/n/10 
+, \T1/ptm/m/it/10 or-der_max\T1/ptm/m/n/10 , \T1/ptm/m/it/10 or-der_max_norm\T1
+/ptm/m/n/10 , \T1/ptm/m/it/10 in-ter-ac-tion_order\T1/ptm/m/n/10 ,
+ []
+
+[51] [52]
+Underfull \hbox (badness 10000) in paragraph at lines 4444--4446
 []\T1/ptm/m/n/10 sobol, sobol_idx, sobol_rel_order_mean, sobol_rel_order_std, s
 obol_rel_1st_order_mean,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4368--4369
+Underfull \hbox (badness 10000) in paragraph at lines 4449--4450
 []\T1/pcr/b/n/10 sobol \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 ndarray of float [n_sobo
 l x n_out]\T1/ptm/m/n/10 ) ^^U Un-nor-mal-ized
  []
 
-[52] [53] [54] [55]
-Underfull \hbox (badness 10000) in paragraph at lines 4833--4833
+[53] [54] [55]
+Underfull \hbox (badness 10000) in paragraph at lines 4789--4789
+[]\T1/ptm/m/it/10 algorithm\T1/ptm/m/n/10 , \T1/ptm/m/it/10 op-tions\T1/ptm/m/n
+/10 , \T1/ptm/m/it/10 dims\T1/ptm/m/n/10 , \T1/ptm/m/it/10 rep-e-ti-tions\T1/pt
+m/m/n/10 ,
+ []
+
+[56]
+Underfull \hbox (badness 10000) in paragraph at lines 4927--4927
 []\T1/ptm/m/it/10 title\T1/ptm/m/n/10 , \T1/ptm/m/it/10 la-bels\T1/ptm/m/n/10 ,
  \T1/ptm/m/it/10 grid_points\T1/ptm/m/n/10 , \T1/ptm/m/it/10 data_points\T1/ptm
 /m/n/10 , \T1/ptm/m/it/10 v_lim=(None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 None)\T1/
@@ -1440,643 +1456,871 @@ ptm/m/n/10 , \T1/ptm/m/it/10 x_lim=None\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4849--4850
+Underfull \hbox (badness 10000) in paragraph at lines 4943--4944
 []\T1/pcr/b/n/10 data_points \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 np.ndarray of the 
 data points that are placed
  []
 
-[56] [57]
-Underfull \hbox (badness 6625) in paragraph at lines 5066--5067
+[57] [58]
+Underfull \hbox (badness 6625) in paragraph at lines 5159--5160
 []\T1/pcr/b/n/10 position \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 ndarray of float [n_r
 gb], optional, default=None\T1/ptm/m/n/10 ) ^^U
  []
 
 
-Underfull \hbox (badness 6380) in paragraph at lines 5094--5095
+Underfull \hbox (badness 6380) in paragraph at lines 5187--5188
 []\T1/pcr/b/n/10 weights \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 ndarray of float [n_gr
 id], optional, default=None\T1/ptm/m/n/10 ) ^^U
  []
 
-[58] [59] [60] [61]
-Underfull \hbox (badness 10000) in paragraph at lines 5542--5545
+[59] [60] [61] [62]
+Underfull \hbox (badness 10000) in paragraph at lines 5635--5638
 []\T1/ptm/m/n/10 fancy_bar(Run,9,10,'Some more text'): Some more text Run 09 fr
 om 10
  []
 
-[62] [63] [64] [65] [66] [67]
-Underfull \hbox (badness 10000) in paragraph at lines 6096--6096
+[63] [64] [65] [66] [67] [68]
+Underfull \hbox (badness 10000) in paragraph at lines 6191--6191
 \T1/ptm/m/it/10 out-put_idx=0\T1/ptm/m/n/10 , \T1/ptm/m/it/10 data_original=Non
 e\T1/ptm/m/n/10 , \T1/ptm/m/it/10 fn_out=None\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 6125--6126
+Underfull \hbox (badness 10000) in paragraph at lines 6220--6221
 []\T1/pcr/b/n/10 fn_out \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 str\T1/ptm/m/n/10 ) ^^U
  File-name of plot com-par-ing orig-i-nal vs gPC model
  []
 
-[68]
+[69]
 Chapter 2.
 
 Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 6169.
+less on input line 6264.
 
-[69
+[70
 
 ]
 
 Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 6194.
-
-[70
-
-
-
-] (./pygpc.ind
-Underfull \hbox (badness 10000) in paragraph at lines 13--14
-[]\T1/ptm/m/n/10 add_heat_map() (pygpc.Visualization.Visualization
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 14--15
-[]\T1/ptm/m/n/10 add_line_plot() (pygpc.Visualization.Visualization
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 15--16
-[]\T1/ptm/m/n/10 add_scatter_plot() (pygpc.Visualization.Visualization
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 30--31
-[]\T1/ptm/m/n/10 BfieldOutsideSphere (class in
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 40--41
-[]\T1/ptm/m/n/10 close() (pygpc.Computation.ComputationFuncPar
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 41--42
-[]\T1/ptm/m/n/10 close() (pygpc.Computation.ComputationPoolMap
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 49--50
-[]\T1/ptm/m/n/10 create_new_chart() (pygpc.Visualization.Visualization
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--51
-[]\T1/ptm/m/n/10 create_sub_plot() (pygpc.Visualization.Visualization
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 61--62
-[]\T1/ptm/m/n/10 extend_random_grid() (pygpc.Grid.RandomGrid
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 66--67
-[]\T1/ptm/m/n/10 figure_number (pygpc.Visualization.Visualization at-
- []
-
-
-Overfull \hbox (23.70947pt too wide) in paragraph at lines 67--68
-[]\T1/ptm/m/n/10 figure_number (pygpc.Visualization.Visualization.Visualisation
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 70--71
-[]\T1/ptm/m/n/10 font_size_label (pygpc.Visualization.Visualization
- []
-
-
-Overfull \hbox (25.92903pt too wide) in paragraph at lines 71--73
-[]\T1/ptm/m/n/10 font_size_label (pygpc.Visualization.Visualization.Visualisati
-on
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 73--74
-[]\T1/ptm/m/n/10 font_size_title (pygpc.Visualization.Visualization at-
- []
-
-
-Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 80.
+less on input line 6290.
 
 [71
 
 
 
+] (./pygpc.ind
+Underfull \hbox (badness 10000) in paragraph at lines 8--10
+[]\T1/pcr/m/n/10 __call__() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.BasisFunction
+.BasisFunction
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 17--19
+[]\T1/pcr/m/n/10 add_heat_map() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visualiza
+tion.Visualization
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--23
+[]\T1/pcr/m/n/10 add_scatter_plot()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--23
+\T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visualization.Visualization static
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--39
+[]\T1/pcr/m/n/10 BfieldOutsideSphere \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--47
+[]\T1/pcr/m/n/10 calc_multi_indices() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Gri
+d.SparseGrid
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 47--48
+[]\T1/pcr/m/n/10 calc_tensor_products()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--49
+[]\T1/pcr/m/n/10 close() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Computation.Comp
+utationFuncPar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 49--50
+[]\T1/pcr/m/n/10 close() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Computation.Comp
+utationPoolMap
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 53--54
+[]\T1/pcr/m/n/10 compute_cluster() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod-ule
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 57--59
+[]\T1/pcr/m/n/10 create_new_chart()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 59--61
+[]\T1/pcr/m/n/10 create_sub_plot()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 59--61
+\T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visualization.Visualization static
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--62
+[]\T1/pcr/m/n/10 create_validation_set()
+ []
+
+
+Overfull \hbox (40.88004pt too wide) in paragraph at lines 79--81
+[]\T1/pcr/m/n/10 figure_number \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visualizat
+ion.Visualization.Visualisation
+ []
+
+
+Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
+less on input line 85.
+
+[72
+
+
+
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 80--81
-[]\T1/ptm/m/n/10 GenzContinuous (class in
+Overfull \hbox (52.88004pt too wide) in paragraph at lines 85--87
+[]\T1/pcr/m/n/10 font_size_label \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visualiz
+ation.Visualization.Visualisation
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 82--83
-[]\T1/ptm/m/n/10 GenzCornerPeak (class in
+Underfull \hbox (badness 10000) in paragraph at lines 95--97
+[]\T1/pcr/m/n/10 GenzContinuous \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 84--85
-[]\T1/ptm/m/n/10 GenzDiscontinuous (class in
+Underfull \hbox (badness 10000) in paragraph at lines 98--100
+[]\T1/pcr/m/n/10 GenzCornerPeak \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 86--87
-[]\T1/ptm/m/n/10 GenzGaussianPeak (class in
+Underfull \hbox (badness 10000) in paragraph at lines 101--103
+[]\T1/pcr/m/n/10 GenzDiscontinuous \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 88--89
-[]\T1/ptm/m/n/10 GenzOscillatory (class in
+Underfull \hbox (badness 10000) in paragraph at lines 104--106
+[]\T1/pcr/m/n/10 GenzGaussianPeak \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 90--91
-[]\T1/ptm/m/n/10 GenzProductPeak (class in
+Underfull \hbox (badness 10000) in paragraph at lines 107--109
+[]\T1/pcr/m/n/10 GenzOscillatory \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 97--98
-[]\T1/ptm/m/n/10 get_denormalized_coordinates() (pygpc.Grid.Grid
+Underfull \hbox (badness 10000) in paragraph at lines 110--112
+[]\T1/pcr/m/n/10 GenzProductPeak \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 114--115
-[]\T1/ptm/m/n/10 get_quadrature_clenshaw_curtis_1d() (pygpc.Grid.Grid
+Underfull \hbox (badness 10000) in paragraph at lines 113--114
+[]\T1/pcr/m/n/10 get_approximation() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.EGPC
+.EGPC
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 115--116
-[]\T1/ptm/m/n/10 get_quadrature_fejer1_1d() (pygpc.Grid.Grid static
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 116--117
-[]\T1/ptm/m/n/10 get_quadrature_fejer2_1d() (pygpc.Grid.Grid static
+[]\T1/pcr/m/n/10 get_array_unique_rows() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod
+-ule
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 117--118
-[]\T1/ptm/m/n/10 get_quadrature_hermite_1d() (pygpc.Grid.Grid static
+[]\T1/pcr/m/n/10 get_cartesian_product() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod
+-ule
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 118--119
-[]\T1/ptm/m/n/10 get_quadrature_jacobi_1d() (pygpc.Grid.Grid static
+Underfull \hbox (badness 10000) in paragraph at lines 118--120
+[]\T1/pcr/m/n/10 get_denormalized_coordinates()
  []
 
 
-Underfull \hbox (badness 5105) in paragraph at lines 119--120
-[]\T1/ptm/m/n/10 get_quadrature_patterson_1d() (pygpc.Grid.Grid static
+Underfull \hbox (badness 10000) in paragraph at lines 120--122
+[]\T1/pcr/m/n/10 get_extracted_sobol_order()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 123--124
-[]\T1/ptm/m/n/10 get_sensitivities_hdf5() (in mod-ule
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 129--130
-[]\T1/ptm/m/n/10 get_standard_deviation() (pygpc.EGPC.EGPC static
+Underfull \hbox (badness 10000) in paragraph at lines 124--125
+[]\T1/pcr/m/n/10 get_list_multi_delete() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod
+-ule
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 130--131
-[]\T1/ptm/m/n/10 get_standard_deviation() (pygpc.SGPC.SGPC static
+[]\T1/pcr/m/n/10 get_normalized_coordinates()
  []
 
 
-Overfull \hbox (35.93929pt too wide) in paragraph at lines 139--141
-[]\T1/ptm/m/n/10 graph_lind_width (pygpc.Visualization.Visualization.Visualisat
-ion
+Underfull \hbox (badness 10000) in paragraph at lines 132--133
+[]\T1/pcr/m/n/10 get_num_coeffs_sparse() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod
+-ule
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 150--151
-[]\T1/ptm/m/n/10 horizontal_padding (pygpc.Visualization.Visualization
+Underfull \hbox (badness 10000) in paragraph at lines 136--138
+[]\T1/pcr/m/n/10 get_quadrature_clenshaw_curtis_1d()
  []
 
 
-Overfull \hbox (42.5992pt too wide) in paragraph at lines 151--153
-[]\T1/ptm/m/n/10 horizontal_padding (pygpc.Visualization.Visualization.Visualis
-ation
+Underfull \hbox (badness 10000) in paragraph at lines 142--144
+[]\T1/pcr/m/n/10 get_quadrature_hermite_1d()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 154--155
-[]\T1/ptm/m/n/10 HyperbolicTangent (class in
+Underfull \hbox (badness 10000) in paragraph at lines 146--148
+[]\T1/pcr/m/n/10 get_quadrature_patterson_1d()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 151--153
+[]\T1/pcr/m/n/10 get_sensitivities_hdf5() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mo
+d-ule
+ []
+
+
+Overfull \hbox (18.81113pt too wide) in paragraph at lines 153--155
+[]\T1/pcr/m/n/10 get_seq_number() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Abstrac
+tModel.AbstractModel
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--157
+[]\T1/pcr/m/n/10 get_sobol_composition() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.
+SGPC.SGPC
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 158--159
-[]\T1/ptm/m/n/10 increment_ctr() (pygpc.AbstractModel.AbstractModel
- []
-
-[72]
-Underfull \hbox (badness 10000) in paragraph at lines 161--162
-[]\T1/ptm/m/n/10 init_basis_function() (pygpc.RandomParameter.Beta
+[]\T1/pcr/m/n/10 get_sobol_indices() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.SGPC
+.SGPC
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 162--163
-[]\T1/ptm/m/n/10 init_basis_function() (pygpc.RandomParameter.Norm
+Underfull \hbox (badness 10000) in paragraph at lines 159--161
+[]\T1/pcr/m/n/10 get_standard_deviation()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 195--196
-[]\T1/ptm/m/n/10 ManufactureDecay (class in
+Underfull \hbox (badness 10000) in paragraph at lines 168--169
+[]\T1/pcr/m/n/10 gpc_matrix_coords_id \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.GPC
+.GPC at-
  []
 
 
-Underfull \hbox (badness 6364) in paragraph at lines 196--197
-[]\T1/ptm/m/n/10 mean (pygpc.RandomParameter.RandomParameter at-
+Overfull \hbox (58.88004pt too wide) in paragraph at lines 171--173
+[]\T1/pcr/m/n/10 graph_lind_width \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visuali
+zation.Visualization.Visualisation
+ []
+
+[73]
+Overfull \hbox (4.33081pt too wide) in paragraph at lines 173--175
+[]\T1/pcr/m/n/10 graph_line_width \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visuali
+zation.Visualization
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 198--199
-[]\T1/ptm/m/n/10 MovingParticleFrictionForce (class in
+Underfull \hbox (badness 10000) in paragraph at lines 183--185
+[]\T1/pcr/m/n/10 horizontal_padding
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 213--214
-[]\T1/ptm/m/n/10 OakleyOhagan2004 (class in
+Underfull \hbox (badness 10000) in paragraph at lines 183--185
+\T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visualization.Visualization at-tribute\T1
+/ptm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 5133) in paragraph at lines 225--226
-[]\T1/ptm/m/n/10 pdf_limits (pygpc.RandomParameter.RandomParameter
+Underfull \hbox (badness 10000) in paragraph at lines 185--187
+[]\T1/pcr/m/n/10 horizontal_padding
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 227--228
-[]\T1/ptm/m/n/10 pdf_norm() (pygpc.RandomParameter.Norm static
+Overfull \hbox (0.98001pt too wide) in paragraph at lines 185--187
+\T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visualization.Visualization.Visualisation
+
  []
 
 
-Underfull \hbox (badness 5189) in paragraph at lines 228--229
-[]\T1/ptm/m/n/10 pdf_shape (pygpc.RandomParameter.RandomParameter
+Underfull \hbox (badness 10000) in paragraph at lines 188--190
+[]\T1/pcr/m/n/10 HyperbolicTangent \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 229--230
-[]\T1/ptm/m/n/10 pdf_type (pygpc.RandomParameter.RandomParameter
+Overfull \hbox (12.81113pt too wide) in paragraph at lines 193--195
+[]\T1/pcr/m/n/10 increment_ctr() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Abstract
+Model.AbstractModel
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 235--236
-[]\T1/ptm/m/n/10 plot_testfunction() (in mod-ule
+Underfull \hbox (badness 10000) in paragraph at lines 197--199
+[]\T1/pcr/m/n/10 init_basis_function()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 197--199
+\T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.RandomParameter.Beta method\T1/ptm/m/n/10
+ ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 199--201
+[]\T1/pcr/m/n/10 init_basis_function()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 199--201
+\T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.RandomParameter.Norm static
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 203--204
+[]\T1/pcr/m/n/10 interaction_order \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Grid.S
+parseGrid
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 205--206
+[]\T1/pcr/m/n/10 interaction_order_current
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 233--235
+[]\T1/pcr/m/n/10 ManufactureDecay \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 236--237
-[]\T1/ptm/m/n/10 PotentialDipole3Layers (class in
+[]\T1/pcr/m/n/10 MovingParticleFrictionForce \T1/ptm/m/n/10 (\T1/ptm/m/it/10 cl
+ass in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 237--238
-[]\T1/ptm/m/n/10 PotentialHomogeneousDipole (class in
+Underfull \hbox (badness 10000) in paragraph at lines 237--239
+[]\T1/pcr/m/n/10 MovingParticleFrictionForce \T1/ptm/m/n/10 (\T1/ptm/m/it/10 cl
+ass in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 238--239
-[]\T1/ptm/m/n/10 print_progress() (pygpc.AbstractModel.AbstractModel
+Underfull \hbox (badness 10000) in paragraph at lines 255--257
+[]\T1/pcr/m/n/10 OakleyOhagan2004 \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
-[73]
-Overfull \hbox (18.83975pt too wide) in paragraph at lines 274--275
-[]\T1/ptm/m/n/10 read_previous_results() (pygpc.AbstractModel.AbstractModel
+
+Overfull \hbox (13.42162pt too wide) in paragraph at lines 269--271
+[]\T1/pcr/m/n/10 pdf_limits \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.RandomParamet
+er.RandomParameter
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 272--273
+[]\T1/pcr/m/n/10 pdf_norm() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.RandomParamet
+er.Norm static
+ []
+
+
+Overfull \hbox (7.42162pt too wide) in paragraph at lines 273--275
+[]\T1/pcr/m/n/10 pdf_shape \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.RandomParamete
+r.RandomParameter
+ []
+
+[74]
+Overfull \hbox (1.42162pt too wide) in paragraph at lines 275--277
+[]\T1/pcr/m/n/10 pdf_type \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.RandomParameter
+.RandomParameter
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 280--281
-[]\T1/ptm/m/n/10 replace_gpc_matrix_samples() (pygpc.GPC.GPC
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 286--287
-[]\T1/ptm/m/n/10 run() (pygpc.Computation.ComputationFuncPar
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 287--288
-[]\T1/ptm/m/n/10 run() (pygpc.Computation.ComputationPoolMap
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 301--302
-[]\T1/ptm/m/n/10 simulate() (pygpc.AbstractModel.AbstractModel
- []
-
-
-Overfull \hbox (33.28912pt too wide) in paragraph at lines 302--303
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.BfieldOutsideSph
-ere
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 303--304
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.Franke
- []
-
-
-Overfull \hbox (17.17952pt too wide) in paragraph at lines 304--305
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.GenzContinuous
- []
-
-
-Overfull \hbox (18.26952pt too wide) in paragraph at lines 305--306
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.GenzCornerPeak
- []
-
-
-Overfull \hbox (28.8393pt too wide) in paragraph at lines 306--307
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.GenzDiscontinuou
-s
- []
-
-
-Overfull \hbox (27.15927pt too wide) in paragraph at lines 307--308
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.GenzGaussianPeak
+[]\T1/pcr/m/n/10 plot_beta_pdf_fit() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod-ule
 
  []
 
 
-Overfull \hbox (15.49919pt too wide) in paragraph at lines 308--309
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.GenzOscillatory
+Underfull \hbox (badness 10000) in paragraph at lines 281--282
+[]\T1/pcr/m/n/10 plot_sobol_indices() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod-ul
+e
  []
 
 
-Overfull \hbox (21.60947pt too wide) in paragraph at lines 309--310
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.GenzProductPeak
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 310--311
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.GFunction
- []
-
-
-Overfull \hbox (26.91948pt too wide) in paragraph at lines 311--312
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.HyperbolicTangen
-t
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 312--313
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.Ishigami
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 313--314
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.Lim2002
- []
-
-
-Overfull \hbox (26.48933pt too wide) in paragraph at lines 314--315
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.ManufactureDecay
+Underfull \hbox (badness 10000) in paragraph at lines 282--284
+[]\T1/pcr/m/n/10 plot_testfunction() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod-ule
 
  []
 
 
-Overfull \hbox (66.16882pt too wide) in paragraph at lines 315--317
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.MovingParticleFr
-ictionForce
+Underfull \hbox (badness 10000) in paragraph at lines 284--286
+[]\T1/pcr/m/n/10 PotentialDipole3Layers \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class i
+n
  []
 
 
-Overfull \hbox (29.73982pt too wide) in paragraph at lines 317--318
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.OakleyOhagan2004
-
+Underfull \hbox (badness 10000) in paragraph at lines 286--288
+[]\T1/pcr/m/n/10 PotentialHomogeneousDipole \T1/ptm/m/n/10 (\T1/ptm/m/it/10 cla
+ss in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 318--319
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.Peaks
- []
-
-
-Overfull \hbox (44.94887pt too wide) in paragraph at lines 319--321
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.PotentialDipole3
-Layers
- []
-
-
-Overfull \hbox (70.50879pt too wide) in paragraph at lines 321--323
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.PotentialHomogen
-eousDipole
+Overfull \hbox (18.81113pt too wide) in paragraph at lines 288--290
+[]\T1/pcr/m/n/10 print_progress() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Abstrac
+tModel.AbstractModel
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 323--324
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.Ridge
+[]\T1/pcr/m/n/10 RandomParameter \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Underfull \hbox (badness 6741) in paragraph at lines 324--325
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.SphereFun
+Underfull \hbox (badness 10000) in paragraph at lines 326--328
+[]\T1/pcr/m/n/10 read_previous_results()
  []
 
 
-Overfull \hbox (3.83957pt too wide) in paragraph at lines 325--326
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.SphereModel
+Underfull \hbox (badness 10000) in paragraph at lines 332--333
+[]\T1/pcr/m/n/10 relative_error_loocv \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.SGP
+C.Reg at-
  []
 
 
-Overfull \hbox (48.9692pt too wide) in paragraph at lines 326--328
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.SurfaceCoverageS
-pecies
- []
-
-
-Overfull \hbox (22.17941pt too wide) in paragraph at lines 328--329
-[]\T1/ptm/m/n/10 simulate() (pygpc.testfunctions.testfunctions.TMSEfieldSphere
+Underfull \hbox (badness 10000) in paragraph at lines 333--334
+[]\T1/pcr/m/n/10 replace_gpc_matrix_samples()
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 339--340
-[]\T1/ptm/m/n/10 std (pygpc.RandomParameter.RandomParameter at-
+[]\T1/pcr/m/n/10 run() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Computation.Comput
+ationFuncPar
  []
 
-[74]
-Underfull \hbox (badness 10000) in paragraph at lines 343--344
-[]\T1/ptm/m/n/10 SurfaceCoverageSpecies (class in
+
+Underfull \hbox (badness 10000) in paragraph at lines 340--341
+[]\T1/pcr/m/n/10 run() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Computation.Comput
+ationPoolMap
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 347--348
+[]\T1/pcr/m/n/10 save_gpc_matrix_hdf5() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.G
+PC.GPC
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 351--352
+[]\T1/pcr/m/n/10 show() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Visualization.Vis
+ualization static
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 354--355
-[]\T1/ptm/m/n/10 TMSEfieldSphere (class in
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.AbstractModel
+.AbstractModel
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 362--363
-[]\T1/ptm/m/n/10 validate() (pygpc.AbstractModel.AbstractModel
+Overfull \hbox (49.68979pt too wide) in paragraph at lines 355--357
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.BfieldOutsideSphere
  []
 
 
-Overfull \hbox (30.80928pt too wide) in paragraph at lines 364--365
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.BfieldOutsideSph
-ere
+Overfull \hbox (34.52002pt too wide) in paragraph at lines 359--361
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzContinuous
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 365--366
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.Franke
+Overfull \hbox (36.48pt too wide) in paragraph at lines 361--363
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzCornerPeak
  []
 
 
-Overfull \hbox (14.69968pt too wide) in paragraph at lines 366--367
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.GenzContinuous
+Overfull \hbox (46.1798pt too wide) in paragraph at lines 363--365
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzDiscontinuous
  []
 
 
-Overfull \hbox (15.78967pt too wide) in paragraph at lines 367--368
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.GenzCornerPeak
+Overfull \hbox (45.37pt too wide) in paragraph at lines 365--367
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzGaussianPeak
  []
 
 
-Overfull \hbox (26.35945pt too wide) in paragraph at lines 368--369
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.GenzDiscontinuou
-s
+Overfull \hbox (33.39963pt too wide) in paragraph at lines 367--369
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzOscillatory
  []
 
 
-Overfull \hbox (24.67943pt too wide) in paragraph at lines 369--370
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.GenzGaussianPeak
+Overfull \hbox (39.36009pt too wide) in paragraph at lines 369--371
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzProductPeak
+ []
+
+
+Overfull \hbox (11.1803pt too wide) in paragraph at lines 371--373
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GFunction
+ []
+
+[75]
+Overfull \hbox (44.59993pt too wide) in paragraph at lines 373--375
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.HyperbolicTangent
+ []
+
+
+Overfull \hbox (2.85022pt too wide) in paragraph at lines 375--377
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Ishigami
+ []
+
+
+Overfull \hbox (3.41042pt too wide) in paragraph at lines 377--379
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Lim2002
+ []
+
+
+Overfull \hbox (44.67992pt too wide) in paragraph at lines 379--381
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.ManufactureDecay
+ []
+
+
+Overfull \hbox (84.40929pt too wide) in paragraph at lines 381--383
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.MovingParticleFrictionForce
+ []
+
+
+Overfull \hbox (47.99034pt too wide) in paragraph at lines 383--385
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.OakleyOhagan2004
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 385--387
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Peaks
+ []
+
+
+Overfull \hbox (63.05948pt too wide) in paragraph at lines 387--389
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.PotentialDipole3Layers
+ []
+
+
+Overfull \hbox (87.9496pt too wide) in paragraph at lines 389--391
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.PotentialHomogeneousDipole
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 391--393
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Ridge
+ []
+
+
+Overfull \hbox (11.36037pt too wide) in paragraph at lines 393--395
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.SphereFun
+ []
+
+
+Overfull \hbox (20.80017pt too wide) in paragraph at lines 395--397
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.SphereModel
+ []
+
+
+Overfull \hbox (66.81966pt too wide) in paragraph at lines 397--399
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.SurfaceCoverageSpecies
+ []
+
+
+Overfull \hbox (37.4701pt too wide) in paragraph at lines 399--401
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.TMSEfieldSphere
+ []
+
+
+Overfull \hbox (11.77051pt too wide) in paragraph at lines 401--403
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Welch1992
+ []
+
+
+Overfull \hbox (15.82028pt too wide) in paragraph at lines 403--405
+[]\T1/pcr/m/n/10 simulate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.WingWeight
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 411--412
+[]\T1/pcr/m/n/10 SphereModel \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 413--414
+[]\T1/pcr/m/n/10 std \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.RandomParameter.Rand
+omParameter
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 417--419
+[]\T1/pcr/m/n/10 SurfaceCoverageSpecies \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class i
+n
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 426--427
+[]\T1/pcr/m/n/10 TestBenchContinuousND \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
 
  []
 
 
-Overfull \hbox (13.01935pt too wide) in paragraph at lines 370--371
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.GenzOscillatory
+Underfull \hbox (badness 10000) in paragraph at lines 427--428
+[]\T1/pcr/m/n/10 TestBenchDiscontinuous \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class i
+n
  []
 
 
-Overfull \hbox (19.12962pt too wide) in paragraph at lines 371--372
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.GenzProductPeak
+Underfull \hbox (badness 10000) in paragraph at lines 428--429
+[]\T1/pcr/m/n/10 TestBenchDiscontinuousND \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class
+ in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 372--373
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.GFunction
+Underfull \hbox (badness 10000) in paragraph at lines 429--431
+[]\T1/pcr/m/n/10 TMSEfieldSphere \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Overfull \hbox (24.43964pt too wide) in paragraph at lines 373--374
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.HyperbolicTangen
-t
+Underfull \hbox (badness 10000) in paragraph at lines 438--439
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.AbstractModel
+.AbstractModel
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 374--375
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.Ishigami
+Overfull \hbox (49.68979pt too wide) in paragraph at lines 441--443
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.BfieldOutsideSphere
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 375--376
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.Lim2002
+Overfull \hbox (34.52002pt too wide) in paragraph at lines 445--447
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzContinuous
  []
 
 
-Overfull \hbox (24.00949pt too wide) in paragraph at lines 376--377
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.ManufactureDecay
+Overfull \hbox (36.48pt too wide) in paragraph at lines 447--449
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzCornerPeak
+ []
+
+
+Overfull \hbox (46.1798pt too wide) in paragraph at lines 449--451
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzDiscontinuous
+ []
+
+
+Overfull \hbox (45.37pt too wide) in paragraph at lines 451--453
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzGaussianPeak
+ []
+
+
+Overfull \hbox (33.39963pt too wide) in paragraph at lines 453--455
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzOscillatory
+ []
+
+
+Overfull \hbox (39.36009pt too wide) in paragraph at lines 455--457
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GenzProductPeak
+ []
+
+
+Overfull \hbox (11.1803pt too wide) in paragraph at lines 457--459
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.GFunction
+ []
+
+
+Overfull \hbox (44.59993pt too wide) in paragraph at lines 459--461
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.HyperbolicTangent
+ []
+
+
+Overfull \hbox (2.85022pt too wide) in paragraph at lines 461--463
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Ishigami
+ []
+
+
+Overfull \hbox (3.41042pt too wide) in paragraph at lines 463--465
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Lim2002
+ []
+
+
+Overfull \hbox (44.67992pt too wide) in paragraph at lines 465--467
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.ManufactureDecay
+ []
+
+
+Overfull \hbox (84.40929pt too wide) in paragraph at lines 467--469
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.MovingParticleFrictionForce
+ []
+
+
+Overfull \hbox (47.99034pt too wide) in paragraph at lines 469--471
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.OakleyOhagan2004
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 471--473
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Peaks
+ []
+
+
+Overfull \hbox (63.05948pt too wide) in paragraph at lines 473--475
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.PotentialDipole3Layers
+ []
+
+[76]
+Overfull \hbox (87.9496pt too wide) in paragraph at lines 475--477
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.PotentialHomogeneousDipole
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 477--479
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Ridge
+ []
+
+
+Overfull \hbox (11.36037pt too wide) in paragraph at lines 479--481
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.SphereFun
+ []
+
+
+Overfull \hbox (20.80017pt too wide) in paragraph at lines 481--483
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.SphereModel
+ []
+
+
+Overfull \hbox (66.81966pt too wide) in paragraph at lines 483--485
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.SurfaceCoverageSpecies
+ []
+
+
+Overfull \hbox (37.4701pt too wide) in paragraph at lines 485--487
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.TMSEfieldSphere
+ []
+
+
+Overfull \hbox (11.77051pt too wide) in paragraph at lines 487--489
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.Welch1992
+ []
+
+
+Overfull \hbox (15.82028pt too wide) in paragraph at lines 489--491
+[]\T1/pcr/m/n/10 validate() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.testfunctions
+.testfunctions.WingWeight
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 492--493
+[]\T1/pcr/m/n/10 validate_gpc_plot() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 in mod-ule
 
  []
 
 
-Overfull \hbox (63.68898pt too wide) in paragraph at lines 377--379
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.MovingParticleFr
-ictionForce
+Underfull \hbox (badness 10000) in paragraph at lines 494--495
+[]\T1/pcr/m/n/10 var \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.RandomParameter.Rand
+omParameter
  []
 
 
-Overfull \hbox (27.25998pt too wide) in paragraph at lines 379--380
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.OakleyOhagan2004
-
+Underfull \hbox (badness 10000) in paragraph at lines 502--503
+[]\T1/pcr/m/n/10 weights_dim_list \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Grid.Te
+nsorGrid at-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 380--381
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.Peaks
+Underfull \hbox (badness 10000) in paragraph at lines 506--507
+[]\T1/pcr/m/n/10 WingWeight \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class in
  []
 
 
-Overfull \hbox (42.46902pt too wide) in paragraph at lines 381--383
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.PotentialDipole3
-Layers
+Overfull \hbox (12.81113pt too wide) in paragraph at lines 513--515
+[]\T1/pcr/m/n/10 write_results() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 pygpc.Abstract
+Model.AbstractModel
  []
 
+[77
 
-Overfull \hbox (68.02895pt too wide) in paragraph at lines 383--385
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.PotentialHomogen
-eousDipole
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 385--386
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.Ridge
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 386--387
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.SphereFun
- []
-
-
-Overfull \hbox (1.35973pt too wide) in paragraph at lines 387--388
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.SphereModel
- []
-
-
-Overfull \hbox (46.48935pt too wide) in paragraph at lines 388--390
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.SurfaceCoverageS
-pecies
- []
-
-
-Overfull \hbox (19.69957pt too wide) in paragraph at lines 390--391
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.TMSEfieldSphere
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 391--392
-[]\T1/ptm/m/n/10 validate() (pygpc.testfunctions.testfunctions.Welch1992
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 395--396
-[]\T1/ptm/m/n/10 var (pygpc.RandomParameter.RandomParameter at-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 414--415
-[]\T1/ptm/m/n/10 write_results() (pygpc.AbstractModel.AbstractModel
- []
-
-[75])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 6198.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 6198.
+])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 6294.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 6294.
  (./pygpc.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 6198.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 6198.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 6294.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 6294.
 
 Package rerunfilecheck Info: File `pygpc.out' has not changed.
-(rerunfilecheck)             Checksum: 42A6E0A252E48C199FC19E942CF0B9F1;3911.
+(rerunfilecheck)             Checksum: CA5E2AF3020F408494AC9DF4E1521B3A;4100.
  ) 
 Here is how much of TeX's memory you used:
- 14703 strings out of 494953
- 213662 string characters out of 6180976
- 342451 words of memory out of 5000000
- 17229 multiletter control sequences out of 15000+600000
+ 14739 strings out of 494953
+ 214389 string characters out of 6180976
+ 343279 words of memory out of 5000000
+ 17256 multiletter control sequences out of 15000+600000
  55305 words of font info for 80 fonts, out of 8000000 for 9000
  15 hyphenation exceptions out of 8191
- 37i,22n,45p,775b,667s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,22n,45p,775b,669s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist
@@ -2095,10 +2339,10 @@ uhvbo8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb>
 </usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist
 /fonts/type1/urw/times/utmri8a.pfb>
-Output written on pygpc.pdf (77 pages, 2898201 bytes).
+Output written on pygpc.pdf (79 pages, 2907957 bytes).
 PDF statistics:
- 2016 PDF objects out of 2073 (max. 8388607)
- 1454 compressed objects within 15 object streams
- 422 named destinations out of 1000 (max. 500000)
- 314 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2043 PDF objects out of 2073 (max. 8388607)
+ 1479 compressed objects within 15 object streams
+ 430 named destinations out of 1000 (max. 500000)
+ 322 words of extra memory for PDF output out of 10000 (max. 10000000)
 

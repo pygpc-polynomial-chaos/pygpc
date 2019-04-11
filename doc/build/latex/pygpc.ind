@@ -1,417 +1,517 @@
 \begin{sphinxtheindex}
 \let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
 
   \bigletter {\sphinxsymbolsname}
-  \item \_\_call\_\_() (pygpc.BasisFunction.BasisFunction method), \hyperpage{34}
-  \item \_coords (pygpc.Grid.Grid attribute), \hyperpage{43}
-  \item \_coords\_norm (pygpc.Grid.Grid attribute), \hyperpage{43}
-  \item \_weights (pygpc.Grid.Grid attribute), \hyperpage{43}
+  \item \spxentry{\_\_call\_\_()}\spxextra{pygpc.BasisFunction.BasisFunction method}, 
+		\hyperpage{34}
+  \item \spxentry{\_coords}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{44}
+  \item \spxentry{\_coords\_norm}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{44}
+  \item \spxentry{\_weights}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{44}
 
   \indexspace
   \bigletter A
-  \item AbstractModel (class in pygpc.AbstractModel), \hyperpage{31}
-  \item add\_heat\_map() (pygpc.Visualization.Visualization method), \hyperpage{56}
-  \item add\_line\_plot() (pygpc.Visualization.Visualization method), \hyperpage{57}
-  \item add\_scatter\_plot() (pygpc.Visualization.Visualization static method), \hyperpage{57}
-  \item Algorithm (class in pygpc.Algorithm), \hyperpage{32}
+  \item \spxentry{AbstractModel}\spxextra{class in pygpc.AbstractModel}, \hyperpage{31}
+  \item \spxentry{add\_heat\_map()}\spxextra{pygpc.Visualization.Visualization method}, 
+		\hyperpage{57}
+  \item \spxentry{add\_line\_plot()}\spxextra{pygpc.Visualization.Visualization method}, 
+		\hyperpage{57}
+  \item \spxentry{add\_scatter\_plot()}\spxextra{pygpc.Visualization.Visualization static method}, 
+		\hyperpage{58}
+  \item \spxentry{Algorithm}\spxextra{class in pygpc.Algorithm}, \hyperpage{32}
 
   \indexspace
   \bigletter B
-  \item b (pygpc.Basis.Basis attribute), \hyperpage{33}
-  \item b2rcw() (in module pygpc.Visualization), \hyperpage{58}
-  \item b\_gpu (pygpc.Basis.Basis attribute), \hyperpage{33}
-  \item b\_id (pygpc.Basis.Basis attribute), \hyperpage{33}
-  \item b\_norm (pygpc.Basis.Basis attribute), \hyperpage{33}
-  \item b\_norm\_basis (pygpc.Basis.Basis attribute), \hyperpage{33}
-  \item Basis (class in pygpc.Basis), \hyperpage{33}
-  \item basis (pygpc.GPC.GPC attribute), \hyperpage{39}
-  \item BasisFunction (class in pygpc.BasisFunction), \hyperpage{34}
-  \item Beta (class in pygpc.RandomParameter), \hyperpage{48}
-  \item BfieldOutsideSphere (class in pygpc.testfunctions.testfunctions), \hyperpage{1}
+  \item \spxentry{b}\spxextra{pygpc.Basis.Basis attribute}, \hyperpage{33}
+  \item \spxentry{b2rcw()}\spxextra{in module pygpc.Visualization}, \hyperpage{59}
+  \item \spxentry{b\_gpu}\spxextra{pygpc.Basis.Basis attribute}, \hyperpage{33}
+  \item \spxentry{b\_id}\spxextra{pygpc.Basis.Basis attribute}, \hyperpage{33}
+  \item \spxentry{b\_norm}\spxextra{pygpc.Basis.Basis attribute}, \hyperpage{33}
+  \item \spxentry{b\_norm\_basis}\spxextra{pygpc.Basis.Basis attribute}, \hyperpage{33}
+  \item \spxentry{Basis}\spxextra{class in pygpc.Basis}, \hyperpage{33}
+  \item \spxentry{basis}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{39}
+  \item \spxentry{BasisFunction}\spxextra{class in pygpc.BasisFunction}, \hyperpage{34}
+  \item \spxentry{Beta}\spxextra{class in pygpc.RandomParameter}, \hyperpage{49}
+  \item \spxentry{BfieldOutsideSphere}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{1}
 
   \indexspace
   \bigletter C
-  \item calc\_coords\_weights() (pygpc.Grid.SparseGrid method), \hyperpage{46}
-  \item calc\_gpc\_matrix() (pygpc.GPC.GPC method), \hyperpage{40}
-  \item calc\_grid() (pygpc.Grid.SparseGrid method), \hyperpage{46}
-  \item calc\_l\_level() (pygpc.Grid.SparseGrid method), \hyperpage{46}
-  \item calc\_multi\_indices() (pygpc.Grid.SparseGrid method), \hyperpage{46}
-  \item calc\_tensor\_products() (pygpc.Grid.SparseGrid method), \hyperpage{46}
-  \item close() (pygpc.Computation.ComputationFuncPar method), \hyperpage{35}
-  \item close() (pygpc.Computation.ComputationPoolMap method), \hyperpage{36}
-  \item Computation() (in module pygpc.Computation), \hyperpage{35}
-  \item ComputationFuncPar (class in pygpc.Computation), \hyperpage{35}
-  \item ComputationPoolMap (class in pygpc.Computation), \hyperpage{36}
-  \item compute\_cluster() (in module pygpc.Computation), \hyperpage{36}
-  \item coords (pygpc.Grid.Grid attribute), \hyperpage{43}
-  \item coords\_id (pygpc.Grid.Grid attribute), \hyperpage{43}
-  \item coords\_norm (pygpc.Grid.Grid attribute), \hyperpage{43}
-  \item create\_new\_chart() (pygpc.Visualization.Visualization method), \hyperpage{57}
-  \item create\_sub\_plot() (pygpc.Visualization.Visualization static method), \hyperpage{57}
+  \item \spxentry{calc\_coords\_weights()}\spxextra{pygpc.Grid.SparseGrid method}, \hyperpage{47}
+  \item \spxentry{calc\_gpc\_matrix()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{40}
+  \item \spxentry{calc\_grid()}\spxextra{pygpc.Grid.SparseGrid method}, \hyperpage{47}
+  \item \spxentry{calc\_l\_level()}\spxextra{pygpc.Grid.SparseGrid method}, \hyperpage{47}
+  \item \spxentry{calc\_multi\_indices()}\spxextra{pygpc.Grid.SparseGrid method}, \hyperpage{47}
+  \item \spxentry{calc\_tensor\_products()}\spxextra{pygpc.Grid.SparseGrid method}, \hyperpage{47}
+  \item \spxentry{close()}\spxextra{pygpc.Computation.ComputationFuncPar method}, \hyperpage{35}
+  \item \spxentry{close()}\spxextra{pygpc.Computation.ComputationPoolMap method}, \hyperpage{36}
+  \item \spxentry{Computation()}\spxextra{in module pygpc.Computation}, \hyperpage{35}
+  \item \spxentry{ComputationFuncPar}\spxextra{class in pygpc.Computation}, \hyperpage{35}
+  \item \spxentry{ComputationPoolMap}\spxextra{class in pygpc.Computation}, \hyperpage{36}
+  \item \spxentry{compute\_cluster()}\spxextra{in module pygpc.Computation}, \hyperpage{36}
+  \item \spxentry{coords}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{44}
+  \item \spxentry{coords\_id}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{44}
+  \item \spxentry{coords\_norm}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{44}
+  \item \spxentry{create\_new\_chart()}\spxextra{pygpc.Visualization.Visualization method}, 
+		\hyperpage{58}
+  \item \spxentry{create\_sub\_plot()}\spxextra{pygpc.Visualization.Visualization static method}, 
+		\hyperpage{58}
+  \item \spxentry{create\_validation\_set()}\spxextra{pygpc.Problem.Problem method}, \hyperpage{49}
 
   \indexspace
   \bigletter D
-  \item dim (pygpc.Basis.Basis attribute), \hyperpage{33}
-  \item display\_fancy\_bar() (in module pygpc.misc), \hyperpage{62}
+  \item \spxentry{dim}\spxextra{pygpc.Basis.Basis attribute}, \hyperpage{33}
+  \item \spxentry{display\_fancy\_bar()}\spxextra{in module pygpc.misc}, \hyperpage{63}
 
   \indexspace
   \bigletter E
-  \item EGPC (class in pygpc.EGPC), \hyperpage{37}
-  \item extend\_basis() (pygpc.Basis.Basis method), \hyperpage{33}
-  \item extend\_random\_grid() (pygpc.Grid.RandomGrid method), \hyperpage{45}
+  \item \spxentry{EGPC}\spxextra{class in pygpc.EGPC}, \hyperpage{37}
+  \item \spxentry{extend\_basis()}\spxextra{pygpc.Basis.Basis method}, \hyperpage{33}
+  \item \spxentry{extend\_random\_grid()}\spxextra{pygpc.Grid.RandomGrid method}, \hyperpage{46}
 
   \indexspace
   \bigletter F
-  \item fig (pygpc.Visualization.Visualization attribute), \hyperpage{56}
-  \item figure\_number (pygpc.Visualization.Visualization attribute), \hyperpage{57}
-  \item figure\_number (pygpc.Visualization.Visualization.Visualisation attribute), \hyperpage{56}
-  \item fn\_results (pygpc.GPC.GPC attribute), \hyperpage{40}
-  \item fn\_results (pygpc.SGPC.SGPC attribute), \hyperpage{51}
-  \item font\_size\_label (pygpc.Visualization.Visualization attribute), \hyperpage{57}
-  \item font\_size\_label (pygpc.Visualization.Visualization.Visualisation attribute), 
+  \item \spxentry{fig}\spxextra{pygpc.Visualization.Visualization attribute}, \hyperpage{57}
+  \item \spxentry{figure\_number}\spxextra{pygpc.Visualization.Visualization attribute}, 
+		\hyperpage{58}
+  \item \spxentry{figure\_number}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}, 
 		\hyperpage{56}
-  \item font\_size\_title (pygpc.Visualization.Visualization attribute), \hyperpage{58}
-  \item Franke (class in pygpc.Test), \hyperpage{53}
-  \item Franke (class in pygpc.testfunctions.testfunctions), \hyperpage{1}
+  \item \spxentry{fn\_results}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{fn\_results}\spxextra{pygpc.SGPC.SGPC attribute}, \hyperpage{52}
+  \item \spxentry{font\_size\_label}\spxextra{pygpc.Visualization.Visualization attribute}, 
+		\hyperpage{58}
+  \item \spxentry{font\_size\_label}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}, 
+		\hyperpage{57}
+  \item \spxentry{font\_size\_title}\spxextra{pygpc.Visualization.Visualization attribute}, 
+		\hyperpage{58}
+  \item \spxentry{Franke}\spxextra{class in pygpc.Test}, \hyperpage{54}
+  \item \spxentry{Franke}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{1}
 
   \indexspace
   \bigletter G
-  \item GenzContinuous (class in pygpc.Test), \hyperpage{53}
-  \item GenzContinuous (class in pygpc.testfunctions.testfunctions), \hyperpage{3}
-  \item GenzCornerPeak (class in pygpc.Test), \hyperpage{54}
-  \item GenzCornerPeak (class in pygpc.testfunctions.testfunctions), \hyperpage{6}
-  \item GenzDiscontinuous (class in pygpc.Test), \hyperpage{54}
-  \item GenzDiscontinuous (class in pygpc.testfunctions.testfunctions), \hyperpage{6}
-  \item GenzGaussianPeak (class in pygpc.Test), \hyperpage{54}
-  \item GenzGaussianPeak (class in pygpc.testfunctions.testfunctions), \hyperpage{8}
-  \item GenzOscillatory (class in pygpc.Test), \hyperpage{54}
-  \item GenzOscillatory (class in pygpc.testfunctions.testfunctions), \hyperpage{10}
-  \item GenzProductPeak (class in pygpc.Test), \hyperpage{54}
-  \item GenzProductPeak (class in pygpc.testfunctions.testfunctions), \hyperpage{10}
-  \item get\_all\_combinations() (in module pygpc.misc), \hyperpage{62}
-  \item get\_approximation() (pygpc.EGPC.EGPC method), \hyperpage{37}
-  \item get\_approximation() (pygpc.GPC.GPC method), \hyperpage{41}
-  \item get\_array\_unique\_rows() (in module pygpc.misc), \hyperpage{63}
-  \item get\_beta\_pdf\_fit() (in module pygpc.misc), \hyperpage{63}
-  \item get\_cartesian\_product() (in module pygpc.misc), \hyperpage{63}
-  \item get\_denormalized\_coordinates() (pygpc.Grid.Grid method), \hyperpage{43}
-  \item get\_extracted\_sobol\_order() (pygpc.SGPC.SGPC static method), \hyperpage{51}
-  \item get\_global\_sens() (pygpc.EGPC.EGPC method), \hyperpage{37}
-  \item get\_global\_sens() (pygpc.SGPC.SGPC method), \hyperpage{52}
-  \item get\_list\_multi\_delete() (in module pygpc.misc), \hyperpage{64}
-  \item get\_local\_sens() (pygpc.EGPC.EGPC method), \hyperpage{37}
-  \item get\_local\_sens() (pygpc.SGPC.SGPC method), \hyperpage{52}
-  \item get\_mean() (pygpc.EGPC.EGPC static method), \hyperpage{37}
-  \item get\_mean() (pygpc.SGPC.SGPC static method), \hyperpage{52}
-  \item get\_multi\_indices\_max\_order() (in module pygpc.misc), \hyperpage{64}
-  \item get\_normalized\_coordinates() (pygpc.Grid.Grid method), \hyperpage{43}
-  \item get\_normalized\_rms\_deviation() (in module pygpc.misc), \hyperpage{64}
-  \item get\_num\_coeffs() (in module pygpc.misc), \hyperpage{64}
-  \item get\_num\_coeffs\_sparse() (in module pygpc.misc), \hyperpage{65}
-  \item get\_pdf() (pygpc.EGPC.EGPC method), \hyperpage{38}
-  \item get\_pdf() (pygpc.GPC.GPC method), \hyperpage{41}
-  \item get\_pdf\_beta() (in module pygpc.misc), \hyperpage{65}
-  \item get\_quadrature\_clenshaw\_curtis\_1d() (pygpc.Grid.Grid static method), \hyperpage{43}
-  \item get\_quadrature\_fejer1\_1d() (pygpc.Grid.Grid static method), \hyperpage{44}
-  \item get\_quadrature\_fejer2\_1d() (pygpc.Grid.Grid static method), \hyperpage{44}
-  \item get\_quadrature\_hermite\_1d() (pygpc.Grid.Grid static method), \hyperpage{44}
-  \item get\_quadrature\_jacobi\_1d() (pygpc.Grid.Grid static method), \hyperpage{44}
-  \item get\_quadrature\_patterson\_1d() (pygpc.Grid.Grid static method), \hyperpage{45}
-  \item get\_rotation\_matrix() (in module pygpc.misc), \hyperpage{65}
-  \item get\_samples() (pygpc.EGPC.EGPC static method), \hyperpage{38}
-  \item get\_samples() (pygpc.GPC.GPC method), \hyperpage{41}
-  \item get\_sensitivities\_hdf5() (in module pygpc.postprocessing), \hyperpage{67}
-  \item get\_seq\_number() (pygpc.AbstractModel.AbstractModel method), \hyperpage{31}
-  \item get\_sobol\_composition() (pygpc.EGPC.EGPC method), \hyperpage{38}
-  \item get\_sobol\_composition() (pygpc.SGPC.SGPC method), \hyperpage{52}
-  \item get\_sobol\_indices() (pygpc.EGPC.EGPC static method), \hyperpage{39}
-  \item get\_sobol\_indices() (pygpc.SGPC.SGPC method), \hyperpage{53}
-  \item get\_standard\_deviation() (pygpc.EGPC.EGPC static method), \hyperpage{39}
-  \item get\_standard\_deviation() (pygpc.SGPC.SGPC static method), \hyperpage{53}
-  \item GFunction (class in pygpc.Test), \hyperpage{53}
-  \item GFunction (class in pygpc.testfunctions.testfunctions), \hyperpage{3}
-  \item GPC (class in pygpc.GPC), \hyperpage{39}
-  \item gpc\_matrix (pygpc.GPC.GPC attribute), \hyperpage{39}
-  \item gpc\_matrix\_b\_id (pygpc.GPC.GPC attribute), \hyperpage{40}
-  \item gpc\_matrix\_coords\_id (pygpc.GPC.GPC attribute), \hyperpage{40}
-  \item gpc\_matrix\_inv (pygpc.GPC.GPC attribute), \hyperpage{39}
-  \item gpu (pygpc.GPC.GPC attribute), \hyperpage{40}
-  \item graph\_lind\_width (pygpc.Visualization.Visualization.Visualisation attribute), 
-		\hyperpage{56}
-  \item graph\_line\_width (pygpc.Visualization.Visualization attribute), \hyperpage{58}
-  \item Grid (class in pygpc.Grid), \hyperpage{42}
-  \item grid (pygpc.GPC.GPC attribute), \hyperpage{39}
-  \item grid\_type (pygpc.Grid.SparseGrid attribute), \hyperpage{45}
-  \item grid\_type (pygpc.Grid.TensorGrid attribute), \hyperpage{47}
+  \item \spxentry{GenzContinuous}\spxextra{class in pygpc.Test}, \hyperpage{54}
+  \item \spxentry{GenzContinuous}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{3}
+  \item \spxentry{GenzCornerPeak}\spxextra{class in pygpc.Test}, \hyperpage{54}
+  \item \spxentry{GenzCornerPeak}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{6}
+  \item \spxentry{GenzDiscontinuous}\spxextra{class in pygpc.Test}, \hyperpage{54}
+  \item \spxentry{GenzDiscontinuous}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{6}
+  \item \spxentry{GenzGaussianPeak}\spxextra{class in pygpc.Test}, \hyperpage{54}
+  \item \spxentry{GenzGaussianPeak}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{8}
+  \item \spxentry{GenzOscillatory}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{GenzOscillatory}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{10}
+  \item \spxentry{GenzProductPeak}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{GenzProductPeak}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{10}
+  \item \spxentry{get\_all\_combinations()}\spxextra{in module pygpc.misc}, \hyperpage{63}
+  \item \spxentry{get\_approximation()}\spxextra{pygpc.EGPC.EGPC method}, \hyperpage{37}
+  \item \spxentry{get\_approximation()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{41}
+  \item \spxentry{get\_array\_unique\_rows()}\spxextra{in module pygpc.misc}, \hyperpage{64}
+  \item \spxentry{get\_beta\_pdf\_fit()}\spxextra{in module pygpc.misc}, \hyperpage{64}
+  \item \spxentry{get\_cartesian\_product()}\spxextra{in module pygpc.misc}, \hyperpage{64}
+  \item \spxentry{get\_denormalized\_coordinates()}\spxextra{pygpc.Grid.Grid method}, 
+		\hyperpage{44}
+  \item \spxentry{get\_extracted\_sobol\_order()}\spxextra{pygpc.SGPC.SGPC static method}, 
+		\hyperpage{52}
+  \item \spxentry{get\_global\_sens()}\spxextra{pygpc.EGPC.EGPC method}, \hyperpage{37}
+  \item \spxentry{get\_global\_sens()}\spxextra{pygpc.SGPC.SGPC method}, \hyperpage{52}
+  \item \spxentry{get\_list\_multi\_delete()}\spxextra{in module pygpc.misc}, \hyperpage{64}
+  \item \spxentry{get\_local\_sens()}\spxextra{pygpc.EGPC.EGPC method}, \hyperpage{37}
+  \item \spxentry{get\_local\_sens()}\spxextra{pygpc.SGPC.SGPC method}, \hyperpage{53}
+  \item \spxentry{get\_mean()}\spxextra{pygpc.EGPC.EGPC static method}, \hyperpage{37}
+  \item \spxentry{get\_mean()}\spxextra{pygpc.SGPC.SGPC static method}, \hyperpage{53}
+  \item \spxentry{get\_multi\_indices\_max\_order()}\spxextra{in module pygpc.misc}, \hyperpage{65}
+  \item \spxentry{get\_normalized\_coordinates()}\spxextra{pygpc.Grid.Grid method}, \hyperpage{44}
+  \item \spxentry{get\_num\_coeffs()}\spxextra{in module pygpc.misc}, \hyperpage{65}
+  \item \spxentry{get\_num\_coeffs\_sparse()}\spxextra{in module pygpc.misc}, \hyperpage{65}
+  \item \spxentry{get\_pdf()}\spxextra{pygpc.EGPC.EGPC method}, \hyperpage{38}
+  \item \spxentry{get\_pdf()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{41}
+  \item \spxentry{get\_pdf\_beta()}\spxextra{in module pygpc.misc}, \hyperpage{66}
+  \item \spxentry{get\_quadrature\_clenshaw\_curtis\_1d()}\spxextra{pygpc.Grid.Grid static method}, 
+		\hyperpage{44}
+  \item \spxentry{get\_quadrature\_fejer1\_1d()}\spxextra{pygpc.Grid.Grid static method}, 
+		\hyperpage{44}
+  \item \spxentry{get\_quadrature\_fejer2\_1d()}\spxextra{pygpc.Grid.Grid static method}, 
+		\hyperpage{45}
+  \item \spxentry{get\_quadrature\_hermite\_1d()}\spxextra{pygpc.Grid.Grid static method}, 
+		\hyperpage{45}
+  \item \spxentry{get\_quadrature\_jacobi\_1d()}\spxextra{pygpc.Grid.Grid static method}, 
+		\hyperpage{45}
+  \item \spxentry{get\_quadrature\_patterson\_1d()}\spxextra{pygpc.Grid.Grid static method}, 
+		\hyperpage{46}
+  \item \spxentry{get\_rotation\_matrix()}\spxextra{in module pygpc.misc}, \hyperpage{66}
+  \item \spxentry{get\_samples()}\spxextra{pygpc.EGPC.EGPC static method}, \hyperpage{38}
+  \item \spxentry{get\_samples()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{41}
+  \item \spxentry{get\_sensitivities\_hdf5()}\spxextra{in module pygpc.postprocessing}, 
+		\hyperpage{67}
+  \item \spxentry{get\_seq\_number()}\spxextra{pygpc.AbstractModel.AbstractModel method}, 
+		\hyperpage{31}
+  \item \spxentry{get\_sobol\_composition()}\spxextra{pygpc.EGPC.EGPC method}, \hyperpage{38}
+  \item \spxentry{get\_sobol\_composition()}\spxextra{pygpc.SGPC.SGPC method}, \hyperpage{53}
+  \item \spxentry{get\_sobol\_indices()}\spxextra{pygpc.EGPC.EGPC static method}, \hyperpage{39}
+  \item \spxentry{get\_sobol\_indices()}\spxextra{pygpc.SGPC.SGPC method}, \hyperpage{54}
+  \item \spxentry{get\_standard\_deviation()}\spxextra{pygpc.EGPC.EGPC static method}, 
+		\hyperpage{39}
+  \item \spxentry{get\_standard\_deviation()}\spxextra{pygpc.SGPC.SGPC static method}, 
+		\hyperpage{54}
+  \item \spxentry{GFunction}\spxextra{class in pygpc.Test}, \hyperpage{54}
+  \item \spxentry{GFunction}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{3}
+  \item \spxentry{GPC}\spxextra{class in pygpc.GPC}, \hyperpage{39}
+  \item \spxentry{gpc\_matrix}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{39}
+  \item \spxentry{gpc\_matrix\_b\_id}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{gpc\_matrix\_coords\_id}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{gpc\_matrix\_inv}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{39}
+  \item \spxentry{gpu}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{graph\_lind\_width}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}, 
+		\hyperpage{57}
+  \item \spxentry{graph\_line\_width}\spxextra{pygpc.Visualization.Visualization attribute}, 
+		\hyperpage{59}
+  \item \spxentry{Grid}\spxextra{class in pygpc.Grid}, \hyperpage{43}
+  \item \spxentry{grid}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{39}
+  \item \spxentry{grid\_type}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{46}
+  \item \spxentry{grid\_type}\spxextra{pygpc.Grid.TensorGrid attribute}, \hyperpage{48}
 
   \indexspace
   \bigletter H
-  \item Hermite (class in pygpc.BasisFunction), \hyperpage{34}
-  \item horizontal\_padding (pygpc.Visualization.Visualization attribute), \hyperpage{58}
-  \item horizontal\_padding (pygpc.Visualization.Visualization.Visualisation attribute), 
-		\hyperpage{56}
-  \item HyperbolicTangent (class in pygpc.Test), \hyperpage{54}
-  \item HyperbolicTangent (class in pygpc.testfunctions.testfunctions), \hyperpage{12}
+  \item \spxentry{Hermite}\spxextra{class in pygpc.BasisFunction}, \hyperpage{34}
+  \item \spxentry{horizontal\_padding}\spxextra{pygpc.Visualization.Visualization attribute}, 
+		\hyperpage{59}
+  \item \spxentry{horizontal\_padding}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}, 
+		\hyperpage{57}
+  \item \spxentry{HyperbolicTangent}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{HyperbolicTangent}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{12}
 
   \indexspace
   \bigletter I
-  \item increment\_ctr() (pygpc.AbstractModel.AbstractModel method), \hyperpage{31}
-  \item init() (in module pygpc.Worker), \hyperpage{59}
-  \item init\_b\_norm() (pygpc.Basis.Basis method), \hyperpage{33}
-  \item init\_basis\_function() (pygpc.RandomParameter.Beta method), \hyperpage{48}
-  \item init\_basis\_function() (pygpc.RandomParameter.Norm static method), \hyperpage{49}
-  \item init\_basis\_sgpc() (pygpc.Basis.Basis method), \hyperpage{33}
-  \item init\_gpc\_matrix() (pygpc.GPC.GPC method), \hyperpage{41}
-  \item interaction\_order (pygpc.Grid.SparseGrid attribute), \hyperpage{46}
-  \item interaction\_order (pygpc.SGPC.SGPC attribute), \hyperpage{51}
-  \item interaction\_order\_current (pygpc.SGPC.SGPC attribute), \hyperpage{51}
-  \item iprint() (in module pygpc.io), \hyperpage{60}
-  \item Ishigami (class in pygpc.Test), \hyperpage{54}
-  \item Ishigami (class in pygpc.testfunctions.testfunctions), \hyperpage{13}
+  \item \spxentry{increment\_ctr()}\spxextra{pygpc.AbstractModel.AbstractModel method}, 
+		\hyperpage{31}
+  \item \spxentry{init()}\spxextra{in module pygpc.Worker}, \hyperpage{60}
+  \item \spxentry{init\_b\_norm()}\spxextra{pygpc.Basis.Basis method}, \hyperpage{33}
+  \item \spxentry{init\_basis\_function()}\spxextra{pygpc.RandomParameter.Beta method}, 
+		\hyperpage{49}
+  \item \spxentry{init\_basis\_function()}\spxextra{pygpc.RandomParameter.Norm static method}, 
+		\hyperpage{50}
+  \item \spxentry{init\_basis\_sgpc()}\spxextra{pygpc.Basis.Basis method}, \hyperpage{33}
+  \item \spxentry{init\_gpc\_matrix()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{42}
+  \item \spxentry{interaction\_order}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{47}
+  \item \spxentry{interaction\_order}\spxextra{pygpc.SGPC.SGPC attribute}, \hyperpage{52}
+  \item \spxentry{interaction\_order\_current}\spxextra{pygpc.SGPC.SGPC attribute}, \hyperpage{52}
+  \item \spxentry{iprint()}\spxextra{in module pygpc.io}, \hyperpage{61}
+  \item \spxentry{Ishigami}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{Ishigami}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{13}
 
   \indexspace
   \bigletter J
-  \item Jacobi (class in pygpc.BasisFunction), \hyperpage{34}
+  \item \spxentry{Jacobi}\spxextra{class in pygpc.BasisFunction}, \hyperpage{34}
 
   \indexspace
   \bigletter K
-  \item knots\_dim\_list (pygpc.Grid.TensorGrid attribute), \hyperpage{47}
+  \item \spxentry{knots\_dim\_list}\spxextra{pygpc.Grid.TensorGrid attribute}, \hyperpage{48}
 
   \indexspace
   \bigletter L
-  \item level (pygpc.Grid.SparseGrid attribute), \hyperpage{45}
-  \item level\_max (pygpc.Grid.SparseGrid attribute), \hyperpage{45}
-  \item level\_sequence (pygpc.Grid.SparseGrid attribute), \hyperpage{46}
-  \item Lim2002 (class in pygpc.Test), \hyperpage{54}
-  \item Lim2002 (class in pygpc.testfunctions.testfunctions), \hyperpage{14}
-  \item list2dict() (in module pygpc.misc), \hyperpage{66}
-  \item loocv() (pygpc.SGPC.Reg method), \hyperpage{50}
+  \item \spxentry{level}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{46}
+  \item \spxentry{level\_max}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{46}
+  \item \spxentry{level\_sequence}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{46}
+  \item \spxentry{Lim2002}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{Lim2002}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{14}
+  \item \spxentry{list2dict()}\spxextra{in module pygpc.misc}, \hyperpage{66}
+  \item \spxentry{loocv()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{42}
 
   \indexspace
   \bigletter M
-  \item make\_cmap() (in module pygpc.Visualization), \hyperpage{58}
-  \item make\_grid (pygpc.Grid.SparseGrid attribute), \hyperpage{46}
-  \item ManufactureDecay (class in pygpc.Test), \hyperpage{54}
-  \item ManufactureDecay (class in pygpc.testfunctions.testfunctions), \hyperpage{16}
-  \item mean (pygpc.RandomParameter.RandomParameter attribute), \hyperpage{49}
-  \item MovingParticleFrictionForce (class in pygpc.Test), \hyperpage{54}
-  \item MovingParticleFrictionForce (class in pygpc.testfunctions.testfunctions), \hyperpage{18}
-  \item mutual\_coherence() (in module pygpc.misc), \hyperpage{66}
+  \item \spxentry{make\_cmap()}\spxextra{in module pygpc.Visualization}, \hyperpage{59}
+  \item \spxentry{make\_grid}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{47}
+  \item \spxentry{ManufactureDecay}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{ManufactureDecay}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{16}
+  \item \spxentry{mean}\spxextra{pygpc.RandomParameter.RandomParameter attribute}, \hyperpage{51}
+  \item \spxentry{MovingParticleFrictionForce}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{MovingParticleFrictionForce}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{18}
+  \item \spxentry{mutual\_coherence()}\spxextra{in module pygpc.misc}, \hyperpage{66}
 
   \indexspace
   \bigletter N
-  \item n\_basis (pygpc.Basis.Basis attribute), \hyperpage{33}
-  \item n\_cpu (pygpc.GPC.GPC attribute), \hyperpage{40}
-  \item n\_grid (pygpc.Grid.Grid attribute), \hyperpage{43}
-  \item n\_grid (pygpc.Grid.RandomGrid attribute), \hyperpage{45}
-  \item nan\_elm (pygpc.GPC.GPC attribute), \hyperpage{40}
-  \item Norm (class in pygpc.RandomParameter), \hyperpage{48}
+  \item \spxentry{n\_basis}\spxextra{pygpc.Basis.Basis attribute}, \hyperpage{33}
+  \item \spxentry{n\_basis}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{n\_grid}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{n\_grid}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{44}
+  \item \spxentry{n\_grid}\spxextra{pygpc.Grid.RandomGrid attribute}, \hyperpage{46}
+  \item \spxentry{nan\_elm}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{Norm}\spxextra{class in pygpc.RandomParameter}, \hyperpage{50}
+  \item \spxentry{nrmsd()}\spxextra{in module pygpc.misc}, \hyperpage{66}
 
   \indexspace
   \bigletter O
-  \item OakleyOhagan2004 (class in pygpc.Test), \hyperpage{54}
-  \item OakleyOhagan2004 (class in pygpc.testfunctions.testfunctions), \hyperpage{20}
-  \item order (pygpc.SGPC.SGPC attribute), \hyperpage{51}
-  \item order\_max (pygpc.SGPC.SGPC attribute), \hyperpage{51}
-  \item order\_max\_norm (pygpc.SGPC.SGPC attribute), \hyperpage{51}
-  \item order\_sequence (pygpc.Grid.SparseGrid attribute), \hyperpage{46}
-  \item order\_sequence\_type (pygpc.Grid.SparseGrid attribute), \hyperpage{46}
+  \item \spxentry{OakleyOhagan2004}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{OakleyOhagan2004}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{20}
+  \item \spxentry{options}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{order}\spxextra{pygpc.SGPC.SGPC attribute}, \hyperpage{51}
+  \item \spxentry{order\_max}\spxextra{pygpc.SGPC.SGPC attribute}, \hyperpage{52}
+  \item \spxentry{order\_max\_norm}\spxextra{pygpc.SGPC.SGPC attribute}, \hyperpage{52}
+  \item \spxentry{order\_sequence}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{47}
+  \item \spxentry{order\_sequence\_type}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{47}
 
   \indexspace
   \bigletter P
-  \item parameters\_random (pygpc.Grid.Grid attribute), \hyperpage{42}
-  \item pdf() (pygpc.RandomParameter.Beta method), \hyperpage{48}
-  \item pdf() (pygpc.RandomParameter.Norm method), \hyperpage{49}
-  \item pdf\_limits (pygpc.RandomParameter.RandomParameter attribute), \hyperpage{49}
-  \item pdf\_norm() (pygpc.RandomParameter.Beta method), \hyperpage{48}
-  \item pdf\_norm() (pygpc.RandomParameter.Norm static method), \hyperpage{49}
-  \item pdf\_shape (pygpc.RandomParameter.RandomParameter attribute), \hyperpage{49}
-  \item pdf\_type (pygpc.RandomParameter.RandomParameter attribute), \hyperpage{49}
-  \item Peaks (class in pygpc.Test), \hyperpage{54}
-  \item Peaks (class in pygpc.testfunctions.testfunctions), \hyperpage{20}
-  \item plot\_2d\_grid() (in module pygpc.Visualization), \hyperpage{58}
-  \item plot\_beta\_pdf\_fit() (in module pygpc.Visualization), \hyperpage{59}
-  \item plot\_sobol\_indices() (in module pygpc.Visualization), \hyperpage{59}
-  \item plot\_testfunction() (in module pygpc.testfunctions.testfunctions), \hyperpage{30}
-  \item PotentialDipole3Layers (class in pygpc.testfunctions.testfunctions), \hyperpage{22}
-  \item PotentialHomogeneousDipole (class in pygpc.testfunctions.testfunctions), \hyperpage{22}
-  \item print\_progress() (pygpc.AbstractModel.AbstractModel method), \hyperpage{31}
-  \item Problem (class in pygpc.Problem), \hyperpage{47}
-  \item problem (pygpc.GPC.GPC attribute), \hyperpage{39}
-  \item pygpc (module), \hyperpage{68}
-  \item pygpc.AbstractModel (module), \hyperpage{31}
-  \item pygpc.Algorithm (module), \hyperpage{32}
-  \item pygpc.Basis (module), \hyperpage{33}
-  \item pygpc.BasisFunction (module), \hyperpage{34}
-  \item pygpc.Computation (module), \hyperpage{35}
-  \item pygpc.EGPC (module), \hyperpage{37}
-  \item pygpc.GPC (module), \hyperpage{39}
-  \item pygpc.Grid (module), \hyperpage{42}
-  \item pygpc.io (module), \hyperpage{60}
-  \item pygpc.misc (module), \hyperpage{62}
-  \item pygpc.postprocessing (module), \hyperpage{67}
-  \item pygpc.Problem (module), \hyperpage{47}
-  \item pygpc.RandomParameter (module), \hyperpage{48}
-  \item pygpc.SGPC (module), \hyperpage{50}
-  \item pygpc.Test (module), \hyperpage{53}
-  \item pygpc.TestBench (module), \hyperpage{55}
-  \item pygpc.testfunctions (module), \hyperpage{31}
-  \item pygpc.testfunctions.testfunctions (module), \hyperpage{1}
-  \item pygpc.validation (module), \hyperpage{67}
-  \item pygpc.Visualization (module), \hyperpage{55}
-  \item pygpc.Worker (module), \hyperpage{59}
+  \item \spxentry{parameters\_random}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{43}
+  \item \spxentry{pdf()}\spxextra{pygpc.RandomParameter.Beta method}, \hyperpage{49}
+  \item \spxentry{pdf()}\spxextra{pygpc.RandomParameter.Norm method}, \hyperpage{50}
+  \item \spxentry{pdf\_limits}\spxextra{pygpc.RandomParameter.RandomParameter attribute}, 
+		\hyperpage{50}
+  \item \spxentry{pdf\_norm()}\spxextra{pygpc.RandomParameter.Beta method}, \hyperpage{49}
+  \item \spxentry{pdf\_norm()}\spxextra{pygpc.RandomParameter.Norm static method}, \hyperpage{50}
+  \item \spxentry{pdf\_shape}\spxextra{pygpc.RandomParameter.RandomParameter attribute}, 
+		\hyperpage{50}
+  \item \spxentry{pdf\_type}\spxextra{pygpc.RandomParameter.RandomParameter attribute}, 
+		\hyperpage{50}
+  \item \spxentry{Peaks}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{Peaks}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{20}
+  \item \spxentry{plot\_2d\_grid()}\spxextra{in module pygpc.Visualization}, \hyperpage{59}
+  \item \spxentry{plot\_beta\_pdf\_fit()}\spxextra{in module pygpc.Visualization}, \hyperpage{60}
+  \item \spxentry{plot\_sobol\_indices()}\spxextra{in module pygpc.Visualization}, \hyperpage{60}
+  \item \spxentry{plot\_testfunction()}\spxextra{in module pygpc.testfunctions.testfunctions}, 
+		\hyperpage{30}
+  \item \spxentry{PotentialDipole3Layers}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{22}
+  \item \spxentry{PotentialHomogeneousDipole}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{22}
+  \item \spxentry{print\_progress()}\spxextra{pygpc.AbstractModel.AbstractModel method}, 
+		\hyperpage{31}
+  \item \spxentry{Problem}\spxextra{class in pygpc.Problem}, \hyperpage{48}
+  \item \spxentry{problem}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{39}
+  \item \spxentry{pygpc}\spxextra{module}, \hyperpage{69}
+  \item \spxentry{pygpc.AbstractModel}\spxextra{module}, \hyperpage{31}
+  \item \spxentry{pygpc.Algorithm}\spxextra{module}, \hyperpage{32}
+  \item \spxentry{pygpc.Basis}\spxextra{module}, \hyperpage{33}
+  \item \spxentry{pygpc.BasisFunction}\spxextra{module}, \hyperpage{34}
+  \item \spxentry{pygpc.Computation}\spxextra{module}, \hyperpage{35}
+  \item \spxentry{pygpc.EGPC}\spxextra{module}, \hyperpage{37}
+  \item \spxentry{pygpc.GPC}\spxextra{module}, \hyperpage{39}
+  \item \spxentry{pygpc.Grid}\spxextra{module}, \hyperpage{43}
+  \item \spxentry{pygpc.io}\spxextra{module}, \hyperpage{61}
+  \item \spxentry{pygpc.misc}\spxextra{module}, \hyperpage{63}
+  \item \spxentry{pygpc.postprocessing}\spxextra{module}, \hyperpage{67}
+  \item \spxentry{pygpc.Problem}\spxextra{module}, \hyperpage{48}
+  \item \spxentry{pygpc.RandomParameter}\spxextra{module}, \hyperpage{49}
+  \item \spxentry{pygpc.SGPC}\spxextra{module}, \hyperpage{51}
+  \item \spxentry{pygpc.Test}\spxextra{module}, \hyperpage{54}
+  \item \spxentry{pygpc.TestBench}\spxextra{module}, \hyperpage{56}
+  \item \spxentry{pygpc.testfunctions}\spxextra{module}, \hyperpage{31}
+  \item \spxentry{pygpc.testfunctions.testfunctions}\spxextra{module}, \hyperpage{1}
+  \item \spxentry{pygpc.validation}\spxextra{module}, \hyperpage{68}
+  \item \spxentry{pygpc.ValidationSet}\spxextra{module}, \hyperpage{56}
+  \item \spxentry{pygpc.Visualization}\spxextra{module}, \hyperpage{56}
+  \item \spxentry{pygpc.Worker}\spxextra{module}, \hyperpage{60}
 
   \indexspace
   \bigletter Q
-  \item Quad (class in pygpc.SGPC), \hyperpage{50}
+  \item \spxentry{Quad}\spxextra{class in pygpc.SGPC}, \hyperpage{51}
 
   \indexspace
   \bigletter R
-  \item RandomGrid (class in pygpc.Grid), \hyperpage{45}
-  \item RandomParameter (class in pygpc.RandomParameter), \hyperpage{49}
-  \item read\_data\_hdf5() (in module pygpc.io), \hyperpage{60}
-  \item read\_gpc\_pkl() (in module pygpc.io), \hyperpage{60}
-  \item read\_previous\_results() (pygpc.AbstractModel.AbstractModel method), \hyperpage{31}
-  \item read\_sobol\_idx\_txt() (in module pygpc.io), \hyperpage{60}
-  \item Rect (class in pygpc.BasisFunction), \hyperpage{34}
-  \item Reg (class in pygpc.SGPC), \hyperpage{50}
-  \item RegAdaptive (class in pygpc.Algorithm), \hyperpage{32}
-  \item relative\_error\_loocv (pygpc.SGPC.Reg attribute), \hyperpage{50}
-  \item replace\_gpc\_matrix\_samples() (pygpc.GPC.GPC method), \hyperpage{42}
-  \item Ridge (class in pygpc.Test), \hyperpage{54}
-  \item Ridge (class in pygpc.testfunctions.testfunctions), \hyperpage{23}
-  \item run() (in module pygpc.Worker), \hyperpage{60}
-  \item run() (pygpc.Algorithm.RegAdaptive method), \hyperpage{32}
-  \item run() (pygpc.Algorithm.Static method), \hyperpage{32}
-  \item run() (pygpc.Computation.ComputationFuncPar method), \hyperpage{35}
-  \item run() (pygpc.Computation.ComputationPoolMap method), \hyperpage{36}
-  \item run() (pygpc.TestBench.TestBench method), \hyperpage{55}
-  \item run\_test() (in module pygpc.TestBench), \hyperpage{55}
+  \item \spxentry{RandomGrid}\spxextra{class in pygpc.Grid}, \hyperpage{46}
+  \item \spxentry{RandomParameter}\spxextra{class in pygpc.RandomParameter}, \hyperpage{50}
+  \item \spxentry{read\_data\_hdf5()}\spxextra{in module pygpc.io}, \hyperpage{61}
+  \item \spxentry{read\_gpc\_pkl()}\spxextra{in module pygpc.io}, \hyperpage{61}
+  \item \spxentry{read\_previous\_results()}\spxextra{pygpc.AbstractModel.AbstractModel method}, 
+		\hyperpage{31}
+  \item \spxentry{read\_sobol\_idx\_txt()}\spxextra{in module pygpc.io}, \hyperpage{61}
+  \item \spxentry{Rect}\spxextra{class in pygpc.BasisFunction}, \hyperpage{34}
+  \item \spxentry{Reg}\spxextra{class in pygpc.SGPC}, \hyperpage{51}
+  \item \spxentry{RegAdaptive}\spxextra{class in pygpc.Algorithm}, \hyperpage{32}
+  \item \spxentry{relative\_error\_loocv}\spxextra{pygpc.SGPC.Reg attribute}, \hyperpage{51}
+  \item \spxentry{replace\_gpc\_matrix\_samples()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{42}
+  \item \spxentry{Ridge}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{Ridge}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{23}
+  \item \spxentry{run()}\spxextra{in module pygpc.Worker}, \hyperpage{61}
+  \item \spxentry{run()}\spxextra{pygpc.Algorithm.RegAdaptive method}, \hyperpage{32}
+  \item \spxentry{run()}\spxextra{pygpc.Algorithm.Static method}, \hyperpage{32}
+  \item \spxentry{run()}\spxextra{pygpc.Computation.ComputationFuncPar method}, \hyperpage{35}
+  \item \spxentry{run()}\spxextra{pygpc.Computation.ComputationPoolMap method}, \hyperpage{36}
+  \item \spxentry{run()}\spxextra{pygpc.TestBench.TestBench method}, \hyperpage{56}
+  \item \spxentry{run\_test()}\spxextra{in module pygpc.TestBench}, \hyperpage{56}
 
   \indexspace
   \bigletter S
-  \item sample\_sphere() (in module pygpc.misc), \hyperpage{66}
-  \item save\_gpc\_matrix\_hdf5() (pygpc.GPC.GPC method), \hyperpage{42}
-  \item seed (pygpc.Grid.RandomGrid attribute), \hyperpage{45}
-  \item settings (pygpc.SGPC.Reg attribute), \hyperpage{50}
-  \item SGPC (class in pygpc.SGPC), \hyperpage{51}
-  \item show() (pygpc.Visualization.Visualization static method), \hyperpage{58}
-  \item SigmoidDown (class in pygpc.BasisFunction), \hyperpage{34}
-  \item SigmoidUp (class in pygpc.BasisFunction), \hyperpage{35}
-  \item simulate() (pygpc.AbstractModel.AbstractModel method), \hyperpage{31}
-  \item simulate() (pygpc.testfunctions.testfunctions.BfieldOutsideSphere method), \hyperpage{1}
-  \item simulate() (pygpc.testfunctions.testfunctions.Franke method), \hyperpage{2}
-  \item simulate() (pygpc.testfunctions.testfunctions.GenzContinuous method), \hyperpage{5}
-  \item simulate() (pygpc.testfunctions.testfunctions.GenzCornerPeak method), \hyperpage{6}
-  \item simulate() (pygpc.testfunctions.testfunctions.GenzDiscontinuous method), \hyperpage{8}
-  \item simulate() (pygpc.testfunctions.testfunctions.GenzGaussianPeak method), \hyperpage{9}
-  \item simulate() (pygpc.testfunctions.testfunctions.GenzOscillatory method), \hyperpage{10}
-  \item simulate() (pygpc.testfunctions.testfunctions.GenzProductPeak method), \hyperpage{12}
-  \item simulate() (pygpc.testfunctions.testfunctions.GFunction method), \hyperpage{3}
-  \item simulate() (pygpc.testfunctions.testfunctions.HyperbolicTangent method), \hyperpage{13}
-  \item simulate() (pygpc.testfunctions.testfunctions.Ishigami method), \hyperpage{14}
-  \item simulate() (pygpc.testfunctions.testfunctions.Lim2002 method), \hyperpage{16}
-  \item simulate() (pygpc.testfunctions.testfunctions.ManufactureDecay method), \hyperpage{17}
-  \item simulate() (pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method), 
+  \item \spxentry{sample\_sphere()}\spxextra{in module pygpc.misc}, \hyperpage{67}
+  \item \spxentry{save\_gpc\_matrix\_hdf5()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{42}
+  \item \spxentry{seed}\spxextra{pygpc.Grid.RandomGrid attribute}, \hyperpage{46}
+  \item \spxentry{settings}\spxextra{pygpc.SGPC.Reg attribute}, \hyperpage{51}
+  \item \spxentry{SGPC}\spxextra{class in pygpc.SGPC}, \hyperpage{51}
+  \item \spxentry{show()}\spxextra{pygpc.Visualization.Visualization static method}, \hyperpage{59}
+  \item \spxentry{SigmoidDown}\spxextra{class in pygpc.BasisFunction}, \hyperpage{34}
+  \item \spxentry{SigmoidUp}\spxextra{class in pygpc.BasisFunction}, \hyperpage{35}
+  \item \spxentry{simulate()}\spxextra{pygpc.AbstractModel.AbstractModel method}, \hyperpage{31}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.BfieldOutsideSphere method}, 
+		\hyperpage{1}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Franke method}, 
+		\hyperpage{2}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzContinuous method}, 
+		\hyperpage{5}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzCornerPeak method}, 
+		\hyperpage{6}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzDiscontinuous method}, 
+		\hyperpage{8}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzGaussianPeak method}, 
+		\hyperpage{9}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzOscillatory method}, 
+		\hyperpage{10}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzProductPeak method}, 
+		\hyperpage{12}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GFunction method}, 
+		\hyperpage{3}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.HyperbolicTangent method}, 
+		\hyperpage{13}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Ishigami method}, 
+		\hyperpage{14}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Lim2002 method}, 
+		\hyperpage{16}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.ManufactureDecay method}, 
+		\hyperpage{17}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method}, 
 		\hyperpage{18}
-  \item simulate() (pygpc.testfunctions.testfunctions.OakleyOhagan2004 method), \hyperpage{20}
-  \item simulate() (pygpc.testfunctions.testfunctions.Peaks method), \hyperpage{22}
-  \item simulate() (pygpc.testfunctions.testfunctions.PotentialDipole3Layers method), 
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.OakleyOhagan2004 method}, 
+		\hyperpage{20}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Peaks method}, 
 		\hyperpage{22}
-  \item simulate() (pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method), 
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.PotentialDipole3Layers method}, 
+		\hyperpage{22}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method}, 
 		\hyperpage{23}
-  \item simulate() (pygpc.testfunctions.testfunctions.Ridge method), \hyperpage{23}
-  \item simulate() (pygpc.testfunctions.testfunctions.SphereFun method), \hyperpage{25}
-  \item simulate() (pygpc.testfunctions.testfunctions.SphereModel method), \hyperpage{27}
-  \item simulate() (pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method), 
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Ridge method}, 
+		\hyperpage{23}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.SphereFun method}, 
+		\hyperpage{25}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.SphereModel method}, 
 		\hyperpage{27}
-  \item simulate() (pygpc.testfunctions.testfunctions.TMSEfieldSphere method), \hyperpage{29}
-  \item simulate() (pygpc.testfunctions.testfunctions.Welch1992 method), \hyperpage{30}
-  \item simulate() (pygpc.testfunctions.testfunctions.WingWeight method), \hyperpage{30}
-  \item solve() (pygpc.GPC.GPC method), \hyperpage{42}
-  \item solver (pygpc.GPC.GPC attribute), \hyperpage{40}
-  \item solver (pygpc.SGPC.Reg attribute), \hyperpage{50}
-  \item SparseGrid (class in pygpc.Grid), \hyperpage{45}
-  \item SphereFun (class in pygpc.Test), \hyperpage{55}
-  \item SphereFun (class in pygpc.testfunctions.testfunctions), \hyperpage{25}
-  \item SphereModel (class in pygpc.testfunctions.testfunctions), \hyperpage{25}
-  \item Static (class in pygpc.Algorithm), \hyperpage{32}
-  \item std (pygpc.RandomParameter.RandomParameter attribute), \hyperpage{49}
-  \item StepDown (class in pygpc.BasisFunction), \hyperpage{35}
-  \item StepUp (class in pygpc.BasisFunction), \hyperpage{35}
-  \item SurfaceCoverageSpecies (class in pygpc.Test), \hyperpage{55}
-  \item SurfaceCoverageSpecies (class in pygpc.testfunctions.testfunctions), \hyperpage{27}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method}, 
+		\hyperpage{27}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.TMSEfieldSphere method}, 
+		\hyperpage{29}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Welch1992 method}, 
+		\hyperpage{30}
+  \item \spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.WingWeight method}, 
+		\hyperpage{30}
+  \item \spxentry{solve()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{42}
+  \item \spxentry{solver}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{solver}\spxextra{pygpc.SGPC.Reg attribute}, \hyperpage{51}
+  \item \spxentry{SparseGrid}\spxextra{class in pygpc.Grid}, \hyperpage{46}
+  \item \spxentry{SphereFun}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{SphereFun}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{25}
+  \item \spxentry{SphereModel}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{25}
+  \item \spxentry{Static}\spxextra{class in pygpc.Algorithm}, \hyperpage{32}
+  \item \spxentry{std}\spxextra{pygpc.RandomParameter.RandomParameter attribute}, \hyperpage{51}
+  \item \spxentry{StepDown}\spxextra{class in pygpc.BasisFunction}, \hyperpage{35}
+  \item \spxentry{StepUp}\spxextra{class in pygpc.BasisFunction}, \hyperpage{35}
+  \item \spxentry{SurfaceCoverageSpecies}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{SurfaceCoverageSpecies}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{27}
 
   \indexspace
   \bigletter T
-  \item TensorGrid (class in pygpc.Grid), \hyperpage{46}
-  \item Test (class in pygpc.Test), \hyperpage{55}
-  \item TestBench (class in pygpc.TestBench), \hyperpage{55}
-  \item TestBenchContinuous (class in pygpc.TestBench), \hyperpage{55}
-  \item TestBenchContinuousND (class in pygpc.TestBench), \hyperpage{55}
-  \item TestBenchDiscontinuous (class in pygpc.TestBench), \hyperpage{55}
-  \item TestBenchDiscontinuousND (class in pygpc.TestBench), \hyperpage{55}
-  \item TMSEfieldSphere (class in pygpc.testfunctions.testfunctions), \hyperpage{29}
+  \item \spxentry{TensorGrid}\spxextra{class in pygpc.Grid}, \hyperpage{47}
+  \item \spxentry{Test}\spxextra{class in pygpc.Test}, \hyperpage{55}
+  \item \spxentry{TestBench}\spxextra{class in pygpc.TestBench}, \hyperpage{56}
+  \item \spxentry{TestBenchContinuous}\spxextra{class in pygpc.TestBench}, \hyperpage{56}
+  \item \spxentry{TestBenchContinuousND}\spxextra{class in pygpc.TestBench}, \hyperpage{56}
+  \item \spxentry{TestBenchDiscontinuous}\spxextra{class in pygpc.TestBench}, \hyperpage{56}
+  \item \spxentry{TestBenchDiscontinuousND}\spxextra{class in pygpc.TestBench}, \hyperpage{56}
+  \item \spxentry{TMSEfieldSphere}\spxextra{class in pygpc.testfunctions.testfunctions}, 
+		\hyperpage{29}
 
   \indexspace
   \bigletter U
-  \item update\_gpc\_matrix() (pygpc.GPC.GPC method), \hyperpage{42}
+  \item \spxentry{update\_gpc\_matrix()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{43}
 
   \indexspace
   \bigletter V
-  \item validate() (pygpc.AbstractModel.AbstractModel method), \hyperpage{32}
-  \item validate() (pygpc.Problem.Problem method), \hyperpage{48}
-  \item validate() (pygpc.testfunctions.testfunctions.BfieldOutsideSphere method), \hyperpage{1}
-  \item validate() (pygpc.testfunctions.testfunctions.Franke method), \hyperpage{3}
-  \item validate() (pygpc.testfunctions.testfunctions.GenzContinuous method), \hyperpage{5}
-  \item validate() (pygpc.testfunctions.testfunctions.GenzCornerPeak method), \hyperpage{6}
-  \item validate() (pygpc.testfunctions.testfunctions.GenzDiscontinuous method), \hyperpage{8}
-  \item validate() (pygpc.testfunctions.testfunctions.GenzGaussianPeak method), \hyperpage{9}
-  \item validate() (pygpc.testfunctions.testfunctions.GenzOscillatory method), \hyperpage{10}
-  \item validate() (pygpc.testfunctions.testfunctions.GenzProductPeak method), \hyperpage{12}
-  \item validate() (pygpc.testfunctions.testfunctions.GFunction method), \hyperpage{3}
-  \item validate() (pygpc.testfunctions.testfunctions.HyperbolicTangent method), \hyperpage{13}
-  \item validate() (pygpc.testfunctions.testfunctions.Ishigami method), \hyperpage{14}
-  \item validate() (pygpc.testfunctions.testfunctions.Lim2002 method), \hyperpage{16}
-  \item validate() (pygpc.testfunctions.testfunctions.ManufactureDecay method), \hyperpage{18}
-  \item validate() (pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method), 
+  \item \spxentry{validate()}\spxextra{pygpc.AbstractModel.AbstractModel method}, \hyperpage{32}
+  \item \spxentry{validate()}\spxextra{pygpc.GPC.GPC method}, \hyperpage{43}
+  \item \spxentry{validate()}\spxextra{pygpc.Problem.Problem method}, \hyperpage{49}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.BfieldOutsideSphere method}, 
+		\hyperpage{1}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Franke method}, 
+		\hyperpage{3}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzContinuous method}, 
+		\hyperpage{5}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzCornerPeak method}, 
+		\hyperpage{6}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzDiscontinuous method}, 
+		\hyperpage{8}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzGaussianPeak method}, 
+		\hyperpage{9}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzOscillatory method}, 
+		\hyperpage{10}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzProductPeak method}, 
+		\hyperpage{12}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GFunction method}, 
+		\hyperpage{3}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.HyperbolicTangent method}, 
+		\hyperpage{13}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Ishigami method}, 
+		\hyperpage{14}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Lim2002 method}, 
+		\hyperpage{16}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.ManufactureDecay method}, 
 		\hyperpage{18}
-  \item validate() (pygpc.testfunctions.testfunctions.OakleyOhagan2004 method), \hyperpage{20}
-  \item validate() (pygpc.testfunctions.testfunctions.Peaks method), \hyperpage{22}
-  \item validate() (pygpc.testfunctions.testfunctions.PotentialDipole3Layers method), 
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method}, 
+		\hyperpage{18}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.OakleyOhagan2004 method}, 
+		\hyperpage{20}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Peaks method}, 
 		\hyperpage{22}
-  \item validate() (pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method), 
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.PotentialDipole3Layers method}, 
+		\hyperpage{22}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method}, 
 		\hyperpage{23}
-  \item validate() (pygpc.testfunctions.testfunctions.Ridge method), \hyperpage{25}
-  \item validate() (pygpc.testfunctions.testfunctions.SphereFun method), \hyperpage{25}
-  \item validate() (pygpc.testfunctions.testfunctions.SphereModel method), \hyperpage{27}
-  \item validate() (pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method), 
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Ridge method}, 
+		\hyperpage{25}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.SphereFun method}, 
+		\hyperpage{25}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.SphereModel method}, 
+		\hyperpage{27}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method}, 
 		\hyperpage{29}
-  \item validate() (pygpc.testfunctions.testfunctions.TMSEfieldSphere method), \hyperpage{29}
-  \item validate() (pygpc.testfunctions.testfunctions.Welch1992 method), \hyperpage{30}
-  \item validate() (pygpc.testfunctions.testfunctions.WingWeight method), \hyperpage{30}
-  \item validate\_gpc\_mc() (in module pygpc.validation), \hyperpage{67}
-  \item validate\_gpc\_plot() (in module pygpc.validation), \hyperpage{68}
-  \item var (pygpc.RandomParameter.RandomParameter attribute), \hyperpage{50}
-  \item verbose (pygpc.GPC.GPC attribute), \hyperpage{40}
-  \item verbose (pygpc.Grid.SparseGrid attribute), \hyperpage{46}
-  \item Visualization (class in pygpc.Visualization), \hyperpage{55}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.TMSEfieldSphere method}, 
+		\hyperpage{29}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Welch1992 method}, 
+		\hyperpage{30}
+  \item \spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.WingWeight method}, 
+		\hyperpage{30}
+  \item \spxentry{validate\_gpc\_mc()}\spxextra{in module pygpc.validation}, \hyperpage{68}
+  \item \spxentry{validate\_gpc\_plot()}\spxextra{in module pygpc.validation}, \hyperpage{69}
+  \item \spxentry{ValidationSet}\spxextra{class in pygpc.ValidationSet}, \hyperpage{56}
+  \item \spxentry{var}\spxextra{pygpc.RandomParameter.RandomParameter attribute}, \hyperpage{51}
+  \item \spxentry{verbose}\spxextra{pygpc.GPC.GPC attribute}, \hyperpage{40}
+  \item \spxentry{verbose}\spxextra{pygpc.Grid.SparseGrid attribute}, \hyperpage{47}
+  \item \spxentry{Visualization}\spxextra{class in pygpc.Visualization}, \hyperpage{56}
 
   \indexspace
   \bigletter W
-  \item weights (pygpc.Grid.Grid attribute), \hyperpage{45}
-  \item weights\_dim\_list (pygpc.Grid.TensorGrid attribute), \hyperpage{47}
-  \item Welch1992 (class in pygpc.Test), \hyperpage{55}
-  \item Welch1992 (class in pygpc.testfunctions.testfunctions), \hyperpage{29}
-  \item WingWeight (class in pygpc.Test), \hyperpage{55}
-  \item WingWeight (class in pygpc.testfunctions.testfunctions), \hyperpage{30}
-  \item wprint() (in module pygpc.io), \hyperpage{61}
-  \item wrap\_function() (in module pygpc.misc), \hyperpage{66}
-  \item write\_data\_hdf5() (in module pygpc.io), \hyperpage{61}
-  \item write\_data\_txt() (in module pygpc.io), \hyperpage{61}
-  \item write\_gpc\_pkl() (in module pygpc.io), \hyperpage{61}
-  \item write\_log\_sobol() (in module pygpc.io), \hyperpage{61}
-  \item write\_results() (pygpc.AbstractModel.AbstractModel method), \hyperpage{32}
-  \item write\_sobol\_idx\_txt() (in module pygpc.io), \hyperpage{62}
+  \item \spxentry{weights}\spxextra{pygpc.Grid.Grid attribute}, \hyperpage{46}
+  \item \spxentry{weights\_dim\_list}\spxextra{pygpc.Grid.TensorGrid attribute}, \hyperpage{48}
+  \item \spxentry{Welch1992}\spxextra{class in pygpc.Test}, \hyperpage{56}
+  \item \spxentry{Welch1992}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{29}
+  \item \spxentry{WingWeight}\spxextra{class in pygpc.Test}, \hyperpage{56}
+  \item \spxentry{WingWeight}\spxextra{class in pygpc.testfunctions.testfunctions}, \hyperpage{30}
+  \item \spxentry{wprint()}\spxextra{in module pygpc.io}, \hyperpage{62}
+  \item \spxentry{wrap\_function()}\spxextra{in module pygpc.misc}, \hyperpage{67}
+  \item \spxentry{write\_data\_hdf5()}\spxextra{in module pygpc.io}, \hyperpage{62}
+  \item \spxentry{write\_data\_txt()}\spxextra{in module pygpc.io}, \hyperpage{62}
+  \item \spxentry{write\_gpc\_pkl()}\spxextra{in module pygpc.io}, \hyperpage{62}
+  \item \spxentry{write\_log\_sobol()}\spxextra{in module pygpc.io}, \hyperpage{62}
+  \item \spxentry{write\_results()}\spxextra{pygpc.AbstractModel.AbstractModel method}, 
+		\hyperpage{32}
+  \item \spxentry{write\_sobol\_idx\_txt()}\spxextra{in module pygpc.io}, \hyperpage{63}
 
 \end{sphinxtheindex}

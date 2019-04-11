@@ -3,6 +3,8 @@ import copy
 import h5py
 from .Grid import *
 from .misc import get_cartesian_product
+from .misc import nrmsd
+from ValidationSet import *
 import numpy as np
 import fastmat as fm
 import scipy.stats
@@ -31,6 +33,10 @@ class GPC(object):
         UUID4() IDs of grid points the gPC matrix derived with
     gpc_matrix_b_id: list of UUID4()
         UUID4() IDs of basis functions the gPC matrix derived with
+    n_basis: int or list of int
+        Number of basis functions (for iterative solvers, this is a list of its history)
+    n_grid: int or list of int
+        Number of grid points (for iterative solvers, this is a list of its history)
     solver: str
         Default solver to determine the gPC coefficients (can be chosen during GPC.solve)
         - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
@@ -42,8 +48,8 @@ class GPC(object):
         boolean value to determine if to print out the progress into the standard output
     fn_results : string, optional, default=None
         If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
-    n_cpu : int, optional, default=1
-        Number of threads to use for parallel evaluation of the model function.
+    options : dict
+        Options of gPC algorithm
     """
 
     def __init__(self, problem, fn_results):
@@ -59,6 +65,11 @@ class GPC(object):
         self.nan_elm = []
         self.gpc_matrix_coords_id = None
         self.gpc_matrix_b_id = None
+        self.n_basis = []
+        self.n_grid = []
+        self.relative_error_nrmsd = []
+        self.relative_error_loocv = []
+        self.error = []
 
         # options
         self.solver = None
@@ -66,7 +77,7 @@ class GPC(object):
         self.gpu = None
         self.verbose = True
         self.fn_results = fn_results
-        self.n_cpu = None
+        self.options = None
 
     def init_gpc_matrix(self):
         """
@@ -76,6 +87,8 @@ class GPC(object):
         self.gpc_matrix = self.calc_gpc_matrix(self.basis.b, self.grid.coords_norm)
         self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
         self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
+        self.n_grid.append(self.gpc_matrix.shape[0])
+        self.n_basis.append(self.gpc_matrix.shape[1])
 
     def calc_gpc_matrix(self, b, x, verbose=False):
         """
@@ -135,6 +148,139 @@ class GPC(object):
 
         return gpc_matrix
 
+        # TODO: @Lucas: Implement this on the GPU
+    def loocv(self, coeffs, sim_results, error_norm="relative"):
+        """
+        Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
+        The loocv error is calculated analytically after eq. (35) in [1] but omitting the "1 - " term, i.e. it
+        corresponds to 1 - Q^2.
+
+        relative_error_loocv = GPC.loocv(sim_results, coeffs)
+
+        .. math::
+           \\epsilon_{LOOCV} = \\frac{\\frac{1}{N}\sum_{i=1}^N \\left( \\frac{y(\\xi_i) - \hat{y}(\\xi_i)}{1-h_i} \\right)^2}{\\frac{1}{N-1}\sum_{i=1}^N \\left( y(\\xi_i) - \\bar{y} \\right)^2}
+
+        with
+
+        .. math::
+           \\mathbf{h} = \mathrm{diag}(\\mathbf{\\Psi} (\\mathbf{\\Psi}^T \\mathbf{\\Psi})^{-1} \\mathbf{\\Psi}^T)
+
+        Parameters
+        ----------
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
+        sim_results: ndarray of float [n_grid x n_out]
+            Results from n_grid simulations with n_out output quantities
+        error_norm: str, optional, default="relative"
+            Decide if error is determined "relative" or "absolute"
+
+        Returns
+        -------
+        relative_error_loocv: float
+            Relative mean error of leave one out cross validation
+
+        Notes
+        -----
+        .. [1] Blatman, G., & Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions
+           for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(2), 183-197.
+        """
+
+        # determine Psi (Psi^T Psi)^-1 Psi^T
+        h = np.dot(np.dot(self.gpc_matrix,
+                          np.linalg.inv(np.dot(self.gpc_matrix.transpose(),
+                                               self.gpc_matrix))),
+                   self.gpc_matrix.transpose())
+
+        # determine loocv error
+        err = np.mean(((sim_results - np.dot(self.gpc_matrix, coeffs)) /
+                       (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
+
+        if error_norm == "relative":
+            norm = np.var(sim_results, axis=0, ddof=1)
+        else:
+            norm = 1
+
+        # normalize
+        relative_error_loocv = np.mean(err / norm)
+
+        return relative_error_loocv
+
+        # # define number of performed cross validations (max 100)
+        # n_loocv_points = np.min((sim_results.shape[0], n_loocv))
+        #
+        # # make list of indices, which are randomly sampled
+        # loocv_point_idx = random.sample(list(range(sim_results.shape[0])), n_loocv_points)
+        #
+        # start = time.time()
+        # relative_error = np.zeros(n_loocv_points)
+        # for i in range(n_loocv_points):
+        #     # get mask of eliminated row
+        #     mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
+        #
+        #     # determine gpc coefficients (this takes a lot of time for large problems)
+        #     coeffs_loo = self.solve(sim_results=sim_results[mask, :],
+        #                             solver=solver,
+        #                             settings=settings,
+        #                             gpc_matrix=self.gpc_matrix[mask, :],
+        #                             verbose=False)
+        #
+        #     sim_results_temp = sim_results[loocv_point_idx[i], :]
+        #     relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(self.gpc_matrix[loocv_point_idx[i], :],
+        #                                                                     coeffs_loo))\
+        #                         / scipy.linalg.norm(sim_results_temp)
+        #     display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
+        #
+        # # store result in relative_error_loocv
+        # self.relative_error_loocv.append(np.mean(relative_error))
+        # iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
+        #
+        # err = self.calc_delta(sim_results, solver, settings)
+        #
+        # return self.relative_error_loocv[-1]
+
+    def validate(self, coeffs, sim_results=None):
+        """
+        Validate gPC approximation using the ValidationSet object contained in the Problem object.
+        Determines the normalized root mean square deviation between the gpc approximation and the
+        original model. Skips this step if no validation set is present
+
+        Parameters
+        ----------
+        coeffs: ndarray of float [n_coeffs x n_out]
+            GPC coefficients
+        sim_results: ndarray of float [n_grid x n_out]
+            Results from n_grid simulations with n_out output quantities
+
+        Returns
+        -------
+        error: float
+            Estimated difference between gPC approximation and original model
+        """
+
+        # always determine nrmsd if a validation set is present
+        if isinstance(self.problem.validation, ValidationSet):
+
+            gpc_results = self.get_approximation(coeffs, self.problem.validation.grid.coords_norm, output_idx=None)
+
+            if gpc_results.ndim == 1:
+                gpc_results = gpc_results[:, np.newaxis]
+
+            self.relative_error_nrmsd.append(float(np.mean(nrmsd(gpc_results,
+                                                                 self.problem.validation.results,
+                                                                 error_norm=self.options["error_norm"],
+                                                                 x_axis=False))))
+
+        if self.options["error_type"] == "nrmsd":
+            self.error.append(self.relative_error_nrmsd[-1])
+
+        elif self.options["error_type"] == "loocv":
+            self.relative_error_loocv.append(self.loocv(coeffs=coeffs,
+                                                        sim_results=sim_results,
+                                                        error_norm=self.options["error_norm"]))
+            self.error.append(self.relative_error_loocv[-1])
+
+        return self.error[-1]
+
     def get_pdf(self, coeffs, n_samples, output_idx=None):
         """ Determine the estimated pdfs of the output quantities
 
@@ -176,9 +322,14 @@ class GPC(object):
         pdf_y = np.zeros([100, n_out])
 
         for i_out in range(n_out):
-            kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
+            try:
+                kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
+                pdf_y[:, i_out] = kde(pdf_x[:, i_out])
+
+            except np.linalg.linalg.LinAlgError:
+                Warning("Singular matrix during pdf calculation ...")
+
             pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
-            pdf_y[:, i_out] = kde(pdf_x[:, i_out])
 
         return pdf_x, pdf_y
 
@@ -400,10 +551,12 @@ class GPC(object):
                                                                             x=self.grid.coords_norm[idx_coords_new, :],
                                                                             verbose=False)
 
-            # overwrite old attributes
+            # overwrite old attributes and append new sizes
             self.gpc_matrix = gpc_matrix_updated
             self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
+            self.n_grid.append(self.gpc_matrix.shape[0])
+            self.n_basis.append(self.gpc_matrix.shape[1])
 
     def save_gpc_matrix_hdf5(self):
         """

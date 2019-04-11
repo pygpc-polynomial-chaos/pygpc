@@ -1037,6 +1037,9 @@ class Lim2002(AbstractModel):
              - 15.0 / 2 * self.p["x1"] ** 3 - 5.0 / 2 * self.p["x1"] * self.p["x2"] ** 2
              - 11.0 / 2 * self.p["x2"] ** 4 + self.p["x1"] ** 3 * self.p["x2"] ** 2)
 
+        if type(y) is not np.ndarray:
+            y = np.array([y])
+
         y_out = y[:, np.newaxis]
 
         return y_out
@@ -1118,6 +1121,9 @@ class Ishigami(AbstractModel):
     def simulate(self, process_id=None):
         y = (np.sin(self.p["x1"].flatten()) + self.p["a"].flatten() * np.sin(self.p["x2"].flatten()) ** 2
              + self.p["b"].flatten() * self.p["x3"].flatten() ** 4 * np.sin(self.p["x1"].flatten()))
+
+        if type(y) is not np.ndarray:
+            y = np.array([y])
 
         y_out = y[:, np.newaxis]
 

@@ -4,6 +4,7 @@ from .EGPC import *
 from .Grid import *
 from .Computation import *
 from .io import write_gpc_pkl
+from .ValidationSet import *
 import h5py
 import os
 import time
@@ -76,6 +77,13 @@ class Static(Algorithm):
             All polynomials are ignored, which have an interaction order greater than the specified
         options["n_cpu"] : int, optional, default=1
             Number of threads to use for parallel evaluation of the model function.
+        options["error_norm"] : str, optional, default="relative"
+            Choose if error is determined "relative" or "absolute". Use "absolute" error when the
+            model generates outputs equal to zero.
+        options["error_type"] : str, optional, default="loocv"
+            Choose type of error to validate gpc approximation. Use "loocv" (Leave-one-Out cross validation)
+            to omit any additional calculations and "nrmsd" (normalized root mean square deviation) to compare
+            against a Problem.ValidationSet.
         grid: Grid object instance
             Grid object to use for static gPC (RandomGrid, SparseGrid, TensorGrid)
 
@@ -136,7 +144,13 @@ class Static(Algorithm):
             self.options["print_func_time"] = False
 
         if "order_max_norm" not in self.options.keys():
-            self.options["order_max_norm"] = 1
+            self.options["order_max_norm"] = 1.
+
+        if "error_norm" not in self.options.keys():
+            self.options["error_norm"] = "relative"
+
+        if "error_type" not in self.options.keys():
+            self.options["error_type"] = "loocv"
 
     def run(self):
         """
@@ -174,6 +188,7 @@ class Static(Algorithm):
         # Write grid in gpc object
         gpc.grid = copy.deepcopy(self.grid)
         gpc.interaction_order_current = copy.deepcopy(self.options["interaction_order"])
+        gpc.options = copy.deepcopy(self.options)
 
         # Initialize gpc matrix
         gpc.init_gpc_matrix()
@@ -206,6 +221,16 @@ class Static(Algorithm):
                            solver=self.options["solver"],
                            settings=self.options["settings"],
                            verbose=True)
+
+        # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+        if self.options["error_type"] == "loocv":
+            eps = gpc.validate(coeffs=coeffs, sim_results=res)
+        elif self.options["error_type"] == "nrmsd":
+            eps = gpc.validate(coeffs=coeffs)
+
+        iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                            self.options["error_type"],
+                                            eps), tab=0, verbose=self.options["verbose"])
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
@@ -261,8 +286,13 @@ class RegAdaptive(Algorithm):
         options["matrix_ratio"]: float, optional, default=1.5
             Ration between the number of model evaluations and the number of basis functions.
             (>1 results in an overdetermined system)
-        options["n_loocv"] : int, optional, default=100
-            Number of leave-one-out cross-validation steps
+        options["error_norm"] : str, optional, default="relative"
+            Choose if error is determined "relative" or "absolute". Use "absolute" error when the
+            model generates outputs equal to zero.
+        options["error_type"] : str, optional, default="loocv"
+            Choose type of error to validate gpc approximation. Use "loocv" (Leave-one-Out cross validation)
+            to omit any additional calculations and "nrmsd" (normalized root mean square deviation) to compare
+            against a Problem.ValidationSet.
 
         Examples
         --------
@@ -314,8 +344,14 @@ class RegAdaptive(Algorithm):
         if "print_func_time" not in self.options.keys():
             self.options["print_func_time"] = False
 
-        if "n_loocv" not in self.options.keys():
-            self.options["n_loocv"] = 100
+        if "order_max_norm" not in self.options.keys():
+            self.options["order_max_norm"] = 1.
+
+        if "error_norm" not in self.options.keys():
+            self.options["error_norm"] = "relative"
+
+        if "error_type" not in self.options.keys():
+            self.options["error_type"] = "loocv"
 
     def run(self):
         """
@@ -355,12 +391,13 @@ class RegAdaptive(Algorithm):
         gpc.interaction_order_current = min(self.options["interaction_order"], self.options["order_start"])
         gpc.solver = self.options["solver"]
         gpc.settings = self.options["settings"]
+        gpc.options = copy.deepcopy(self.options)
 
         # Initialize gpc matrix
         gpc.init_gpc_matrix()
 
         # Main iterations (order)
-        while (eps > self.options["eps"]) and order < self.options["order_end"]:
+        while (eps > self.options["eps"]) and order <= self.options["order_end"]:
 
             iprint("Order #{}".format(order), tab=0, verbose=self.options["verbose"])
             iprint("==========", tab=0, verbose=self.options["verbose"])
@@ -426,25 +463,27 @@ class RegAdaptive(Algorithm):
 
                 start_time = time.time()
 
-                res = com.run(model=gpc.problem.model,
-                              problem=gpc.problem,
-                              coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
-                              coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
-                              i_iter=order,
-                              i_subiter=gpc.interaction_order_current,
-                              fn_results=gpc.fn_results,
-                              print_func_time=self.options["print_func_time"])
+                # run model if grid points were added
+                if i_grid<len(gpc.grid.coords):
+                    res = com.run(model=gpc.problem.model,
+                                  problem=gpc.problem,
+                                  coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
+                                  coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
+                                  i_iter=order,
+                                  i_subiter=gpc.interaction_order_current,
+                                  fn_results=gpc.fn_results,
+                                  print_func_time=self.options["print_func_time"])
 
-                iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-                       tab=0, verbose=self.options["verbose"])
+                    iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+                           tab=0, verbose=self.options["verbose"])
 
-                # Append result to solution matrix (RHS)
-                if i_grid == 0:
-                    res_complete = res
-                else:
-                    res_complete = np.vstack([res_complete, res])
+                    # Append result to solution matrix (RHS)
+                    if i_grid == 0:
+                        res_complete = res
+                    else:
+                        res_complete = np.vstack([res_complete, res])
 
-                i_grid = gpc.grid.coords.shape[0]
+                    i_grid = gpc.grid.coords.shape[0]
 
                 # Determine QOIs with NaN in results
                 non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
@@ -476,11 +515,15 @@ class RegAdaptive(Algorithm):
                 # save gpc matrix in .hdf5 file
                 gpc.save_gpc_matrix_hdf5()
 
-                # determine error
-                eps = gpc.loocv(sim_results=res_complete[:, non_nan_mask],
-                                coeffs=coeffs)
+                # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+                if self.options["error_type"] == "loocv":
+                    eps = gpc.validate(coeffs=coeffs, sim_results=res_complete[:, non_nan_mask])
+                elif self.options["error_type"] == "nrmsd":
+                    eps = gpc.validate(coeffs=coeffs)
 
-                iprint("-> error = {}".format(eps), tab=0, verbose=self.options["verbose"])
+                iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                    self.options["error_type"],
+                                                    eps), tab=0, verbose=self.options["verbose"])
 
                 # increase current interaction order
                 gpc.interaction_order_current = gpc.interaction_order_current + 1

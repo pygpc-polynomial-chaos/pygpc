@@ -181,9 +181,9 @@ def get_array_unique_rows(array):
     return array[index]
 
 
-def get_normalized_rms_deviation(array, array_ref, x_axis=False):
+def nrmsd(array, array_ref, error_norm="relative", x_axis=False):
     """
-    Determine the normalized root mean square deviation between input data and reference data in [%].
+    Determine the normalized root mean square deviation between input data and reference data.
 
     normalized_rms = get_normalized_rms(array, array_ref)
 
@@ -194,6 +194,8 @@ def get_normalized_rms_deviation(array, array_ref, x_axis=False):
     array_ref: np.ndarray
         reference data [ (x_ref), y0_ref, y1_ref, y2_ref ... ]
         if array_ref is 1D, all sizes have to match
+    error_norm: str, optional, default="relative"
+        Decide if error is determined "relative" or "absolute"
     x_axis: boolean, optional, default=False
         If True, the first column of array and array_ref is interpreted as the x-axis, where the data points are
         evaluated. If False, the data points are assumed to be at the same location.
@@ -235,14 +237,18 @@ def get_normalized_rms_deviation(array, array_ref, x_axis=False):
         data_ref = array_ref
         data = array
 
-    max_min_idx = np.isclose(np.max(data_ref, axis=0), np.min(data_ref, axis=0))
-    delta = np.max(data_ref, axis=0) - np.min(data_ref, axis=0)
+    # determine "absolute" or "relative" error
+    if error_norm == "relative":
+        max_min_idx = np.isclose(np.max(data_ref, axis=0), np.min(data_ref, axis=0))
+        delta = np.max(data_ref, axis=0) - np.min(data_ref, axis=0)
 
-    if max_min_idx.any():
-        delta[max_min_idx] = max(data_ref[max_min_idx])
-    
+        if max_min_idx.any():
+            delta[max_min_idx] = max(data_ref[max_min_idx])
+    else:
+        delta = 1
+
     # determine normalized rms deviation and return
-    normalized_rms = 100 * np.sqrt(1.0/n_points * np.sum((data - data_ref)**2, axis=0)) / delta
+    normalized_rms = np.sqrt(1.0/n_points * np.sum((data - data_ref)**2, axis=0)) / delta
 
     return normalized_rms
 

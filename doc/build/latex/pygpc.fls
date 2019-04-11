@@ -1,4 +1,4 @@
-PWD /home/kporzig/py/pygpc/doc/build/latex
+PWD /data/pt_01756/software/git/pygpc/doc/build/latex
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf

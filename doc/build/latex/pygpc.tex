@@ -36,8 +36,14 @@
 \urlstyle{same}
 \addto\captionsenglish{\renewcommand{\contentsname}{Contents:}}
 
-\addto\captionsenglish{\renewcommand{\figurename}{Fig.}}
-\addto\captionsenglish{\renewcommand{\tablename}{Table}}
+\addto\captionsenglish{\renewcommand{\figurename}{Fig.\@ }}
+\makeatletter
+\def\fnum@figure{\figurename\thefigure{}}
+\makeatother
+\addto\captionsenglish{\renewcommand{\tablename}{Table }}
+\makeatletter
+\def\fnum@table{\tablename\thetable{}}
+\makeatother
 \addto\captionsenglish{\renewcommand{\literalblockname}{Listing}}
 
 \addto\captionsenglish{\renewcommand{\literalblockcontinuedname}{continued from previous page}}
@@ -53,7 +59,7 @@
 
 
 \title{Documentation of the pygpc package}
-\date{Apr 08, 2019}
+\date{Apr 11, 2019}
 \release{2018}
 \author{Konstantin Weise}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -62,7 +68,7 @@
 \begin{document}
 
 \pagestyle{empty}
-\maketitle
+\sphinxmaketitle
 \pagestyle{plain}
 \sphinxtableofcontents
 \pagestyle{normal}
@@ -83,7 +89,7 @@
 \label{\detokenize{pygpc.testfunctions:submodules}}
 
 \subsubsection{pygpc.testfunctions.testfunctions module}
-\label{\detokenize{pygpc.testfunctions:module-pygpc.testfunctions.testfunctions}}\label{\detokenize{pygpc.testfunctions:pygpc-testfunctions-testfunctions-module}}\index{pygpc.testfunctions.testfunctions (module)}\index{BfieldOutsideSphere (class in pygpc.testfunctions.testfunctions)}
+\label{\detokenize{pygpc.testfunctions:module-pygpc.testfunctions.testfunctions}}\label{\detokenize{pygpc.testfunctions:pygpc-testfunctions-testfunctions-module}}\index{pygpc.testfunctions.testfunctions (module)@\spxentry{pygpc.testfunctions.testfunctions}\spxextra{module}}\index{BfieldOutsideSphere (class in pygpc.testfunctions.testfunctions)@\spxentry{BfieldOutsideSphere}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.BfieldOutsideSphere}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{BfieldOutsideSphere}}}{\emph{p}, \emph{context=None}}{}
@@ -115,7 +121,7 @@ ndarray of float {[}1 x 3*N{]}
 
 \end{description}\end{quote}
 \subsubsection*{Notes}
-\index{simulate() (pygpc.testfunctions.testfunctions.BfieldOutsideSphere method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.BfieldOutsideSphere method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.BfieldOutsideSphere method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.BfieldOutsideSphere.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -129,7 +135,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.BfieldOutsideSphere method)}
+\index{validate() (pygpc.testfunctions.testfunctions.BfieldOutsideSphere method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.BfieldOutsideSphere method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.BfieldOutsideSphere.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -143,7 +149,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{Franke (class in pygpc.testfunctions.testfunctions)}
+\index{Franke (class in pygpc.testfunctions.testfunctions)@\spxentry{Franke}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Franke}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{Franke}}}{\emph{p}, \emph{context=None}}{}
@@ -180,7 +186,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-1}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.Franke method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.Franke method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Franke method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Franke.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -194,7 +200,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.Franke method)}
+\index{validate() (pygpc.testfunctions.testfunctions.Franke method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Franke method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Franke.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -208,7 +214,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{GFunction (class in pygpc.testfunctions.testfunctions)}
+\index{GFunction (class in pygpc.testfunctions.testfunctions)@\spxentry{GFunction}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GFunction}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{GFunction}}}{\emph{p}, \emph{context=None}}{}
@@ -258,7 +264,7 @@ ndarray of float {[}N\_input x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-2}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.GFunction method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.GFunction method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GFunction method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GFunction.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -272,7 +278,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.GFunction method)}
+\index{validate() (pygpc.testfunctions.testfunctions.GFunction method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GFunction method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GFunction.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -286,7 +292,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{GenzContinuous (class in pygpc.testfunctions.testfunctions)}
+\index{GenzContinuous (class in pygpc.testfunctions.testfunctions)@\spxentry{GenzContinuous}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzContinuous}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{GenzContinuous}}}{\emph{p}, \emph{context=None}}{}
@@ -322,7 +328,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-3}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.GenzContinuous method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.GenzContinuous method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzContinuous method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzContinuous.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -336,7 +342,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.GenzContinuous method)}
+\index{validate() (pygpc.testfunctions.testfunctions.GenzContinuous method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzContinuous method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzContinuous.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -350,7 +356,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{GenzCornerPeak (class in pygpc.testfunctions.testfunctions)}
+\index{GenzCornerPeak (class in pygpc.testfunctions.testfunctions)@\spxentry{GenzCornerPeak}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzCornerPeak}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{GenzCornerPeak}}}{\emph{p}, \emph{context=None}}{}
@@ -387,7 +393,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-4}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.GenzCornerPeak method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.GenzCornerPeak method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzCornerPeak method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzCornerPeak.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -401,7 +407,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.GenzCornerPeak method)}
+\index{validate() (pygpc.testfunctions.testfunctions.GenzCornerPeak method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzCornerPeak method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzCornerPeak.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -415,7 +421,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{GenzDiscontinuous (class in pygpc.testfunctions.testfunctions)}
+\index{GenzDiscontinuous (class in pygpc.testfunctions.testfunctions)@\spxentry{GenzDiscontinuous}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzDiscontinuous}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{GenzDiscontinuous}}}{\emph{p}, \emph{context=None}}{}
@@ -451,7 +457,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-5}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.GenzDiscontinuous method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.GenzDiscontinuous method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzDiscontinuous method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzDiscontinuous.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -465,7 +471,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.GenzDiscontinuous method)}
+\index{validate() (pygpc.testfunctions.testfunctions.GenzDiscontinuous method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzDiscontinuous method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzDiscontinuous.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -479,7 +485,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{GenzGaussianPeak (class in pygpc.testfunctions.testfunctions)}
+\index{GenzGaussianPeak (class in pygpc.testfunctions.testfunctions)@\spxentry{GenzGaussianPeak}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzGaussianPeak}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{GenzGaussianPeak}}}{\emph{p}, \emph{context=None}}{}
@@ -515,7 +521,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-6}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.GenzGaussianPeak method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.GenzGaussianPeak method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzGaussianPeak method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzGaussianPeak.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -529,7 +535,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.GenzGaussianPeak method)}
+\index{validate() (pygpc.testfunctions.testfunctions.GenzGaussianPeak method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzGaussianPeak method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzGaussianPeak.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -543,7 +549,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{GenzOscillatory (class in pygpc.testfunctions.testfunctions)}
+\index{GenzOscillatory (class in pygpc.testfunctions.testfunctions)@\spxentry{GenzOscillatory}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzOscillatory}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{GenzOscillatory}}}{\emph{p}, \emph{context=None}}{}
@@ -579,7 +585,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-7}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.GenzOscillatory method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.GenzOscillatory method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzOscillatory method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzOscillatory.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -593,7 +599,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.GenzOscillatory method)}
+\index{validate() (pygpc.testfunctions.testfunctions.GenzOscillatory method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzOscillatory method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzOscillatory.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -607,7 +613,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{GenzProductPeak (class in pygpc.testfunctions.testfunctions)}
+\index{GenzProductPeak (class in pygpc.testfunctions.testfunctions)@\spxentry{GenzProductPeak}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzProductPeak}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{GenzProductPeak}}}{\emph{p}, \emph{context=None}}{}
@@ -643,7 +649,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-8}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.GenzProductPeak method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.GenzProductPeak method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.GenzProductPeak method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzProductPeak.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -657,7 +663,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.GenzProductPeak method)}
+\index{validate() (pygpc.testfunctions.testfunctions.GenzProductPeak method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.GenzProductPeak method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.GenzProductPeak.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -671,7 +677,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{HyperbolicTangent (class in pygpc.testfunctions.testfunctions)}
+\index{HyperbolicTangent (class in pygpc.testfunctions.testfunctions)@\spxentry{HyperbolicTangent}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.HyperbolicTangent}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{HyperbolicTangent}}}{\emph{p}, \emph{context=None}}{}
@@ -704,7 +710,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-9}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.HyperbolicTangent method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.HyperbolicTangent method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.HyperbolicTangent method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.HyperbolicTangent.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -718,7 +724,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.HyperbolicTangent method)}
+\index{validate() (pygpc.testfunctions.testfunctions.HyperbolicTangent method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.HyperbolicTangent method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.HyperbolicTangent.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -732,7 +738,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{Ishigami (class in pygpc.testfunctions.testfunctions)}
+\index{Ishigami (class in pygpc.testfunctions.testfunctions)@\spxentry{Ishigami}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Ishigami}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{Ishigami}}}{\emph{p}, \emph{context=None}}{}
@@ -780,7 +786,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-10}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.Ishigami method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.Ishigami method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Ishigami method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Ishigami.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -794,7 +800,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.Ishigami method)}
+\index{validate() (pygpc.testfunctions.testfunctions.Ishigami method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Ishigami method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Ishigami.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -808,7 +814,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{Lim2002 (class in pygpc.testfunctions.testfunctions)}
+\index{Lim2002 (class in pygpc.testfunctions.testfunctions)@\spxentry{Lim2002}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Lim2002}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{Lim2002}}}{\emph{p}, \emph{context=None}}{}
@@ -846,7 +852,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-11}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.Lim2002 method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.Lim2002 method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Lim2002 method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Lim2002.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -860,7 +866,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.Lim2002 method)}
+\index{validate() (pygpc.testfunctions.testfunctions.Lim2002 method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Lim2002 method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Lim2002.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -874,7 +880,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{ManufactureDecay (class in pygpc.testfunctions.testfunctions)}
+\index{ManufactureDecay (class in pygpc.testfunctions.testfunctions)@\spxentry{ManufactureDecay}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.ManufactureDecay}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{ManufactureDecay}}}{\emph{p}, \emph{context=None}}{}
@@ -911,7 +917,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-12}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.ManufactureDecay method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.ManufactureDecay method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.ManufactureDecay method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.ManufactureDecay.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -925,7 +931,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.ManufactureDecay method)}
+\index{validate() (pygpc.testfunctions.testfunctions.ManufactureDecay method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.ManufactureDecay method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.ManufactureDecay.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -939,7 +945,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{MovingParticleFrictionForce (class in pygpc.testfunctions.testfunctions)}
+\index{MovingParticleFrictionForce (class in pygpc.testfunctions.testfunctions)@\spxentry{MovingParticleFrictionForce}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.MovingParticleFrictionForce}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{MovingParticleFrictionForce}}}{\emph{p}, \emph{context=None}}{}
@@ -991,7 +997,7 @@ ndarray of float {[}1 x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-13}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.MovingParticleFrictionForce.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1005,7 +1011,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method)}
+\index{validate() (pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.MovingParticleFrictionForce method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.MovingParticleFrictionForce.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1019,7 +1025,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{OakleyOhagan2004 (class in pygpc.testfunctions.testfunctions)}
+\index{OakleyOhagan2004 (class in pygpc.testfunctions.testfunctions)@\spxentry{OakleyOhagan2004}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.OakleyOhagan2004}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{OakleyOhagan2004}}}{\emph{p}, \emph{context=None}}{}
@@ -1048,7 +1054,7 @@ ndarray of float {[}N\_input x 1{]}
 
 \end{description}\end{quote}
 \subsubsection*{Notes}
-\index{simulate() (pygpc.testfunctions.testfunctions.OakleyOhagan2004 method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.OakleyOhagan2004 method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.OakleyOhagan2004 method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.OakleyOhagan2004.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1062,7 +1068,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.OakleyOhagan2004 method)}
+\index{validate() (pygpc.testfunctions.testfunctions.OakleyOhagan2004 method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.OakleyOhagan2004 method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.OakleyOhagan2004.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1076,7 +1082,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{Peaks (class in pygpc.testfunctions.testfunctions)}
+\index{Peaks (class in pygpc.testfunctions.testfunctions)@\spxentry{Peaks}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Peaks}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{Peaks}}}{\emph{p}, \emph{context=None}}{}
@@ -1117,7 +1123,7 @@ y = Peaks(x)
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-14}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.Peaks method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.Peaks method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Peaks method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Peaks.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1131,7 +1137,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.Peaks method)}
+\index{validate() (pygpc.testfunctions.testfunctions.Peaks method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Peaks method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Peaks.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1145,7 +1151,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{PotentialDipole3Layers (class in pygpc.testfunctions.testfunctions)}
+\index{PotentialDipole3Layers (class in pygpc.testfunctions.testfunctions)@\spxentry{PotentialDipole3Layers}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.PotentialDipole3Layers}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{PotentialDipole3Layers}}}{\emph{p}, \emph{context=None}}{}
@@ -1182,7 +1188,7 @@ ndarray of float {[}1 x n\_out{]}
 
 \end{description}\end{quote}
 \subsubsection*{Notes}
-\index{simulate() (pygpc.testfunctions.testfunctions.PotentialDipole3Layers method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.PotentialDipole3Layers method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.PotentialDipole3Layers method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.PotentialDipole3Layers.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1196,7 +1202,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.PotentialDipole3Layers method)}
+\index{validate() (pygpc.testfunctions.testfunctions.PotentialDipole3Layers method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.PotentialDipole3Layers method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.PotentialDipole3Layers.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1210,7 +1216,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{PotentialHomogeneousDipole (class in pygpc.testfunctions.testfunctions)}
+\index{PotentialHomogeneousDipole (class in pygpc.testfunctions.testfunctions)@\spxentry{PotentialHomogeneousDipole}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{PotentialHomogeneousDipole}}}{\emph{p}, \emph{context=None}}{}
@@ -1244,7 +1250,7 @@ ndarray of float {[}1 x n\_out{]}
 
 \end{description}\end{quote}
 \subsubsection*{Notes}
-\index{simulate() (pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1258,7 +1264,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method)}
+\index{validate() (pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.PotentialHomogeneousDipole.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1272,7 +1278,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{Ridge (class in pygpc.testfunctions.testfunctions)}
+\index{Ridge (class in pygpc.testfunctions.testfunctions)@\spxentry{Ridge}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Ridge}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{Ridge}}}{\emph{p}, \emph{context=None}}{}
@@ -1309,7 +1315,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-15}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.Ridge method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.Ridge method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Ridge method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Ridge.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1323,7 +1329,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.Ridge method)}
+\index{validate() (pygpc.testfunctions.testfunctions.Ridge method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Ridge method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Ridge.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1337,7 +1343,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{SphereFun (class in pygpc.testfunctions.testfunctions)}
+\index{SphereFun (class in pygpc.testfunctions.testfunctions)@\spxentry{SphereFun}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SphereFun}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{SphereFun}}}{\emph{p}, \emph{context=None}}{}
@@ -1373,7 +1379,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-16}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.SphereFun method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.SphereFun method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.SphereFun method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SphereFun.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1387,7 +1393,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.SphereFun method)}
+\index{validate() (pygpc.testfunctions.testfunctions.SphereFun method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.SphereFun method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SphereFun.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1401,7 +1407,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{SphereModel (class in pygpc.testfunctions.testfunctions)}
+\index{SphereModel (class in pygpc.testfunctions.testfunctions)@\spxentry{SphereModel}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SphereModel}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{SphereModel}}}{\emph{p}, \emph{context=None}}{}
@@ -1442,7 +1448,7 @@ ndarray of float {[}1 x n\_out{]}
 
 \end{description}\end{quote}
 \subsubsection*{Notes}
-\index{simulate() (pygpc.testfunctions.testfunctions.SphereModel method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.SphereModel method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.SphereModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SphereModel.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1456,7 +1462,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.SphereModel method)}
+\index{validate() (pygpc.testfunctions.testfunctions.SphereModel method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.SphereModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SphereModel.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1470,7 +1476,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{SurfaceCoverageSpecies (class in pygpc.testfunctions.testfunctions)}
+\index{SurfaceCoverageSpecies (class in pygpc.testfunctions.testfunctions)@\spxentry{SurfaceCoverageSpecies}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{SurfaceCoverageSpecies}}}{\emph{p}, \emph{context=None}}{}
@@ -1511,7 +1517,7 @@ ndarray of float {[}1 x 1{]}
 
 \noindent\sphinxincludegraphics{{pygpc-testfunctions-17}.pdf}
 \end{figure}
-\index{simulate() (pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1525,7 +1531,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method)}
+\index{validate() (pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.SurfaceCoverageSpecies.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1539,7 +1545,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{TMSEfieldSphere (class in pygpc.testfunctions.testfunctions)}
+\index{TMSEfieldSphere (class in pygpc.testfunctions.testfunctions)@\spxentry{TMSEfieldSphere}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.TMSEfieldSphere}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{TMSEfieldSphere}}}{\emph{p}, \emph{context=None}}{}
@@ -1571,7 +1577,7 @@ ndarray of float {[}1 x 3*N{]}
 
 \end{description}\end{quote}
 \subsubsection*{Notes}
-\index{simulate() (pygpc.testfunctions.testfunctions.TMSEfieldSphere method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.TMSEfieldSphere method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.TMSEfieldSphere method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.TMSEfieldSphere.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1585,7 +1591,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.TMSEfieldSphere method)}
+\index{validate() (pygpc.testfunctions.testfunctions.TMSEfieldSphere method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.TMSEfieldSphere method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.TMSEfieldSphere.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1599,7 +1605,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{Welch1992 (class in pygpc.testfunctions.testfunctions)}
+\index{Welch1992 (class in pygpc.testfunctions.testfunctions)@\spxentry{Welch1992}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Welch1992}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{Welch1992}}}{\emph{p}, \emph{context=None}}{}
@@ -1627,7 +1633,7 @@ ndarray of float {[}n\_grid x 1{]}
 
 \end{description}\end{quote}
 \subsubsection*{Notes}
-\index{simulate() (pygpc.testfunctions.testfunctions.Welch1992 method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.Welch1992 method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.Welch1992 method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Welch1992.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1641,7 +1647,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.Welch1992 method)}
+\index{validate() (pygpc.testfunctions.testfunctions.Welch1992 method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.Welch1992 method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.Welch1992.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1655,7 +1661,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{WingWeight (class in pygpc.testfunctions.testfunctions)}
+\index{WingWeight (class in pygpc.testfunctions.testfunctions)@\spxentry{WingWeight}\spxextra{class in pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.WingWeight}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{WingWeight}}}{\emph{p}, \emph{context=None}}{}
@@ -1707,7 +1713,7 @@ float or ndarray of float {[}n\_grid x 1{]}
 
 \end{description}\end{quote}
 \subsubsection*{Notes}
-\index{simulate() (pygpc.testfunctions.testfunctions.WingWeight method)}
+\index{simulate() (pygpc.testfunctions.testfunctions.WingWeight method)@\spxentry{simulate()}\spxextra{pygpc.testfunctions.testfunctions.WingWeight method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.WingWeight.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1721,7 +1727,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.testfunctions.testfunctions.WingWeight method)}
+\index{validate() (pygpc.testfunctions.testfunctions.WingWeight method)@\spxentry{validate()}\spxextra{pygpc.testfunctions.testfunctions.WingWeight method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.WingWeight.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1735,7 +1741,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{plot\_testfunction() (in module pygpc.testfunctions.testfunctions)}
+\index{plot\_testfunction() (in module pygpc.testfunctions.testfunctions)@\spxentry{plot\_testfunction()}\spxextra{in module pygpc.testfunctions.testfunctions}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc.testfunctions:pygpc.testfunctions.testfunctions.plot_testfunction}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.testfunctions.testfunctions.}}\sphinxbfcode{\sphinxupquote{plot\_testfunction}}}{\emph{testfunction\_name}, \emph{parameters}, \emph{constants=None}, \emph{output\_idx=0}}{}
@@ -1769,13 +1775,13 @@ matplotlib figure
 
 
 \subsubsection{Module contents}
-\label{\detokenize{pygpc.testfunctions:module-pygpc.testfunctions}}\label{\detokenize{pygpc.testfunctions:module-contents}}\index{pygpc.testfunctions (module)}
+\label{\detokenize{pygpc.testfunctions:module-pygpc.testfunctions}}\label{\detokenize{pygpc.testfunctions:module-contents}}\index{pygpc.testfunctions (module)@\spxentry{pygpc.testfunctions}\spxextra{module}}
 
 \section{Submodules}
 \label{\detokenize{pygpc:submodules}}
 
 \section{pygpc.AbstractModel module}
-\label{\detokenize{pygpc:module-pygpc.AbstractModel}}\label{\detokenize{pygpc:pygpc-abstractmodel-module}}\index{pygpc.AbstractModel (module)}\index{AbstractModel (class in pygpc.AbstractModel)}
+\label{\detokenize{pygpc:module-pygpc.AbstractModel}}\label{\detokenize{pygpc:pygpc-abstractmodel-module}}\index{pygpc.AbstractModel (module)@\spxentry{pygpc.AbstractModel}\spxextra{module}}\index{AbstractModel (class in pygpc.AbstractModel)@\spxentry{AbstractModel}\spxextra{class in pygpc.AbstractModel}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.AbstractModel.AbstractModel}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.AbstractModel.}}\sphinxbfcode{\sphinxupquote{AbstractModel}}}{\emph{p}, \emph{context=None}}{}
@@ -1784,13 +1790,13 @@ Bases: \sphinxcode{\sphinxupquote{object}}
 Abstract base class for the SimulationWrapper.
 This base class provides basic functions for serialization/deserialization and printing progress.
 It cannot be used directly, but a derived class implementing the “simulate” method must be created.
-\index{get\_seq\_number() (pygpc.AbstractModel.AbstractModel method)}
+\index{get\_seq\_number() (pygpc.AbstractModel.AbstractModel method)@\spxentry{get\_seq\_number()}\spxextra{pygpc.AbstractModel.AbstractModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.AbstractModel.AbstractModel.get_seq_number}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_seq\_number}}}{}{}
 \end{fulllineitems}
 
-\index{increment\_ctr() (pygpc.AbstractModel.AbstractModel method)}
+\index{increment\_ctr() (pygpc.AbstractModel.AbstractModel method)@\spxentry{increment\_ctr()}\spxextra{pygpc.AbstractModel.AbstractModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.AbstractModel.AbstractModel.increment_ctr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{increment\_ctr}}}{}{}
@@ -1798,7 +1804,7 @@ This functions increments the global counter by 1.
 
 \end{fulllineitems}
 
-\index{print\_progress() (pygpc.AbstractModel.AbstractModel method)}
+\index{print\_progress() (pygpc.AbstractModel.AbstractModel method)@\spxentry{print\_progress()}\spxextra{pygpc.AbstractModel.AbstractModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.AbstractModel.AbstractModel.print_progress}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{print\_progress}}}{\emph{func\_time=None}, \emph{read\_from\_file=False}}{}
@@ -1806,7 +1812,7 @@ This function prints the progress according to the current context and global\_c
 
 \end{fulllineitems}
 
-\index{read\_previous\_results() (pygpc.AbstractModel.AbstractModel method)}
+\index{read\_previous\_results() (pygpc.AbstractModel.AbstractModel method)@\spxentry{read\_previous\_results()}\spxextra{pygpc.AbstractModel.AbstractModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.AbstractModel.AbstractModel.read_previous_results}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{read\_previous\_results}}}{\emph{coords}}{}
@@ -1834,7 +1840,7 @@ internally, i\_grid is a range {[}i\_grid\_min, i\_grid\_max{]}.
 
 \end{fulllineitems}
 
-\index{simulate() (pygpc.AbstractModel.AbstractModel method)}
+\index{simulate() (pygpc.AbstractModel.AbstractModel method)@\spxentry{simulate()}\spxextra{pygpc.AbstractModel.AbstractModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.AbstractModel.AbstractModel.simulate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{simulate}}}{\emph{process\_id=None}}{}
@@ -1848,7 +1854,7 @@ It should perform the simulation task depending on the input\_values provided to
 
 \end{fulllineitems}
 
-\index{validate() (pygpc.AbstractModel.AbstractModel method)}
+\index{validate() (pygpc.AbstractModel.AbstractModel method)@\spxentry{validate()}\spxextra{pygpc.AbstractModel.AbstractModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.AbstractModel.AbstractModel.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -1859,7 +1865,7 @@ of the random parameters and the constants.
 
 \end{fulllineitems}
 
-\index{write\_results() (pygpc.AbstractModel.AbstractModel method)}
+\index{write\_results() (pygpc.AbstractModel.AbstractModel method)@\spxentry{write\_results()}\spxextra{pygpc.AbstractModel.AbstractModel method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.AbstractModel.AbstractModel.write_results}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{write\_results}}}{\emph{data\_dict}}{}
@@ -1882,7 +1888,7 @@ executed in parallel.
 
 
 \section{pygpc.Algorithm module}
-\label{\detokenize{pygpc:module-pygpc.Algorithm}}\label{\detokenize{pygpc:pygpc-algorithm-module}}\index{pygpc.Algorithm (module)}\index{Algorithm (class in pygpc.Algorithm)}
+\label{\detokenize{pygpc:module-pygpc.Algorithm}}\label{\detokenize{pygpc:pygpc-algorithm-module}}\index{pygpc.Algorithm (module)@\spxentry{pygpc.Algorithm}\spxextra{module}}\index{Algorithm (class in pygpc.Algorithm)@\spxentry{Algorithm}\spxextra{class in pygpc.Algorithm}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Algorithm.Algorithm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Algorithm.}}\sphinxbfcode{\sphinxupquote{Algorithm}}}{\emph{problem}, \emph{options}}{}
@@ -1892,14 +1898,14 @@ Class for GPC algorithms
 
 \end{fulllineitems}
 
-\index{RegAdaptive (class in pygpc.Algorithm)}
+\index{RegAdaptive (class in pygpc.Algorithm)@\spxentry{RegAdaptive}\spxextra{class in pygpc.Algorithm}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Algorithm.RegAdaptive}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Algorithm.}}\sphinxbfcode{\sphinxupquote{RegAdaptive}}}{\emph{problem}, \emph{options}}{}
 Bases: {\hyperref[\detokenize{pygpc:pygpc.Algorithm.Algorithm}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygpc.Algorithm.Algorithm}}}}}
 
 Adaptive regression approach based on leave one out cross validation error estimation
-\index{run() (pygpc.Algorithm.RegAdaptive method)}
+\index{run() (pygpc.Algorithm.RegAdaptive method)@\spxentry{run()}\spxextra{pygpc.Algorithm.RegAdaptive method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Algorithm.RegAdaptive.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{}{}
@@ -1926,14 +1932,14 @@ Runs adaptive gPC algorithm to solve problem.
 
 \end{fulllineitems}
 
-\index{Static (class in pygpc.Algorithm)}
+\index{Static (class in pygpc.Algorithm)@\spxentry{Static}\spxextra{class in pygpc.Algorithm}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Algorithm.Static}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Algorithm.}}\sphinxbfcode{\sphinxupquote{Static}}}{\emph{problem}, \emph{options}, \emph{grid}}{}
 Bases: {\hyperref[\detokenize{pygpc:pygpc.Algorithm.Algorithm}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygpc.Algorithm.Algorithm}}}}}
 
 Static gPC algorithm
-\index{run() (pygpc.Algorithm.Static method)}
+\index{run() (pygpc.Algorithm.Static method)@\spxentry{run()}\spxextra{pygpc.Algorithm.Static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Algorithm.Static.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{}{}
@@ -1963,12 +1969,12 @@ Runs static gPC algorithm to solve problem.
 
 
 \section{pygpc.Basis module}
-\label{\detokenize{pygpc:module-pygpc.Basis}}\label{\detokenize{pygpc:pygpc-basis-module}}\index{pygpc.Basis (module)}\index{Basis (class in pygpc.Basis)}
+\label{\detokenize{pygpc:module-pygpc.Basis}}\label{\detokenize{pygpc:pygpc-basis-module}}\index{pygpc.Basis (module)@\spxentry{pygpc.Basis}\spxextra{module}}\index{Basis (class in pygpc.Basis)@\spxentry{Basis}\spxextra{class in pygpc.Basis}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Basis.}}\sphinxbfcode{\sphinxupquote{Basis}}}
 Basis class of gPC
-\index{b (pygpc.Basis.Basis attribute)}
+\index{b (pygpc.Basis.Basis attribute)@\spxentry{b}\spxextra{pygpc.Basis.Basis attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.b}}\pysigline{\sphinxbfcode{\sphinxupquote{b}}}
@@ -1982,7 +1988,7 @@ list of BasisFunction object instances {[}n\_basis x n\_dim{]}
 
 \end{fulllineitems}
 
-\index{b\_gpu (pygpc.Basis.Basis attribute)}
+\index{b\_gpu (pygpc.Basis.Basis attribute)@\spxentry{b\_gpu}\spxextra{pygpc.Basis.Basis attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.b_gpu}}\pysigline{\sphinxbfcode{\sphinxupquote{b\_gpu}}}
@@ -1995,7 +2001,7 @@ list of BasisFunction object instances {[}n\_basis x n\_dim{]}
 
 \end{fulllineitems}
 
-\index{b\_id (pygpc.Basis.Basis attribute)}
+\index{b\_id (pygpc.Basis.Basis attribute)@\spxentry{b\_id}\spxextra{pygpc.Basis.Basis attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.b_id}}\pysigline{\sphinxbfcode{\sphinxupquote{b\_id}}}
@@ -2008,7 +2014,7 @@ list of UUID objects (version 4) {[}n\_basis{]}
 
 \end{fulllineitems}
 
-\index{b\_norm (pygpc.Basis.Basis attribute)}
+\index{b\_norm (pygpc.Basis.Basis attribute)@\spxentry{b\_norm}\spxextra{pygpc.Basis.Basis attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.b_norm}}\pysigline{\sphinxbfcode{\sphinxupquote{b\_norm}}}
@@ -2021,7 +2027,7 @@ ndarray {[}n\_basis x dim{]}
 
 \end{fulllineitems}
 
-\index{b\_norm\_basis (pygpc.Basis.Basis attribute)}
+\index{b\_norm\_basis (pygpc.Basis.Basis attribute)@\spxentry{b\_norm\_basis}\spxextra{pygpc.Basis.Basis attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.b_norm_basis}}\pysigline{\sphinxbfcode{\sphinxupquote{b\_norm\_basis}}}
@@ -2034,7 +2040,7 @@ ndarray {[}n\_basis x 1{]}
 
 \end{fulllineitems}
 
-\index{dim (pygpc.Basis.Basis attribute)}
+\index{dim (pygpc.Basis.Basis attribute)@\spxentry{dim}\spxextra{pygpc.Basis.Basis attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.dim}}\pysigline{\sphinxbfcode{\sphinxupquote{dim}}}
@@ -2042,7 +2048,7 @@ Number of variables
 
 \end{fulllineitems}
 
-\index{n\_basis (pygpc.Basis.Basis attribute)}
+\index{n\_basis (pygpc.Basis.Basis attribute)@\spxentry{n\_basis}\spxextra{pygpc.Basis.Basis attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.n_basis}}\pysigline{\sphinxbfcode{\sphinxupquote{n\_basis}}}
@@ -2055,7 +2061,7 @@ int
 
 \end{fulllineitems}
 
-\index{extend\_basis() (pygpc.Basis.Basis method)}
+\index{extend\_basis() (pygpc.Basis.Basis method)@\spxentry{extend\_basis()}\spxextra{pygpc.Basis.Basis method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.extend_basis}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{extend\_basis}}}{\emph{b\_added}}{}
@@ -2068,7 +2074,7 @@ Extend set of basis functions and update gpc matrix (append columns).
 
 \end{fulllineitems}
 
-\index{init\_b\_norm() (pygpc.Basis.Basis method)}
+\index{init\_b\_norm() (pygpc.Basis.Basis method)@\spxentry{init\_b\_norm()}\spxextra{pygpc.Basis.Basis method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.init_b_norm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_b\_norm}}}{}{}
@@ -2077,7 +2083,7 @@ to normalize basis functions \textless{}psi\textasciicircum{}2\textgreater{} = i
 
 \end{fulllineitems}
 
-\index{init\_basis\_sgpc() (pygpc.Basis.Basis method)}
+\index{init\_basis\_sgpc() (pygpc.Basis.Basis method)@\spxentry{init\_basis\_sgpc()}\spxextra{pygpc.Basis.Basis method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Basis.Basis.init_basis_sgpc}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_basis\_sgpc}}}{\emph{problem}, \emph{order}, \emph{order\_max}, \emph{order\_max\_norm}, \emph{interaction\_order}}{}
@@ -2137,7 +2143,7 @@ Multiplying all elements in a row at location xi = (x1, x2, …, x\_dim) yields 
 
 
 \section{pygpc.BasisFunction module}
-\label{\detokenize{pygpc:module-pygpc.BasisFunction}}\label{\detokenize{pygpc:pygpc-basisfunction-module}}\index{pygpc.BasisFunction (module)}\index{BasisFunction (class in pygpc.BasisFunction)}
+\label{\detokenize{pygpc:module-pygpc.BasisFunction}}\label{\detokenize{pygpc:pygpc-basisfunction-module}}\index{pygpc.BasisFunction (module)@\spxentry{pygpc.BasisFunction}\spxextra{module}}\index{BasisFunction (class in pygpc.BasisFunction)@\spxentry{BasisFunction}\spxextra{class in pygpc.BasisFunction}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.BasisFunction}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.BasisFunction.}}\sphinxbfcode{\sphinxupquote{BasisFunction}}}{\emph{p}}{}
@@ -2146,7 +2152,7 @@ Bases: \sphinxcode{\sphinxupquote{object}}
 Abstract class of basis functions.
 This base class provides basic properties and methods for the basis functions.
 It cannot be used directly, but inherits properties and methods to the specific basis function sub classes.
-\index{\_\_call\_\_() (pygpc.BasisFunction.BasisFunction method)}
+\index{\_\_call\_\_() (pygpc.BasisFunction.BasisFunction method)@\spxentry{\_\_call\_\_()}\spxextra{pygpc.BasisFunction.BasisFunction method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.BasisFunction.__call__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_call\_\_}}}{\emph{x}}{}
@@ -2168,7 +2174,7 @@ float or ndarray of float
 
 \end{fulllineitems}
 
-\index{Hermite (class in pygpc.BasisFunction)}
+\index{Hermite (class in pygpc.BasisFunction)@\spxentry{Hermite}\spxextra{class in pygpc.BasisFunction}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.Hermite}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.BasisFunction.}}\sphinxbfcode{\sphinxupquote{Hermite}}}{\emph{p}}{}
@@ -2178,7 +2184,7 @@ Hermite basis function used in the orthogonal gPC to model normal distributed ra
 
 \end{fulllineitems}
 
-\index{Jacobi (class in pygpc.BasisFunction)}
+\index{Jacobi (class in pygpc.BasisFunction)@\spxentry{Jacobi}\spxextra{class in pygpc.BasisFunction}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.Jacobi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.BasisFunction.}}\sphinxbfcode{\sphinxupquote{Jacobi}}}{\emph{p}}{}
@@ -2188,7 +2194,7 @@ Jacobi basis function used in the orthogonal gPC to model beta distributed rando
 
 \end{fulllineitems}
 
-\index{Rect (class in pygpc.BasisFunction)}
+\index{Rect (class in pygpc.BasisFunction)@\spxentry{Rect}\spxextra{class in pygpc.BasisFunction}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.Rect}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.BasisFunction.}}\sphinxbfcode{\sphinxupquote{Rect}}}{\emph{p}}{}
@@ -2198,7 +2204,7 @@ Rectangular basis function used in the non-orthogonal gPC.
 
 \end{fulllineitems}
 
-\index{SigmoidDown (class in pygpc.BasisFunction)}
+\index{SigmoidDown (class in pygpc.BasisFunction)@\spxentry{SigmoidDown}\spxextra{class in pygpc.BasisFunction}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.SigmoidDown}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.BasisFunction.}}\sphinxbfcode{\sphinxupquote{SigmoidDown}}}{\emph{p}}{}
@@ -2208,7 +2214,7 @@ SigmoidDown (from 0 to 1) basis function used in the non-orthogonal gPC.
 
 \end{fulllineitems}
 
-\index{SigmoidUp (class in pygpc.BasisFunction)}
+\index{SigmoidUp (class in pygpc.BasisFunction)@\spxentry{SigmoidUp}\spxextra{class in pygpc.BasisFunction}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.SigmoidUp}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.BasisFunction.}}\sphinxbfcode{\sphinxupquote{SigmoidUp}}}{\emph{p}}{}
@@ -2218,7 +2224,7 @@ SigmoidUp (from 0 to 1) basis function used in the non-orthogonal gPC.
 
 \end{fulllineitems}
 
-\index{StepDown (class in pygpc.BasisFunction)}
+\index{StepDown (class in pygpc.BasisFunction)@\spxentry{StepDown}\spxextra{class in pygpc.BasisFunction}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.StepDown}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.BasisFunction.}}\sphinxbfcode{\sphinxupquote{StepDown}}}{\emph{p}}{}
@@ -2228,7 +2234,7 @@ StepDown (from 1 to 0) basis function used in the non-orthogonal gPC.
 
 \end{fulllineitems}
 
-\index{StepUp (class in pygpc.BasisFunction)}
+\index{StepUp (class in pygpc.BasisFunction)@\spxentry{StepUp}\spxextra{class in pygpc.BasisFunction}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.BasisFunction.StepUp}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.BasisFunction.}}\sphinxbfcode{\sphinxupquote{StepUp}}}{\emph{p}}{}
@@ -2241,7 +2247,7 @@ StepUp (from 0 to 1) basis function used in the non-orthogonal gPC.
 
 
 \section{pygpc.Computation module}
-\label{\detokenize{pygpc:module-pygpc.Computation}}\label{\detokenize{pygpc:pygpc-computation-module}}\index{pygpc.Computation (module)}\index{Computation() (in module pygpc.Computation)}
+\label{\detokenize{pygpc:module-pygpc.Computation}}\label{\detokenize{pygpc:pygpc-computation-module}}\index{pygpc.Computation (module)@\spxentry{pygpc.Computation}\spxextra{module}}\index{Computation() (in module pygpc.Computation)@\spxentry{Computation()}\spxextra{in module pygpc.Computation}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Computation.Computation}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Computation.}}\sphinxbfcode{\sphinxupquote{Computation}}}{\emph{n\_cpu}}{}
@@ -2263,12 +2269,12 @@ object instance of Computation class
 
 \end{fulllineitems}
 
-\index{ComputationFuncPar (class in pygpc.Computation)}
+\index{ComputationFuncPar (class in pygpc.Computation)@\spxentry{ComputationFuncPar}\spxextra{class in pygpc.Computation}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Computation.ComputationFuncPar}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Computation.}}\sphinxbfcode{\sphinxupquote{ComputationFuncPar}}}{\emph{n\_cpu}}{}
 Computation sub-class to run the model using a the models internal parallelization
-\index{close() (pygpc.Computation.ComputationFuncPar method)}
+\index{close() (pygpc.Computation.ComputationFuncPar method)@\spxentry{close()}\spxextra{pygpc.Computation.ComputationFuncPar method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Computation.ComputationFuncPar.close}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{close}}}{}{}
@@ -2276,7 +2282,7 @@ Closes the pool
 
 \end{fulllineitems}
 
-\index{run() (pygpc.Computation.ComputationFuncPar method)}
+\index{run() (pygpc.Computation.ComputationFuncPar method)@\spxentry{run()}\spxextra{pygpc.Computation.ComputationFuncPar method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Computation.ComputationFuncPar.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{\emph{model}, \emph{problem}, \emph{coords}, \emph{coords\_norm=None}, \emph{i\_iter=None}, \emph{i\_subiter=None}, \emph{fn\_results=None}, \emph{print\_func\_time=False}}{}
@@ -2322,12 +2328,12 @@ ndarray of float {[}n\_sims x n\_out{]}
 
 \end{fulllineitems}
 
-\index{ComputationPoolMap (class in pygpc.Computation)}
+\index{ComputationPoolMap (class in pygpc.Computation)@\spxentry{ComputationPoolMap}\spxextra{class in pygpc.Computation}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Computation.ComputationPoolMap}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Computation.}}\sphinxbfcode{\sphinxupquote{ComputationPoolMap}}}{\emph{n\_cpu}}{}
 Computation sub-class to run the model using a processing pool for parallelization
-\index{close() (pygpc.Computation.ComputationPoolMap method)}
+\index{close() (pygpc.Computation.ComputationPoolMap method)@\spxentry{close()}\spxextra{pygpc.Computation.ComputationPoolMap method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Computation.ComputationPoolMap.close}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{close}}}{}{}
@@ -2335,7 +2341,7 @@ Closes the pool
 
 \end{fulllineitems}
 
-\index{run() (pygpc.Computation.ComputationPoolMap method)}
+\index{run() (pygpc.Computation.ComputationPoolMap method)@\spxentry{run()}\spxextra{pygpc.Computation.ComputationPoolMap method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Computation.ComputationPoolMap.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{\emph{model}, \emph{problem}, \emph{coords}, \emph{coords\_norm=None}, \emph{i\_iter=None}, \emph{i\_subiter=None}, \emph{fn\_results=None}, \emph{print\_func\_time=False}}{}
@@ -2381,7 +2387,7 @@ ndarray of float {[}n\_sims x n\_out{]}
 
 \end{fulllineitems}
 
-\index{compute\_cluster() (in module pygpc.Computation)}
+\index{compute\_cluster() (in module pygpc.Computation)@\spxentry{compute\_cluster()}\spxextra{in module pygpc.Computation}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Computation.compute_cluster}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Computation.}}\sphinxbfcode{\sphinxupquote{compute\_cluster}}}{\emph{algorithms}, \emph{nodes}, \emph{start\_scheduler=True}}{}
@@ -2410,12 +2416,12 @@ running somewhere on the cluster.
 
 
 \section{pygpc.EGPC module}
-\label{\detokenize{pygpc:module-pygpc.EGPC}}\label{\detokenize{pygpc:pygpc-egpc-module}}\index{pygpc.EGPC (module)}\index{EGPC (class in pygpc.EGPC)}
+\label{\detokenize{pygpc:module-pygpc.EGPC}}\label{\detokenize{pygpc:pygpc-egpc-module}}\index{pygpc.EGPC (module)@\spxentry{pygpc.EGPC}\spxextra{module}}\index{EGPC (class in pygpc.EGPC)@\spxentry{EGPC}\spxextra{class in pygpc.EGPC}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.EGPC.}}\sphinxbfcode{\sphinxupquote{EGPC}}}
 Bases: {\hyperref[\detokenize{pygpc:pygpc.GPC.GPC}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygpc.GPC.GPC}}}}}
-\index{get\_approximation() (pygpc.EGPC.EGPC method)}
+\index{get\_approximation() (pygpc.EGPC.EGPC method)@\spxentry{get\_approximation()}\spxextra{pygpc.EGPC.EGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_approximation}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_approximation}}}{\emph{coeffs=None}, \emph{xi=None}, \emph{output\_idx=None}}{}
@@ -2445,7 +2451,7 @@ pce = EGPC.get\_approximation(coeffs=None, xi=None, output\_idx=None)
 
 \end{fulllineitems}
 
-\index{get\_global\_sens() (pygpc.EGPC.EGPC method)}
+\index{get\_global\_sens() (pygpc.EGPC.EGPC method)@\spxentry{get\_global\_sens()}\spxextra{pygpc.EGPC.EGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_global_sens}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_global\_sens}}}{\emph{coeffs}}{}
@@ -2467,7 +2473,7 @@ global\_sens = EGPC.get\_global\_sens(coeffs)
 
 \end{fulllineitems}
 
-\index{get\_local\_sens() (pygpc.EGPC.EGPC method)}
+\index{get\_local\_sens() (pygpc.EGPC.EGPC method)@\spxentry{get\_local\_sens()}\spxextra{pygpc.EGPC.EGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_local_sens}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_local\_sens}}}{\emph{coeffs}, \emph{xi}}{}
@@ -2495,7 +2501,7 @@ local\_sens = EGPC.calc\_localsens(coeffs, xi)
 
 \end{fulllineitems}
 
-\index{get\_mean() (pygpc.EGPC.EGPC static method)}
+\index{get\_mean() (pygpc.EGPC.EGPC static method)@\spxentry{get\_mean()}\spxextra{pygpc.EGPC.EGPC static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_mean}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_mean}}}{\emph{coeffs}}{}
@@ -2516,7 +2522,7 @@ mean = SGPC.get\_mean(coeffs)
 
 \end{fulllineitems}
 
-\index{get\_pdf() (pygpc.EGPC.EGPC method)}
+\index{get\_pdf() (pygpc.EGPC.EGPC method)@\spxentry{get\_pdf()}\spxextra{pygpc.EGPC.EGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_pdf}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pdf}}}{\emph{coeffs}, \emph{n\_samples}, \emph{output\_idx=None}}{}
@@ -2552,7 +2558,7 @@ If output\_idx=None, all output quantities are considered
 
 \end{fulllineitems}
 
-\index{get\_samples() (pygpc.EGPC.EGPC static method)}
+\index{get\_samples() (pygpc.EGPC.EGPC static method)@\spxentry{get\_samples()}\spxextra{pygpc.EGPC.EGPC static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_samples}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_samples}}}{\emph{self}, \emph{coeffs=None}, \emph{n\_samples=100}, \emph{output\_idx=None}}{}
@@ -2587,7 +2593,7 @@ xi = EGPC.get\_pdf\_mc(N\_samples, coeffs=None, output\_idx=None)
 
 \end{fulllineitems}
 
-\index{get\_sobol\_composition() (pygpc.EGPC.EGPC method)}
+\index{get\_sobol\_composition() (pygpc.EGPC.EGPC method)@\spxentry{get\_sobol\_composition()}\spxextra{pygpc.EGPC.EGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_sobol_composition}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_sobol\_composition}}}{\emph{sobol=None}, \emph{sobol\_idx=None}, \emph{sobol\_idx\_bool=None}}{}
@@ -2636,7 +2642,7 @@ variance
 
 \end{fulllineitems}
 
-\index{get\_sobol\_indices() (pygpc.EGPC.EGPC static method)}
+\index{get\_sobol\_indices() (pygpc.EGPC.EGPC static method)@\spxentry{get\_sobol\_indices()}\spxextra{pygpc.EGPC.EGPC static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_sobol_indices}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_sobol\_indices}}}{\emph{self}, \emph{coeffs=None}}{}
@@ -2665,7 +2671,7 @@ sobol, sobol\_idx = EGPC.get\_sobol\_indices(coeffs=None)
 
 \end{fulllineitems}
 
-\index{get\_standard\_deviation() (pygpc.EGPC.EGPC static method)}
+\index{get\_standard\_deviation() (pygpc.EGPC.EGPC static method)@\spxentry{get\_standard\_deviation()}\spxextra{pygpc.EGPC.EGPC static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.EGPC.EGPC.get_standard_deviation}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_standard\_deviation}}}{\emph{coeffs}}{}
@@ -2692,14 +2698,14 @@ std = EGPC.get\_standard\_deviation(coeffs)
 
 
 \section{pygpc.GPC module}
-\label{\detokenize{pygpc:module-pygpc.GPC}}\label{\detokenize{pygpc:pygpc-gpc-module}}\index{pygpc.GPC (module)}\index{GPC (class in pygpc.GPC)}
+\label{\detokenize{pygpc:module-pygpc.GPC}}\label{\detokenize{pygpc:pygpc-gpc-module}}\index{pygpc.GPC (module)@\spxentry{pygpc.GPC}\spxextra{module}}\index{GPC (class in pygpc.GPC)@\spxentry{GPC}\spxextra{class in pygpc.GPC}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.GPC.}}\sphinxbfcode{\sphinxupquote{GPC}}}{\emph{problem}, \emph{fn\_results}}{}
 Bases: \sphinxcode{\sphinxupquote{object}}
 
 General gPC base class
-\index{problem (pygpc.GPC.GPC attribute)}
+\index{problem (pygpc.GPC.GPC attribute)@\spxentry{problem}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.problem}}\pysigline{\sphinxbfcode{\sphinxupquote{problem}}}
@@ -2712,7 +2718,7 @@ Problem class instance
 
 \end{fulllineitems}
 
-\index{basis (pygpc.GPC.GPC attribute)}
+\index{basis (pygpc.GPC.GPC attribute)@\spxentry{basis}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.basis}}\pysigline{\sphinxbfcode{\sphinxupquote{basis}}}
@@ -2725,7 +2731,7 @@ Basis class instance
 
 \end{fulllineitems}
 
-\index{grid (pygpc.GPC.GPC attribute)}
+\index{grid (pygpc.GPC.GPC attribute)@\spxentry{grid}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.grid}}\pysigline{\sphinxbfcode{\sphinxupquote{grid}}}
@@ -2738,7 +2744,7 @@ Grid class instance
 
 \end{fulllineitems}
 
-\index{gpc\_matrix (pygpc.GPC.GPC attribute)}
+\index{gpc\_matrix (pygpc.GPC.GPC attribute)@\spxentry{gpc\_matrix}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.gpc_matrix}}\pysigline{\sphinxbfcode{\sphinxupquote{gpc\_matrix}}}
@@ -2751,7 +2757,7 @@ generalized polynomial chaos matrix
 
 \end{fulllineitems}
 
-\index{gpc\_matrix\_inv (pygpc.GPC.GPC attribute)}
+\index{gpc\_matrix\_inv (pygpc.GPC.GPC attribute)@\spxentry{gpc\_matrix\_inv}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.gpc_matrix_inv}}\pysigline{\sphinxbfcode{\sphinxupquote{gpc\_matrix\_inv}}}
@@ -2764,7 +2770,7 @@ pseudo inverse of the generalized polynomial chaos matrix
 
 \end{fulllineitems}
 
-\index{nan\_elm (pygpc.GPC.GPC attribute)}
+\index{nan\_elm (pygpc.GPC.GPC attribute)@\spxentry{nan\_elm}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.nan_elm}}\pysigline{\sphinxbfcode{\sphinxupquote{nan\_elm}}}
@@ -2777,7 +2783,7 @@ ndarray of int
 
 \end{fulllineitems}
 
-\index{gpc\_matrix\_coords\_id (pygpc.GPC.GPC attribute)}
+\index{gpc\_matrix\_coords\_id (pygpc.GPC.GPC attribute)@\spxentry{gpc\_matrix\_coords\_id}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.gpc_matrix_coords_id}}\pysigline{\sphinxbfcode{\sphinxupquote{gpc\_matrix\_coords\_id}}}
@@ -2790,7 +2796,7 @@ list of UUID4()
 
 \end{fulllineitems}
 
-\index{gpc\_matrix\_b\_id (pygpc.GPC.GPC attribute)}
+\index{gpc\_matrix\_b\_id (pygpc.GPC.GPC attribute)@\spxentry{gpc\_matrix\_b\_id}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.gpc_matrix_b_id}}\pysigline{\sphinxbfcode{\sphinxupquote{gpc\_matrix\_b\_id}}}
@@ -2803,7 +2809,33 @@ list of UUID4()
 
 \end{fulllineitems}
 
-\index{solver (pygpc.GPC.GPC attribute)}
+\index{n\_basis (pygpc.GPC.GPC attribute)@\spxentry{n\_basis}\spxextra{pygpc.GPC.GPC attribute}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.n_basis}}\pysigline{\sphinxbfcode{\sphinxupquote{n\_basis}}}
+Number of basis functions (for iterative solvers, this is a list of its history)
+\begin{quote}\begin{description}
+\item[{Type}] \leavevmode
+int or list of int
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{n\_grid (pygpc.GPC.GPC attribute)@\spxentry{n\_grid}\spxextra{pygpc.GPC.GPC attribute}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.n_grid}}\pysigline{\sphinxbfcode{\sphinxupquote{n\_grid}}}
+Number of grid points (for iterative solvers, this is a list of its history)
+\begin{quote}\begin{description}
+\item[{Type}] \leavevmode
+int or list of int
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{solver (pygpc.GPC.GPC attribute)@\spxentry{solver}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.solver}}\pysigline{\sphinxbfcode{\sphinxupquote{solver}}}
@@ -2819,7 +2851,7 @@ str
 
 \end{fulllineitems}
 
-\index{gpu (pygpc.GPC.GPC attribute)}
+\index{gpu (pygpc.GPC.GPC attribute)@\spxentry{gpu}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.gpu}}\pysigline{\sphinxbfcode{\sphinxupquote{gpu}}}
@@ -2832,7 +2864,7 @@ bool
 
 \end{fulllineitems}
 
-\index{verbose (pygpc.GPC.GPC attribute)}
+\index{verbose (pygpc.GPC.GPC attribute)@\spxentry{verbose}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.verbose}}\pysigline{\sphinxbfcode{\sphinxupquote{verbose}}}
@@ -2845,7 +2877,7 @@ bool
 
 \end{fulllineitems}
 
-\index{fn\_results (pygpc.GPC.GPC attribute)}
+\index{fn\_results (pygpc.GPC.GPC attribute)@\spxentry{fn\_results}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.fn_results}}\pysigline{\sphinxbfcode{\sphinxupquote{fn\_results}}}
@@ -2858,20 +2890,20 @@ string, optional, default=None
 
 \end{fulllineitems}
 
-\index{n\_cpu (pygpc.GPC.GPC attribute)}
+\index{options (pygpc.GPC.GPC attribute)@\spxentry{options}\spxextra{pygpc.GPC.GPC attribute}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.n_cpu}}\pysigline{\sphinxbfcode{\sphinxupquote{n\_cpu}}}
-Number of threads to use for parallel evaluation of the model function.
+\phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.options}}\pysigline{\sphinxbfcode{\sphinxupquote{options}}}
+Options of gPC algorithm
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
-int, optional, default=1
+dict
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{calc\_gpc\_matrix() (pygpc.GPC.GPC method)}
+\index{calc\_gpc\_matrix() (pygpc.GPC.GPC method)@\spxentry{calc\_gpc\_matrix()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.calc_gpc_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{calc\_gpc\_matrix}}}{\emph{b}, \emph{x}, \emph{verbose=False}}{}
@@ -2902,7 +2934,7 @@ ndarray of float {[}n\_x x n\_basis{]}
 
 \end{fulllineitems}
 
-\index{get\_approximation() (pygpc.GPC.GPC method)}
+\index{get\_approximation() (pygpc.GPC.GPC method)@\spxentry{get\_approximation()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.get_approximation}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_approximation}}}{\emph{coeffs}, \emph{x}, \emph{output\_idx=None}}{}
@@ -2932,7 +2964,7 @@ ndarray of float {[}n\_x x n\_out{]}
 
 \end{fulllineitems}
 
-\index{get\_pdf() (pygpc.GPC.GPC method)}
+\index{get\_pdf() (pygpc.GPC.GPC method)@\spxentry{get\_pdf()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.get_pdf}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pdf}}}{\emph{coeffs}, \emph{n\_samples}, \emph{output\_idx=None}}{}
@@ -2967,7 +2999,7 @@ pdf\_x, pdf\_y = SGPC.get\_pdf(coeffs, n\_samples, output\_idx=None)
 
 \end{fulllineitems}
 
-\index{get\_samples() (pygpc.GPC.GPC method)}
+\index{get\_samples() (pygpc.GPC.GPC method)@\spxentry{get\_samples()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.get_samples}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_samples}}}{\emph{coeffs}, \emph{n\_samples}, \emph{output\_idx=None}}{}
@@ -3002,7 +3034,7 @@ x, pce = SGPC.get\_pdf\_mc(n\_samples, coeffs, output\_idx=None)
 
 \end{fulllineitems}
 
-\index{init\_gpc\_matrix() (pygpc.GPC.GPC method)}
+\index{init\_gpc\_matrix() (pygpc.GPC.GPC method)@\spxentry{init\_gpc\_matrix()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.init_gpc_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_gpc\_matrix}}}{}{}
@@ -3010,7 +3042,46 @@ Sets self.gpc\_matrix with given self.basis and self.grid
 
 \end{fulllineitems}
 
-\index{replace\_gpc\_matrix\_samples() (pygpc.GPC.GPC method)}
+\index{loocv() (pygpc.GPC.GPC method)@\spxentry{loocv()}\spxextra{pygpc.GPC.GPC method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.loocv}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{loocv}}}{\emph{coeffs}, \emph{sim\_results}, \emph{error\_norm='relative'}}{}
+Perform leave-one-out cross validation of gPC approximation and add error value to self.relative\_error\_loocv.
+The loocv error is calculated analytically after eq. (35) in {[}1{]} but omitting the “1 - ” term, i.e. it
+corresponds to 1 - Q\textasciicircum{}2.
+
+relative\_error\_loocv = GPC.loocv(sim\_results, coeffs)
+\begin{equation*}
+\begin{split}\epsilon_{LOOCV} = \frac{\frac{1}{N}\sum_{i=1}^N \left( \frac{y(\xi_i) - \hat{y}(\xi_i)}{1-h_i} \right)^2}{\frac{1}{N-1}\sum_{i=1}^N \left( y(\xi_i) - \bar{y} \right)^2}\end{split}
+\end{equation*}
+with
+\begin{equation*}
+\begin{split}\mathbf{h} = \mathrm{diag}(\mathbf{\Psi} (\mathbf{\Psi}^T \mathbf{\Psi})^{-1} \mathbf{\Psi}^T)\end{split}
+\end{equation*}\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{coeffs}} (\sphinxstyleliteralemphasis{\sphinxupquote{ndarray of float}}\sphinxstyleliteralemphasis{\sphinxupquote{ {[}}}\sphinxstyleliteralemphasis{\sphinxupquote{n\_basis x n\_out}}\sphinxstyleliteralemphasis{\sphinxupquote{{]}}}) \textendash{} GPC coefficients
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{sim\_results}} (\sphinxstyleliteralemphasis{\sphinxupquote{ndarray of float}}\sphinxstyleliteralemphasis{\sphinxupquote{ {[}}}\sphinxstyleliteralemphasis{\sphinxupquote{n\_grid x n\_out}}\sphinxstyleliteralemphasis{\sphinxupquote{{]}}}) \textendash{} Results from n\_grid simulations with n\_out output quantities
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{error\_norm}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{default="relative"}}) \textendash{} Decide if error is determined “relative” or “absolute”
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\sphinxstylestrong{relative\_error\_loocv} \textendash{} Relative mean error of leave one out cross validation
+
+\item[{Return type}] \leavevmode
+float
+
+\end{description}\end{quote}
+\subsubsection*{Notes}
+
+\end{fulllineitems}
+
+\index{replace\_gpc\_matrix\_samples() (pygpc.GPC.GPC method)@\spxentry{replace\_gpc\_matrix\_samples()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.replace_gpc_matrix_samples}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{replace\_gpc\_matrix\_samples}}}{\emph{idx}, \emph{seed=None}}{}
@@ -3032,7 +3103,7 @@ GPC.replace\_gpc\_matrix\_samples(idx, seed=None)
 
 \end{fulllineitems}
 
-\index{save\_gpc\_matrix\_hdf5() (pygpc.GPC.GPC method)}
+\index{save\_gpc\_matrix\_hdf5() (pygpc.GPC.GPC method)@\spxentry{save\_gpc\_matrix\_hdf5()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.save_gpc_matrix_hdf5}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{save\_gpc\_matrix\_hdf5}}}{}{}
@@ -3041,7 +3112,7 @@ If a gpc matrix is already present, check for equality and save only appended ro
 
 \end{fulllineitems}
 
-\index{solve() (pygpc.GPC.GPC method)}
+\index{solve() (pygpc.GPC.GPC method)@\spxentry{solve()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.solve}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{solve}}}{\emph{sim\_results}, \emph{solver=None}, \emph{settings=None}, \emph{gpc\_matrix=None}, \emph{verbose=False}}{}
@@ -3081,7 +3152,7 @@ ndarray of float {[}n\_coeffs x n\_out{]}
 
 \end{fulllineitems}
 
-\index{update\_gpc\_matrix() (pygpc.GPC.GPC method)}
+\index{update\_gpc\_matrix() (pygpc.GPC.GPC method)@\spxentry{update\_gpc\_matrix()}\spxextra{pygpc.GPC.GPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.update_gpc_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_gpc\_matrix}}}{}{}
@@ -3093,22 +3164,49 @@ to self.basis.b\_id and self.grid.coords\_id. New rows and columns are computed 
 
 \end{fulllineitems}
 
+\index{validate() (pygpc.GPC.GPC method)@\spxentry{validate()}\spxextra{pygpc.GPC.GPC method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{pygpc:pygpc.GPC.GPC.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{\emph{coeffs}, \emph{sim\_results=None}}{}
+Validate gPC approximation using the ValidationSet object contained in the Problem object.
+Determines the normalized root mean square deviation between the gpc approximation and the
+original model. Skips this step if no validation set is present
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{coeffs}} (\sphinxstyleliteralemphasis{\sphinxupquote{ndarray of float}}\sphinxstyleliteralemphasis{\sphinxupquote{ {[}}}\sphinxstyleliteralemphasis{\sphinxupquote{n\_coeffs x n\_out}}\sphinxstyleliteralemphasis{\sphinxupquote{{]}}}) \textendash{} GPC coefficients
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{sim\_results}} (\sphinxstyleliteralemphasis{\sphinxupquote{ndarray of float}}\sphinxstyleliteralemphasis{\sphinxupquote{ {[}}}\sphinxstyleliteralemphasis{\sphinxupquote{n\_grid x n\_out}}\sphinxstyleliteralemphasis{\sphinxupquote{{]}}}) \textendash{} Results from n\_grid simulations with n\_out output quantities
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\sphinxstylestrong{error} \textendash{} Estimated difference between gPC approximation and original model
+
+\item[{Return type}] \leavevmode
+float
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
 
 \end{fulllineitems}
 
 
 
 \section{pygpc.Grid module}
-\label{\detokenize{pygpc:module-pygpc.Grid}}\label{\detokenize{pygpc:pygpc-grid-module}}\index{pygpc.Grid (module)}
+\label{\detokenize{pygpc:module-pygpc.Grid}}\label{\detokenize{pygpc:pygpc-grid-module}}\index{pygpc.Grid (module)@\spxentry{pygpc.Grid}\spxextra{module}}
 Functions and classes that provide data and methods for the generation and processing of numerical grids
-\index{Grid (class in pygpc.Grid)}
+\index{Grid (class in pygpc.Grid)@\spxentry{Grid}\spxextra{class in pygpc.Grid}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Grid.}}\sphinxbfcode{\sphinxupquote{Grid}}}{\emph{parameters\_random}}{}
 Bases: \sphinxcode{\sphinxupquote{object}}
 
 Grid class
-\index{parameters\_random (pygpc.Grid.Grid attribute)}
+\index{parameters\_random (pygpc.Grid.Grid attribute)@\spxentry{parameters\_random}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.parameters_random}}\pysigline{\sphinxbfcode{\sphinxupquote{parameters\_random}}}
@@ -3121,7 +3219,7 @@ OrderedDict of RandomParameter instances
 
 \end{fulllineitems}
 
-\index{\_weights (pygpc.Grid.Grid attribute)}
+\index{\_weights (pygpc.Grid.Grid attribute)@\spxentry{\_weights}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid._weights}}\pysigline{\sphinxbfcode{\sphinxupquote{\_weights}}}
@@ -3134,7 +3232,7 @@ ndarray of float {[}n\_grid x dim{]}
 
 \end{fulllineitems}
 
-\index{\_coords (pygpc.Grid.Grid attribute)}
+\index{\_coords (pygpc.Grid.Grid attribute)@\spxentry{\_coords}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid._coords}}\pysigline{\sphinxbfcode{\sphinxupquote{\_coords}}}
@@ -3147,7 +3245,7 @@ ndarray of float {[}n\_grid x dim{]}
 
 \end{fulllineitems}
 
-\index{\_coords\_norm (pygpc.Grid.Grid attribute)}
+\index{\_coords\_norm (pygpc.Grid.Grid attribute)@\spxentry{\_coords\_norm}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid._coords_norm}}\pysigline{\sphinxbfcode{\sphinxupquote{\_coords\_norm}}}
@@ -3160,7 +3258,7 @@ nd array of float {[}n\_grid x dim{]}
 
 \end{fulllineitems}
 
-\index{coords\_id (pygpc.Grid.Grid attribute)}
+\index{coords\_id (pygpc.Grid.Grid attribute)@\spxentry{coords\_id}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.coords_id}}\pysigline{\sphinxbfcode{\sphinxupquote{coords\_id}}}
@@ -3173,7 +3271,7 @@ list of UUID objects (version 4) {[}n\_grid{]}
 
 \end{fulllineitems}
 
-\index{n\_grid (pygpc.Grid.Grid attribute)}
+\index{n\_grid (pygpc.Grid.Grid attribute)@\spxentry{n\_grid}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.n_grid}}\pysigline{\sphinxbfcode{\sphinxupquote{n\_grid}}}
@@ -3186,19 +3284,19 @@ int
 
 \end{fulllineitems}
 
-\index{coords (pygpc.Grid.Grid attribute)}
+\index{coords (pygpc.Grid.Grid attribute)@\spxentry{coords}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.coords}}\pysigline{\sphinxbfcode{\sphinxupquote{coords}}}
 \end{fulllineitems}
 
-\index{coords\_norm (pygpc.Grid.Grid attribute)}
+\index{coords\_norm (pygpc.Grid.Grid attribute)@\spxentry{coords\_norm}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.coords_norm}}\pysigline{\sphinxbfcode{\sphinxupquote{coords\_norm}}}
 \end{fulllineitems}
 
-\index{get\_denormalized\_coordinates() (pygpc.Grid.Grid method)}
+\index{get\_denormalized\_coordinates() (pygpc.Grid.Grid method)@\spxentry{get\_denormalized\_coordinates()}\spxextra{pygpc.Grid.Grid method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.get_denormalized_coordinates}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_denormalized\_coordinates}}}{\emph{coords\_norm}}{}
@@ -3219,7 +3317,7 @@ coords = Grid.get\_denormalized\_coordinates(coords\_norm)
 
 \end{fulllineitems}
 
-\index{get\_normalized\_coordinates() (pygpc.Grid.Grid method)}
+\index{get\_normalized\_coordinates() (pygpc.Grid.Grid method)@\spxentry{get\_normalized\_coordinates()}\spxextra{pygpc.Grid.Grid method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.get_normalized_coordinates}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_normalized\_coordinates}}}{\emph{coords}}{}
@@ -3240,7 +3338,7 @@ coords\_norm = Grid.get\_normalized\_coordinates(coords)
 
 \end{fulllineitems}
 
-\index{get\_quadrature\_clenshaw\_curtis\_1d() (pygpc.Grid.Grid static method)}
+\index{get\_quadrature\_clenshaw\_curtis\_1d() (pygpc.Grid.Grid static method)@\spxentry{get\_quadrature\_clenshaw\_curtis\_1d()}\spxextra{pygpc.Grid.Grid static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.get_quadrature_clenshaw_curtis_1d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_quadrature\_clenshaw\_curtis\_1d}}}{\emph{n}}{}
@@ -3266,7 +3364,7 @@ knots, weights = Grid.get\_quadrature\_clenshaw\_curtis\_1d(n)
 
 \end{fulllineitems}
 
-\index{get\_quadrature\_fejer1\_1d() (pygpc.Grid.Grid static method)}
+\index{get\_quadrature\_fejer1\_1d() (pygpc.Grid.Grid static method)@\spxentry{get\_quadrature\_fejer1\_1d()}\spxextra{pygpc.Grid.Grid static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.get_quadrature_fejer1_1d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_quadrature\_fejer1\_1d}}}{\emph{n}}{}
@@ -3296,7 +3394,7 @@ knots, weights = Grid.get\_quadrature\_fejer1\_1d(n)
 
 \end{fulllineitems}
 
-\index{get\_quadrature\_fejer2\_1d() (pygpc.Grid.Grid static method)}
+\index{get\_quadrature\_fejer2\_1d() (pygpc.Grid.Grid static method)@\spxentry{get\_quadrature\_fejer2\_1d()}\spxextra{pygpc.Grid.Grid static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.get_quadrature_fejer2_1d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_quadrature\_fejer2\_1d}}}{\emph{n}}{}
@@ -3326,7 +3424,7 @@ knots, weights = Grid.get\_quadrature\_fejer2\_1d(n)
 
 \end{fulllineitems}
 
-\index{get\_quadrature\_hermite\_1d() (pygpc.Grid.Grid static method)}
+\index{get\_quadrature\_hermite\_1d() (pygpc.Grid.Grid static method)@\spxentry{get\_quadrature\_hermite\_1d()}\spxextra{pygpc.Grid.Grid static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.get_quadrature_hermite_1d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_quadrature\_hermite\_1d}}}{\emph{n}}{}
@@ -3352,7 +3450,7 @@ knots, weights = Grid.get\_quadrature\_hermite\_1d(n)
 
 \end{fulllineitems}
 
-\index{get\_quadrature\_jacobi\_1d() (pygpc.Grid.Grid static method)}
+\index{get\_quadrature\_jacobi\_1d() (pygpc.Grid.Grid static method)@\spxentry{get\_quadrature\_jacobi\_1d()}\spxextra{pygpc.Grid.Grid static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.get_quadrature_jacobi_1d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_quadrature\_jacobi\_1d}}}{\emph{n}, \emph{p}, \emph{q}}{}
@@ -3387,7 +3485,7 @@ knots, weights = Grid.get\_quadrature\_jacobi\_1d(n, p, q)
 
 \end{fulllineitems}
 
-\index{get\_quadrature\_patterson\_1d() (pygpc.Grid.Grid static method)}
+\index{get\_quadrature\_patterson\_1d() (pygpc.Grid.Grid static method)@\spxentry{get\_quadrature\_patterson\_1d()}\spxextra{pygpc.Grid.Grid static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.get_quadrature_patterson_1d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_quadrature\_patterson\_1d}}}{\emph{n}}{}
@@ -3413,7 +3511,7 @@ knots, weights = Grid.get\_quadrature\_patterson\_1d(n)
 
 \end{fulllineitems}
 
-\index{weights (pygpc.Grid.Grid attribute)}
+\index{weights (pygpc.Grid.Grid attribute)@\spxentry{weights}\spxextra{pygpc.Grid.Grid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.Grid.weights}}\pysigline{\sphinxbfcode{\sphinxupquote{weights}}}
@@ -3422,7 +3520,7 @@ knots, weights = Grid.get\_quadrature\_patterson\_1d(n)
 
 \end{fulllineitems}
 
-\index{RandomGrid (class in pygpc.Grid)}
+\index{RandomGrid (class in pygpc.Grid)@\spxentry{RandomGrid}\spxextra{class in pygpc.Grid}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.RandomGrid}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Grid.}}\sphinxbfcode{\sphinxupquote{RandomGrid}}}{\emph{parameters\_random}, \emph{options}}{}
@@ -3431,7 +3529,7 @@ Bases: {\hyperref[\detokenize{pygpc:pygpc.Grid.Grid}]{\sphinxcrossref{\sphinxcod
 RandomGrid object
 
 RandomGrid(parameters\_random, options)
-\index{n\_grid (pygpc.Grid.RandomGrid attribute)}
+\index{n\_grid (pygpc.Grid.RandomGrid attribute)@\spxentry{n\_grid}\spxextra{pygpc.Grid.RandomGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.RandomGrid.n_grid}}\pysigline{\sphinxbfcode{\sphinxupquote{n\_grid}}}
@@ -3444,7 +3542,7 @@ int
 
 \end{fulllineitems}
 
-\index{seed (pygpc.Grid.RandomGrid attribute)}
+\index{seed (pygpc.Grid.RandomGrid attribute)@\spxentry{seed}\spxextra{pygpc.Grid.RandomGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.RandomGrid.seed}}\pysigline{\sphinxbfcode{\sphinxupquote{seed}}}
@@ -3457,7 +3555,7 @@ float
 
 \end{fulllineitems}
 
-\index{extend\_random\_grid() (pygpc.Grid.RandomGrid method)}
+\index{extend\_random\_grid() (pygpc.Grid.RandomGrid method)@\spxentry{extend\_random\_grid()}\spxextra{pygpc.Grid.RandomGrid method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.RandomGrid.extend_random_grid}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{extend\_random\_grid}}}{\emph{n\_grid\_new}, \emph{seed=None}}{}
@@ -3482,7 +3580,7 @@ extend\_random\_grid(n\_grid\_new, seed=None):
 
 \end{fulllineitems}
 
-\index{SparseGrid (class in pygpc.Grid)}
+\index{SparseGrid (class in pygpc.Grid)@\spxentry{SparseGrid}\spxextra{class in pygpc.Grid}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Grid.}}\sphinxbfcode{\sphinxupquote{SparseGrid}}}{\emph{parameters\_random}, \emph{options}}{}
@@ -3491,7 +3589,7 @@ Bases: {\hyperref[\detokenize{pygpc:pygpc.Grid.Grid}]{\sphinxcrossref{\sphinxcod
 SparseGrid object instance.
 
 Grid.SparseGrid(parameters\_random, options)
-\index{grid\_type (pygpc.Grid.SparseGrid attribute)}
+\index{grid\_type (pygpc.Grid.SparseGrid attribute)@\spxentry{grid\_type}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.grid_type}}\pysigline{\sphinxbfcode{\sphinxupquote{grid\_type}}}
@@ -3504,7 +3602,7 @@ specify type of quadrature used to construct sparse grid (‘jacobi’, ‘hermi
 
 \end{fulllineitems}
 
-\index{level (pygpc.Grid.SparseGrid attribute)}
+\index{level (pygpc.Grid.SparseGrid attribute)@\spxentry{level}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.level}}\pysigline{\sphinxbfcode{\sphinxupquote{level}}}
@@ -3517,7 +3615,7 @@ number of levels in each dimension
 
 \end{fulllineitems}
 
-\index{level\_max (pygpc.Grid.SparseGrid attribute)}
+\index{level\_max (pygpc.Grid.SparseGrid attribute)@\spxentry{level\_max}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.level_max}}\pysigline{\sphinxbfcode{\sphinxupquote{level\_max}}}
@@ -3530,7 +3628,7 @@ int
 
 \end{fulllineitems}
 
-\index{level\_sequence (pygpc.Grid.SparseGrid attribute)}
+\index{level\_sequence (pygpc.Grid.SparseGrid attribute)@\spxentry{level\_sequence}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.level_sequence}}\pysigline{\sphinxbfcode{\sphinxupquote{level\_sequence}}}
@@ -3543,7 +3641,7 @@ list of int
 
 \end{fulllineitems}
 
-\index{interaction\_order (pygpc.Grid.SparseGrid attribute)}
+\index{interaction\_order (pygpc.Grid.SparseGrid attribute)@\spxentry{interaction\_order}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.interaction_order}}\pysigline{\sphinxbfcode{\sphinxupquote{interaction\_order}}}
@@ -3556,7 +3654,7 @@ int
 
 \end{fulllineitems}
 
-\index{order\_sequence\_type (pygpc.Grid.SparseGrid attribute)}
+\index{order\_sequence\_type (pygpc.Grid.SparseGrid attribute)@\spxentry{order\_sequence\_type}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.order_sequence_type}}\pysigline{\sphinxbfcode{\sphinxupquote{order\_sequence\_type}}}
@@ -3569,7 +3667,7 @@ str
 
 \end{fulllineitems}
 
-\index{order\_sequence (pygpc.Grid.SparseGrid attribute)}
+\index{order\_sequence (pygpc.Grid.SparseGrid attribute)@\spxentry{order\_sequence}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.order_sequence}}\pysigline{\sphinxbfcode{\sphinxupquote{order\_sequence}}}
@@ -3582,7 +3680,7 @@ list of int
 
 \end{fulllineitems}
 
-\index{make\_grid (pygpc.Grid.SparseGrid attribute)}
+\index{make\_grid (pygpc.Grid.SparseGrid attribute)@\spxentry{make\_grid}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.make_grid}}\pysigline{\sphinxbfcode{\sphinxupquote{make\_grid}}}
@@ -3595,7 +3693,7 @@ boolean
 
 \end{fulllineitems}
 
-\index{verbose (pygpc.Grid.SparseGrid attribute)}
+\index{verbose (pygpc.Grid.SparseGrid attribute)@\spxentry{verbose}\spxextra{pygpc.Grid.SparseGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.verbose}}\pysigline{\sphinxbfcode{\sphinxupquote{verbose}}}
@@ -3608,7 +3706,7 @@ bool
 
 \end{fulllineitems}
 
-\index{calc\_coords\_weights() (pygpc.Grid.SparseGrid method)}
+\index{calc\_coords\_weights() (pygpc.Grid.SparseGrid method)@\spxentry{calc\_coords\_weights()}\spxextra{pygpc.Grid.SparseGrid method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.calc_coords_weights}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{calc\_coords\_weights}}}{}{}
@@ -3616,7 +3714,7 @@ Determine coords and weights of sparse grid by generating, merging and subtracti
 
 \end{fulllineitems}
 
-\index{calc\_grid() (pygpc.Grid.SparseGrid method)}
+\index{calc\_grid() (pygpc.Grid.SparseGrid method)@\spxentry{calc\_grid()}\spxextra{pygpc.Grid.SparseGrid method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.calc_grid}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{calc\_grid}}}{}{}
@@ -3639,7 +3737,7 @@ dl\_k, dl\_w = calc\_grid()
 
 \end{fulllineitems}
 
-\index{calc\_l\_level() (pygpc.Grid.SparseGrid method)}
+\index{calc\_l\_level() (pygpc.Grid.SparseGrid method)@\spxentry{calc\_l\_level()}\spxextra{pygpc.Grid.SparseGrid method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.calc_l_level}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{calc\_l\_level}}}{}{}
@@ -3657,7 +3755,7 @@ np.ndarray
 
 \end{fulllineitems}
 
-\index{calc\_multi\_indices() (pygpc.Grid.SparseGrid method)}
+\index{calc\_multi\_indices() (pygpc.Grid.SparseGrid method)@\spxentry{calc\_multi\_indices()}\spxextra{pygpc.Grid.SparseGrid method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.calc_multi_indices}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{calc\_multi\_indices}}}{}{}
@@ -3665,7 +3763,7 @@ Calculate the multi index list needed for the calculation of the SparseGrid.
 
 \end{fulllineitems}
 
-\index{calc\_tensor\_products() (pygpc.Grid.SparseGrid method)}
+\index{calc\_tensor\_products() (pygpc.Grid.SparseGrid method)@\spxentry{calc\_tensor\_products()}\spxextra{pygpc.Grid.SparseGrid method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.SparseGrid.calc_tensor_products}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{calc\_tensor\_products}}}{}{}
@@ -3691,7 +3789,7 @@ dll\_k, dll\_w = calc\_tensor\_products()
 
 \end{fulllineitems}
 
-\index{TensorGrid (class in pygpc.Grid)}
+\index{TensorGrid (class in pygpc.Grid)@\spxentry{TensorGrid}\spxextra{class in pygpc.Grid}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.TensorGrid}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Grid.}}\sphinxbfcode{\sphinxupquote{TensorGrid}}}{\emph{parameters\_random}, \emph{options}}{}
@@ -3700,7 +3798,7 @@ Bases: {\hyperref[\detokenize{pygpc:pygpc.Grid.Grid}]{\sphinxcrossref{\sphinxcod
 Generate TensorGrid object instance.
 
 TensorGrid(random\_parameters, parameters):
-\index{grid\_type (pygpc.Grid.TensorGrid attribute)}
+\index{grid\_type (pygpc.Grid.TensorGrid attribute)@\spxentry{grid\_type}\spxextra{pygpc.Grid.TensorGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.TensorGrid.grid_type}}\pysigline{\sphinxbfcode{\sphinxupquote{grid\_type}}}
@@ -3713,7 +3811,7 @@ Type of quadrature used to construct tensor grid (‘jacobi’, ‘hermite’, �
 
 \end{fulllineitems}
 
-\index{knots\_dim\_list (pygpc.Grid.TensorGrid attribute)}
+\index{knots\_dim\_list (pygpc.Grid.TensorGrid attribute)@\spxentry{knots\_dim\_list}\spxextra{pygpc.Grid.TensorGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.TensorGrid.knots_dim_list}}\pysigline{\sphinxbfcode{\sphinxupquote{knots\_dim\_list}}}
@@ -3726,7 +3824,7 @@ Knots of grid in each dimension
 
 \end{fulllineitems}
 
-\index{weights\_dim\_list (pygpc.Grid.TensorGrid attribute)}
+\index{weights\_dim\_list (pygpc.Grid.TensorGrid attribute)@\spxentry{weights\_dim\_list}\spxextra{pygpc.Grid.TensorGrid attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Grid.TensorGrid.weights_dim_list}}\pysigline{\sphinxbfcode{\sphinxupquote{weights\_dim\_list}}}
@@ -3745,10 +3843,10 @@ Weights of grid in each dimension
 
 
 \section{pygpc.Problem module}
-\label{\detokenize{pygpc:module-pygpc.Problem}}\label{\detokenize{pygpc:pygpc-problem-module}}\index{pygpc.Problem (module)}\index{Problem (class in pygpc.Problem)}
+\label{\detokenize{pygpc:module-pygpc.Problem}}\label{\detokenize{pygpc:pygpc-problem-module}}\index{pygpc.Problem (module)@\spxentry{pygpc.Problem}\spxextra{module}}\index{Problem (class in pygpc.Problem)@\spxentry{Problem}\spxextra{class in pygpc.Problem}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.Problem.Problem}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Problem.}}\sphinxbfcode{\sphinxupquote{Problem}}}{\emph{model}, \emph{parameters}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.Problem.Problem}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Problem.}}\sphinxbfcode{\sphinxupquote{Problem}}}{\emph{model}, \emph{parameters}, \emph{validation=None}}{}
 Data wrapper for the gpc problem containing the model to investigate and the associated parameters.
 \subsubsection*{Notes}
 
@@ -3781,7 +3879,6 @@ normal-dist: {[}{[}{]}, … {[}0, 0{]}, …, {[}{]}{]} (not used)
 
 Setup model and specify parameters of gPC problem
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k+kn}{import} \PYG{n+nn}{pygpc}
 \PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k+kn}{from} \PYG{n+nn}{collections} \PYG{k}{import} \PYG{n}{OrderedDict}
@@ -3799,7 +3896,27 @@ Setup model and specify parameters of gPC problem
 \PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{parameters}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{sigma\PYGZus{}3}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{pygpc}\PYG{o}{.}\PYG{n}{RandomParameter}\PYG{o}{.}\PYG{n}{Norm}\PYG{p}{(}\PYG{n}{pdf\PYGZus{}shape}\PYG{o}{=}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{)}                           \PYG{c+c1}{\PYGZsh{}       \PYGZdq{}}
 \PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{problem} \PYG{o}{=} \PYG{n}{pygpc}\PYG{o}{.}\PYG{n}{Problem}\PYG{p}{(}\PYG{n}{model}\PYG{p}{,} \PYG{n}{parameters}\PYG{p}{)}
 \end{sphinxVerbatim}
-\index{validate() (pygpc.Problem.Problem method)}
+\index{create\_validation\_set() (pygpc.Problem.Problem method)@\spxentry{create\_validation\_set()}\spxextra{pygpc.Problem.Problem method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{pygpc:pygpc.Problem.Problem.create_validation_set}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{create\_validation\_set}}}{\emph{n\_samples}, \emph{n\_cpu=1}}{}
+Creates a ValidationSet instance (calls the model)
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{n\_samples}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Number of sampling points contained in the validation set
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{n\_cpu}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Number of parallel function evaluations to evaluate validation set (n\_cpu=0 assumes that the
+model is capable to evaluate all grid points in parallel)
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{validate() (pygpc.Problem.Problem method)@\spxentry{validate()}\spxextra{pygpc.Problem.Problem method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Problem.Problem.validate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{validate}}}{}{}
@@ -3819,7 +3936,7 @@ overwrites parameters
 
 
 \section{pygpc.RandomParameter module}
-\label{\detokenize{pygpc:module-pygpc.RandomParameter}}\label{\detokenize{pygpc:pygpc-randomparameter-module}}\index{pygpc.RandomParameter (module)}\index{Beta (class in pygpc.RandomParameter)}
+\label{\detokenize{pygpc:module-pygpc.RandomParameter}}\label{\detokenize{pygpc:pygpc-randomparameter-module}}\index{pygpc.RandomParameter (module)@\spxentry{pygpc.RandomParameter}\spxextra{module}}\index{Beta (class in pygpc.RandomParameter)@\spxentry{Beta}\spxextra{class in pygpc.RandomParameter}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.Beta}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.RandomParameter.}}\sphinxbfcode{\sphinxupquote{Beta}}}{\emph{pdf\_shape}, \emph{pdf\_limits}}{}
@@ -3828,7 +3945,7 @@ Bases: {\hyperref[\detokenize{pygpc:pygpc.RandomParameter.RandomParameter}]{\sph
 Beta distributed random variable sub-class
 
 Probability density function:
-\index{init\_basis\_function() (pygpc.RandomParameter.Beta method)}
+\index{init\_basis\_function() (pygpc.RandomParameter.Beta method)@\spxentry{init\_basis\_function()}\spxextra{pygpc.RandomParameter.Beta method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.Beta.init_basis_function}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_basis\_function}}}{\emph{order}}{}
@@ -3841,7 +3958,7 @@ Initializes Jacobi BasisFunction of Beta RandomParameter
 
 \end{fulllineitems}
 
-\index{pdf() (pygpc.RandomParameter.Beta method)}
+\index{pdf() (pygpc.RandomParameter.Beta method)@\spxentry{pdf()}\spxextra{pygpc.RandomParameter.Beta method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.Beta.pdf}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pdf}}}{\emph{x}}{}
@@ -3862,7 +3979,7 @@ ndarray of float {[}n\_x{]}
 
 \end{fulllineitems}
 
-\index{pdf\_norm() (pygpc.RandomParameter.Beta method)}
+\index{pdf\_norm() (pygpc.RandomParameter.Beta method)@\spxentry{pdf\_norm()}\spxextra{pygpc.RandomParameter.Beta method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.Beta.pdf_norm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pdf\_norm}}}{\emph{x}}{}
@@ -3887,7 +4004,7 @@ ndarray of float {[}n\_x{]}
 
 \end{fulllineitems}
 
-\index{Norm (class in pygpc.RandomParameter)}
+\index{Norm (class in pygpc.RandomParameter)@\spxentry{Norm}\spxextra{class in pygpc.RandomParameter}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.Norm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.RandomParameter.}}\sphinxbfcode{\sphinxupquote{Norm}}}{\emph{pdf\_shape}}{}
@@ -3898,7 +4015,7 @@ Normal distributed random variable sub-class
 Probability density function
 \begin{equation*}
 \begin{split}pdf = \frac{1}{\sqrt{2\pi\sigma^2}}\exp{-\frac{(x-\mu)^2}{2\sigma^2}}\end{split}
-\end{equation*}\index{init\_basis\_function() (pygpc.RandomParameter.Norm static method)}
+\end{equation*}\index{init\_basis\_function() (pygpc.RandomParameter.Norm static method)@\spxentry{init\_basis\_function()}\spxextra{pygpc.RandomParameter.Norm static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.Norm.init_basis_function}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{init\_basis\_function}}}{\emph{order}}{}
@@ -3911,7 +4028,7 @@ Initializes Hermite BasisFunction of Norm RandomParameter
 
 \end{fulllineitems}
 
-\index{pdf() (pygpc.RandomParameter.Norm method)}
+\index{pdf() (pygpc.RandomParameter.Norm method)@\spxentry{pdf()}\spxextra{pygpc.RandomParameter.Norm method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.Norm.pdf}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pdf}}}{\emph{x}}{}
@@ -3932,7 +4049,7 @@ ndarray of float {[}n\_x{]}
 
 \end{fulllineitems}
 
-\index{pdf\_norm() (pygpc.RandomParameter.Norm static method)}
+\index{pdf\_norm() (pygpc.RandomParameter.Norm static method)@\spxentry{pdf\_norm()}\spxextra{pygpc.RandomParameter.Norm static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.Norm.pdf_norm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{pdf\_norm}}}{\emph{x}}{}
@@ -3957,14 +4074,14 @@ ndarray of float {[}n\_x{]}
 
 \end{fulllineitems}
 
-\index{RandomParameter (class in pygpc.RandomParameter)}
+\index{RandomParameter (class in pygpc.RandomParameter)@\spxentry{RandomParameter}\spxextra{class in pygpc.RandomParameter}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.RandomParameter}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.RandomParameter.}}\sphinxbfcode{\sphinxupquote{RandomParameter}}}{\emph{pdf\_type=None}, \emph{pdf\_shape=None}, \emph{pdf\_limits=None}}{}
 Bases: \sphinxcode{\sphinxupquote{object}}
 
 RandomParameter class
-\index{pdf\_type (pygpc.RandomParameter.RandomParameter attribute)}
+\index{pdf\_type (pygpc.RandomParameter.RandomParameter attribute)@\spxentry{pdf\_type}\spxextra{pygpc.RandomParameter.RandomParameter attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.RandomParameter.pdf_type}}\pysigline{\sphinxbfcode{\sphinxupquote{pdf\_type}}}
@@ -3977,7 +4094,7 @@ str
 
 \end{fulllineitems}
 
-\index{pdf\_shape (pygpc.RandomParameter.RandomParameter attribute)}
+\index{pdf\_shape (pygpc.RandomParameter.RandomParameter attribute)@\spxentry{pdf\_shape}\spxextra{pygpc.RandomParameter.RandomParameter attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.RandomParameter.pdf_shape}}\pysigline{\sphinxbfcode{\sphinxupquote{pdf\_shape}}}
@@ -3990,7 +4107,7 @@ list of float {[}2{]}
 
 \end{fulllineitems}
 
-\index{pdf\_limits (pygpc.RandomParameter.RandomParameter attribute)}
+\index{pdf\_limits (pygpc.RandomParameter.RandomParameter attribute)@\spxentry{pdf\_limits}\spxextra{pygpc.RandomParameter.RandomParameter attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.RandomParameter.pdf_limits}}\pysigline{\sphinxbfcode{\sphinxupquote{pdf\_limits}}}
@@ -4003,7 +4120,7 @@ list of float {[}2{]}
 
 \end{fulllineitems}
 
-\index{mean (pygpc.RandomParameter.RandomParameter attribute)}
+\index{mean (pygpc.RandomParameter.RandomParameter attribute)@\spxentry{mean}\spxextra{pygpc.RandomParameter.RandomParameter attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.RandomParameter.mean}}\pysigline{\sphinxbfcode{\sphinxupquote{mean}}}
@@ -4016,7 +4133,7 @@ float
 
 \end{fulllineitems}
 
-\index{std (pygpc.RandomParameter.RandomParameter attribute)}
+\index{std (pygpc.RandomParameter.RandomParameter attribute)@\spxentry{std}\spxextra{pygpc.RandomParameter.RandomParameter attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.RandomParameter.std}}\pysigline{\sphinxbfcode{\sphinxupquote{std}}}
@@ -4029,7 +4146,7 @@ float
 
 \end{fulllineitems}
 
-\index{var (pygpc.RandomParameter.RandomParameter attribute)}
+\index{var (pygpc.RandomParameter.RandomParameter attribute)@\spxentry{var}\spxextra{pygpc.RandomParameter.RandomParameter attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.RandomParameter.RandomParameter.var}}\pysigline{\sphinxbfcode{\sphinxupquote{var}}}
@@ -4048,7 +4165,7 @@ float
 
 
 \section{pygpc.SGPC module}
-\label{\detokenize{pygpc:module-pygpc.SGPC}}\label{\detokenize{pygpc:pygpc-sgpc-module}}\index{pygpc.SGPC (module)}\index{Quad (class in pygpc.SGPC)}
+\label{\detokenize{pygpc:module-pygpc.SGPC}}\label{\detokenize{pygpc:pygpc-sgpc-module}}\index{pygpc.SGPC (module)@\spxentry{pygpc.SGPC}\spxextra{module}}\index{Quad (class in pygpc.SGPC)@\spxentry{Quad}\spxextra{class in pygpc.SGPC}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.Quad}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.SGPC.}}\sphinxbfcode{\sphinxupquote{Quad}}}{\emph{problem}, \emph{order}, \emph{order\_max}, \emph{order\_max\_norm}, \emph{interaction\_order}, \emph{fn\_results=None}}{}
@@ -4058,7 +4175,7 @@ Quadrature SGPC sub-class
 
 \end{fulllineitems}
 
-\index{Reg (class in pygpc.SGPC)}
+\index{Reg (class in pygpc.SGPC)@\spxentry{Reg}\spxextra{class in pygpc.SGPC}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.Reg}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.SGPC.}}\sphinxbfcode{\sphinxupquote{Reg}}}{\emph{problem}, \emph{order}, \emph{order\_max}, \emph{order\_max\_norm}, \emph{interaction\_order}, \emph{fn\_results=None}}{}
@@ -4067,7 +4184,7 @@ Bases: {\hyperref[\detokenize{pygpc:pygpc.SGPC.SGPC}]{\sphinxcrossref{\sphinxcod
 Regression gPC subclass
 
 Reg(problem, order, order\_max, interaction\_order, fn\_results=None)
-\index{relative\_error\_loocv (pygpc.SGPC.Reg attribute)}
+\index{relative\_error\_loocv (pygpc.SGPC.Reg attribute)@\spxentry{relative\_error\_loocv}\spxextra{pygpc.SGPC.Reg attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.Reg.relative_error_loocv}}\pysigline{\sphinxbfcode{\sphinxupquote{relative\_error\_loocv}}}
@@ -4080,7 +4197,7 @@ list of float
 
 \end{fulllineitems}
 
-\index{solver (pygpc.SGPC.Reg attribute)}
+\index{solver (pygpc.SGPC.Reg attribute)@\spxentry{solver}\spxextra{pygpc.SGPC.Reg attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.Reg.solver}}\pysigline{\sphinxbfcode{\sphinxupquote{solver}}}
@@ -4096,7 +4213,7 @@ str
 
 \end{fulllineitems}
 
-\index{settings (pygpc.SGPC.Reg attribute)}
+\index{settings (pygpc.SGPC.Reg attribute)@\spxentry{settings}\spxextra{pygpc.SGPC.Reg attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.Reg.settings}}\pysigline{\sphinxbfcode{\sphinxupquote{settings}}}
@@ -4112,53 +4229,17 @@ dict
 
 \end{fulllineitems}
 
-\index{loocv() (pygpc.SGPC.Reg method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.SGPC.Reg.loocv}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{loocv}}}{\emph{sim\_results}, \emph{coeffs}}{}
-Perform leave-one-out cross validation of gPC approximation and add error value to self.relative\_error\_loocv.
-The loocv error is calculated analytically after eq. (35) in {[}1{]} but omitting the “1 - ” term, i.e. it
-corresponds to 1 - Q\textasciicircum{}2.
-
-relative\_error\_loocv = SGPC.loocv(sim\_results, coeffs)
-\begin{equation*}
-\begin{split}\epsilon_{LOOCV} = \frac{\frac{1}{N}\sum_{i=1}^N \left( \frac{y(\xi_i) - \hat{y}(\xi_i)}{1-h_i} \right)^2}{\frac{1}{N-1}\sum_{i=1}^N \left( y(\xi_i) - \bar{y} \right)^2}\end{split}
-\end{equation*}
-with
-\begin{equation*}
-\begin{split}\mathbf{h} = \mathrm{diag}(\mathbf{\Psi} (\mathbf{\Psi}^T \mathbf{\Psi})^{-1} \mathbf{\Psi}^T)\end{split}
-\end{equation*}\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{sim\_results}} (\sphinxstyleliteralemphasis{\sphinxupquote{ndarray of float}}\sphinxstyleliteralemphasis{\sphinxupquote{ {[}}}\sphinxstyleliteralemphasis{\sphinxupquote{n\_grid x n\_out}}\sphinxstyleliteralemphasis{\sphinxupquote{{]}}}) \textendash{} Results from n\_grid simulations with n\_out output quantities
-
-\item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{coeffs}} (\sphinxstyleliteralemphasis{\sphinxupquote{ndarray of float}}\sphinxstyleliteralemphasis{\sphinxupquote{ {[}}}\sphinxstyleliteralemphasis{\sphinxupquote{n\_basis x n\_out}}\sphinxstyleliteralemphasis{\sphinxupquote{{]}}}) \textendash{} GPC coefficients
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\sphinxstylestrong{relative\_error\_loocv} \textendash{} Relative mean error of leave one out cross validation
-
-\item[{Return type}] \leavevmode
-float
-
-\end{description}\end{quote}
-\subsubsection*{Notes}
 
 \end{fulllineitems}
 
-
-\end{fulllineitems}
-
-\index{SGPC (class in pygpc.SGPC)}
+\index{SGPC (class in pygpc.SGPC)@\spxentry{SGPC}\spxextra{class in pygpc.SGPC}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.SGPC.}}\sphinxbfcode{\sphinxupquote{SGPC}}}{\emph{problem}, \emph{order}, \emph{order\_max}, \emph{order\_max\_norm}, \emph{interaction\_order}, \emph{fn\_results=None}}{}
 Bases: {\hyperref[\detokenize{pygpc:pygpc.GPC.GPC}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygpc.GPC.GPC}}}}}
 
 Sub-class for standard gPC (SGPC)
-\index{order (pygpc.SGPC.SGPC attribute)}
+\index{order (pygpc.SGPC.SGPC attribute)@\spxentry{order}\spxextra{pygpc.SGPC.SGPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.order}}\pysigline{\sphinxbfcode{\sphinxupquote{order}}}
@@ -4172,7 +4253,7 @@ list of int {[}dim{]}
 
 \end{fulllineitems}
 
-\index{order\_max (pygpc.SGPC.SGPC attribute)}
+\index{order\_max (pygpc.SGPC.SGPC attribute)@\spxentry{order\_max}\spxextra{pygpc.SGPC.SGPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.order_max}}\pysigline{\sphinxbfcode{\sphinxupquote{order\_max}}}
@@ -4188,7 +4269,7 @@ int
 
 \end{fulllineitems}
 
-\index{order\_max\_norm (pygpc.SGPC.SGPC attribute)}
+\index{order\_max\_norm (pygpc.SGPC.SGPC attribute)@\spxentry{order\_max\_norm}\spxextra{pygpc.SGPC.SGPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.order_max_norm}}\pysigline{\sphinxbfcode{\sphinxupquote{order\_max\_norm}}}
@@ -4204,7 +4285,7 @@ float
 
 \end{fulllineitems}
 
-\index{interaction\_order (pygpc.SGPC.SGPC attribute)}
+\index{interaction\_order (pygpc.SGPC.SGPC attribute)@\spxentry{interaction\_order}\spxextra{pygpc.SGPC.SGPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.interaction_order}}\pysigline{\sphinxbfcode{\sphinxupquote{interaction\_order}}}
@@ -4218,7 +4299,7 @@ int
 
 \end{fulllineitems}
 
-\index{interaction\_order\_current (pygpc.SGPC.SGPC attribute)}
+\index{interaction\_order\_current (pygpc.SGPC.SGPC attribute)@\spxentry{interaction\_order\_current}\spxextra{pygpc.SGPC.SGPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.interaction_order_current}}\pysigline{\sphinxbfcode{\sphinxupquote{interaction\_order\_current}}}
@@ -4233,7 +4314,7 @@ int
 
 \end{fulllineitems}
 
-\index{fn\_results (pygpc.SGPC.SGPC attribute)}
+\index{fn\_results (pygpc.SGPC.SGPC attribute)@\spxentry{fn\_results}\spxextra{pygpc.SGPC.SGPC attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.fn_results}}\pysigline{\sphinxbfcode{\sphinxupquote{fn\_results}}}
@@ -4246,7 +4327,7 @@ string, optional, default=None
 
 \end{fulllineitems}
 
-\index{get\_extracted\_sobol\_order() (pygpc.SGPC.SGPC static method)}
+\index{get\_extracted\_sobol\_order() (pygpc.SGPC.SGPC static method)@\spxentry{get\_extracted\_sobol\_order()}\spxextra{pygpc.SGPC.SGPC static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.get_extracted_sobol_order}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_extracted\_sobol\_order}}}{\emph{sobol}, \emph{sobol\_idx\_bool}, \emph{order=1}}{}
@@ -4281,7 +4362,7 @@ sobol\_1st, sobol\_idx\_1st = SGPC.get\_extracted\_sobol\_order(sobol, sobol\_id
 
 \end{fulllineitems}
 
-\index{get\_global\_sens() (pygpc.SGPC.SGPC method)}
+\index{get\_global\_sens() (pygpc.SGPC.SGPC method)@\spxentry{get\_global\_sens()}\spxextra{pygpc.SGPC.SGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.get_global_sens}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_global\_sens}}}{\emph{coeffs}}{}
@@ -4303,7 +4384,7 @@ ndarray {[}dim x n\_out{]}
 
 \end{fulllineitems}
 
-\index{get\_local\_sens() (pygpc.SGPC.SGPC method)}
+\index{get\_local\_sens() (pygpc.SGPC.SGPC method)@\spxentry{get\_local\_sens()}\spxextra{pygpc.SGPC.SGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.get_local_sens}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_local\_sens}}}{\emph{coeffs}, \emph{x}}{}
@@ -4331,7 +4412,7 @@ ndarray {[}dim x n\_out{]}
 
 \end{fulllineitems}
 
-\index{get\_mean() (pygpc.SGPC.SGPC static method)}
+\index{get\_mean() (pygpc.SGPC.SGPC static method)@\spxentry{get\_mean()}\spxextra{pygpc.SGPC.SGPC static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.get_mean}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_mean}}}{\emph{coeffs}}{}
@@ -4352,7 +4433,7 @@ ndarray of float {[}1 x n\_out{]}
 
 \end{fulllineitems}
 
-\index{get\_sobol\_composition() (pygpc.SGPC.SGPC method)}
+\index{get\_sobol\_composition() (pygpc.SGPC.SGPC method)@\spxentry{get\_sobol\_composition()}\spxextra{pygpc.SGPC.SGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.get_sobol_composition}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_sobol\_composition}}}{\emph{sobol}, \emph{sobol\_idx\_bool}}{}
@@ -4407,7 +4488,7 @@ variance
 
 \end{fulllineitems}
 
-\index{get\_sobol\_indices() (pygpc.SGPC.SGPC method)}
+\index{get\_sobol\_indices() (pygpc.SGPC.SGPC method)@\spxentry{get\_sobol\_indices()}\spxextra{pygpc.SGPC.SGPC method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.get_sobol_indices}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_sobol\_indices}}}{\emph{coeffs}}{}
@@ -4436,7 +4517,7 @@ sobol, sobol\_idx = SGPC.get\_sobol\_indices(coeffs)
 
 \end{fulllineitems}
 
-\index{get\_standard\_deviation() (pygpc.SGPC.SGPC static method)}
+\index{get\_standard\_deviation() (pygpc.SGPC.SGPC static method)@\spxentry{get\_standard\_deviation()}\spxextra{pygpc.SGPC.SGPC static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.SGPC.SGPC.get_standard_deviation}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{get\_standard\_deviation}}}{\emph{coeffs}}{}
@@ -4463,7 +4544,7 @@ ndarray of float {[}1 x n\_out{]}
 
 
 \section{pygpc.Test module}
-\label{\detokenize{pygpc:module-pygpc.Test}}\label{\detokenize{pygpc:pygpc-test-module}}\index{pygpc.Test (module)}\index{Franke (class in pygpc.Test)}
+\label{\detokenize{pygpc:module-pygpc.Test}}\label{\detokenize{pygpc:pygpc-test-module}}\index{pygpc.Test (module)@\spxentry{pygpc.Test}\spxextra{module}}\index{Franke (class in pygpc.Test)@\spxentry{Franke}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.Franke}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{Franke}}}
@@ -4473,7 +4554,7 @@ Franke test function
 
 \end{fulllineitems}
 
-\index{GFunction (class in pygpc.Test)}
+\index{GFunction (class in pygpc.Test)@\spxentry{GFunction}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.GFunction}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{GFunction}}}{\emph{dim=2}}{}
@@ -4483,7 +4564,7 @@ GFunction test function
 
 \end{fulllineitems}
 
-\index{GenzContinuous (class in pygpc.Test)}
+\index{GenzContinuous (class in pygpc.Test)@\spxentry{GenzContinuous}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.GenzContinuous}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{GenzContinuous}}}{\emph{dim=2}}{}
@@ -4493,7 +4574,7 @@ GenzContinuous test function
 
 \end{fulllineitems}
 
-\index{GenzCornerPeak (class in pygpc.Test)}
+\index{GenzCornerPeak (class in pygpc.Test)@\spxentry{GenzCornerPeak}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.GenzCornerPeak}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{GenzCornerPeak}}}{\emph{dim=2}}{}
@@ -4503,7 +4584,7 @@ GenzCornerPeak test function
 
 \end{fulllineitems}
 
-\index{GenzDiscontinuous (class in pygpc.Test)}
+\index{GenzDiscontinuous (class in pygpc.Test)@\spxentry{GenzDiscontinuous}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.GenzDiscontinuous}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{GenzDiscontinuous}}}{\emph{dim=2}}{}
@@ -4513,7 +4594,7 @@ GenzDiscontinuous test function
 
 \end{fulllineitems}
 
-\index{GenzGaussianPeak (class in pygpc.Test)}
+\index{GenzGaussianPeak (class in pygpc.Test)@\spxentry{GenzGaussianPeak}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.GenzGaussianPeak}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{GenzGaussianPeak}}}{\emph{dim=2}}{}
@@ -4523,7 +4604,7 @@ GenzGaussianPeak test function
 
 \end{fulllineitems}
 
-\index{GenzOscillatory (class in pygpc.Test)}
+\index{GenzOscillatory (class in pygpc.Test)@\spxentry{GenzOscillatory}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.GenzOscillatory}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{GenzOscillatory}}}{\emph{dim=2}}{}
@@ -4533,7 +4614,7 @@ GenzOscillatory test function
 
 \end{fulllineitems}
 
-\index{GenzProductPeak (class in pygpc.Test)}
+\index{GenzProductPeak (class in pygpc.Test)@\spxentry{GenzProductPeak}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.GenzProductPeak}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{GenzProductPeak}}}{\emph{dim=2}}{}
@@ -4543,7 +4624,7 @@ GenzProductPeak test function
 
 \end{fulllineitems}
 
-\index{HyperbolicTangent (class in pygpc.Test)}
+\index{HyperbolicTangent (class in pygpc.Test)@\spxentry{HyperbolicTangent}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.HyperbolicTangent}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{HyperbolicTangent}}}
@@ -4553,7 +4634,7 @@ HyperbolicTangent test function
 
 \end{fulllineitems}
 
-\index{Ishigami (class in pygpc.Test)}
+\index{Ishigami (class in pygpc.Test)@\spxentry{Ishigami}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.Ishigami}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{Ishigami}}}{\emph{dim=2}}{}
@@ -4563,7 +4644,7 @@ Ishigami test function
 
 \end{fulllineitems}
 
-\index{Lim2002 (class in pygpc.Test)}
+\index{Lim2002 (class in pygpc.Test)@\spxentry{Lim2002}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.Lim2002}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{Lim2002}}}
@@ -4573,7 +4654,7 @@ Lim2002 test function
 
 \end{fulllineitems}
 
-\index{ManufactureDecay (class in pygpc.Test)}
+\index{ManufactureDecay (class in pygpc.Test)@\spxentry{ManufactureDecay}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.ManufactureDecay}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{ManufactureDecay}}}{\emph{dim=2}}{}
@@ -4583,7 +4664,7 @@ ManufactureDecay test function
 
 \end{fulllineitems}
 
-\index{MovingParticleFrictionForce (class in pygpc.Test)}
+\index{MovingParticleFrictionForce (class in pygpc.Test)@\spxentry{MovingParticleFrictionForce}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.MovingParticleFrictionForce}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{MovingParticleFrictionForce}}}
@@ -4593,7 +4674,7 @@ MovingParticleFrictionForce test function
 
 \end{fulllineitems}
 
-\index{OakleyOhagan2004 (class in pygpc.Test)}
+\index{OakleyOhagan2004 (class in pygpc.Test)@\spxentry{OakleyOhagan2004}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.OakleyOhagan2004}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{OakleyOhagan2004}}}
@@ -4603,7 +4684,7 @@ OakleyOhagan2004 test function
 
 \end{fulllineitems}
 
-\index{Peaks (class in pygpc.Test)}
+\index{Peaks (class in pygpc.Test)@\spxentry{Peaks}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.Peaks}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{Peaks}}}
@@ -4613,7 +4694,7 @@ Peaks test function
 
 \end{fulllineitems}
 
-\index{Ridge (class in pygpc.Test)}
+\index{Ridge (class in pygpc.Test)@\spxentry{Ridge}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.Ridge}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{Ridge}}}{\emph{dim=2}}{}
@@ -4623,7 +4704,7 @@ Ridge test function
 
 \end{fulllineitems}
 
-\index{SphereFun (class in pygpc.Test)}
+\index{SphereFun (class in pygpc.Test)@\spxentry{SphereFun}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.SphereFun}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{SphereFun}}}{\emph{dim=2}}{}
@@ -4633,7 +4714,7 @@ SphereFun test function
 
 \end{fulllineitems}
 
-\index{SurfaceCoverageSpecies (class in pygpc.Test)}
+\index{SurfaceCoverageSpecies (class in pygpc.Test)@\spxentry{SurfaceCoverageSpecies}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.SurfaceCoverageSpecies}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{SurfaceCoverageSpecies}}}{\emph{dim}}{}
@@ -4643,7 +4724,7 @@ SurfaceCoverageSpecies test function
 
 \end{fulllineitems}
 
-\index{Test (class in pygpc.Test)}
+\index{Test (class in pygpc.Test)@\spxentry{Test}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.Test}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{Test}}}{\emph{dim}}{}
@@ -4653,7 +4734,7 @@ Test function objects
 
 \end{fulllineitems}
 
-\index{Welch1992 (class in pygpc.Test)}
+\index{Welch1992 (class in pygpc.Test)@\spxentry{Welch1992}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.Welch1992}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{Welch1992}}}
@@ -4663,7 +4744,7 @@ Welch1992 test function
 
 \end{fulllineitems}
 
-\index{WingWeight (class in pygpc.Test)}
+\index{WingWeight (class in pygpc.Test)@\spxentry{WingWeight}\spxextra{class in pygpc.Test}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Test.WingWeight}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Test.}}\sphinxbfcode{\sphinxupquote{WingWeight}}}
@@ -4676,14 +4757,14 @@ WingWeight test function
 
 
 \section{pygpc.TestBench module}
-\label{\detokenize{pygpc:module-pygpc.TestBench}}\label{\detokenize{pygpc:pygpc-testbench-module}}\index{pygpc.TestBench (module)}\index{TestBench (class in pygpc.TestBench)}
+\label{\detokenize{pygpc:module-pygpc.TestBench}}\label{\detokenize{pygpc:pygpc-testbench-module}}\index{pygpc.TestBench (module)@\spxentry{pygpc.TestBench}\spxextra{module}}\index{TestBench (class in pygpc.TestBench)@\spxentry{TestBench}\spxextra{class in pygpc.TestBench}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBench}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBench}}}{\emph{algorithm}, \emph{problem}, \emph{options}, \emph{n\_cpu}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBench}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBench}}}{\emph{algorithm}, \emph{problem}, \emph{options}, \emph{repetitions=1}, \emph{n\_cpu=1}}{}
 Bases: \sphinxcode{\sphinxupquote{object}}
 
 TestBench for gPC algorithms
-\index{run() (pygpc.TestBench.TestBench method)}
+\index{run() (pygpc.TestBench.TestBench method)@\spxentry{run()}\spxextra{pygpc.TestBench.TestBench method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBench.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{}{}
@@ -4694,39 +4775,39 @@ Run algorithms with test problems and save results
 
 \end{fulllineitems}
 
-\index{TestBenchContinuous (class in pygpc.TestBench)}
+\index{TestBenchContinuous (class in pygpc.TestBench)@\spxentry{TestBenchContinuous}\spxextra{class in pygpc.TestBench}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBenchContinuous}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBenchContinuous}}}{\emph{algorithm}, \emph{options}, \emph{n\_cpu=1}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBenchContinuous}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBenchContinuous}}}{\emph{algorithm}, \emph{options}, \emph{repetitions}, \emph{n\_cpu=1}}{}
 Bases: {\hyperref[\detokenize{pygpc:pygpc.TestBench.TestBench}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygpc.TestBench.TestBench}}}}}
 
 \end{fulllineitems}
 
-\index{TestBenchContinuousND (class in pygpc.TestBench)}
+\index{TestBenchContinuousND (class in pygpc.TestBench)@\spxentry{TestBenchContinuousND}\spxextra{class in pygpc.TestBench}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBenchContinuousND}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBenchContinuousND}}}{\emph{algorithm}, \emph{options}, \emph{dims}, \emph{n\_cpu=1}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBenchContinuousND}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBenchContinuousND}}}{\emph{algorithm}, \emph{options}, \emph{dims}, \emph{repetitions}, \emph{n\_cpu=1}}{}
 Bases: {\hyperref[\detokenize{pygpc:pygpc.TestBench.TestBench}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygpc.TestBench.TestBench}}}}}
 
 \end{fulllineitems}
 
-\index{TestBenchDiscontinuous (class in pygpc.TestBench)}
+\index{TestBenchDiscontinuous (class in pygpc.TestBench)@\spxentry{TestBenchDiscontinuous}\spxextra{class in pygpc.TestBench}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBenchDiscontinuous}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBenchDiscontinuous}}}{\emph{algorithm}, \emph{options}, \emph{n\_cpu=1}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBenchDiscontinuous}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBenchDiscontinuous}}}{\emph{algorithm}, \emph{options}, \emph{repetitions}, \emph{n\_cpu=1}}{}
 Bases: {\hyperref[\detokenize{pygpc:pygpc.TestBench.TestBench}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygpc.TestBench.TestBench}}}}}
 
 \end{fulllineitems}
 
-\index{TestBenchDiscontinuousND (class in pygpc.TestBench)}
+\index{TestBenchDiscontinuousND (class in pygpc.TestBench)@\spxentry{TestBenchDiscontinuousND}\spxextra{class in pygpc.TestBench}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBenchDiscontinuousND}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBenchDiscontinuousND}}}{\emph{algorithm}, \emph{options}, \emph{dims}, \emph{n\_cpu=1}}{}
+\phantomsection\label{\detokenize{pygpc:pygpc.TestBench.TestBenchDiscontinuousND}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{TestBenchDiscontinuousND}}}{\emph{algorithm}, \emph{options}, \emph{dims}, \emph{repetitions}, \emph{n\_cpu=1}}{}
 Bases: {\hyperref[\detokenize{pygpc:pygpc.TestBench.TestBench}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygpc.TestBench.TestBench}}}}}
 
 \end{fulllineitems}
 
-\index{run\_test() (in module pygpc.TestBench)}
+\index{run\_test() (in module pygpc.TestBench)@\spxentry{run\_test()}\spxextra{in module pygpc.TestBench}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.TestBench.run_test}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.TestBench.}}\sphinxbfcode{\sphinxupquote{run\_test}}}{\emph{algorithm}}{}
@@ -4734,17 +4815,30 @@ Bases: {\hyperref[\detokenize{pygpc:pygpc.TestBench.TestBench}]{\sphinxcrossref{
 
 
 
+\section{pygpc.ValidationSet module}
+\label{\detokenize{pygpc:module-pygpc.ValidationSet}}\label{\detokenize{pygpc:pygpc-validationset-module}}\index{pygpc.ValidationSet (module)@\spxentry{pygpc.ValidationSet}\spxextra{module}}\index{ValidationSet (class in pygpc.ValidationSet)@\spxentry{ValidationSet}\spxextra{class in pygpc.ValidationSet}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{pygpc:pygpc.ValidationSet.ValidationSet}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.ValidationSet.}}\sphinxbfcode{\sphinxupquote{ValidationSet}}}{\emph{grid=None}, \emph{results=None}}{}
+Bases: \sphinxcode{\sphinxupquote{object}}
+
+ValidationSet object
+
+\end{fulllineitems}
+
+
+
 \section{pygpc.Visualization module}
-\label{\detokenize{pygpc:module-pygpc.Visualization}}\label{\detokenize{pygpc:pygpc-visualization-module}}\index{pygpc.Visualization (module)}
+\label{\detokenize{pygpc:module-pygpc.Visualization}}\label{\detokenize{pygpc:pygpc-visualization-module}}\index{pygpc.Visualization (module)@\spxentry{pygpc.Visualization}\spxextra{module}}
 Functions and classes that provide visualisation functionalities
-\index{Visualization (class in pygpc.Visualization)}
+\index{Visualization (class in pygpc.Visualization)@\spxentry{Visualization}\spxextra{class in pygpc.Visualization}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygpc.Visualization.}}\sphinxbfcode{\sphinxupquote{Visualization}}}{\emph{dims=(10}, \emph{10)}}{}
 Creates a new visualization in a new window. Any added sub-charts will be added to this window.
 
 Visualisation(dims=(10, 10))
-\index{figure\_number (pygpc.Visualization.Visualization.Visualisation attribute)}
+\index{figure\_number (pygpc.Visualization.Visualization.Visualisation attribute)@\spxentry{figure\_number}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.Visualisation.figure_number}}\pysigline{\sphinxcode{\sphinxupquote{Visualisation.}}\sphinxbfcode{\sphinxupquote{figure\_number}}}
@@ -4757,7 +4851,7 @@ int, begin=0
 
 \end{fulllineitems}
 
-\index{horizontal\_padding (pygpc.Visualization.Visualization.Visualisation attribute)}
+\index{horizontal\_padding (pygpc.Visualization.Visualization.Visualisation attribute)@\spxentry{horizontal\_padding}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.Visualisation.horizontal_padding}}\pysigline{\sphinxcode{\sphinxupquote{Visualisation.}}\sphinxbfcode{\sphinxupquote{horizontal\_padding}}}
@@ -4770,7 +4864,7 @@ float, default=0.4
 
 \end{fulllineitems}
 
-\index{font\_size\_label (pygpc.Visualization.Visualization.Visualisation attribute)}
+\index{font\_size\_label (pygpc.Visualization.Visualization.Visualisation attribute)@\spxentry{font\_size\_label}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.Visualisation.font_size_label}}\pysigline{\sphinxcode{\sphinxupquote{Visualisation.}}\sphinxbfcode{\sphinxupquote{font\_size\_label}}}
@@ -4783,7 +4877,7 @@ int, default=12
 
 \end{fulllineitems}
 
-\index{font\_size\_label (pygpc.Visualization.Visualization.Visualisation attribute)}
+\index{font\_size\_label (pygpc.Visualization.Visualization.Visualisation attribute)@\spxentry{font\_size\_label}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}}
 
 \begin{fulllineitems}
 \pysigline{\sphinxcode{\sphinxupquote{Visualisation.}}\sphinxbfcode{\sphinxupquote{font\_size\_label}}}
@@ -4796,7 +4890,7 @@ int, default=12
 
 \end{fulllineitems}
 
-\index{graph\_lind\_width (pygpc.Visualization.Visualization.Visualisation attribute)}
+\index{graph\_lind\_width (pygpc.Visualization.Visualization.Visualisation attribute)@\spxentry{graph\_lind\_width}\spxextra{pygpc.Visualization.Visualization.Visualisation attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.Visualisation.graph_lind_width}}\pysigline{\sphinxcode{\sphinxupquote{Visualisation.}}\sphinxbfcode{\sphinxupquote{graph\_lind\_width}}}
@@ -4809,7 +4903,7 @@ int, default 2
 
 \end{fulllineitems}
 
-\index{fig (pygpc.Visualization.Visualization attribute)}
+\index{fig (pygpc.Visualization.Visualization attribute)@\spxentry{fig}\spxextra{pygpc.Visualization.Visualization attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.fig}}\pysigline{\sphinxbfcode{\sphinxupquote{fig}}}
@@ -4827,7 +4921,7 @@ mpl.figure
 \sphinxstyleliteralstrong{\sphinxupquote{dims}} (\sphinxstyleliteralemphasis{\sphinxupquote{list of int}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{default=}}\sphinxstyleliteralemphasis{\sphinxupquote{(}}\sphinxstyleliteralemphasis{\sphinxupquote{10}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{10}}\sphinxstyleliteralemphasis{\sphinxupquote{)}}) \textendash{} Size of the newly created window
 
 \end{description}\end{quote}
-\index{add\_heat\_map() (pygpc.Visualization.Visualization method)}
+\index{add\_heat\_map() (pygpc.Visualization.Visualization method)@\spxentry{add\_heat\_map()}\spxextra{pygpc.Visualization.Visualization method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.add_heat_map}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_heat\_map}}}{\emph{title}, \emph{labels}, \emph{grid\_points}, \emph{data\_points}, \emph{v\_lim=(None}, \emph{None)}, \emph{x\_lim=None}, \emph{y\_lim=None}, \emph{colormap=None}}{}
@@ -4866,7 +4960,7 @@ add\_heat\_map(title, labels, grid\_points, data\_points, v\_lim=(None, None), x
 
 \end{fulllineitems}
 
-\index{add\_line\_plot() (pygpc.Visualization.Visualization method)}
+\index{add\_line\_plot() (pygpc.Visualization.Visualization method)@\spxentry{add\_line\_plot()}\spxextra{pygpc.Visualization.Visualization method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.add_line_plot}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_line\_plot}}}{\emph{title}, \emph{labels}, \emph{data}, \emph{x\_lim=None}, \emph{y\_lim=None}}{}
@@ -4896,7 +4990,7 @@ add\_line\_plot(title, labels, data, x\_lim=None, y\_lim=None)
 
 \end{fulllineitems}
 
-\index{add\_scatter\_plot() (pygpc.Visualization.Visualization static method)}
+\index{add\_scatter\_plot() (pygpc.Visualization.Visualization static method)@\spxentry{add\_scatter\_plot()}\spxextra{pygpc.Visualization.Visualization static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.add_scatter_plot}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{add\_scatter\_plot}}}{\emph{shape}, \emph{plot\_size}, \emph{color\_sequence}, \emph{colormap=None}, \emph{v\_lim=(None}, \emph{None)}}{}
@@ -4926,7 +5020,7 @@ add\_scatter\_plot(shape, plot\_size, color\_sequence, colormap=None, v\_lim=(No
 
 \end{fulllineitems}
 
-\index{create\_new\_chart() (pygpc.Visualization.Visualization method)}
+\index{create\_new\_chart() (pygpc.Visualization.Visualization method)@\spxentry{create\_new\_chart()}\spxextra{pygpc.Visualization.Visualization method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.create_new_chart}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{create\_new\_chart}}}{\emph{layout\_id=None}}{}
@@ -4942,7 +5036,7 @@ create\_new\_chart(layout\_id=None)
 
 \end{fulllineitems}
 
-\index{create\_sub\_plot() (pygpc.Visualization.Visualization static method)}
+\index{create\_sub\_plot() (pygpc.Visualization.Visualization static method)@\spxentry{create\_sub\_plot()}\spxextra{pygpc.Visualization.Visualization static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.create_sub_plot}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{create\_sub\_plot}}}{\emph{title}, \emph{labels}, \emph{x\_lim}, \emph{y\_lim}}{}
@@ -4969,37 +5063,37 @@ create\_sub\_plot(title, labels, x\_lim, y\_lim)
 
 \end{fulllineitems}
 
-\index{figure\_number (pygpc.Visualization.Visualization attribute)}
+\index{figure\_number (pygpc.Visualization.Visualization attribute)@\spxentry{figure\_number}\spxextra{pygpc.Visualization.Visualization attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.figure_number}}\pysigline{\sphinxbfcode{\sphinxupquote{figure\_number}}\sphinxbfcode{\sphinxupquote{ = 0}}}
 \end{fulllineitems}
 
-\index{font\_size\_label (pygpc.Visualization.Visualization attribute)}
+\index{font\_size\_label (pygpc.Visualization.Visualization attribute)@\spxentry{font\_size\_label}\spxextra{pygpc.Visualization.Visualization attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.font_size_label}}\pysigline{\sphinxbfcode{\sphinxupquote{font\_size\_label}}\sphinxbfcode{\sphinxupquote{ = 12}}}
 \end{fulllineitems}
 
-\index{font\_size\_title (pygpc.Visualization.Visualization attribute)}
+\index{font\_size\_title (pygpc.Visualization.Visualization attribute)@\spxentry{font\_size\_title}\spxextra{pygpc.Visualization.Visualization attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.font_size_title}}\pysigline{\sphinxbfcode{\sphinxupquote{font\_size\_title}}\sphinxbfcode{\sphinxupquote{ = 12}}}
 \end{fulllineitems}
 
-\index{graph\_line\_width (pygpc.Visualization.Visualization attribute)}
+\index{graph\_line\_width (pygpc.Visualization.Visualization attribute)@\spxentry{graph\_line\_width}\spxextra{pygpc.Visualization.Visualization attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.graph_line_width}}\pysigline{\sphinxbfcode{\sphinxupquote{graph\_line\_width}}\sphinxbfcode{\sphinxupquote{ = 2}}}
 \end{fulllineitems}
 
-\index{horizontal\_padding (pygpc.Visualization.Visualization attribute)}
+\index{horizontal\_padding (pygpc.Visualization.Visualization attribute)@\spxentry{horizontal\_padding}\spxextra{pygpc.Visualization.Visualization attribute}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.horizontal_padding}}\pysigline{\sphinxbfcode{\sphinxupquote{horizontal\_padding}}\sphinxbfcode{\sphinxupquote{ = 0.4}}}
 \end{fulllineitems}
 
-\index{show() (pygpc.Visualization.Visualization static method)}
+\index{show() (pygpc.Visualization.Visualization static method)@\spxentry{show()}\spxextra{pygpc.Visualization.Visualization static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.Visualization.show}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{show}}}{}{}
@@ -5010,7 +5104,7 @@ Show plots.
 
 \end{fulllineitems}
 
-\index{b2rcw() (in module pygpc.Visualization)}
+\index{b2rcw() (in module pygpc.Visualization)@\spxentry{b2rcw()}\spxextra{in module pygpc.Visualization}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.b2rcw}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Visualization.}}\sphinxbfcode{\sphinxupquote{b2rcw}}}{\emph{cmin\_input}, \emph{cmax\_input}}{}
@@ -5038,7 +5132,6 @@ ndarray of float {[}N\_RGB x 3{]}
 \end{description}\end{quote}
 \subsubsection*{Examples}
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{b2rcw\PYGZus{}cmap\PYGZus{}1} \PYG{o}{=} \PYG{n}{make\PYGZus{}cmap}\PYG{p}{(}\PYG{n}{b2rcw}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{)}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} is from light blue to deep red}
 \PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{b2rcw\PYGZus{}cmap\PYGZus{}2} \PYG{o}{=} \PYG{n}{make\PYGZus{}cmap}\PYG{p}{(}\PYG{n}{b2rcw}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{)}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} is from deep blue to deep red}
@@ -5046,7 +5139,7 @@ ndarray of float {[}N\_RGB x 3{]}
 
 \end{fulllineitems}
 
-\index{make\_cmap() (in module pygpc.Visualization)}
+\index{make\_cmap() (in module pygpc.Visualization)@\spxentry{make\_cmap()}\spxextra{in module pygpc.Visualization}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.make_cmap}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Visualization.}}\sphinxbfcode{\sphinxupquote{make\_cmap}}}{\emph{colors}, \emph{position=None}, \emph{bit=False}}{}
@@ -5080,7 +5173,7 @@ mpl.colors instance
 
 \end{fulllineitems}
 
-\index{plot\_2d\_grid() (in module pygpc.Visualization)}
+\index{plot\_2d\_grid() (in module pygpc.Visualization)@\spxentry{plot\_2d\_grid()}\spxextra{in module pygpc.Visualization}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.plot_2d_grid}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Visualization.}}\sphinxbfcode{\sphinxupquote{plot\_2d\_grid}}}{\emph{coords}, \emph{weights=None}, \emph{fn\_plot=None}}{}
@@ -5108,7 +5201,7 @@ Plot of grid-points
 
 \end{fulllineitems}
 
-\index{plot\_beta\_pdf\_fit() (in module pygpc.Visualization)}
+\index{plot\_beta\_pdf\_fit() (in module pygpc.Visualization)@\spxentry{plot\_beta\_pdf\_fit()}\spxextra{in module pygpc.Visualization}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.plot_beta_pdf_fit}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Visualization.}}\sphinxbfcode{\sphinxupquote{plot\_beta\_pdf\_fit}}}{\emph{data}, \emph{a\_beta}, \emph{b\_beta}, \emph{p\_beta}, \emph{q\_beta}, \emph{a\_uni=None}, \emph{b\_uni=None}, \emph{interactive=True}, \emph{fn\_plot=None}, \emph{xlabel='\$x\$'}, \emph{ylabel='\$p(x)\$'}}{}
@@ -5160,7 +5253,7 @@ Plots
 
 \end{fulllineitems}
 
-\index{plot\_sobol\_indices() (in module pygpc.Visualization)}
+\index{plot\_sobol\_indices() (in module pygpc.Visualization)@\spxentry{plot\_sobol\_indices()}\spxextra{in module pygpc.Visualization}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Visualization.plot_sobol_indices}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Visualization.}}\sphinxbfcode{\sphinxupquote{plot\_sobol\_indices}}}{\emph{sobol\_rel\_order\_mean}, \emph{sobol\_rel\_1st\_order\_mean}, \emph{fn\_plot}, \emph{random\_vars}}{}
@@ -5192,7 +5285,7 @@ output quantities
 
 
 \section{pygpc.Worker module}
-\label{\detokenize{pygpc:module-pygpc.Worker}}\label{\detokenize{pygpc:pygpc-worker-module}}\index{pygpc.Worker (module)}\index{init() (in module pygpc.Worker)}
+\label{\detokenize{pygpc:module-pygpc.Worker}}\label{\detokenize{pygpc:pygpc-worker-module}}\index{pygpc.Worker (module)@\spxentry{pygpc.Worker}\spxextra{module}}\index{init() (in module pygpc.Worker)@\spxentry{init()}\spxextra{in module pygpc.Worker}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Worker.init}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Worker.}}\sphinxbfcode{\sphinxupquote{init}}}{\emph{queue}}{}
@@ -5210,7 +5303,7 @@ be read by any function of this process
 
 \end{fulllineitems}
 
-\index{run() (in module pygpc.Worker)}
+\index{run() (in module pygpc.Worker)@\spxentry{run()}\spxextra{in module pygpc.Worker}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.Worker.run}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.Worker.}}\sphinxbfcode{\sphinxupquote{run}}}{\emph{obj}}{}
@@ -5247,9 +5340,9 @@ printing global process
 
 
 \section{pygpc.io module}
-\label{\detokenize{pygpc:module-pygpc.io}}\label{\detokenize{pygpc:pygpc-io-module}}\index{pygpc.io (module)}
+\label{\detokenize{pygpc:module-pygpc.io}}\label{\detokenize{pygpc:pygpc-io-module}}\index{pygpc.io (module)@\spxentry{pygpc.io}\spxextra{module}}
 Functions that provide input and output functionality
-\index{iprint() (in module pygpc.io)}
+\index{iprint() (in module pygpc.io)@\spxentry{iprint()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.iprint}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{iprint}}}{\emph{message}, \emph{verbose=True}, \emph{tab=None}}{}
@@ -5273,7 +5366,7 @@ iprint(message, verbose=True)
 
 \end{fulllineitems}
 
-\index{read\_data\_hdf5() (in module pygpc.io)}
+\index{read\_data\_hdf5() (in module pygpc.io)@\spxentry{read\_data\_hdf5()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.read_data_hdf5}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{read\_data\_hdf5}}}{\emph{fname}, \emph{loc}}{}
@@ -5300,7 +5393,7 @@ ndarray of float
 
 \end{fulllineitems}
 
-\index{read\_gpc\_pkl() (in module pygpc.io)}
+\index{read\_gpc\_pkl() (in module pygpc.io)@\spxentry{read\_gpc\_pkl()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.read_gpc_pkl}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{read\_gpc\_pkl}}}{\emph{fname}}{}
@@ -5321,7 +5414,7 @@ GPC Object
 
 \end{fulllineitems}
 
-\index{read\_sobol\_idx\_txt() (in module pygpc.io)}
+\index{read\_sobol\_idx\_txt() (in module pygpc.io)@\spxentry{read\_sobol\_idx\_txt()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.read_sobol_idx_txt}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{read\_sobol\_idx\_txt}}}{\emph{fname}}{}
@@ -5342,7 +5435,7 @@ read\_sobol\_idx\_txt(fname)
 
 \end{fulllineitems}
 
-\index{wprint() (in module pygpc.io)}
+\index{wprint() (in module pygpc.io)@\spxentry{wprint()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.wprint}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{wprint}}}{\emph{message}, \emph{verbose=True}, \emph{tab=None}}{}
@@ -5366,7 +5459,7 @@ wprint(message, verbose=True)
 
 \end{fulllineitems}
 
-\index{write\_data\_hdf5() (in module pygpc.io)}
+\index{write\_data\_hdf5() (in module pygpc.io)@\spxentry{write\_data\_hdf5()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.write_data_hdf5}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{write\_data\_hdf5}}}{\emph{data}, \emph{fname}, \emph{loc}}{}
@@ -5390,7 +5483,7 @@ write\_data\_hdf5(data, fname, loc)
 
 \end{fulllineitems}
 
-\index{write\_data\_txt() (in module pygpc.io)}
+\index{write\_data\_txt() (in module pygpc.io)@\spxentry{write\_data\_txt()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.write_data_txt}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{write\_data\_txt}}}{\emph{data}, \emph{fname}}{}
@@ -5417,7 +5510,7 @@ txt file
 
 \end{fulllineitems}
 
-\index{write\_gpc\_pkl() (in module pygpc.io)}
+\index{write\_gpc\_pkl() (in module pygpc.io)@\spxentry{write\_gpc\_pkl()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.write_gpc_pkl}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{write\_gpc\_pkl}}}{\emph{obj}, \emph{fname}}{}
@@ -5444,7 +5537,7 @@ pkl file
 
 \end{fulllineitems}
 
-\index{write\_log\_sobol() (in module pygpc.io)}
+\index{write\_log\_sobol() (in module pygpc.io)@\spxentry{write\_log\_sobol()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.write_log_sobol}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{write\_log\_sobol}}}{\emph{fname}, \emph{random\_vars}, \emph{sobol\_rel\_order\_mean}, \emph{sobol\_rel\_1st\_order\_mean}, \emph{sobol\_extracted\_idx\_1st}}{}
@@ -5480,7 +5573,7 @@ txt file
 
 \end{fulllineitems}
 
-\index{write\_sobol\_idx\_txt() (in module pygpc.io)}
+\index{write\_sobol\_idx\_txt() (in module pygpc.io)@\spxentry{write\_sobol\_idx\_txt()}\spxextra{in module pygpc.io}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.io.write_sobol_idx_txt}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.io.}}\sphinxbfcode{\sphinxupquote{write\_sobol\_idx\_txt}}}{\emph{sobol\_idx}, \emph{fname}}{}
@@ -5510,9 +5603,9 @@ txt file
 
 
 \section{pygpc.misc module}
-\label{\detokenize{pygpc:module-pygpc.misc}}\label{\detokenize{pygpc:pygpc-misc-module}}\index{pygpc.misc (module)}
+\label{\detokenize{pygpc:module-pygpc.misc}}\label{\detokenize{pygpc:pygpc-misc-module}}\index{pygpc.misc (module)@\spxentry{pygpc.misc}\spxextra{module}}
 Functions and classes that provide data and methods with general usage in the pygpc package
-\index{display\_fancy\_bar() (in module pygpc.misc)}
+\index{display\_fancy\_bar() (in module pygpc.misc)@\spxentry{display\_fancy\_bar()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.display_fancy_bar}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{display\_fancy\_bar}}}{\emph{text}, \emph{i}, \emph{n\_i}, \emph{more\_text=None}}{}
@@ -5545,7 +5638,7 @@ Run 09 from 10 {[}======================================= {]} 90\%
 
 \end{fulllineitems}
 
-\index{get\_all\_combinations() (in module pygpc.misc)}
+\index{get\_all\_combinations() (in module pygpc.misc)@\spxentry{get\_all\_combinations()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_all_combinations}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_all\_combinations}}}{\emph{array}, \emph{number\_elements}}{}
@@ -5567,7 +5660,7 @@ np.ndarray
 
 \end{fulllineitems}
 
-\index{get\_array\_unique\_rows() (in module pygpc.misc)}
+\index{get\_array\_unique\_rows() (in module pygpc.misc)@\spxentry{get\_array\_unique\_rows()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_array_unique_rows}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_array\_unique\_rows}}}{\emph{array}}{}
@@ -5588,7 +5681,7 @@ ndarray of float
 
 \end{fulllineitems}
 
-\index{get\_beta\_pdf\_fit() (in module pygpc.misc)}
+\index{get\_beta\_pdf\_fit() (in module pygpc.misc)@\spxentry{get\_beta\_pdf\_fit()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_beta_pdf_fit}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_beta\_pdf\_fit}}}{\emph{data}, \emph{beta\_tolerance=0}, \emph{uni\_interval=0}, \emph{fn\_plot=None}}{}
@@ -5633,7 +5726,7 @@ from observed data, e.g. 0.2 (+-20\% tolerance on observed max and min value)
 
 \end{fulllineitems}
 
-\index{get\_cartesian\_product() (in module pygpc.misc)}
+\index{get\_cartesian\_product() (in module pygpc.misc)@\spxentry{get\_cartesian\_product()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_cartesian_product}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_cartesian\_product}}}{\emph{array\_list}}{}
@@ -5654,7 +5747,6 @@ ndarray of float
 \end{description}\end{quote}
 \subsubsection*{Examples}
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k+kn}{import} \PYG{n+nn}{pygpc}
 \PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{out} \PYG{o}{=} \PYG{n}{pygpc}\PYG{o}{.}\PYG{n}{get\PYGZus{}cartesian\PYGZus{}product}\PYG{p}{(}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{6}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{]}\PYG{p}{)}\PYG{p}{)}
@@ -5663,7 +5755,7 @@ ndarray of float
 
 \end{fulllineitems}
 
-\index{get\_list\_multi\_delete() (in module pygpc.misc)}
+\index{get\_list\_multi\_delete() (in module pygpc.misc)@\spxentry{get\_list\_multi\_delete()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_list_multi_delete}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_list\_multi\_delete}}}{\emph{input\_list}, \emph{index}}{}
@@ -5690,7 +5782,7 @@ list
 
 \end{fulllineitems}
 
-\index{get\_multi\_indices\_max\_order() (in module pygpc.misc)}
+\index{get\_multi\_indices\_max\_order() (in module pygpc.misc)@\spxentry{get\_multi\_indices\_max\_order()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_multi_indices_max_order}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_multi\_indices\_max\_order}}}{\emph{dim}, \emph{order\_max}, \emph{order\_max\_norm=1.0}}{}
@@ -5725,39 +5817,7 @@ np.ndarray {[}n\_basis x dim{]}
 
 \end{fulllineitems}
 
-\index{get\_normalized\_rms\_deviation() (in module pygpc.misc)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygpc:pygpc.misc.get_normalized_rms_deviation}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_normalized\_rms\_deviation}}}{\emph{array}, \emph{array\_ref}, \emph{x\_axis=False}}{}
-Determine the normalized root mean square deviation between input data and reference data in {[}\%{]}.
-
-normalized\_rms = get\_normalized\_rms(array, array\_ref)
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{array}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} input data {[} (x), y0, y1, y2 … {]}
-
-\item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{array\_ref}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} reference data {[} (x\_ref), y0\_ref, y1\_ref, y2\_ref … {]}
-if array\_ref is 1D, all sizes have to match
-
-\item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{x\_axis}} (\sphinxstyleliteralemphasis{\sphinxupquote{boolean}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{default=False}}) \textendash{} If True, the first column of array and array\_ref is interpreted as the x-axis, where the data points are
-evaluated. If False, the data points are assumed to be at the same location.
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\sphinxstylestrong{normalized\_rms} \textendash{} Normalized root mean square deviation between the columns of array and array\_ref
-
-\item[{Return type}] \leavevmode
-ndarray of float {[}array.shape{[}1{]}{]}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{get\_num\_coeffs() (in module pygpc.misc)}
+\index{get\_num\_coeffs() (in module pygpc.misc)@\spxentry{get\_num\_coeffs()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_num_coeffs}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_num\_coeffs}}}{\emph{order}, \emph{dim}}{}
@@ -5786,7 +5846,7 @@ int
 
 \end{fulllineitems}
 
-\index{get\_num\_coeffs\_sparse() (in module pygpc.misc)}
+\index{get\_num\_coeffs\_sparse() (in module pygpc.misc)@\spxentry{get\_num\_coeffs\_sparse()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_num_coeffs_sparse}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_num\_coeffs\_sparse}}}{\emph{order\_dim\_max}, \emph{order\_glob\_max}, \emph{order\_inter\_max}, \emph{dim}, \emph{order\_glob\_max\_norm=1}}{}
@@ -5824,7 +5884,7 @@ int
 
 \end{fulllineitems}
 
-\index{get\_pdf\_beta() (in module pygpc.misc)}
+\index{get\_pdf\_beta() (in module pygpc.misc)@\spxentry{get\_pdf\_beta()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_pdf_beta}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_pdf\_beta}}}{\emph{x}, \emph{p}, \emph{q}, \emph{a}, \emph{b}}{}
@@ -5865,7 +5925,7 @@ ndarray of float
 
 \end{fulllineitems}
 
-\index{get\_rotation\_matrix() (in module pygpc.misc)}
+\index{get\_rotation\_matrix() (in module pygpc.misc)@\spxentry{get\_rotation\_matrix()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.get_rotation_matrix}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{get\_rotation\_matrix}}}{\emph{theta}}{}
@@ -5886,7 +5946,7 @@ ndarray of float {[}3, 3{]}
 
 \end{fulllineitems}
 
-\index{list2dict() (in module pygpc.misc)}
+\index{list2dict() (in module pygpc.misc)@\spxentry{list2dict()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.list2dict}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{list2dict}}}{\emph{l}}{}
@@ -5905,7 +5965,7 @@ dict of lists
 
 \end{fulllineitems}
 
-\index{mutual\_coherence() (in module pygpc.misc)}
+\index{mutual\_coherence() (in module pygpc.misc)@\spxentry{mutual\_coherence()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.mutual_coherence}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{mutual\_coherence}}}{\emph{array}}{}
@@ -5927,7 +5987,42 @@ float
 
 \end{fulllineitems}
 
-\index{sample\_sphere() (in module pygpc.misc)}
+\index{nrmsd() (in module pygpc.misc)@\spxentry{nrmsd()}\spxextra{in module pygpc.misc}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{pygpc:pygpc.misc.nrmsd}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{nrmsd}}}{\emph{array}, \emph{array\_ref}, \emph{error\_norm='relative'}, \emph{x\_axis=False}}{}
+Determine the normalized root mean square deviation between input data and reference data.
+
+normalized\_rms = get\_normalized\_rms(array, array\_ref)
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{array}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} input data {[} (x), y0, y1, y2 … {]}
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{array\_ref}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} reference data {[} (x\_ref), y0\_ref, y1\_ref, y2\_ref … {]}
+if array\_ref is 1D, all sizes have to match
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{error\_norm}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{default="relative"}}) \textendash{} Decide if error is determined “relative” or “absolute”
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{x\_axis}} (\sphinxstyleliteralemphasis{\sphinxupquote{boolean}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{default=False}}) \textendash{} If True, the first column of array and array\_ref is interpreted as the x-axis, where the data points are
+evaluated. If False, the data points are assumed to be at the same location.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\sphinxstylestrong{normalized\_rms} \textendash{} Normalized root mean square deviation between the columns of array and array\_ref
+
+\item[{Return type}] \leavevmode
+ndarray of float {[}array.shape{[}1{]}{]}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{sample\_sphere() (in module pygpc.misc)@\spxentry{sample\_sphere()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.sample_sphere}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{sample\_sphere}}}{\emph{n\_points}, \emph{r}}{}
@@ -5952,7 +6047,7 @@ ndarray of float {[}N x 3{]}
 
 \end{fulllineitems}
 
-\index{wrap\_function() (in module pygpc.misc)}
+\index{wrap\_function() (in module pygpc.misc)@\spxentry{wrap\_function()}\spxextra{in module pygpc.misc}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.misc.wrap_function}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.misc.}}\sphinxbfcode{\sphinxupquote{wrap\_function}}}{\emph{fn}, \emph{x}, \emph{args}}{}
@@ -5985,7 +6080,7 @@ function
 
 
 \section{pygpc.postprocessing module}
-\label{\detokenize{pygpc:module-pygpc.postprocessing}}\label{\detokenize{pygpc:pygpc-postprocessing-module}}\index{pygpc.postprocessing (module)}\index{get\_sensitivities\_hdf5() (in module pygpc.postprocessing)}
+\label{\detokenize{pygpc:module-pygpc.postprocessing}}\label{\detokenize{pygpc:pygpc-postprocessing-module}}\index{pygpc.postprocessing (module)@\spxentry{pygpc.postprocessing}\spxextra{module}}\index{get\_sensitivities\_hdf5() (in module pygpc.postprocessing)@\spxentry{get\_sensitivities\_hdf5()}\spxextra{in module pygpc.postprocessing}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.postprocessing.get_sensitivities_hdf5}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.postprocessing.}}\sphinxbfcode{\sphinxupquote{get\_sensitivities\_hdf5}}}{\emph{fn\_gpc}, \emph{output\_idx=False}, \emph{calc\_sobol=True}, \emph{calc\_global\_sens=False}, \emph{calc\_pdf=False}}{}
@@ -6043,7 +6138,7 @@ I—/pdf\_y              {[}100 x n\_qoi{]}           y-axis values of output PD
 
 
 \section{pygpc.validation module}
-\label{\detokenize{pygpc:module-pygpc.validation}}\label{\detokenize{pygpc:pygpc-validation-module}}\index{pygpc.validation (module)}\index{validate\_gpc\_mc() (in module pygpc.validation)}
+\label{\detokenize{pygpc:module-pygpc.validation}}\label{\detokenize{pygpc:pygpc-validation-module}}\index{pygpc.validation (module)@\spxentry{pygpc.validation}\spxextra{module}}\index{validate\_gpc\_mc() (in module pygpc.validation)@\spxentry{validate\_gpc\_mc()}\spxextra{in module pygpc.validation}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.validation.validate_gpc_mc}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.validation.}}\sphinxbfcode{\sphinxupquote{validate\_gpc\_mc}}}{\emph{gpc}, \emph{coeffs}, \emph{n\_samples=10000.0}, \emph{output\_idx=0}, \emph{n\_cpu=1}, \emph{fn\_out=None}}{}
@@ -6090,7 +6185,7 @@ and saves the plot as fn\_pdf.png and fn\_pdf.pdf.
 
 \end{fulllineitems}
 
-\index{validate\_gpc\_plot() (in module pygpc.validation)}
+\index{validate\_gpc\_plot() (in module pygpc.validation)@\spxentry{validate\_gpc\_plot()}\spxextra{in module pygpc.validation}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pygpc:pygpc.validation.validate_gpc_plot}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygpc.validation.}}\sphinxbfcode{\sphinxupquote{validate\_gpc\_plot}}}{\emph{gpc}, \emph{coeffs}, \emph{random\_vars}, \emph{n\_grid=None}, \emph{coords=None}, \emph{output\_idx=0}, \emph{data\_original=None}, \emph{fn\_out=None}, \emph{n\_cpu=1}}{}
@@ -6147,7 +6242,7 @@ A cartesian grid is generated based on the limits of the specified random\_vars
 
 
 \section{Module contents}
-\label{\detokenize{pygpc:module-pygpc}}\label{\detokenize{pygpc:module-contents}}\index{pygpc (module)}
+\label{\detokenize{pygpc:module-pygpc}}\label{\detokenize{pygpc:module-contents}}\index{pygpc (module)@\spxentry{pygpc}\spxextra{module}}
 A package that provides submodules to perform polynomial chaos uncertainty analysis on complex dynamic systems.
 
 
@@ -6189,6 +6284,7 @@ A package that provides submodules to perform polynomial chaos uncertainty analy
 \item\relax\sphinxstyleindexentry{pygpc.testfunctions}\sphinxstyleindexpageref{pygpc.testfunctions:\detokenize{module-pygpc.testfunctions}}
 \item\relax\sphinxstyleindexentry{pygpc.testfunctions.testfunctions}\sphinxstyleindexpageref{pygpc.testfunctions:\detokenize{module-pygpc.testfunctions.testfunctions}}
 \item\relax\sphinxstyleindexentry{pygpc.validation}\sphinxstyleindexpageref{pygpc:\detokenize{module-pygpc.validation}}
+\item\relax\sphinxstyleindexentry{pygpc.ValidationSet}\sphinxstyleindexpageref{pygpc:\detokenize{module-pygpc.ValidationSet}}
 \item\relax\sphinxstyleindexentry{pygpc.Visualization}\sphinxstyleindexpageref{pygpc:\detokenize{module-pygpc.Visualization}}
 \item\relax\sphinxstyleindexentry{pygpc.Worker}\sphinxstyleindexpageref{pygpc:\detokenize{module-pygpc.Worker}}
 \end{sphinxtheindex}

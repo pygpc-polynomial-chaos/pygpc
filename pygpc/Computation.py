@@ -144,6 +144,8 @@ class ComputationPoolMap:
 
             # replace RandomParameters with grid points
             for i in range(0, len(random_var_instances)):
+                if type(random_var_instances[i]) is not np.array:
+                    random_var_instances[i] = np.array([random_var_instances[i]])
                 parameters[list(problem.parameters_random.keys())[i]] = random_var_instances[i]
 
             # append new worker which will evaluate the model with particular parameters from grid

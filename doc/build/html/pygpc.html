@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
@@ -1004,6 +1004,34 @@ variance
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pygpc.GPC.GPC.n_basis">
+<code class="descname">n_basis</code><a class="headerlink" href="#pygpc.GPC.GPC.n_basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of basis functions (for iterative solvers, this is a list of its history)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int or list of int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.GPC.GPC.n_grid">
+<code class="descname">n_grid</code><a class="headerlink" href="#pygpc.GPC.GPC.n_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of grid points (for iterative solvers, this is a list of its history)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int or list of int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pygpc.GPC.GPC.solver">
 <code class="descname">solver</code><a class="headerlink" href="#pygpc.GPC.GPC.solver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default solver to determine the gPC coefficients (can be chosen during GPC.solve)
@@ -1063,14 +1091,14 @@ variance
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pygpc.GPC.GPC.n_cpu">
-<code class="descname">n_cpu</code><a class="headerlink" href="#pygpc.GPC.GPC.n_cpu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of threads to use for parallel evaluation of the model function.</p>
+<dt id="pygpc.GPC.GPC.options">
+<code class="descname">options</code><a class="headerlink" href="#pygpc.GPC.GPC.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options of gPC algorithm</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int, optional, default=1</td>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
@@ -1190,6 +1218,47 @@ Multiplying all elements in a row at location xi = (x1, x2, …, x_dim) yields t
 </dd></dl>
 
 <dl class="method">
+<dt id="pygpc.GPC.GPC.loocv">
+<code class="descname">loocv</code><span class="sig-paren">(</span><em>coeffs</em>, <em>sim_results</em>, <em>error_norm='relative'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.loocv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.loocv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
+The loocv error is calculated analytically after eq. (35) in [1] but omitting the “1 - ” term, i.e. it
+corresponds to 1 - Q^2.</p>
+<p>relative_error_loocv = GPC.loocv(sim_results, coeffs)</p>
+<div class="math">
+<p><img src="_images/math/a44beebe84df819e638ee21019d32e5c926cc9e1.png" alt="\epsilon_{LOOCV} = \frac{\frac{1}{N}\sum_{i=1}^N \left( \frac{y(\xi_i) - \hat{y}(\xi_i)}{1-h_i} \right)^2}{\frac{1}{N-1}\sum_{i=1}^N \left( y(\xi_i) - \bar{y} \right)^2}"/></p>
+</div><p>with</p>
+<div class="math">
+<p><img src="_images/math/22fc1ecf32904db42e600d34e33f17e041cc27d6.png" alt="\mathbf{h} = \mathrm{diag}(\mathbf{\Psi} (\mathbf{\Psi}^T \mathbf{\Psi})^{-1} \mathbf{\Psi}^T)"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_basis x n_out</em><em>]</em>) – GPC coefficients</li>
+<li><strong>sim_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results from n_grid simulations with n_out output quantities</li>
+<li><strong>error_norm</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default=&quot;relative&quot;</em>) – Decide if error is determined “relative” or “absolute”</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>relative_error_loocv</strong> – Relative mean error of leave one out cross validation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>Blatman, G., &amp; Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions
+for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(2), 183-197.</td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="pygpc.GPC.GPC.replace_gpc_matrix_samples">
 <code class="descname">replace_gpc_matrix_samples</code><span class="sig-paren">(</span><em>idx</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.replace_gpc_matrix_samples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.replace_gpc_matrix_samples" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace distinct sample points from the gPC matrix with new ones.</p>
@@ -1256,6 +1325,32 @@ If a gpc matrix is already present, check for equality and save only appended ro
 <p>Call this method when self.gpc_matrix does not fit to self.grid and self.basis objects anymore
 The old gPC matrix with their self.gpc_matrix_b_id and self.gpc_matrix_coords_id is compared
 to self.basis.b_id and self.grid.coords_id. New rows and columns are computed when differences are found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygpc.GPC.GPC.validate">
+<code class="descname">validate</code><span class="sig-paren">(</span><em>coeffs</em>, <em>sim_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate gPC approximation using the ValidationSet object contained in the Problem object.
+Determines the normalized root mean square deviation between the gpc approximation and the
+original model. Skips this step if no validation set is present</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_coeffs x n_out</em><em>]</em>) – GPC coefficients</li>
+<li><strong>sim_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results from n_grid simulations with n_out output quantities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>error</strong> – Estimated difference between gPC approximation and original model</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -1444,21 +1539,21 @@ The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fouri
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Davis, P. J., Rabinowitz, P. (2007). Methods of numerical integration.
 Courier Corporation, second edition, ISBN: 0486453391.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+<table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
 SIAM Journal on Numerical Analysis, 4(3), 357-362.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
+<table class="docutils footnote" frame="void" id="id6" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[3]</td><td>Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
@@ -1489,21 +1584,21 @@ The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fouri
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id6" rules="none">
+<table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Davis, P. J., Rabinowitz, P. (2007). Methods of numerical integration.
 Courier Corporation, second edition, ISBN: 0486453391.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id7" rules="none">
+<table class="docutils footnote" frame="void" id="id8" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
 SIAM Journal on Numerical Analysis, 4(3), 357-362.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[3]</td><td>Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
@@ -1900,7 +1995,7 @@ BIT Numerical Mathematics, 46(1), 195-202.</td></tr>
 <span id="pygpc-problem-module"></span><h2>pygpc.Problem module<a class="headerlink" href="#module-pygpc.Problem" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.Problem.Problem">
-<em class="property">class </em><code class="descclassname">pygpc.Problem.</code><code class="descname">Problem</code><span class="sig-paren">(</span><em>model</em>, <em>parameters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Problem.html#Problem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Problem.Problem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Problem.</code><code class="descname">Problem</code><span class="sig-paren">(</span><em>model</em>, <em>parameters</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Problem.html#Problem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Problem.Problem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data wrapper for the gpc problem containing the model to investigate and the associated parameters.</p>
 <p class="rubric">Notes</p>
 <p>Add Attributes:</p>
@@ -1941,6 +2036,25 @@ normal-dist: [[], … [0, 0], …, []] (not used)</dd>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="method">
+<dt id="pygpc.Problem.Problem.create_validation_set">
+<code class="descname">create_validation_set</code><span class="sig-paren">(</span><em>n_samples</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Problem.html#Problem.create_validation_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Problem.Problem.create_validation_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a ValidationSet instance (calls the model)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n_samples</strong> (<em>int</em>) – Number of sampling points contained in the validation set</li>
+<li><strong>n_cpu</strong> (<em>int</em>) – Number of parallel function evaluations to evaluate validation set (n_cpu=0 assumes that the
+model is capable to evaluate all grid points in parallel)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="pygpc.Problem.Problem.validate">
 <code class="descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Problem.html#Problem.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Problem.Problem.validate" title="Permalink to this definition">¶</a></dt>
@@ -2231,46 +2345,6 @@ of the random parameters or the constants in model.validate.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
 </tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pygpc.SGPC.Reg.loocv">
-<code class="descname">loocv</code><span class="sig-paren">(</span><em>sim_results</em>, <em>coeffs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg.loocv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg.loocv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
-The loocv error is calculated analytically after eq. (35) in [1] but omitting the “1 - ” term, i.e. it
-corresponds to 1 - Q^2.</p>
-<p>relative_error_loocv = SGPC.loocv(sim_results, coeffs)</p>
-<div class="math">
-<p><img src="_images/math/a44beebe84df819e638ee21019d32e5c926cc9e1.png" alt="\epsilon_{LOOCV} = \frac{\frac{1}{N}\sum_{i=1}^N \left( \frac{y(\xi_i) - \hat{y}(\xi_i)}{1-h_i} \right)^2}{\frac{1}{N-1}\sum_{i=1}^N \left( y(\xi_i) - \bar{y} \right)^2}"/></p>
-</div><p>with</p>
-<div class="math">
-<p><img src="_images/math/22fc1ecf32904db42e600d34e33f17e041cc27d6.png" alt="\mathbf{h} = \mathrm{diag}(\mathbf{\Psi} (\mathbf{\Psi}^T \mathbf{\Psi})^{-1} \mathbf{\Psi}^T)"/></p>
-</div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sim_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results from n_grid simulations with n_out output quantities</li>
-<li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_basis x n_out</em><em>]</em>) – GPC coefficients</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>relative_error_loocv</strong> – Relative mean error of leave one out cross validation</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label">[1]</td><td>Blatman, G., &amp; Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions
-for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(2), 183-197.</td></tr>
 </tbody>
 </table>
 </dd></dl>
@@ -2714,7 +2788,7 @@ variance
 <span id="pygpc-testbench-module"></span><h2>pygpc.TestBench module<a class="headerlink" href="#module-pygpc.TestBench" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.TestBench.TestBench">
-<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBench</code><span class="sig-paren">(</span><em>algorithm</em>, <em>problem</em>, <em>options</em>, <em>n_cpu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBench"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBench" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBench</code><span class="sig-paren">(</span><em>algorithm</em>, <em>problem</em>, <em>options</em>, <em>repetitions=1</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBench"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBench" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>TestBench for gPC algorithms</p>
 <dl class="method">
@@ -2727,25 +2801,25 @@ variance
 
 <dl class="class">
 <dt id="pygpc.TestBench.TestBenchContinuous">
-<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBenchContinuous</code><span class="sig-paren">(</span><em>algorithm</em>, <em>options</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBenchContinuous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBenchContinuous" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBenchContinuous</code><span class="sig-paren">(</span><em>algorithm</em>, <em>options</em>, <em>repetitions</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBenchContinuous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBenchContinuous" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.TestBench.TestBench" title="pygpc.TestBench.TestBench"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.TestBench.TestBench</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pygpc.TestBench.TestBenchContinuousND">
-<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBenchContinuousND</code><span class="sig-paren">(</span><em>algorithm</em>, <em>options</em>, <em>dims</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBenchContinuousND"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBenchContinuousND" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBenchContinuousND</code><span class="sig-paren">(</span><em>algorithm</em>, <em>options</em>, <em>dims</em>, <em>repetitions</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBenchContinuousND"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBenchContinuousND" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.TestBench.TestBench" title="pygpc.TestBench.TestBench"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.TestBench.TestBench</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pygpc.TestBench.TestBenchDiscontinuous">
-<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBenchDiscontinuous</code><span class="sig-paren">(</span><em>algorithm</em>, <em>options</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBenchDiscontinuous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBenchDiscontinuous" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBenchDiscontinuous</code><span class="sig-paren">(</span><em>algorithm</em>, <em>options</em>, <em>repetitions</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBenchDiscontinuous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBenchDiscontinuous" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.TestBench.TestBench" title="pygpc.TestBench.TestBench"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.TestBench.TestBench</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pygpc.TestBench.TestBenchDiscontinuousND">
-<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBenchDiscontinuousND</code><span class="sig-paren">(</span><em>algorithm</em>, <em>options</em>, <em>dims</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBenchDiscontinuousND"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBenchDiscontinuousND" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.TestBench.</code><code class="descname">TestBenchDiscontinuousND</code><span class="sig-paren">(</span><em>algorithm</em>, <em>options</em>, <em>dims</em>, <em>repetitions</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#TestBenchDiscontinuousND"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.TestBenchDiscontinuousND" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.TestBench.TestBench" title="pygpc.TestBench.TestBench"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.TestBench.TestBench</span></code></a></p>
 </dd></dl>
 
@@ -2753,6 +2827,16 @@ variance
 <dt id="pygpc.TestBench.run_test">
 <code class="descclassname">pygpc.TestBench.</code><code class="descname">run_test</code><span class="sig-paren">(</span><em>algorithm</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/TestBench.html#run_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.TestBench.run_test" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</div>
+<div class="section" id="module-pygpc.ValidationSet">
+<span id="pygpc-validationset-module"></span><h2>pygpc.ValidationSet module<a class="headerlink" href="#module-pygpc.ValidationSet" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pygpc.ValidationSet.ValidationSet">
+<em class="property">class </em><code class="descclassname">pygpc.ValidationSet.</code><code class="descname">ValidationSet</code><span class="sig-paren">(</span><em>grid=None</em>, <em>results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/ValidationSet.html#ValidationSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.ValidationSet.ValidationSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ValidationSet object</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-pygpc.Visualization">
@@ -3601,34 +3685,6 @@ sum(a_i^q)^1/q &lt;= p, where p is order_max and q is order_max_norm (for more d
 </dd></dl>
 
 <dl class="function">
-<dt id="pygpc.misc.get_normalized_rms_deviation">
-<code class="descclassname">pygpc.misc.</code><code class="descname">get_normalized_rms_deviation</code><span class="sig-paren">(</span><em>array</em>, <em>array_ref</em>, <em>x_axis=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_normalized_rms_deviation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_normalized_rms_deviation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine the normalized root mean square deviation between input data and reference data in [%].</p>
-<p>normalized_rms = get_normalized_rms(array, array_ref)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>array</strong> (<em>np.ndarray</em>) – input data [ (x), y0, y1, y2 … ]</li>
-<li><strong>array_ref</strong> (<em>np.ndarray</em>) – reference data [ (x_ref), y0_ref, y1_ref, y2_ref … ]
-if array_ref is 1D, all sizes have to match</li>
-<li><strong>x_axis</strong> (<em>boolean</em><em>, </em><em>optional</em><em>, </em><em>default=False</em>) – If True, the first column of array and array_ref is interpreted as the x-axis, where the data points are
-evaluated. If False, the data points are assumed to be at the same location.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>normalized_rms</strong> – Normalized root mean square deviation between the columns of array and array_ref</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray of float [array.shape[1]]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="pygpc.misc.get_num_coeffs">
 <code class="descclassname">pygpc.misc.</code><code class="descname">get_num_coeffs</code><span class="sig-paren">(</span><em>order</em>, <em>dim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_num_coeffs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_num_coeffs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the number of gPC coefficients by the maximum order and the number of random variables.</p>
@@ -3768,6 +3824,35 @@ between two columns.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>mutual_coherence</strong> – Mutual coherence</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.nrmsd">
+<code class="descclassname">pygpc.misc.</code><code class="descname">nrmsd</code><span class="sig-paren">(</span><em>array</em>, <em>array_ref</em>, <em>error_norm='relative'</em>, <em>x_axis=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#nrmsd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.nrmsd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the normalized root mean square deviation between input data and reference data.</p>
+<p>normalized_rms = get_normalized_rms(array, array_ref)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>np.ndarray</em>) – input data [ (x), y0, y1, y2 … ]</li>
+<li><strong>array_ref</strong> (<em>np.ndarray</em>) – reference data [ (x_ref), y0_ref, y1_ref, y2_ref … ]
+if array_ref is 1D, all sizes have to match</li>
+<li><strong>error_norm</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default=&quot;relative&quot;</em>) – Decide if error is determined “relative” or “absolute”</li>
+<li><strong>x_axis</strong> (<em>boolean</em><em>, </em><em>optional</em><em>, </em><em>default=False</em>) – If True, the first column of array and array_ref is interpreted as the x-axis, where the data points are
+evaluated. If False, the data points are assumed to be at the same location.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>normalized_rms</strong> – Normalized root mean square deviation between the columns of array and array_ref</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray of float [array.shape[1]]</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -3973,6 +4058,7 @@ A cartesian grid is generated based on the limits of the specified random_vars</
 <li><a class="reference internal" href="#module-pygpc.SGPC">pygpc.SGPC module</a></li>
 <li><a class="reference internal" href="#module-pygpc.Test">pygpc.Test module</a></li>
 <li><a class="reference internal" href="#module-pygpc.TestBench">pygpc.TestBench module</a></li>
+<li><a class="reference internal" href="#module-pygpc.ValidationSet">pygpc.ValidationSet module</a></li>
 <li><a class="reference internal" href="#module-pygpc.Visualization">pygpc.Visualization module</a></li>
 <li><a class="reference internal" href="#module-pygpc.Worker">pygpc.Worker module</a></li>
 <li><a class="reference internal" href="#module-pygpc.io">pygpc.io module</a></li>
@@ -4018,7 +4104,7 @@ A cartesian grid is generated based on the limits of the specified random_vars</
         &copy; Copyright 2018, Konstantin Weise.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
       </li>
     </ul>
     </div>

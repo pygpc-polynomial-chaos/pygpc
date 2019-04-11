@@ -3,6 +3,9 @@
 
 from collections import OrderedDict
 from .RandomParameter import *
+from .ValidationSet import *
+from .Grid import *
+from .Computation import *
 
 
 class Problem:
@@ -50,7 +53,7 @@ class Problem:
     >>> parameters["sigma_3"] = pygpc.RandomParameter.Norm(pdf_shape=[2, 2])                           #       "
     >>> problem = pygpc.Problem(model, parameters)
     """
-    def __init__(self, model, parameters):
+    def __init__(self, model, parameters, validation=None):
         """
         Constructor; Initializes Problem instance
 
@@ -63,12 +66,18 @@ class Problem:
             - constants: value as float or list of float
             - random variable: namedtuple("RandomParameter", "pdf_type pdf_shape pdf_limits")
               (e.g. RandomParameter("beta", [5, 5], [0.15, 0.45]))
+        validation: ValidationSet object (optional)
+            Object containing a set of validation points and corresponding solutions. Can be used
+            to validate gpc approximation setting options["error_type"]="nrmsd".
+            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+            - results: ndarray [n_grid x n_out] results
         """
         assert(isinstance(parameters, OrderedDict))
 
         self.model = model                              # Model class instance
         self.parameters = parameters                    # OrderedDict of parameters (constants and random)
         self.parameters_random = OrderedDict()          # OrderedDict of parameters (random)
+        self.validation = validation                    # ValidationSet object
 
         # extract random parameters
         for p in self.parameters:
@@ -105,3 +114,29 @@ class Problem:
             for p in self.parameters:
                 if isinstance(self.parameters[p], RandomParameter):
                     self.parameters_random[p] = self.parameters[p]
+
+    def create_validation_set(self, n_samples, n_cpu=1):
+        """
+        Creates a ValidationSet instance (calls the model)
+
+        Parameters
+        ----------
+        n_samples: int
+            Number of sampling points contained in the validation set
+        n_cpu: int
+            Number of parallel function evaluations to evaluate validation set (n_cpu=0 assumes that the
+            model is capable to evaluate all grid points in parallel)
+        """
+        # create set of validation points
+        n_samples = n_samples
+        grid = RandomGrid(parameters_random=self.parameters_random,
+                          options={"n_grid": n_samples, "seed": None})
+
+        # Evaluate original model at grid points
+        com = Computation(n_cpu=n_cpu)
+        results = com.run(model=self.model, problem=self, coords=grid.coords)
+
+        if results.ndim == 1:
+            results = results[:, np.newaxis]
+
+        self.validation = ValidationSet(grid=grid, results=results)

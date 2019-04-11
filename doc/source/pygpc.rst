@@ -115,6 +115,14 @@ pygpc.TestBench module
     :undoc-members:
     :show-inheritance:
 
+pygpc.ValidationSet module
+--------------------------
+
+.. automodule:: pygpc.ValidationSet
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pygpc.Visualization module
 --------------------------
 
