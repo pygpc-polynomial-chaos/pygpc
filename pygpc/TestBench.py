@@ -111,7 +111,14 @@ class TestBench(object):
         for key in self.problem_keys:
 
             # merge gpc files
-            with h5py.File(os.path.join(self.fn_results, key) + ".hdf5", 'w') as f:
+            if self.algorithm[key + "_0000"] == Static:
+                fn_hdf5 = os.path.join(self.fn_results, key + "_p_{}_".format(
+                        self.algorithm[key + "_0000"].options["order"][0])) + ".hdf5"
+            else:
+                fn_hdf5 = os.path.join(self.fn_results, key) + ".hdf5"
+
+            with h5py.File(fn_hdf5, 'w') as f:
+
                 for rep in range(self.repetitions):
                     f.create_group(str(rep).zfill(4))
 
@@ -174,9 +181,6 @@ class TestBenchContinuous(TestBench):
         problem["Lim2002"] = Lim2002().problem
         problem["Ishigami_2D"] = Ishigami(dim=2).problem
         problem["Ishigami_3D"] = Ishigami(dim=3).problem
-        # problem["OakleyOhagan2004"] = OakleyOhagan2004().problem
-        # problem["Welch1992"] = Welch1992().problem
-        # problem["WingWeight"] = WingWeight().problem
 
         # create validation sets
         for p in problem:
@@ -227,6 +231,40 @@ class TestBenchContinuousND(TestBench):
             problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
 
         super(TestBenchContinuousND, self).__init__(algorithm, problem, options, repetitions, n_cpu)
+
+
+class TestBenchContinuousHD(TestBench):
+    """
+    TestBenchContinuousHD
+    """
+    def __init__(self, algorithm, options, repetitions, n_cpu=1):
+        """
+        Initializes TestBenchContinuousND class. Setting up pygpc.Problem instances.
+
+        Parameters
+        ----------
+        algorithm : pygpc.Algorithm Object
+            Algorithm to benchmark
+        options : Dict or OrderedDict()
+            Algorithm options
+        repetitions : int
+            Number of repeated runs
+        n_cpu : int
+            Number of threads to run pygpc.Problems in parallel
+        """
+        self.dims = []
+
+        # set up test problems
+        problem = OrderedDict()
+        problem["OakleyOhagan2004"] = OakleyOhagan2004().problem
+        problem["Welch1992"] = Welch1992().problem
+        # problem["WingWeight"] = WingWeight().problem
+
+        # create validation sets
+        for p in problem:
+            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+
+        super(TestBenchContinuousHD, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 
 
 class TestBenchDiscontinuous(TestBench):

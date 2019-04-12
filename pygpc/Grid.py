@@ -23,7 +23,11 @@ class Grid(object):
         Weights of the grid (all)
     _coords: ndarray of float [n_grid x dim]
         Denormalized coordinates xi
-    _coords_norm: nd array of float [n_grid x dim]
+    _coords_norm: ndarray of float [n_grid x dim]
+        Normalized [-1, 1] coordinates xi
+    _coords_gradient: ndarray of float [n_grid x dim x dim]
+        Denormalized coordinates xi
+    _coords_gradient_norm: ndarray of float [n_grid x dim x dim]
         Normalized [-1, 1] coordinates xi
     coords_id: list of UUID objects (version 4) [n_grid]
         Unique IDs of grid points
@@ -46,6 +50,8 @@ class Grid(object):
         self._weights = None        # Weights for numerical integration for every point in the coordinate space
         self.parameters_random = parameters_random      # OrderedDict of RandomParameter instances
         self.dim = len(self.parameters_random)          # Number of random variables
+        self._coords_gradient = None        # Shifted coordinates for gradient calculation in the system space
+        self._coords_gradient_norm = None   # Shifted coordinates for gradient calculation in the gpc space [-1,1]
 
     @property
     def coords(self):
@@ -72,6 +78,22 @@ class Grid(object):
         # Generate unique IDs of grid points
         if self.coords_id is None:
             self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+    @property
+    def coords_gradient(self):
+        return self._coords_gradient
+
+    @coords_gradient.setter
+    def coords_gradient(self, value):
+        self._coords_gradient = value
+
+    @property
+    def coords_gradient_norm(self):
+        return self._coords_gradient_norm
+
+    @coords_gradient_norm.setter
+    def coords_gradient_norm(self, value):
+        self._coords_gradient_norm = value
 
     @property
     def weights(self):
@@ -509,13 +531,13 @@ class Grid(object):
         for i_p, p in enumerate(self.parameters_random):
 
             if self.parameters_random[p].pdf_type == "beta":
-                coords[:, i_p] = (coords_norm[:, i_p] + 1) / \
+                coords[:, i_p, ] = (coords_norm[:, i_p, ] + 1) / \
                                    2 * (self.parameters_random[p].pdf_limits[1] -
                                         self.parameters_random[p].pdf_limits[0]) \
                                    + self.parameters_random[p].pdf_limits[0]
 
             if self.parameters_random[p].pdf_type in ["norm", "normal"]:
-                coords[:, i_p] = coords_norm[:, i_p] * self.parameters_random[p].pdf_shape[1] + \
+                coords[:, i_p, ] = coords_norm[:, i_p, ] * self.parameters_random[p].pdf_shape[1] + \
                                  self.parameters_random[p].pdf_shape[0]
 
         return coords
@@ -543,15 +565,35 @@ class Grid(object):
             if self.parameters_random[p].pdf_type == "beta":
                 coords_norm[:, i_p] = (coords[:, i_p] - self.parameters_random[p].pdf_limits[0])
                 coords_norm[:, i_p] = coords_norm[:, i_p] / \
-                                        (self.parameters_random[p].pdf_limits[1] -
-                                         self.parameters_random[p].pdf_limits[0]) * \
-                                        2.0 - 1
+                                      (self.parameters_random[p].pdf_limits[1] -
+                                       self.parameters_random[p].pdf_limits[0]) * \
+                                      2.0 - 1
 
             if self.parameters_random[p].pdf_type in ["norm", "normal"]:
                 coords_norm[:, i_p] = (coords[:, i_p] - self.parameters_random[p].pdf_shape[0]) / \
                                       self.parameters_random[p].pdf_shape[1]
 
         return coords_norm
+
+    def create_gradient_grid(self):
+        """
+        Creates new grid points to determine gradient of model function.
+        Adds self.coords_gradient and self.coords_gradient_norm.
+        """
+        self.coords_gradient = np.zeros((self.n_grid, self.dim, self.dim))
+        self.coords_gradient_norm = np.zeros((self.n_grid, self.dim, self.dim))
+
+        # shift of gradient grid in normalized space [-1, 1]
+        delta = 1e-3 * np.eye(self.dim)
+
+        # shift the grid
+        for i_dim in range(self.dim):
+            self.coords_gradient_norm[:, :, i_dim] = self.coords_norm - delta[i_dim, :]
+
+        # determine coordinates in original parameter space
+        self.coords_gradient = self.get_denormalized_coordinates(self.coords_gradient_norm)
+
+        # np.vstack(self.coords_gradient.transpose(2,0,1))
 
 
 class TensorGrid(Grid):

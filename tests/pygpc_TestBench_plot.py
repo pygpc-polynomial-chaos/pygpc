@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib
 
-folder = "/NOBACKUP2/tmp/TestBench/TestBenchContinuous"
+folder = "/data/pt_01756/tmp/TestBench/TestBenchContinuousHD"
 algorithms = os.listdir(folder)
 algorithms.sort()
 testbench_objs = []
-order = [2, 4, 6, 8, 10, 12, 14]  #
+order = [2, 3, 4]  # 2, 4, 6, 8, 10, 12, 14
 
 for a in algorithms:
     with open(os.path.join(folder, a, "testbench.pkl"), 'rb') as f:

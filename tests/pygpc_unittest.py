@@ -932,7 +932,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
     #
     #     # define algorithm
-    #     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+    #     algorithm = pygpc.StaticProjection(problem=problem, options=options, grid=grid)
     #
     #     # run gPC algorithm
     #     gpc, coeffs, results = algorithm.run()
@@ -1553,7 +1553,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
     #
     #     # define algorithm
-    #     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+    #     algorithm = pygpc.StaticProjection(problem=problem, options=options, grid=grid)
     #
     #     # run gPC algorithm
     #     gpc, coeffs, results = algorithm.run()
@@ -1597,7 +1597,159 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     print("done!\n")
 
-    def test_20_static_gpc_reg_omp_randomgrid_Ishigami_2D(self):
+    # def test_20_static_gpc_reg_omp_randomgrid_Ishigami_2D(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Regression
+    #     Solver: Moore-Penrose
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_20_RegAdaptive_reg_omp_randomgrid_Ishigami_2D'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.Ishigami
+    #
+    #     # define parameters
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
+    #     parameters["x3"] = 0.
+    #     parameters["a"] = 7.
+    #     parameters["b"] = 0.1
+    #     problem = pygpc.Problem(model, parameters)
+    #     problem.create_validation_set(n_samples=int(1e4), n_cpu=0)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["order_start"] = 1
+    #     options["order_end"] = 14
+    #     options["interaction_order"] = 2
+    #     options["solver"] = "OMP"
+    #     options["settings"] = {"sparsity": 0.5}
+    #     options["seed"] = 1
+    #     options["matrix_ratio"] = 1
+    #     options["n_cpu"] = 0
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["print_func_time"] = True
+    #     options["error_norm"] = "relative"
+    #     options["error_type"] = "nrmsd"
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
+    #     # Validate gPC vs original model function (Monte Carlo)
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   n_cpu=options["n_cpu"],
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     # Validate gPC vs original model function (1D-slice)
+    #     pygpc.validate_gpc_plot(gpc=gpc,
+    #                             coeffs=coeffs,
+    #                             random_vars=["x1", "x2"],
+    #                             n_grid=[51, 51],
+    #                             output_idx=[0],
+    #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
+    #                             n_cpu=options["n_cpu"])
+    #
+    #     # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
+    #
+    #
+    # def test_21_static_gpc_reg_mp_randomgrid_Ishigami_2D(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Regression
+    #     Solver: Moore-Penrose
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_21_RegAdaptive_reg_mp_randomgrid_Ishigami_2D'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.Ishigami
+    #
+    #     # define parameters
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
+    #     parameters["x3"] = 0.
+    #     parameters["a"] = 7.
+    #     parameters["b"] = 0.1
+    #     problem = pygpc.Problem(model, parameters)
+    #     problem.create_validation_set(n_samples=int(1e4), n_cpu=0)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["order_start"] = 1
+    #     options["order_end"] = 14
+    #     options["interaction_order"] = 2
+    #     options["solver"] = "Moore-Penrose"
+    #     options["settings"] = None
+    #     options["seed"] = 1
+    #     options["matrix_ratio"] = 2
+    #     options["n_cpu"] = 0
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["print_func_time"] = True
+    #     options["error_norm"] = "relative"
+    #     options["error_type"] = "nrmsd"
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
+    #     # Validate gPC vs original model function (Monte Carlo)
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   n_cpu=options["n_cpu"],
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     # Validate gPC vs original model function (1D-slice)
+    #     pygpc.validate_gpc_plot(gpc=gpc,
+    #                             coeffs=coeffs,
+    #                             random_vars=["x1", "x2"],
+    #                             n_grid=[51, 51],
+    #                             output_idx=[0],
+    #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
+    #                             n_cpu=options["n_cpu"])
+    #
+    #     # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
+
+
+    def test_22_static_gpc_reg_mp_randomgrid_SphereFun(self):
         """
         Algorithm: Static
         Method: Regression
@@ -1605,115 +1757,43 @@ class TestpygpcMethods(unittest.TestCase):
         Grid: RandomGrid
         """
         global folder
-        test_name = 'pygpc_test_20_RegAdaptive_reg_omp_randomgrid_Ishigami_2D'
+        test_name = 'pygpc_test_22_static_reg_mp_randomgrid_SphereFun'
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.Ishigami
+        model = pygpc.testfunctions.SphereFun
 
-        # define parameters
+        # define problem
         parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
-        parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
-        parameters["x3"] = 0.
-        parameters["a"] = 7.
-        parameters["b"] = 0.1
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
         problem = pygpc.Problem(model, parameters)
-        problem.create_validation_set(n_samples=int(1e4), n_cpu=0)
 
         # gPC options
         options = dict()
-        options["order_start"] = 1
-        options["order_end"] = 14
-        options["interaction_order"] = 2
-        options["solver"] = "OMP"
-        options["settings"] = {"sparsity": 0.5}
-        options["seed"] = 1
-        options["matrix_ratio"] = 1
-        options["n_cpu"] = 0
-        options["fn_results"] = os.path.join(folder, test_name)
-        options["print_func_time"] = True
-        options["error_norm"] = "relative"
-        options["error_type"] = "nrmsd"
-
-        # define algorithm
-        algorithm = pygpc.RegAdaptive(problem=problem, options=options)
-
-        # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
-
-        # Post-process gPC
-        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                     output_idx=None,
-                                     calc_sobol=True,
-                                     calc_global_sens=True,
-                                     calc_pdf=True)
-
-        # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                      coeffs=coeffs,
-                                      n_samples=int(1e4),
-                                      output_idx=0,
-                                      n_cpu=options["n_cpu"],
-                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
-
-        print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
-
-        # Validate gPC vs original model function (1D-slice)
-        pygpc.validate_gpc_plot(gpc=gpc,
-                                coeffs=coeffs,
-                                random_vars=["x1", "x2"],
-                                n_grid=[51, 51],
-                                output_idx=[0],
-                                fn_out=os.path.join(folder, test_name + '_validation_2d'),
-                                n_cpu=options["n_cpu"])
-
-        # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
-
-        print("done!\n")
-
-
-    def test_21_static_gpc_reg_mp_randomgrid_Ishigami_2D(self):
-        """
-        Algorithm: Static
-        Method: Regression
-        Solver: Moore-Penrose
-        Grid: RandomGrid
-        """
-        global folder
-        test_name = 'pygpc_test_21_RegAdaptive_reg_mp_randomgrid_Ishigami_2D'
-        print(test_name)
-
-        # define model
-        model = pygpc.testfunctions.Ishigami
-
-        # define parameters
-        parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
-        parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
-        parameters["x3"] = 0.
-        parameters["a"] = 7.
-        parameters["b"] = 0.1
-        problem = pygpc.Problem(model, parameters)
-        problem.create_validation_set(n_samples=int(1e4), n_cpu=0)
-
-        # gPC options
-        options = dict()
-        options["order_start"] = 1
-        options["order_end"] = 14
-        options["interaction_order"] = 2
+        options["method"] = "reg"
         options["solver"] = "Moore-Penrose"
         options["settings"] = None
-        options["seed"] = 1
-        options["matrix_ratio"] = 2
+        options["order"] = [7, 7]
+        options["order_max"] = 7
+        options["interaction_order"] = 2
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
-        options["print_func_time"] = True
-        options["error_norm"] = "relative"
-        options["error_type"] = "nrmsd"
+
+        # generate grid
+        n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
+                                               order_glob_max=options["order_max"],
+                                               order_inter_max=options["interaction_order"],
+                                               dim=problem.dim)
+
+        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+                                options={"n_grid": 2 * n_coeffs, "seed": 1})
+
+        # plot grid
+        pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
 
         # define algorithm
-        algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+        algorithm = pygpc.StaticProjection(problem=problem, options=options, grid=grid)
 
         # run gPC algorithm
         gpc, coeffs, results = algorithm.run()
@@ -1738,6 +1818,15 @@ class TestpygpcMethods(unittest.TestCase):
         # Validate gPC vs original model function (1D-slice)
         pygpc.validate_gpc_plot(gpc=gpc,
                                 coeffs=coeffs,
+                                random_vars=["x1"],
+                                n_grid=[51],
+                                output_idx=[0],
+                                fn_out=os.path.join(folder, test_name + '_validation_1d'),
+                                n_cpu=options["n_cpu"])
+
+        # Validate gPC vs original model function (2D-surface)
+        pygpc.validate_gpc_plot(gpc=gpc,
+                                coeffs=coeffs,
                                 random_vars=["x1", "x2"],
                                 n_grid=[51, 51],
                                 output_idx=[0],
@@ -1747,6 +1836,7 @@ class TestpygpcMethods(unittest.TestCase):
         # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
 
         print("done!\n")
+
 
 if __name__ == '__main__':
     unittest.main()

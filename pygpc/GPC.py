@@ -70,6 +70,7 @@ class GPC(object):
         self.relative_error_nrmsd = []
         self.relative_error_loocv = []
         self.error = []
+        self.n_out = []
 
         # options
         self.solver = None

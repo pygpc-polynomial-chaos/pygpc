@@ -248,6 +248,262 @@ class Static(Algorithm):
         return gpc, coeffs, res
 
 
+class StaticProjection(Algorithm):
+    """
+    Static gPC algorithm using Basis Projection approach
+    """
+    def __init__(self, problem, options, grid):
+        """
+        Constructor; Initializes static gPC algorithm
+
+        Parameters
+        ----------
+        problem : Problem object
+            Object instance of gPC problem to investigate
+        options["method"]: str
+            GPC method to apply ['Reg', 'Quad']
+        options["solver"]: str
+            Solver to determine the gPC coefficients
+            - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
+            - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+            - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
+        options["settings"]: dict
+            Solver settings
+            - 'Moore-Penrose' ... None
+            - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0
+            - 'NumInt' ... None
+        options["order"]: list of int [dim]
+            Maximum individual expansion order [order_1, order_2, ..., order_dim].
+            Generates individual polynomials also if maximum expansion order in order_max is exceeded
+        options["order_max"]: int
+            Maximum global expansion order.
+            The maximum expansion order considers the sum of the orders of combined polynomials together with the
+            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+            monomial orders.
+        options["order_max_norm"]: float
+            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+        options["interaction_order"]: int
+            Number of random variables, which can interact with each other.
+            All polynomials are ignored, which have an interaction order greater than the specified
+        options["n_cpu"] : int, optional, default=1
+            Number of threads to use for parallel evaluation of the model function.
+        options["error_norm"] : str, optional, default="relative"
+            Choose if error is determined "relative" or "absolute". Use "absolute" error when the
+            model generates outputs equal to zero.
+        options["error_type"] : str, optional, default="loocv"
+            Choose type of error to validate gpc approximation. Use "loocv" (Leave-one-Out cross validation)
+            to omit any additional calculations and "nrmsd" (normalized root mean square deviation) to compare
+            against a Problem.ValidationSet.
+        grid: Grid object instance
+            Grid object to use for static gPC (RandomGrid, SparseGrid, TensorGrid)
+
+        Notes
+        -----
+        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+           regression. Journal of Computational Physics, 230(6), 2345-2367.
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> # initialize static gPC algorithm
+        >>> algorithm = pygpc.StaticProjection(problem=problem, options=options, grid=grid)
+        >>> # run algorithm
+        >>> gpc, coeffs, results = algorithm.run()
+        """
+        super(StaticProjection, self).__init__(problem, options)
+        self.grid = grid
+
+        # check contents of settings dict and set defaults
+        if "method" not in self.options.keys():
+            raise AssertionError("Please specify 'method' with either 'reg' or 'quad' in options dictionary")
+
+        if self.options["method"] == "reg" and not (self.options["solver"] == "Moore-Penrose" or
+                                                    self.options["solver"] == "OMP"):
+            raise AssertionError("Please specify 'Moore-Penrose' or 'OMP' as solver for 'reg' method")
+
+        if self.options["solver"] == "Moore-Penrose":
+            self.options["settings"] = None
+
+        if self.options["method"] == "quad":
+            self.options["solver"] = 'NumInt'
+            self.options["settings"] = None
+
+        if self.options["solver"] == "OMP" and ("settings" not in self.options.keys() or
+                                                "n_coeffs_sparse" not in self.options["settings"].keys()):
+            raise AssertionError("Please specify correct solver settings for OMP in 'settings'")
+
+        if "order" not in self.options.keys():
+            raise AssertionError("Please specify 'order'=[order_1, order_2, ..., order_dim] in options dictionary")
+
+        if "order_max" not in self.options.keys():
+            raise AssertionError("Please specify 'order_max' in options dictionary")
+
+        if "fn_results" not in self.options.keys():
+            self.options["fn_results"] = None
+
+        if "verbose" not in self.options.keys():
+            self.options["verbose"] = True
+
+        if "interaction_order" not in self.options.keys():
+            self.options["interaction_order"] = self.problem.dim
+
+        if "n_cpu" in self.options.keys():
+            self.n_cpu = self.options["n_cpu"]
+
+        if "print_func_time" not in self.options.keys():
+            self.options["print_func_time"] = False
+
+        if "order_max_norm" not in self.options.keys():
+            self.options["order_max_norm"] = 1.
+
+        if "error_norm" not in self.options.keys():
+            self.options["error_norm"] = "relative"
+
+        if "error_type" not in self.options.keys():
+            self.options["error_type"] = "loocv"
+
+    def run(self):
+        """
+        Runs static gPC algorithm to solve problem.
+
+        Returns
+        -------
+        gpc : GPC object instance
+            GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
+        res : ndarray of float [n_grid x n_out]
+            Simulation results at n_grid points of the n_out output variables
+        """
+        # Create gPC object
+        if self.options["method"] == "reg":
+            gpc = Reg(problem=self.problem,
+                      order=self.options["order"],
+                      order_max=self.options["order_max"],
+                      order_max_norm=self.options["order_max_norm"],
+                      interaction_order=self.options["interaction_order"],
+                      fn_results=self.options["fn_results"])
+
+        elif self.options["method"] == "quad":
+            gpc = Quad(problem=self.problem,
+                       order=self.options["order"],
+                       order_max=self.options["order_max"],
+                       order_max_norm=self.options["order_max_norm"],
+                       interaction_order=self.options["interaction_order"],
+                       fn_results=self.options["fn_results"])
+
+        else:
+            raise AssertionError("Please specify correct gPC method ('reg' or 'quad')")
+
+        # Write grid in gpc object
+        gpc.grid = copy.deepcopy(self.grid)
+        gpc.grid.create_gradient_grid()
+        gpc.interaction_order_current = copy.deepcopy(self.options["interaction_order"])
+        gpc.options = copy.deepcopy(self.options)
+
+        # Initialize gpc matrix
+        gpc.init_gpc_matrix()
+
+        # Initialize parallel Computation class
+        com = Computation(n_cpu=self.n_cpu)
+
+        # Run simulations
+        iprint("Performing {} simulations!".format(gpc.grid.coords.shape[0]),
+               tab=0, verbose=self.options["verbose"])
+
+        start_time = time.time()
+
+        res = com.run(model=gpc.problem.model,
+                      problem=gpc.problem,
+                      coords=gpc.grid.coords,
+                      coords_norm=gpc.grid.coords_norm,
+                      i_iter=gpc.order_max,
+                      i_subiter=gpc.interaction_order,
+                      fn_results=gpc.fn_results,
+                      print_func_time=self.options["print_func_time"])
+
+        res_gradient = com.run(model=gpc.problem.model,
+                               problem=gpc.problem,
+                               coords=np.vstack(gpc.grid.coords_gradient.transpose(2, 0, 1)),
+                               coords_norm=np.vstack(gpc.grid.coords_gradient_norm.transpose(2, 0, 1)),
+                               i_iter=gpc.order_max,
+                               i_subiter=gpc.interaction_order,
+                               fn_results=gpc.fn_results,
+                               print_func_time=self.options["print_func_time"])
+        com.close()
+
+        iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
+               tab=0, verbose=self.options["verbose"])
+
+        # [n_grid x n_out x dim]
+        res_gradient = res_gradient.reshape((gpc.grid.coords_gradient.shape[0],
+                                             res.shape[1],
+                                             gpc.problem.dim), order='F')#.transpose(0, 2, 1)
+
+        # [n_grid x n_out x dim]
+        grad_res = np.zeros((gpc.grid.coords.shape[0], res.shape[1], gpc.problem.dim))
+
+        for i_dim in range(gpc.problem.dim):
+            grad_res[:, :, i_dim] = (res - res_gradient[:, :, i_dim]) / \
+                                 np.linalg.norm(gpc.grid.coords_norm - gpc.grid.coords_gradient_norm[:, :, i_dim],
+                                                axis=1)[:, np.newaxis]
+
+        # determine SVD of gradients
+        u = [0 for _ in range(res.shape[1])]
+        s = [0 for _ in range(res.shape[1])]
+        v = [0 for _ in range(res.shape[1])]
+
+        s_filt = [0 for _ in range(res.shape[1])]
+        v_filt = [0 for _ in range(res.shape[1])]
+
+        A = [0 for _ in range(res.shape[1])]
+
+        # lower relative bound of eigenvalues
+        lambda_eps = 1e-1
+
+        for i_out in range(res.shape[1]):
+            u[i_out], s[i_out], v[i_out] = np.linalg.svd(grad_res[:, i_out, :])
+            s_filt[i_out] = s[i_out][s[i_out] > lambda_eps]
+            v_filt[i_out] = v[i_out][:, s[i_out] > lambda_eps]
+            A[i_out] = v_filt[i_out].transpose()
+
+        # TODO continue here to implement basis rotation and projection
+
+        # Compute gpc coefficients
+        coeffs = gpc.solve(sim_results=res,
+                           solver=self.options["solver"],
+                           settings=self.options["settings"],
+                           verbose=True)
+
+        # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+        if self.options["error_type"] == "loocv":
+            eps = gpc.validate(coeffs=coeffs, sim_results=res)
+        elif self.options["error_type"] == "nrmsd":
+            eps = gpc.validate(coeffs=coeffs)
+
+        iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                            self.options["error_type"],
+                                            eps), tab=0, verbose=self.options["verbose"])
+
+        # save gpc object and gpc coeffs
+        if self.options["fn_results"]:
+            write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
+
+            with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
+                if "coeffs" in f.keys():
+                    del f['coeffs']
+                f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+
+                if "gpc_matrix" in f.keys():
+                    del f['gpc_matrix']
+                f.create_dataset("gpc_matrix", data=gpc.gpc_matrix, maxshape=None, dtype="float64")
+
+        return gpc, coeffs, res
+
+
 class RegAdaptive(Algorithm):
     """
     Adaptive regression approach based on leave one out cross validation error estimation

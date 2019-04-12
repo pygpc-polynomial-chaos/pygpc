@@ -14,6 +14,7 @@ import pygpc.Worker
 import pygpc.Grid
 from .io import *
 from .misc import *
+from .Test import *
 from .Problem import *
 from .Algorithm import *
 from .TestBench import *
