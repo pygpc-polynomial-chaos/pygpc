@@ -23,10 +23,12 @@ class GPC(object):
         Basis of the gPC including BasisFunctions
     grid: Grid class instance
         Grid of the derived gPC approximation
-    gpc_matrix: [N_samples x N_poly] np.ndarray
+    gpc_matrix: [N_samples x N_poly] ndarray
         generalized polynomial chaos matrix
-    gpc_matrix_inv: [N_poly x N_samples] np.ndarray
+    gpc_matrix_inv: [N_poly x N_samples] ndarray of float
         pseudo inverse of the generalized polynomial chaos matrix
+    p_matrix: [dim_red x dim] ndarray of float
+        Projection matrix to reduce number of efficient dimensions (\\eta = p_matrix * \\xi)
     nan_elm: ndarray of int
         Indices of NaN elements of model output
     gpc_matrix_coords_id: list of UUID4()
@@ -48,11 +50,15 @@ class GPC(object):
         boolean value to determine if to print out the progress into the standard output
     fn_results : string, optional, default=None
         If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+    relative_error_loocv: list of float
+        Relative error of the leave-one-out-cross-validation
+    relative_error_nrmsd: list of float
+        Normalized root mean square deviation between model and gpc approximation
     options : dict
         Options of gPC algorithm
     """
 
-    def __init__(self, problem, fn_results):
+    def __init__(self, problem, options):
 
         # objects
         self.problem = problem
@@ -62,6 +68,7 @@ class GPC(object):
         # arrays
         self.gpc_matrix = None
         self.gpc_matrix_inv = None
+        self.p_matrix = None
         self.nan_elm = []
         self.gpc_matrix_coords_id = None
         self.gpc_matrix_b_id = None
@@ -77,8 +84,10 @@ class GPC(object):
         self.settings = None
         self.gpu = None
         self.verbose = True
-        self.fn_results = fn_results
-        self.options = None
+        if "fn_results" not in options.keys():
+            options["fn_results"] = None
+        self.fn_results = options["fn_results"]
+        self.options = options
 
     def init_gpc_matrix(self):
         """
@@ -257,11 +266,16 @@ class GPC(object):
         error: float
             Estimated difference between gPC approximation and original model
         """
-
         # always determine nrmsd if a validation set is present
         if isinstance(self.problem.validation, ValidationSet):
 
-            gpc_results = self.get_approximation(coeffs, self.problem.validation.grid.coords_norm, output_idx=None)
+            # transform variables from xi to eta space if gpc model is reduced
+            if self.p_matrix is not None:
+                validation_coords_norm = np.dot(self.problem.validation.grid.coords_norm, self.p_matrix.transpose())
+            else:
+                validation_coords_norm = self.problem.validation.grid.coords_norm
+
+            gpc_results = self.get_approximation(coeffs, validation_coords_norm, output_idx=None)
 
             if gpc_results.ndim == 1:
                 gpc_results = gpc_results[:, np.newaxis]
@@ -531,7 +545,7 @@ class GPC(object):
             # determine new columns (new basis functions) with old grid
             idx = get_cartesian_product([idx_coords_old, idx_b_new]).astype(int)
             if idx.any():
-                iprint('Adding columns to gPC matrix...', tab=0, verbose=True)
+                iprint('Adding {} columns to gPC matrix...'.format(idx_b_new.size), tab=0, verbose=True)
 
                 idx_row = np.reshape(idx[:, 0], (idx_coords_old.size, idx_b_new.size)).astype(int)
                 idx_col = np.reshape(idx[:, 1], (idx_coords_old.size, idx_b_new.size)).astype(int)
@@ -543,7 +557,7 @@ class GPC(object):
             # determine new rows (new grid points) with all basis functions
             idx = get_cartesian_product([idx_coords_new, np.arange(len(self.basis.b))]).astype(int)
             if idx.any():
-                iprint('Adding rows to gPC matrix...', tab=0, verbose=True)
+                iprint('Adding {} rows to gPC matrix...'.format(idx_coords_new.size), tab=0, verbose=True)
 
                 idx_row = np.reshape(idx[:, 0], (idx_coords_new.size, len(self.basis.b))).astype(int)
                 idx_col = np.reshape(idx[:, 1], (idx_coords_new.size, len(self.basis.b))).astype(int)

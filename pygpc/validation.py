@@ -54,7 +54,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
     # Evaluate original model at grid points
     com = Computation(n_cpu=n_cpu)
 
-    y_orig = com.run(model=gpc.problem.model, problem=gpc.problem, coords=grid_mc.coords)
+    y_orig = com.run
 
     if y_orig.ndim == 1:
         y_orig = y_orig[:, np.newaxis]
@@ -188,7 +188,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     # Evaluate original model function on grid
     if data_original is None:
         com = Computation(n_cpu=n_cpu)
-        y_orig = com.run(model=gpc.problem.model, problem=gpc.problem, coords=grid)[:, output_idx]
+        y_orig = com.run[:, output_idx]
     else:
         y_orig = data_original[:, output_idx]
 

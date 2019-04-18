@@ -26,7 +26,7 @@ loocv = dict()
 for testbench in testbench_objs:
 
     # concatenate results for static gpc
-    if testbench.algorithm_type == pygpc.Static:
+    if testbench.algorithm_type == pygpc.Static or testbench.algorithm_type == pygpc.StaticProjection:
         n_grid[os.path.split(testbench.fn_results)[1]] = dict()
         n_basis[os.path.split(testbench.fn_results)[1]] = dict()
         nrmsd[os.path.split(testbench.fn_results)[1]] = dict()
@@ -106,7 +106,8 @@ if ax.ndim == 1:
 cmap = matplotlib.cm.get_cmap('jet')
 legend = [os.path.split(t.fn_results)[1] for t in testbench_objs]
 
-# loop over testfunctions
+# loop over problems (testfunctions and dimension)
+i_fun = 0
 for i_pkey, pkey in enumerate(testbench.problem_keys):
 
     if dims:
@@ -114,7 +115,9 @@ for i_pkey, pkey in enumerate(testbench.problem_keys):
     else:
         i_dim = 0
 
-    i_fun = i_pkey - i_dim * len(testbench.problem_keys)
+    if len(dims) > 0:
+        if i_fun >= len(testbench.problem_keys)/len(dims):
+            i_fun = 0
 
     # loop over algorithms
     for i_alg, testbench in enumerate(testbench_objs):
@@ -139,10 +142,13 @@ for i_pkey, pkey in enumerate(testbench.problem_keys):
         ax[i_dim, i_fun].set_yscale("log")
         ax[i_dim, i_fun].set_xscale("log")
         ax[i_dim, i_fun].set_xlim([0, n_grid_max*1.1])
-        ax[i_dim, i_fun].set_ylim([0.0005, 5])
+        # ax[i_dim, i_fun].set_ylim([0.0005, 5])
         ax[i_dim, i_fun].grid(True)
 
     ax[i_dim, i_fun].plot([0, n_grid_max * 1.1], [1e-2, 1e-2], 'r', linewidth=0.5)
+
+
+    i_fun += 1
 
 # legend
 handles = []

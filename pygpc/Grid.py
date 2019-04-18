@@ -43,7 +43,8 @@ class Grid(object):
         parameters_random : OrderedDict of RandomParameter instances
             OrderedDict containing the RandomParameter instances the grids are generated for
         """
-        self.n_grid = None          # Total number of grid points
+        self.n_grid = 0             # Total number of grid points
+        self.n_grid_gradient = 0    # Total number of grid points for gradient calculation
         self._coords = None         # Coordinates of gpc model calculation in the system space
         self._coords_norm = None    # Coordinates of gpc model calculation in the gpc space [-1,1]
         self.coords_id = None       # Unique IDs of grid points
@@ -593,6 +594,9 @@ class Grid(object):
         # determine coordinates in original parameter space
         self.coords_gradient = self.get_denormalized_coordinates(self.coords_gradient_norm)
 
+        # number of grid points
+        self.n_grid_gradient = self.coords_gradient.shape[0]*self.coords_gradient.shape[2]
+
         # np.vstack(self.coords_gradient.transpose(2,0,1))
 
 
@@ -1111,37 +1115,51 @@ class RandomGrid(Grid):
         # Generate unique IDs of grid points
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
-    def extend_random_grid(self, n_grid_new, seed=None):
+    def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, seed=None):
         """
-        Add sample points according to input pdfs to grid (old points are kept).
+        Add sample points according to input pdfs to grid (old points are kept). Define either the new total number of
+        grid points with "n_grid_new" or add grid-points manually by providing "coords" and "coords_norm".
 
         extend_random_grid(n_grid_new, seed=None):
 
         Parameters
         ----------
-        n_grid_new: float
+        n_grid_new : float
             Total number of grid points in extended random grid (old points are kept)
             (n_grid_add = n_grid_new - n_grid_old)
-        seed: float, optional, default=None
+        coords : ndarray of float [n_grid_add x dim]
+            Grid points to add (model space)
+        coords_norm : ndarray of float [n_grid_add x dim]
+            Grid points to add (normalized space [-1, 1])
+        seed : float, optional, default=None
             Random seeding point
         """
 
-        # Number of new grid points
-        n_grid_add = int(n_grid_new - self.n_grid)
+        if n_grid_new is not None:
+            # Number of new grid points
+            n_grid_add = int(n_grid_new - self.n_grid)
 
-        if n_grid_add > 0:
-            # Generate new grid points
-            new_grid = RandomGrid(parameters_random=self.parameters_random,
-                                  options={"n_grid": n_grid_add, "seed": seed})
+            if n_grid_add > 0:
+                # Generate new grid points
+                new_grid = RandomGrid(parameters_random=self.parameters_random,
+                                      options={"n_grid": n_grid_add, "seed": seed})
+
+                # append points to existing grid
+                self.coords = np.vstack([self.coords, new_grid.coords])
+                self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+
+        elif coords is not None and coords_norm is not None:
+            # Number of new grid points
+            n_grid_add = coords.shape[0]
 
             # append points to existing grid
-            self.coords = np.vstack([self.coords, new_grid.coords])
-            self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
-
-            # Generate and append unique IDs of new grid points
-            self.coords_id = self.coords_id + [uuid.uuid4() for _ in range(n_grid_add)]
-
-            self.n_grid = self.coords.shape[0]
+            self.coords = np.vstack([self.coords, coords])
+            self.coords_norm = np.vstack([self.coords_norm, coords_norm])
 
         else:
-            Warning("No samples added to grid ... (n_grid_new < n_grid)")
+            raise ValueError("Specify either n_grid_new or coords and coords_norm")
+
+        # Generate and append unique IDs of new grid points
+        self.coords_id = self.coords_id + [uuid.uuid4() for _ in range(n_grid_add)]
+
+        self.n_grid = self.coords.shape[0]

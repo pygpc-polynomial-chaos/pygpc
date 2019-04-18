@@ -21,11 +21,11 @@ def run_test(algorithm):
     gpc, coeffs, results = algorithm.run()
 
     # Post-process gPC
-    get_sensitivities_hdf5(fn_gpc=algorithm.options["fn_results"],
-                           output_idx=None,
-                           calc_sobol=True,
-                           calc_global_sens=True,
-                           calc_pdf=True)
+    # get_sensitivities_hdf5(fn_gpc=algorithm.options["fn_results"],
+    #                        output_idx=None,
+    #                        calc_sobol=True,
+    #                        calc_global_sens=True,
+    #                        calc_pdf=True)
 
 
 class TestBench(object):
@@ -90,6 +90,13 @@ class TestBench(object):
                                                                         options=copy.deepcopy(options),
                                                                         grid=copy.deepcopy(grid))
 
+                elif algorithm == StaticProjection:
+                    options["fn_results"] = os.path.join(self.fn_results,
+                                                         key + "_p_{}_".format(options["order"][0]) + str(rep).zfill(4))
+
+                    self.algorithm[self.algorithm_keys[-1]] = algorithm(problem=problem[key],
+                                                                        options=copy.deepcopy(options))
+
                 else:
                     options["fn_results"] = os.path.join(self.fn_results, key + "_" + str(rep).zfill(4))
                     self.algorithm[self.algorithm_keys[-1]] = algorithm(problem=problem[key],
@@ -111,9 +118,10 @@ class TestBench(object):
         for key in self.problem_keys:
 
             # merge gpc files
-            if self.algorithm[key + "_0000"] == Static:
-                fn_hdf5 = os.path.join(self.fn_results, key + "_p_{}_".format(
-                        self.algorithm[key + "_0000"].options["order"][0])) + ".hdf5"
+            if isinstance(self.algorithm[key + "_0000"], Static) or \
+                    isinstance(self.algorithm[key + "_0000"], StaticProjection):
+                fn_hdf5 = os.path.join(self.fn_results, key + "_p_{}".format(
+                    self.algorithm[key + "_0000"].options["order"][0])) + ".hdf5"
             else:
                 fn_hdf5 = os.path.join(self.fn_results, key) + ".hdf5"
 

@@ -39,7 +39,7 @@ class SGPC(GPC):
         If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, fn_results=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options):
         """
         Constructor; Initializes the SGPC class
 
@@ -71,7 +71,7 @@ class SGPC(GPC):
         .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle 
            regression. Journal of Computational Physics, 230(6), 2345-2367.
         """
-        super(SGPC, self).__init__(problem, fn_results)
+        super(SGPC, self).__init__(problem, options)
 
         self.order = order
         self.order_max = order_max
@@ -448,8 +448,6 @@ class Reg(SGPC):
 
     Attributes
     ----------
-    relative_error_loocv: list of float
-        relative error of the leave-one-out-cross-validation
     solver: str
         Solver to determine the gPC coefficients
         - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
@@ -462,7 +460,7 @@ class Reg(SGPC):
         - 'NumInt' ... None
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, fn_results=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options):
         """
         Constructor; Initializes Regression SGPC class
 
@@ -505,7 +503,7 @@ class Reg(SGPC):
         >>>                 fn_results="/tmp/my_results")
         """
 
-        super(Reg, self).__init__(problem, order, order_max, order_max_norm, interaction_order, fn_results)
+        super(Reg, self).__init__(problem, order, order_max, order_max_norm, interaction_order, options)
         self.solver = 'Moore-Penrose'   # Default solver
         self.settings = None            # Default Solver settings
 
@@ -515,7 +513,7 @@ class Quad(SGPC):
     Quadrature SGPC sub-class
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, fn_results=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options):
         """
         Constructor; Initializes Quadrature SGPC sub-class
 
@@ -559,6 +557,6 @@ class Quad(SGPC):
         >>>                 interaction_order=2,
         >>>                 fn_results="/tmp/my_results")
         """
-        super(Quad, self).__init__(problem, order, order_max, order_max_norm, interaction_order, fn_results)
+        super(Quad, self).__init__(problem, order, order_max, order_max_norm, interaction_order, options)
         self.solver = 'NumInt'  # Default solver
         self.settings = None    # Default solver settings

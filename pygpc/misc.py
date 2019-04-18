@@ -13,7 +13,6 @@ from .Visualization import plot_beta_pdf_fit
 
 
 def display_fancy_bar(text, i, n_i, more_text=None):
-    # TODO: improve?
     """
     Display a simple progress bar. Call in each iteration and start with i=1.
 
@@ -65,8 +64,9 @@ def display_fancy_bar(text, i, n_i, more_text=None):
     sys.stdout.write(" [%-40s] %d%%" % (
         '=' * int((float(i) + 0) / n_i * 100 / 2.5), float(i) / n_i * 100))
     sys.stdout.flush()
-    if int(i) == n_i:
-        print("")
+    # if int(i) == n_i:
+    #     print("")
+    print("")
 
 
 def get_cartesian_product(array_list):
@@ -628,3 +628,33 @@ def list2dict(l):
             d[key][i] = l[i][key]
 
     return d
+
+
+def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=1e-1):
+    """
+    Determines projection matrix [P].
+
+    .. math:: \\eta = [\\mathbf{P}] \\xi
+
+    Parameters
+    ----------
+    gradient_results : ndarray of float [n_grid x n_out x dim]
+        Gradient of model function in grid points
+    qoi_idx : int
+        Index of QOI the projection matrix is determined for
+    lambda_eps : float, optional, default: 1e-1
+        Lower relative bound of eigenvalues (with respect to highest eigenvalue)
+
+    Returns
+    -------
+    p_matrix : ndarray of float [dim_reduced x dim]
+        Projection matrix for QOI.
+    """
+
+    # Determine projection matrices by SVD of gradients
+    u, s, v = np.linalg.svd(gradient_results[:, qoi_idx, :])
+    s_filt = s[s > lambda_eps*s[0]]
+    v_filt = v[s > lambda_eps*s[0], :]
+    p_matrix = v_filt
+
+    return p_matrix

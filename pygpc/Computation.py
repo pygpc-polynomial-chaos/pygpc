@@ -318,7 +318,7 @@ def compute_cluster(algorithms, nodes, start_scheduler=True):
     """
 
     def _algorithm_run(f):
-        f.run()
+        f.run
 
     dispy.MsgTimeout = 90
 

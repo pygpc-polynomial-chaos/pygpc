@@ -228,8 +228,8 @@ class MovingParticleFrictionForce(AbstractModel):
     Discontinuity at randomly perturbed initial value x0 = X0 + delta_X * xi = 0.05 - 0.2 * 0.25
     and two stable fixed points:
 
-    .. math:: x = -\sqrt{15/35} \mathrm{for} \\xi < -0.25
-    .. math:: x = +\sqrt{15/35} \mathrm{for} \\xi > -0.25
+    .. math:: x = -\sqrt{15/35} \; \mathrm{for} \; \\xi < -0.25
+    .. math:: x = +\sqrt{15/35} \; \mathrm{for} \; \\xi > -0.25
 
     xi is uniform distributed [-1, 1]
 

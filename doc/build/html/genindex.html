@@ -114,8 +114,12 @@
 </li>
       <li><a href="pygpc.html#pygpc.Grid.Grid._coords">_coords (pygpc.Grid.Grid attribute)</a>
 </li>
+      <li><a href="pygpc.html#pygpc.Grid.Grid._coords_gradient">_coords_gradient (pygpc.Grid.Grid attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pygpc.html#pygpc.Grid.Grid._coords_gradient_norm">_coords_gradient_norm (pygpc.Grid.Grid attribute)</a>
+</li>
       <li><a href="pygpc.html#pygpc.Grid.Grid._coords_norm">_coords_norm (pygpc.Grid.Grid attribute)</a>
 </li>
       <li><a href="pygpc.html#pygpc.Grid.Grid._weights">_weights (pygpc.Grid.Grid attribute)</a>
@@ -194,19 +198,25 @@
       </ul></li>
       <li><a href="pygpc.html#pygpc.Computation.Computation">Computation() (in module pygpc.Computation)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pygpc.html#pygpc.Computation.ComputationFuncPar">ComputationFuncPar (class in pygpc.Computation)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pygpc.html#pygpc.Computation.ComputationPoolMap">ComputationPoolMap (class in pygpc.Computation)</a>
 </li>
       <li><a href="pygpc.html#pygpc.Computation.compute_cluster">compute_cluster() (in module pygpc.Computation)</a>
 </li>
       <li><a href="pygpc.html#pygpc.Grid.Grid.coords">coords (pygpc.Grid.Grid attribute)</a>
 </li>
+      <li><a href="pygpc.html#pygpc.Grid.Grid.coords_gradient">coords_gradient (pygpc.Grid.Grid attribute)</a>
+</li>
+      <li><a href="pygpc.html#pygpc.Grid.Grid.coords_gradient_norm">coords_gradient_norm (pygpc.Grid.Grid attribute)</a>
+</li>
       <li><a href="pygpc.html#pygpc.Grid.Grid.coords_id">coords_id (pygpc.Grid.Grid attribute)</a>
 </li>
       <li><a href="pygpc.html#pygpc.Grid.Grid.coords_norm">coords_norm (pygpc.Grid.Grid attribute)</a>
+</li>
+      <li><a href="pygpc.html#pygpc.Grid.Grid.create_gradient_grid">create_gradient_grid() (pygpc.Grid.Grid method)</a>
 </li>
       <li><a href="pygpc.html#pygpc.Visualization.Visualization.create_new_chart">create_new_chart() (pygpc.Visualization.Visualization method)</a>
 </li>
@@ -220,10 +230,12 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pygpc.html#pygpc.Basis.Basis.dim">dim (pygpc.Basis.Basis attribute)</a>
+      <li><a href="pygpc.html#pygpc.Algorithm.Algorithm.determine_projection_matrix">determine_projection_matrix() (pygpc.Algorithm.Algorithm method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pygpc.html#pygpc.Basis.Basis.dim">dim (pygpc.Basis.Basis attribute)</a>
+</li>
       <li><a href="pygpc.html#pygpc.misc.display_fancy_bar">display_fancy_bar() (in module pygpc.misc)</a>
 </li>
   </ul></td>
@@ -342,6 +354,8 @@
         <li><a href="pygpc.html#pygpc.SGPC.SGPC.get_global_sens">(pygpc.SGPC.SGPC method)</a>
 </li>
       </ul></li>
+      <li><a href="pygpc.html#pygpc.Algorithm.Algorithm.get_gradient">get_gradient() (pygpc.Algorithm.Algorithm method)</a>
+</li>
       <li><a href="pygpc.html#pygpc.misc.get_list_multi_delete">get_list_multi_delete() (in module pygpc.misc)</a>
 </li>
       <li><a href="pygpc.html#pygpc.EGPC.EGPC.get_local_sens">get_local_sens() (pygpc.EGPC.EGPC method)</a>
@@ -638,6 +652,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pygpc.html#pygpc.GPC.GPC.p_matrix">p_matrix (pygpc.GPC.GPC attribute)</a>
+</li>
       <li><a href="pygpc.html#pygpc.Grid.Grid.parameters_random">parameters_random (pygpc.Grid.Grid attribute)</a>
 </li>
       <li><a href="pygpc.html#pygpc.RandomParameter.Beta.pdf">pdf() (pygpc.RandomParameter.Beta method)</a>
@@ -684,10 +700,10 @@
 </li>
       <li><a href="pygpc.html#module-pygpc">pygpc (module)</a>
 </li>
-      <li><a href="pygpc.html#module-pygpc.AbstractModel">pygpc.AbstractModel (module)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pygpc.html#module-pygpc.AbstractModel">pygpc.AbstractModel (module)</a>
+</li>
       <li><a href="pygpc.html#module-pygpc.Algorithm">pygpc.Algorithm (module)</a>
 </li>
       <li><a href="pygpc.html#module-pygpc.Basis">pygpc.Basis (module)</a>
@@ -762,7 +778,9 @@
 </li>
       <li><a href="pygpc.html#pygpc.Algorithm.RegAdaptive">RegAdaptive (class in pygpc.Algorithm)</a>
 </li>
-      <li><a href="pygpc.html#pygpc.SGPC.Reg.relative_error_loocv">relative_error_loocv (pygpc.SGPC.Reg attribute)</a>
+      <li><a href="pygpc.html#pygpc.GPC.GPC.relative_error_loocv">relative_error_loocv (pygpc.GPC.GPC attribute)</a>
+</li>
+      <li><a href="pygpc.html#pygpc.GPC.GPC.relative_error_nrmsd">relative_error_nrmsd (pygpc.GPC.GPC attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -780,6 +798,8 @@
         <li><a href="pygpc.html#pygpc.Algorithm.RegAdaptive.run">(pygpc.Algorithm.RegAdaptive method)</a>
 </li>
         <li><a href="pygpc.html#pygpc.Algorithm.Static.run">(pygpc.Algorithm.Static method)</a>
+</li>
+        <li><a href="pygpc.html#pygpc.Algorithm.StaticProjection.run">(pygpc.Algorithm.StaticProjection method)</a>
 </li>
         <li><a href="pygpc.html#pygpc.Computation.ComputationFuncPar.run">(pygpc.Computation.ComputationFuncPar method)</a>
 </li>
@@ -888,6 +908,8 @@
 </li>
       <li><a href="pygpc.html#pygpc.Algorithm.Static">Static (class in pygpc.Algorithm)</a>
 </li>
+      <li><a href="pygpc.html#pygpc.Algorithm.StaticProjection">StaticProjection (class in pygpc.Algorithm)</a>
+</li>
       <li><a href="pygpc.html#pygpc.RandomParameter.RandomParameter.std">std (pygpc.RandomParameter.RandomParameter attribute)</a>
 </li>
       <li><a href="pygpc.html#pygpc.BasisFunction.StepDown">StepDown (class in pygpc.BasisFunction)</a>
@@ -916,6 +938,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pygpc.html#pygpc.TestBench.TestBenchContinuousHD">TestBenchContinuousHD (class in pygpc.TestBench)</a>
+</li>
       <li><a href="pygpc.html#pygpc.TestBench.TestBenchContinuousND">TestBenchContinuousND (class in pygpc.TestBench)</a>
 </li>
       <li><a href="pygpc.html#pygpc.TestBench.TestBenchDiscontinuous">TestBenchDiscontinuous (class in pygpc.TestBench)</a>
