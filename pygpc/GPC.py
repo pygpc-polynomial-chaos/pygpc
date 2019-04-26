@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 import copy
 import h5py
+import time
+import random
 from .Grid import *
 from .misc import get_cartesian_product
+from .misc import display_fancy_bar
 from .misc import nrmsd
 from ValidationSet import *
 import numpy as np
 import fastmat as fm
 import scipy.stats
-import ctypes
+from sklearn import linear_model
 
 
 class GPC(object):
@@ -43,6 +46,7 @@ class GPC(object):
         Default solver to determine the gPC coefficients (can be chosen during GPC.solve)
         - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
         - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+        - 'LarsLasso' ... {"alpha": float 0...1} Regularization parameter
         - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
     gpu: bool
         Flag to execute the calculation on the gpu
@@ -168,7 +172,8 @@ class GPC(object):
         relative_error_loocv = GPC.loocv(sim_results, coeffs)
 
         .. math::
-           \\epsilon_{LOOCV} = \\frac{\\frac{1}{N}\sum_{i=1}^N \\left( \\frac{y(\\xi_i) - \hat{y}(\\xi_i)}{1-h_i} \\right)^2}{\\frac{1}{N-1}\sum_{i=1}^N \\left( y(\\xi_i) - \\bar{y} \\right)^2}
+           \\epsilon_{LOOCV} = \\frac{\\frac{1}{N}\sum_{i=1}^N \\left( \\frac{y(\\xi_i) - \hat{y}(\\xi_i)}{1-h_i}
+           \\right)^2}{\\frac{1}{N-1}\sum_{i=1}^N \\left( y(\\xi_i) - \\bar{y} \\right)^2}
 
         with
 
@@ -195,58 +200,59 @@ class GPC(object):
            for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(2), 183-197.
         """
 
-        # determine Psi (Psi^T Psi)^-1 Psi^T
-        h = np.dot(np.dot(self.gpc_matrix,
-                          np.linalg.inv(np.dot(self.gpc_matrix.transpose(),
-                                               self.gpc_matrix))),
-                   self.gpc_matrix.transpose())
+        # Analytical error estimation in case of overdetermined systems
+        if self.gpc_matrix.shape[0] > 2*self.gpc_matrix.shape[1]:
+            # determine Psi (Psi^T Psi)^-1 Psi^T
+            h = np.dot(np.dot(self.gpc_matrix,
+                              np.linalg.inv(np.dot(self.gpc_matrix.transpose(),
+                                                   self.gpc_matrix))),
+                       self.gpc_matrix.transpose())
 
-        # determine loocv error
-        err = np.mean(((sim_results - np.dot(self.gpc_matrix, coeffs)) /
-                       (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
+            # determine loocv error
+            err = np.mean(((sim_results - np.dot(self.gpc_matrix, coeffs)) /
+                           (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
 
-        if error_norm == "relative":
-            norm = np.var(sim_results, axis=0, ddof=1)
+            if error_norm == "relative":
+                norm = np.var(sim_results, axis=0, ddof=1)
+            else:
+                norm = 1
+
+            # normalize
+            relative_error_loocv = np.mean(err / norm)
+
         else:
-            norm = 1
+            n_loocv = 25
 
-        # normalize
-        relative_error_loocv = np.mean(err / norm)
+            # define number of performed cross validations (max 100)
+            n_loocv_points = np.min((sim_results.shape[0], n_loocv))
+
+            # make list of indices, which are randomly sampled
+            loocv_point_idx = random.sample(list(range(sim_results.shape[0])), n_loocv_points)
+
+            start = time.time()
+            relative_error = np.zeros(n_loocv_points)
+            for i in range(n_loocv_points):
+                # get mask of eliminated row
+                mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
+
+                # determine gpc coefficients (this takes a lot of time for large problems)
+                coeffs_loo = self.solve(sim_results=sim_results[mask, :],
+                                        solver=self.options["solver"],
+                                        settings=self.options["settings"],
+                                        gpc_matrix=self.gpc_matrix[mask, :],
+                                        verbose=False)
+
+                sim_results_temp = sim_results[loocv_point_idx[i], :]
+                relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(self.gpc_matrix[loocv_point_idx[i], :],
+                                                                                coeffs_loo))\
+                                    / scipy.linalg.norm(sim_results_temp)
+                display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
+
+            # store result in relative_error_loocv
+            relative_error_loocv = np.mean(relative_error)
+            iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
 
         return relative_error_loocv
-
-        # # define number of performed cross validations (max 100)
-        # n_loocv_points = np.min((sim_results.shape[0], n_loocv))
-        #
-        # # make list of indices, which are randomly sampled
-        # loocv_point_idx = random.sample(list(range(sim_results.shape[0])), n_loocv_points)
-        #
-        # start = time.time()
-        # relative_error = np.zeros(n_loocv_points)
-        # for i in range(n_loocv_points):
-        #     # get mask of eliminated row
-        #     mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
-        #
-        #     # determine gpc coefficients (this takes a lot of time for large problems)
-        #     coeffs_loo = self.solve(sim_results=sim_results[mask, :],
-        #                             solver=solver,
-        #                             settings=settings,
-        #                             gpc_matrix=self.gpc_matrix[mask, :],
-        #                             verbose=False)
-        #
-        #     sim_results_temp = sim_results[loocv_point_idx[i], :]
-        #     relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(self.gpc_matrix[loocv_point_idx[i], :],
-        #                                                                     coeffs_loo))\
-        #                         / scipy.linalg.norm(sim_results_temp)
-        #     display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
-        #
-        # # store result in relative_error_loocv
-        # self.relative_error_loocv.append(np.mean(relative_error))
-        # iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
-        #
-        # err = self.calc_delta(sim_results, solver, settings)
-        #
-        # return self.relative_error_loocv[-1]
 
     def validate(self, coeffs, sim_results=None):
         """
@@ -625,11 +631,13 @@ class GPC(object):
             Solver to determine the gPC coefficients
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
             - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+            - 'LarsLasso' ... Least-Angle Regression using Lasso model (SGPC.Reg, EGPC)
             - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
         settings : dict
             Solver settings
             - 'Moore-Penrose' ... None
             - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0 or "sparsity": float 0...1
+            - 'LarsLasso' ... {"alpha": float 0...1} Regularization parameter
             - 'NumInt' ... None
         gpc_matrix : ndarray of float [n_grid x n_basis], optional, default: self.gpc_matrix
             GPC matrix to invert
@@ -654,6 +662,9 @@ class GPC(object):
 
         iprint("Determine gPC coefficients using '{}' solver...".format(solver), tab=0, verbose=verbose)
 
+        #################
+        # Moore-Penrose #
+        #################
         if solver == 'Moore-Penrose':
             # determine pseudoinverse of gPC matrix
             self.gpc_matrix_inv = np.linalg.pinv(gpc_matrix)
@@ -663,6 +674,9 @@ class GPC(object):
             except ValueError:
                 raise AttributeError("Please check format of parameter sim_results: [n_grid x n_out] np.ndarray.")
 
+        ###############################
+        # Orthogonal Matching Pursuit #
+        ###############################
         elif solver == 'OMP':
             # transform gPC matrix to fastmat format
             gpc_matrix_fm = fm.Matrix(gpc_matrix)
@@ -680,6 +694,27 @@ class GPC(object):
 
             coeffs = fm.algs.OMP(gpc_matrix_fm, sim_results, n_coeffs_sparse)
 
+        ################################
+        # Least-Angle Regression Lasso #
+        ################################
+        elif solver == 'LarsLasso':
+
+            if sim_results.ndim == 1:
+                sim_results = sim_results[:, np.newaxis]
+
+            # determine gPC-coefficients of extended basis using LarsLasso
+            reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False)
+            reg.fit(gpc_matrix, sim_results)
+            coeffs = reg.coef_
+
+            if coeffs.ndim == 1:
+                coeffs = coeffs[:, np.newaxis]
+            else:
+                coeffs = coeffs.transpose()
+
+        #########################
+        # Numerical Integration #
+        #########################
         elif solver == 'NumInt':
             # check if quadrature rule (grid) fits to the probability density distribution (pdf)
             grid_pdf_fit = True

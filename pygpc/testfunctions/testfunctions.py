@@ -984,7 +984,7 @@ class Ridge(AbstractModel):
 
 class Lim2002(AbstractModel):
     """
-    Two-dimensional test function of Lim et al. (2002) [1].
+    Two-dimensional test function of Lim et al. (2002) [1] (eq. (27)).
 
     This function is a polynomial in two dimensions, with terms up to degree
     5. It is nonlinear, and it is smooth despite being complex, which is
@@ -1032,10 +1032,11 @@ class Lim2002(AbstractModel):
         pass
 
     def simulate(self, process_id=None):
-        y = (9 + 5.0 / 2 * self.p["x1"] - 35.0 / 2 * self.p["x2"] + 5.0
-             / 2 * self.p["x1"] * self.p["x2"] + 19 * self.p["x2"] ** 2
-             - 15.0 / 2 * self.p["x1"] ** 3 - 5.0 / 2 * self.p["x1"] * self.p["x2"] ** 2
-             - 11.0 / 2 * self.p["x2"] ** 4 + self.p["x1"] ** 3 * self.p["x2"] ** 2)
+        y = 9 + 2.5 * self.p["x1"] - 17.5 * self.p["x2"] + 2.5 * self.p["x1"] * self.p["x2"] + 19 * self.p["x2"] ** 2 - 7.5 * self.p["x1"] ** 3 - 2.5 * self.p["x1"] * self.p["x2"] ** 2 - 5.5 * self.p["x2"] ** 4 + (self.p["x1"] ** 3) * (self.p["x2"] ** 2)
+
+        # y = (9 + 5.0 / 2 * self.p["x1"] - 35.0 / 2 * self.p["x2"] + 5.0 / 2 * self.p["x1"] * self.p["x2"] +
+        #      19 * self.p["x2"] ** 2 - 15.0 / 2 * self.p["x1"] ** 3 - 5.0 / 2 * self.p["x1"] * self.p["x2"] ** 2 -
+        #      11.0 / 2 * self.p["x2"] ** 4 + self.p["x1"] ** 3 * self.p["x2"] ** 2)
 
         if type(y) is not np.ndarray:
             y = np.array([y])

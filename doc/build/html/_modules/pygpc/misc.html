@@ -94,7 +94,6 @@
 
 
 <div class="viewcode-block" id="display_fancy_bar"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.display_fancy_bar">[docs]</a><span class="k">def</span> <span class="nf">display_fancy_bar</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_i</span><span class="p">,</span> <span class="n">more_text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="c1"># TODO: improve?</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display a simple progress bar. Call in each iteration and start with i=1.</span>
 
@@ -146,8 +145,9 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; [</span><span class="si">%-40s</span><span class="s2">] </span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
         <span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="nb">int</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="mf">2.5</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_i</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+    <span class="c1"># if int(i) == n_i:</span>
+    <span class="c1">#     print(&quot;&quot;)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_cartesian_product"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_cartesian_product">[docs]</a><span class="k">def</span> <span class="nf">get_cartesian_product</span><span class="p">(</span><span class="n">array_list</span><span class="p">):</span>
@@ -709,6 +709,36 @@
             <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">d</span></div>
+
+
+<div class="viewcode-block" id="determine_projection_matrix"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.determine_projection_matrix">[docs]</a><span class="k">def</span> <span class="nf">determine_projection_matrix</span><span class="p">(</span><span class="n">gradient_results</span><span class="p">,</span> <span class="n">qoi_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lambda_eps</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines projection matrix [P].</span>
+
+<span class="sd">    .. math:: \\eta = [\\mathbf{P}] \\xi</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gradient_results : ndarray of float [n_grid x n_out x dim]</span>
+<span class="sd">        Gradient of model function in grid points</span>
+<span class="sd">    qoi_idx : int</span>
+<span class="sd">        Index of QOI the projection matrix is determined for</span>
+<span class="sd">    lambda_eps : float, optional, default: 1e-1</span>
+<span class="sd">        Lower relative bound of eigenvalues (with respect to highest eigenvalue)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    p_matrix : ndarray of float [dim_reduced x dim]</span>
+<span class="sd">        Projection matrix for QOI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Determine projection matrices by SVD of gradients</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">gradient_results</span><span class="p">[:,</span> <span class="n">qoi_idx</span><span class="p">,</span> <span class="p">:])</span>
+    <span class="n">s_filt</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span> <span class="o">&gt;</span> <span class="n">lambda_eps</span><span class="o">*</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">v_filt</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">s</span> <span class="o">&gt;</span> <span class="n">lambda_eps</span><span class="o">*</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">p_matrix</span> <span class="o">=</span> <span class="n">v_filt</span>
+
+    <span class="k">return</span> <span class="n">p_matrix</span></div>
 </pre></div>
 
           </div>

@@ -157,6 +157,9 @@ class Static(Algorithm):
             against a Problem.ValidationSet.
         grid: Grid object instance
             Grid object to use for static gPC (RandomGrid, SparseGrid, TensorGrid)
+        options["n_samples_validation"] : int, optional, default: 1e4
+            Number of validation points used to determine the NRMSD if chosen as "error_type". Does not create a
+            validation set if there is already one present in the Problem instance (problem.validation).
 
         Notes
         -----
@@ -194,6 +197,10 @@ class Static(Algorithm):
                                                 "sparsity" not in self.options["settings"].keys())):
             raise AssertionError("Please specify correct solver settings for OMP in 'settings'")
 
+        if self.options["solver"] == "LarsLasso" and ("settings" not in self.options.keys() or not(
+                                                "alpha" not in self.options["settings"].keys())):
+            self.options["settings"]["alpha"] = 1e-5
+
         if "order" not in self.options.keys():
             raise AssertionError("Please specify 'order'=[order_1, order_2, ..., order_dim] in options dictionary")
 
@@ -223,6 +230,9 @@ class Static(Algorithm):
 
         if "error_type" not in self.options.keys():
             self.options["error_type"] = "loocv"
+
+        if "n_samples_validation" not in self.options.keys():
+            self.options["n_samples_validation"] = 1e4
 
     def run(self):
         """
@@ -294,10 +304,7 @@ class Static(Algorithm):
                            verbose=True)
 
         # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-        if self.options["error_type"] == "loocv":
-            eps = gpc.validate(coeffs=coeffs, sim_results=res)
-        elif self.options["error_type"] == "nrmsd":
-            eps = gpc.validate(coeffs=coeffs)
+        eps = gpc.validate(coeffs=coeffs, sim_results=res)
 
         iprint("-> {} {} error = {}".format(self.options["error_norm"],
                                             self.options["error_type"],
@@ -381,8 +388,12 @@ class StaticProjection(Algorithm):
         options["matrix_ratio"]: float, optional, default=1.5
             Ration between the number of model evaluations and the number of basis functions.
             (>1 results in an overdetermined system)
-        options["eps_lambda_gradient"] : float, optional, default: 0.1
-            Lower relative bound of eigenvalues (with respect to highest eigenvalue)
+        options["lambda_eps_gradient"] : float, optional, default: 0.95
+            Bound of principal components in %. All eigenvectors are included until lambda_eps of total sum of all
+            eigenvalues is included in the system.
+        options["n_samples_validation"] : int, optional, default: 1e4
+            Number of validation points used to determine the NRMSD if chosen as "error_type". Does not create a
+            validation set if there is already one present in the Problem instance (problem.validation).
 
         Notes
         -----
@@ -418,6 +429,10 @@ class StaticProjection(Algorithm):
                                                 "n_coeffs_sparse" not in self.options["settings"].keys() or
                                                 "sparsity" not in self.options["settings"].keys())):
             raise AssertionError("Please specify correct solver settings for OMP in 'settings'")
+
+        if self.options["solver"] == "LarsLasso" and ("settings" not in self.options.keys() or not(
+                                                "alpha" not in self.options["settings"].keys())):
+            self.options["settings"]["alpha"] = 1e-5
 
         if "order" not in self.options.keys():
             raise AssertionError("Please specify 'order'=[order_1, order_2, ..., order_dim] in options dictionary")
@@ -464,8 +479,11 @@ class StaticProjection(Algorithm):
         if "seed" not in self.options.keys():
             self.options["seed"] = None
 
-        if "eps_lambda_gradient" not in self.options.keys():
-            self.options["eps_lambda_gradient"] = 0.1
+        if "lambda_eps_gradient" not in self.options.keys():
+            self.options["lambda_eps_gradient"] = 0.95
+
+        if "n_samples_validation" not in self.options.keys():
+            self.options["n_samples_validation"] = 1e4
 
     def run(self):
         """
@@ -536,7 +554,9 @@ class StaticProjection(Algorithm):
                 res = res_init[:, q_idx][:, np.newaxis]
 
             # Determine projection matrix
-            p_matrix = determine_projection_matrix(gradient_results=grad_res, qoi_idx=q_idx, lambda_eps=1e-1)
+            p_matrix = determine_projection_matrix(gradient_results=grad_res,
+                                                   qoi_idx=q_idx,
+                                                   lambda_eps=self.options["lambda_eps_gradient"])
 
             dim_reduced = p_matrix.shape[0]
             parameters_reduced = OrderedDict()
@@ -713,6 +733,8 @@ class RegAdaptive(Algorithm):
             Number of threads to use for parallel evaluation of the model function.
         options["matrix_ratio"]: float, optional, default=1.5
             Ration between the number of model evaluations and the number of basis functions.
+            If "adaptive_sampling" is activated this factor is only used to
+            construct the initial grid depending on the initial number of basis functions determined by "order_start".
             (>1 results in an overdetermined system)
         options["error_norm"] : str, optional, default="relative"
             Choose if error is determined "relative" or "absolute". Use "absolute" error when the
@@ -721,6 +743,12 @@ class RegAdaptive(Algorithm):
             Choose type of error to validate gpc approximation. Use "loocv" (Leave-one-Out cross validation)
             to omit any additional calculations and "nrmsd" (normalized root mean square deviation) to compare
             against a Problem.ValidationSet.
+        options["adaptive_sampling"] : boolean, optional, default: True
+            Adds samples adaptively to the expansion until the error is converged and continues by
+            adding new basis functions.
+        options["n_samples_validation"] : int, optional, default: 1e4
+            Number of validation points used to determine the NRMSD if chosen as "error_type". Does not create a
+            validation set if there is already one present in the Problem instance (problem.validation).
 
         Examples
         --------
@@ -769,6 +797,10 @@ class RegAdaptive(Algorithm):
         if self.options["solver"] == "OMP" and "settings" not in self.options.keys():
             raise AssertionError("Please specify correct solver settings for OMP in 'settings'")
 
+        if self.options["solver"] == "LarsLasso" and ("settings" not in self.options.keys() or
+                                                      "alpha" not in self.options["settings"].keys()):
+            self.options["settings"]["alpha"] = 1e-5
+
         if "print_func_time" not in self.options.keys():
             self.options["print_func_time"] = False
 
@@ -780,6 +812,12 @@ class RegAdaptive(Algorithm):
 
         if "error_type" not in self.options.keys():
             self.options["error_type"] = "loocv"
+
+        if "adaptive_sampling" not in self.options.keys():
+            self.options["adaptive_sampling"] = True
+
+        if "n_samples_validation" not in self.options.keys():
+            self.options["n_samples_validation"] = 1e4
 
     def run(self):
         """
@@ -799,6 +837,12 @@ class RegAdaptive(Algorithm):
         i_grid = 0
         order = self.options["order_start"]
         res_complete = None
+        first_iter = True
+
+        # Add a validation set if nrmsd is chosen and no validation set is yet present
+        if self.options["error_type"] == "nrmsd" and not isinstance(self.problem.validation, ValidationSet):
+            self.problem.create_validation_set(n_samples=self.options["n_samples_validation"],
+                                               n_cpu=self.options["n_cpu"])
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu)
@@ -810,6 +854,7 @@ class RegAdaptive(Algorithm):
                   order_max_norm=self.options["order_max_norm"],
                   interaction_order=self.options["interaction_order"],
                   options=self.options)
+        extended_basis = True
 
         # Initialize Grid object
         gpc.grid = RandomGrid(parameters_random=self.problem.parameters_random,
@@ -823,6 +868,8 @@ class RegAdaptive(Algorithm):
 
         # Initialize gpc matrix
         gpc.init_gpc_matrix()
+        gpc.n_grid.pop(0)
+        gpc.n_basis.pop(0)
 
         # Main iterations (order)
         while (eps > self.options["eps"]) and order <= self.options["order_end"]:
@@ -877,55 +924,106 @@ class RegAdaptive(Algorithm):
 
                     # extend basis
                     gpc.basis.extend_basis(b_added)
+                    extended_basis = True
 
-                    # extend grid
-                    gpc.grid.extend_random_grid(n_grid_new=np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]),
-                                                seed=None)
+                if self.options["adaptive_sampling"]:
+                    iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
 
-                    # update gpc matrix
-                    gpc.update_gpc_matrix()
+                add_samples = True   # if adaptive sampling is False, the while loop will be only executed once
+                delta_eps_target = 1e-1
+                delta_eps = delta_eps_target + 1
+                delta_samples = 5e-2
 
-                # run simulations
-                iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
-                       tab=0, verbose=self.options["verbose"])
+                while add_samples and delta_eps > delta_eps_target and eps > self.options["eps"]:
 
-                start_time = time.time()
+                    if not self.options["adaptive_sampling"]:
+                        add_samples = False
 
-                # run model if grid points were added
-                if i_grid < len(gpc.grid.coords):
-                    res = com.run(model=gpc.problem.model,
-                                  problem=gpc.problem,
-                                  coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
-                                  coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
-                                  i_iter=order,
-                                  i_subiter=gpc.interaction_order_current,
-                                  fn_results=gpc.fn_results,
-                                  print_func_time=self.options["print_func_time"])
-
-                    iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-                           tab=0, verbose=self.options["verbose"])
-
-                    # Append result to solution matrix (RHS)
-                    if i_grid == 0:
-                        res_complete = res
+                    # new sample size
+                    if extended_basis and self.options["adaptive_sampling"]:
+                        # do not increase sample size immediately when basis was extended, try first with old samples
+                        n_grid_new = gpc.grid.n_grid
+                    elif self.options["adaptive_sampling"] and not first_iter:
+                        # increase sample size stepwise (adaptive sampling)
+                        n_grid_new = int(np.ceil(gpc.grid.n_grid + delta_samples * gpc.basis.n_basis))
                     else:
-                        res_complete = np.vstack([res_complete, res])
+                        # increase sample size according to matrix ratio w.r.t. bnumber of basis functions
+                        n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
 
-                    i_grid = gpc.grid.coords.shape[0]
+                    # run model if grid points were added
+                    if i_grid < n_grid_new or extended_basis:
+                        # extend grid
+                        if i_grid < n_grid_new:
+                            iprint("Extending grid from {} to {} by {} sampling points".format(
+                                gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
+                                tab=0, verbose=self.options["verbose"])
+                            gpc.grid.extend_random_grid(n_grid_new=n_grid_new, seed=None)
 
-                # Determine QOIs with NaN in results
-                non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
-                n_nan = res_complete.shape[1]-non_nan_mask.size
+                            # run simulations
+                            iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
+                                   tab=0, verbose=self.options["verbose"])
 
-                if n_nan > 0:
-                    iprint("In {}/{} output quantities NaN's were found.".format(n_nan, res_complete.shape[1]),
-                           tab=0, verbose=self.options["verbose"])
+                            start_time = time.time()
 
-                # determine gpc coefficients
-                coeffs = gpc.solve(sim_results=res_complete,
-                                   solver=gpc.solver,
-                                   settings=gpc.settings,
-                                   verbose=True)
+                            res = com.run(model=gpc.problem.model,
+                                          problem=gpc.problem,
+                                          coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
+                                          coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
+                                          i_iter=order,
+                                          i_subiter=gpc.interaction_order_current,
+                                          fn_results=gpc.fn_results,
+                                          print_func_time=self.options["print_func_time"])
+
+                            iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+                                   tab=0, verbose=self.options["verbose"])
+
+                            # Append result to solution matrix (RHS)
+                            if i_grid == 0:
+                                res_complete = res
+                            else:
+                                res_complete = np.vstack([res_complete, res])
+
+                            i_grid = gpc.grid.coords.shape[0]
+
+                            # Determine QOIs with NaN in results
+                            non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
+                            n_nan = res_complete.shape[1] - non_nan_mask.size
+
+                            if n_nan > 0:
+                                iprint("In {}/{} output quantities NaN's were found.".format(n_nan, res_complete.shape[1]),
+                                       tab=0, verbose=self.options["verbose"])
+
+                        # update gpc matrix
+                        gpc.update_gpc_matrix()
+
+                        # determine gpc coefficients
+                        coeffs = gpc.solve(sim_results=res_complete,
+                                           solver=gpc.solver,
+                                           settings=gpc.settings,
+                                           verbose=True)
+
+                        # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+                        eps = gpc.validate(coeffs=coeffs, sim_results=res_complete[:, non_nan_mask])
+
+                        if extended_basis:
+                            eps_ref = copy.deepcopy(eps)
+                        else:
+                            delta_eps = np.abs((gpc.error[-1] - gpc.error[-2]) / eps_ref)
+
+                        iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                            self.options["error_type"],
+                                                            eps), tab=0, verbose=self.options["verbose"])
+
+                        # extend basis further if error was decreased (except in very first iteration)
+                        if not first_iter and extended_basis and gpc.error[-1] < gpc.error[-2]:
+                            break
+
+                        extended_basis = False
+                        first_iter = False
+
+                        # exit adaptive sampling loop if no adaptive sampling was chosen
+                        if not self.options["adaptive_sampling"]:
+                            break
 
                 # save gpc object and coeffs for this sub-iteration
                 if self.options["fn_results"]:
@@ -942,16 +1040,6 @@ class RegAdaptive(Algorithm):
 
                 # save gpc matrix in .hdf5 file
                 gpc.save_gpc_matrix_hdf5()
-
-                # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-                if self.options["error_type"] == "loocv":
-                    eps = gpc.validate(coeffs=coeffs, sim_results=res_complete[:, non_nan_mask])
-                elif self.options["error_type"] == "nrmsd":
-                    eps = gpc.validate(coeffs=coeffs)
-
-                iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                                    self.options["error_type"],
-                                                    eps), tab=0, verbose=self.options["verbose"])
 
                 # increase current interaction order
                 gpc.interaction_order_current = gpc.interaction_order_current + 1
@@ -1019,6 +1107,8 @@ class RegAdaptiveProjection(Algorithm):
             Number of threads to use for parallel evaluation of the model function.
         options["matrix_ratio"]: float, optional, default=1.5
             Ration between the number of model evaluations and the number of basis functions.
+            If "adaptive_sampling" is activated this factor is only used to
+            construct the initial grid depending on the initial number of basis functions determined by "order_start".
             (>1 results in an overdetermined system)
         options["error_norm"] : str, optional, default="relative"
             Choose if error is determined "relative" or "absolute". Use "absolute" error when the
@@ -1036,9 +1126,18 @@ class RegAdaptiveProjection(Algorithm):
             directions)
             - "???" ... ???
         options["n_grid_gradient"] : float, optional, default: 10
-            Number of initial grid points to determine gradient and projection matrix
-        options["eps_lambda_gradient"] : float, optional, default: 0.1
-            Lower relative bound of eigenvalues (with respect to highest eigenvalue)
+            Number of initial grid points to determine gradient and projection matrix. When the algorithm goes
+            into the main interations the number will be increased depending on the options "matrix_ratio"
+            and "adaptive_sampling".
+        options["lambda_eps_gradient"] : float, optional, default: 0.95
+            Bound of principal components in %. All eigenvectors are included until lambda_eps of total sum of all
+            eigenvalues is included in the system.
+        options["adaptive_sampling"] : boolean, optional, default: True
+            Adds samples adaptively to the expansion until the error is converged and continues by
+            adding new basis functions.
+        options["n_samples_validation"] : int, optional, default: 1e4
+            Number of validation points used to determine the NRMSD if chosen as "error_type". Does not create a
+            validation set if there is already one present in the Problem instance (problem.validation).
 
         Examples
         --------
@@ -1087,6 +1186,10 @@ class RegAdaptiveProjection(Algorithm):
         if self.options["solver"] == "OMP" and "settings" not in self.options.keys():
             raise AssertionError("Please specify correct solver settings for OMP in 'settings'")
 
+        if self.options["solver"] == "LarsLasso" and ("settings" not in self.options.keys() or
+                                                      "alpha" not in self.options["settings"].keys()):
+            self.options["settings"]["alpha"] = 1e-5
+
         if "print_func_time" not in self.options.keys():
             self.options["print_func_time"] = False
 
@@ -1108,12 +1211,15 @@ class RegAdaptiveProjection(Algorithm):
         if "projection_qoi" not in self.options.keys():
             self.options["projection_qoi"] = 0
 
-        if "eps_lambda_gradient" not in self.options.keys():
-            self.options["eps_lambda_gradient"] = 0.1
+        if "lambda_eps_gradient" not in self.options.keys():
+            self.options["lambda_eps_gradient"] = 0.95
+
+        if "n_samples_validation" not in self.options.keys():
+            self.options["n_samples_validation"] = 1e4
 
     def run(self):
         """
-        Runs adaptive gPC algorithm to solve problem.
+        Runs adaptive gPC algorithm using projection to solve problem.
 
         Returns
         -------
@@ -1158,6 +1264,15 @@ class RegAdaptiveProjection(Algorithm):
         iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
+        # Determine QOIs with NaN in results
+        non_nan_mask = np.where(np.all(~np.isnan(res_init), axis=0))[0]
+        n_nan = res_init.shape[1] - non_nan_mask.size
+
+        if n_nan > 0:
+            iprint(
+                "In {}/{} output quantities NaN's were found.".format(n_nan, res_init.shape[1]),
+                tab=0, verbose=self.options["verbose"])
+
         if self.options["projection_qoi"] == "all":
             qoi_idx = np.arange(res_init.shape[1])
             n_qoi = len(qoi_idx)
@@ -1173,6 +1288,8 @@ class RegAdaptiveProjection(Algorithm):
         self.options["order_max"] = None
 
         for i_qoi, q_idx in enumerate(qoi_idx):
+            first_iter = True
+
             if n_qoi == 1:
                 fn_results = os.path.splitext(self.options["fn_results"])[0]
                 res_complete = res_init
@@ -1191,7 +1308,7 @@ class RegAdaptiveProjection(Algorithm):
             # Determine projection matrix
             p_matrix = determine_projection_matrix(gradient_results=gradient_results_complete,
                                                    qoi_idx=q_idx,
-                                                   lambda_eps=self.options["eps_lambda_gradient"])
+                                                   lambda_eps=self.options["lambda_eps_gradient"])
 
             # Set up initial reduced problem
             dim_reduced = p_matrix.shape[0]
@@ -1209,6 +1326,7 @@ class RegAdaptiveProjection(Algorithm):
                              order_max_norm=self.options["order_max_norm"],
                              interaction_order=self.options["interaction_order"],
                              options=self.options)
+            extended_basis = False
 
             # save projection matrix in gPC object
             gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
@@ -1227,6 +1345,8 @@ class RegAdaptiveProjection(Algorithm):
 
             # Initialize gpc matrix
             gpc[i_qoi].init_gpc_matrix()
+            gpc[i_qoi].n_grid.pop(0)
+            gpc[i_qoi].n_basis.pop(0)
 
             gpc[i_qoi].solver = self.options["solver"]
             gpc[i_qoi].settings = self.options["settings"]
@@ -1271,7 +1391,6 @@ class RegAdaptiveProjection(Algorithm):
                         interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
                         multi_indices_added = multi_indices_all_new[
                                               interaction_order_list == interaction_order_current, :]
-                        print(multi_indices_added)
 
                         # continue while loop if no basis function was added because of max norm constraint
                         if not multi_indices_added.any():
@@ -1293,163 +1412,224 @@ class RegAdaptiveProjection(Algorithm):
 
                         # extend basis
                         gpc[i_qoi].basis.extend_basis(b_added)
+                        extended_basis = True
 
-                    # extend original grid
-                    grid_original.extend_random_grid(n_grid_new=np.ceil(gpc[i_qoi].basis.n_basis *
-                                                                        self.options["matrix_ratio"]),
-                                                     seed=None)
+                    if self.options["adaptive_sampling"]:
+                        iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
 
-                    # run model and update projection matrix if grid points were added
-                    # (Skip simulations of first run because we already simulated it)
-                    if i_grid < grid_original.n_grid:
+                    add_samples = True  # if adaptive sampling is False, the while loop will be only executed once
+                    delta_eps_target = 1e-1
+                    delta_eps = delta_eps_target + 1
+                    delta_samples = 5e-2
 
-                        # run simulations
-                        iprint("Performing simulations " + str(i_grid + 1) + " to " + str(grid_original.coords.shape[0]),
-                               tab=0, verbose=self.options["verbose"])
+                    if gpc[i_qoi].error:
+                        eps_ref = gpc[i_qoi].error[-1]
 
-                        start_time = time.time()
-                        res = com.run(model=self.problem.model,
-                                      problem=self.problem,
-                                      coords=grid_original.coords[i_grid:grid_original.coords.shape[0]],
-                                      coords_norm=grid_original.coords_norm[i_grid:grid_original.coords.shape[0]],
-                                      i_iter=order,
-                                      i_subiter=interaction_order_current,
-                                      fn_results=gpc[i_qoi].fn_results,
-                                      print_func_time=self.options["print_func_time"])
+                    while add_samples and delta_eps > delta_eps_target and eps > self.options["eps"]:
 
-                        if n_qoi != 1:
-                            res = res[:, q_idx][:, np.newaxis]
+                        if not self.options["adaptive_sampling"]:
+                            add_samples = False
 
-                        iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-                               tab=0, verbose=self.options["verbose"])
+                        # new sample size
+                        if extended_basis and self.options["adaptive_sampling"]:
+                            # do not increase sample size immediately when basis was extended, try first with old samples
+                            n_grid_new = gpc[i_qoi].grid.n_grid
+                        elif self.options["adaptive_sampling"]:
+                            # increase sample size stepwise (adaptive sampling)
+                            n_grid_new = int(np.ceil(gpc[i_qoi].grid.n_grid + delta_samples * gpc[i_qoi].basis.n_basis))
+                        else:
+                            # increase sample size according to matrix ratio w.r.t. number of basis functions
+                            n_grid_new = int(np.ceil(gpc[i_qoi].basis.n_basis * self.options["matrix_ratio"]))
 
-                        # Append result to solution matrix (RHS)
-                        res_complete = np.vstack([res_complete, res])
+                        # run model and update projection matrix if grid points were added
+                        # (Skip simulations of first run because we already simulated it)
+                        if i_grid < n_grid_new or extended_basis:
+                            # extend grid
+                            if i_grid < n_grid_new:
+                                iprint("Extending grid from {} to {} by {} sampling points".format(
+                                    gpc[i_qoi].grid.n_grid, n_grid_new, n_grid_new - gpc[i_qoi].grid.n_grid),
+                                    tab=0, verbose=self.options["verbose"])
+                                grid_original.extend_random_grid(n_grid_new=n_grid_new, seed=None)
 
-                        i_grid = grid_original.coords.shape[0]
+                                # run simulations
+                                iprint("Performing simulations " + str(i_grid + 1) + " to " + str(grid_original.coords.shape[0]),
+                                       tab=0, verbose=self.options["verbose"])
 
-                        # Determine gradient
-                        start_time = time.time()
-                        gradient_results_complete = self.get_gradient(grid=grid_original, results=res_complete,
-                                                                      gradient_results=gradient_results_complete)
-                        iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-                               tab=0, verbose=self.options["verbose"])
+                                start_time = time.time()
+                                res = com.run(model=self.problem.model,
+                                              problem=self.problem,
+                                              coords=grid_original.coords[i_grid:grid_original.coords.shape[0]],
+                                              coords_norm=grid_original.coords_norm[i_grid:grid_original.coords.shape[0]],
+                                              i_iter=order,
+                                              i_subiter=interaction_order_current,
+                                              fn_results=gpc[i_qoi].fn_results,
+                                              print_func_time=self.options["print_func_time"])
 
-                        # Determine projection matrix
-                        p_matrix = determine_projection_matrix(gradient_results=gradient_results_complete,
-                                                               qoi_idx=q_idx,
-                                                               lambda_eps=self.options["eps_lambda_gradient"])
+                                if n_qoi != 1:
+                                    res = res[:, q_idx][:, np.newaxis]
 
-                        # save projection matrix in gPC object
-                        gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
+                                iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+                                       tab=0, verbose=self.options["verbose"])
 
-                        # Set up reduced gPC
-                        dim_reduced = p_matrix.shape[0]
-                        print("dim_reduced: {}".format(dim_reduced))
+                                # Append result to solution matrix (RHS)
+                                res_complete = np.vstack([res_complete, res])
 
-                        # Update gPC object if dimension has changed
-                        if dim_reduced != gpc[i_qoi].problem.dim:
-                            parameters_reduced = OrderedDict()
+                                i_grid = grid_original.coords.shape[0]
 
-                            for i in range(dim_reduced):
-                                parameters_reduced["n{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
+                                # Determine QOIs with NaN in results
+                                non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
+                                n_nan = res_complete.shape[1] - non_nan_mask.size
 
-                            self.problem_reduced[i_qoi] = Problem(model=self.problem.model, parameters=parameters_reduced)
+                                if n_nan > 0:
+                                    iprint(
+                                        "In {}/{} output quantities NaN's were found.".format(n_nan, res_complete.shape[1]),
+                                        tab=0, verbose=self.options["verbose"])
 
-                            # Create reduced gPC object of order - 1 and add rest of basisfunctions of this subiteration afterwards
-                            gpc[i_qoi] = Reg(problem=self.problem_reduced[i_qoi],
-                                             order=[order - 1 for _ in range(dim_reduced)],
-                                             order_max=order - 1,
-                                             order_max_norm=self.options["order_max_norm"],
-                                             interaction_order=self.options["interaction_order"],
-                                             options=self.options)
+                                # Determine gradient
+                                start_time = time.time()
+                                gradient_results_complete = self.get_gradient(grid=grid_original, results=res_complete,
+                                                                              gradient_results=gradient_results_complete)
+                                iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                                       tab=0, verbose=self.options["verbose"])
 
-                            # save projection matrix in gPC object
-                            gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
+                                # Determine projection matrix
+                                p_matrix = determine_projection_matrix(gradient_results=gradient_results_complete,
+                                                                       qoi_idx=q_idx,
+                                                                       lambda_eps=self.options["lambda_eps_gradient"])
 
-                            # add basis functions of this subiteration to be complete again
-                            # determine new possible set of basis functions
-                            multi_indices_all_new = get_multi_indices_max_order(self.problem_reduced[i_qoi].dim,
-                                                                                order,
-                                                                                self.options["order_max_norm"])
-                            multi_indices_all_current = np.array(
-                                [list(map(lambda x: x.p["i"], _b)) for _b in gpc[i_qoi].basis.b])
+                                # save projection matrix in gPC object
+                                gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
 
-                            idx_old = np.hstack(
-                                [np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
-                                 for i in range(multi_indices_all_current.shape[0])])
+                                # Set up reduced gPC
+                                dim_reduced = p_matrix.shape[0]
+                                iprint("Dimension of reduced problem: {}".format(dim_reduced),
+                                       tab=0, verbose=self.options["verbose"])
 
-                            multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
+                                # Update gPC object if dimension has changed
+                                if dim_reduced != gpc[i_qoi].problem.dim:
+                                    parameters_reduced = OrderedDict()
 
-                            # remove multi-indices, we did not consider yet in this sub-iteration
-                            # filter out polynomials of interaction_order > interaction_order_current
-                            interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
-                            multi_indices_added = multi_indices_all_new[
-                                                  interaction_order_list <= interaction_order_current, :]
+                                    for i in range(dim_reduced):
+                                        parameters_reduced["n{}".format(i)] = Beta(pdf_shape=[1., 1.],
+                                                                                   pdf_limits=[-1., 1.])
 
-                            # construct 2D list with new BasisFunction objects
-                            b_added = [[0 for _ in range(self.problem_reduced[i_qoi].dim)] for _ in
-                                       range(multi_indices_added.shape[0])]
+                                    self.problem_reduced[i_qoi] = Problem(model=self.problem.model,
+                                                                          parameters=parameters_reduced)
 
-                            for i_basis in range(multi_indices_added.shape[0]):
-                                for i_p, p in enumerate(
-                                        self.problem_reduced[i_qoi].parameters_random):  # Ordered Dict of RandomParameter
-                                    b_added[i_basis][i_p] = self.problem_reduced[i_qoi].parameters_random[p].init_basis_function(
-                                        order=multi_indices_added[i_basis, i_p])
+                                    # Create reduced gPC object of order - 1 and add rest of basisfunctions
+                                    # of this subiteration afterwards
+                                    gpc[i_qoi] = Reg(problem=self.problem_reduced[i_qoi],
+                                                     order=[order - 1 for _ in range(dim_reduced)],
+                                                     order_max=order - 1,
+                                                     order_max_norm=self.options["order_max_norm"],
+                                                     interaction_order=self.options["interaction_order"],
+                                                     options=self.options)
 
-                            # extend basis
-                            gpc[i_qoi].basis.extend_basis(b_added)
+                                    # save projection matrix in gPC object
+                                    gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
 
-                            # transformed grid
-                            grid[i_qoi] = copy.deepcopy(grid_original)
+                                    # add basis functions of this subiteration to be complete again
+                                    # determine new possible set of basis functions
+                                    multi_indices_all_new = get_multi_indices_max_order(self.problem_reduced[i_qoi].dim,
+                                                                                        order,
+                                                                                        self.options["order_max_norm"])
+                                    multi_indices_all_current = np.array(
+                                        [list(map(lambda x: x.p["i"], _b)) for _b in gpc[i_qoi].basis.b])
 
-                            # transform variables of original grid to reduced parameter space
-                            grid[i_qoi].coords = np.dot(grid_original.coords,
+                                    idx_old = np.hstack(
+                                        [np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
+                                         for i in range(multi_indices_all_current.shape[0])])
+
+                                    multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
+
+                                    # remove multi-indices, we did not consider yet in this sub-iteration
+                                    # filter out polynomials of interaction_order > interaction_order_current
+                                    interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
+                                    multi_indices_added = multi_indices_all_new[
+                                                          interaction_order_list <= interaction_order_current, :]
+
+                                    # construct 2D list with new BasisFunction objects
+                                    b_added = [[0 for _ in range(self.problem_reduced[i_qoi].dim)] for _ in
+                                               range(multi_indices_added.shape[0])]
+
+                                    for i_basis in range(multi_indices_added.shape[0]):
+                                        for i_p, p in enumerate(
+                                                self.problem_reduced[i_qoi].parameters_random):  # Ordered Dict of RandomParameter
+                                            b_added[i_basis][i_p] = self.problem_reduced[i_qoi].parameters_random[p].init_basis_function(
+                                                order=multi_indices_added[i_basis, i_p])
+
+                                    # extend basis
+                                    gpc[i_qoi].basis.extend_basis(b_added)
+
+                                    # transformed grid
+                                    grid[i_qoi] = copy.deepcopy(grid_original)
+
+                                    # transform variables of original grid to reduced parameter space
+                                    grid[i_qoi].coords = np.dot(grid_original.coords,
+                                                                gpc[i_qoi].p_matrix.transpose())
+                                    grid[i_qoi].coords_norm = np.dot(grid_original.coords_norm,
+                                                                     gpc[i_qoi].p_matrix.transpose())
+
+                                    # assign transformed grid
+                                    gpc[i_qoi].grid = grid[i_qoi]
+
+                                    # Initialize gpc matrix
+                                    gpc[i_qoi].init_gpc_matrix()
+
+                                    gpc[i_qoi].interaction_order_current = interaction_order_current
+                                    gpc[i_qoi].solver = self.options["solver"]
+                                    gpc[i_qoi].settings = self.options["settings"]
+                                    gpc[i_qoi].options = copy.deepcopy(self.options)
+
+                                else:
+                                    coords_new = np.dot(grid_original.coords, #[gpc[i_qoi].grid.n_grid:, :]
                                                         gpc[i_qoi].p_matrix.transpose())
-                            grid[i_qoi].coords_norm = np.dot(grid_original.coords_norm,
+                                    coords_norm_new = np.dot(grid_original.coords_norm, #[gpc[i_qoi].grid.n_grid:, :]
                                                              gpc[i_qoi].p_matrix.transpose())
 
-                            # assign transformed grid
-                            gpc[i_qoi].grid = grid[i_qoi]
+                                    gpc[i_qoi].grid.coords = coords_new
+                                    gpc[i_qoi].grid.coords_norm = coords_norm_new
 
-                            # Initialize gpc matrix
-                            gpc[i_qoi].init_gpc_matrix()
+                        gpc[i_qoi].init_gpc_matrix()
 
-                            gpc[i_qoi].interaction_order_current = interaction_order_current
-                            gpc[i_qoi].solver = self.options["solver"]
-                            gpc[i_qoi].settings = self.options["settings"]
-                            gpc[i_qoi].options = copy.deepcopy(self.options)
+                        # determine gpc coefficients
+                        coeffs[i_qoi] = gpc[i_qoi].solve(sim_results=res_complete,
+                                                         solver=gpc[i_qoi].solver,
+                                                         settings=gpc[i_qoi].settings,
+                                                         verbose=True)
 
+                        # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+                        gpc[i_qoi].problem.validation = self.problem.validation
+                        eps = gpc[i_qoi].validate(coeffs=coeffs[i_qoi], sim_results=res_complete[:, non_nan_mask])
+
+                        if extended_basis or first_iter:
+                            eps_ref = copy.deepcopy(eps)
                         else:
-                            coords_new = np.dot(grid_original.coords[gpc[i_qoi].grid.n_grid:, :],
-                                                gpc[i_qoi].p_matrix.transpose())
-                            coords_norm_new = np.dot(grid_original.coords_norm[gpc[i_qoi].grid.n_grid:, :],
-                                                     gpc[i_qoi].p_matrix.transpose())
+                            delta_eps = np.abs((gpc[i_qoi].error[-1] - gpc[i_qoi].error[-2]) / eps_ref)
 
-                            gpc[i_qoi].grid.extend_random_grid(coords=coords_new, coords_norm=coords_norm_new)
+                        first_iter = False
 
-                    gpc[i_qoi].update_gpc_matrix()
+                        iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                            self.options["error_type"],
+                                                            eps), tab=0, verbose=self.options["verbose"])
 
-                    # Determine QOIs with NaN in results
-                    non_nan_mask = np.where(np.all(~np.isnan(res_complete), axis=0))[0]
-                    n_nan = res_complete.shape[1]-non_nan_mask.size
+                        # extend basis further if error was decreased (except in very first iteration)
+                        if order != self.options["order_start"]:
+                            if extended_basis and gpc[i_qoi].error[-1] < gpc[i_qoi].error[-2]:
+                                break
 
-                    if n_nan > 0:
-                        iprint("In {}/{} output quantities NaN's were found.".format(n_nan, res_complete.shape[1]),
-                               tab=0, verbose=self.options["verbose"])
+                        extended_basis = False
 
-                    # determine gpc coefficients
-                    coeffs[i_qoi] = gpc[i_qoi].solve(sim_results=res_complete,
-                                                     solver=gpc[i_qoi].solver,
-                                                     settings=gpc[i_qoi].settings,
-                                                     verbose=True)
+                        # exit adaptive sampling loop if no adaptive sampling was chosen
+                        if not self.options["adaptive_sampling"]:
+                            break
 
                     # save gpc object and coeffs for this sub-iteration
                     if self.options["fn_results"]:
                         with h5py.File(fn_results + ".hdf5", "a") as f:
                             if "coeffs" in f.keys():
                                 del f['coeffs']
-                            f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+                            f.create_dataset("coeffs", data=coeffs[i_qoi], maxshape=None, dtype="float64")
 
                             if "p_matrix" in f.keys():
                                 del f['p_matrix']
@@ -1463,13 +1643,6 @@ class RegAdaptiveProjection(Algorithm):
 
                     # save gpc matrix in .hdf5 file
                     gpc[i_qoi].save_gpc_matrix_hdf5()
-
-                    # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-                    eps = gpc[i_qoi].validate(coeffs=coeffs[i_qoi], sim_results=res_complete[:, non_nan_mask])
-
-                    iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                                        self.options["error_type"],
-                                                        eps), tab=0, verbose=self.options["verbose"])
 
                     # increase current interaction order
                     interaction_order_current = interaction_order_current + 1

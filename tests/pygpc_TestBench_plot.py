@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib
 
-folder = "/data/pt_01756/tmp/TestBench/TestBenchContinuousHD"
+folder = "/data/pt_01756/tmp/TestBench/TestBenchContinuous"
 algorithms = os.listdir(folder)
 algorithms.sort()
 testbench_objs = []
-order = [2, 3, 4]  # 2, 4, 6, 8, 10, 12, 14
-
+# order = [2, 3, 4, 5]
+order = [2, 4, 6, 8, 10, 12, 14]
 for a in algorithms:
     with open(os.path.join(folder, a, "testbench.pkl"), 'rb') as f:
         testbench_objs.append(pickle.load(f))
@@ -76,6 +76,10 @@ for testbench in testbench_objs:
                 n_grid[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(gpc.n_grid))
                 n_basis[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(gpc.n_basis))
                 nrmsd[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(gpc.relative_error_nrmsd))
+
+                # if "Projection" in os.path.split(testbench.fn_results)[1]:
+                #     n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep] = n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep][1:]
+
                 if gpc.relative_error_loocv:
                     loocv[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(gpc.relative_error_nrmsd))
 
@@ -119,10 +123,10 @@ for i_pkey, pkey in enumerate(testbench.problem_keys):
         if i_fun >= len(testbench.problem_keys)/len(dims):
             i_fun = 0
 
+    n_grid_max = []
     # loop over algorithms
     for i_alg, testbench in enumerate(testbench_objs):
         # loop over repetitions
-        n_grid_max = []
         for rep in range(testbench.repetitions):
             ax[i_dim, i_fun].scatter(n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep],
                                      nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep],
@@ -134,17 +138,16 @@ for i_pkey, pkey in enumerate(testbench.problem_keys):
 
             n_grid_max.append(np.max(n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep]))
 
-        n_grid_max = np.max(n_grid_max)
-        ax[i_dim, i_fun].set_title(pkey, fontsize=10)
-        if i_dim == 0 and i_fun == 0:
-            ax[i_dim, i_fun].set_ylabel("$\\epsilon_{NRMSD}$", fontsize=fontsize)
-            ax[i_dim, i_fun].set_xlabel("$N_g$", fontsize=fontsize)
-        ax[i_dim, i_fun].set_yscale("log")
-        ax[i_dim, i_fun].set_xscale("log")
-        ax[i_dim, i_fun].set_xlim([0, n_grid_max*1.1])
-        # ax[i_dim, i_fun].set_ylim([0.0005, 5])
-        ax[i_dim, i_fun].grid(True)
-
+    n_grid_max = np.max(n_grid_max)
+    ax[i_dim, i_fun].set_title(pkey, fontsize=10)
+    if i_dim == 0 and i_fun == 0:
+        ax[i_dim, i_fun].set_ylabel("$\\epsilon_{NRMSD}$", fontsize=fontsize)
+        ax[i_dim, i_fun].set_xlabel("$N_g$", fontsize=fontsize)
+    ax[i_dim, i_fun].set_yscale("log")
+    ax[i_dim, i_fun].set_xscale("log")
+    ax[i_dim, i_fun].set_xlim([0, n_grid_max*1.1])
+    # ax[i_dim, i_fun].set_ylim([0.00001, 5])
+    ax[i_dim, i_fun].grid(True)
     ax[i_dim, i_fun].plot([0, n_grid_max * 1.1], [1e-2, 1e-2], 'r', linewidth=0.5)
 
 

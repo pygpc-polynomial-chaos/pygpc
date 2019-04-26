@@ -630,7 +630,7 @@ def list2dict(l):
     return d
 
 
-def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=1e-1):
+def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=0.95):
     """
     Determines projection matrix [P].
 
@@ -642,8 +642,9 @@ def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=1e-1):
         Gradient of model function in grid points
     qoi_idx : int
         Index of QOI the projection matrix is determined for
-    lambda_eps : float, optional, default: 1e-1
-        Lower relative bound of eigenvalues (with respect to highest eigenvalue)
+    lambda_eps : float, optional, default: 0.95
+        Bound of principal components in %. All eigenvectors are included until lambda_eps of total sum of all
+        eigenvalues is included in the system.
 
     Returns
     -------
@@ -653,8 +654,19 @@ def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=1e-1):
 
     # Determine projection matrices by SVD of gradients
     u, s, v = np.linalg.svd(gradient_results[:, qoi_idx, :])
-    s_filt = s[s > lambda_eps*s[0]]
-    v_filt = v[s > lambda_eps*s[0], :]
+
+    # determine dominant eigenvalues up to lambda_eps * s_sum
+    s_mask = [False]*len(s)
+    s_sum_part = 0
+    s_sum = np.sum(s)
+    i_s = 0
+    while s_sum_part <= lambda_eps*s_sum:
+        s_sum_part += s[i_s]
+        s_mask[i_s] = True
+        i_s += 1
+
+    s_filt = s[s_mask]
+    v_filt = v[np.append(s_mask, [False]*(v.shape[0]-u.shape[1])) > 0, :]
     p_matrix = v_filt
 
     return p_matrix

@@ -203,38 +203,12 @@ executed in parallel.</p>
 <span id="pygpc-algorithm-module"></span><h2>pygpc.Algorithm module<a class="headerlink" href="#module-pygpc.Algorithm" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.Algorithm.Algorithm">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">Algorithm</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Algorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Algorithm" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">Algorithm</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Algorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Algorithm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for GPC algorithms</p>
 <dl class="method">
-<dt id="pygpc.Algorithm.Algorithm.determine_projection_matrix">
-<code class="descname">determine_projection_matrix</code><span class="sig-paren">(</span><em>results_gradient</em>, <em>lambda_eps=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Algorithm.determine_projection_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Algorithm.determine_projection_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines projection matrix [P].</p>
-<div class="math">
-<p><img src="_images/math/7b8f11785f69697578883f709ff9cc0c237c58a3.png" alt="\eta = [\mathbf{P}] \xi"/></p>
-</div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>results_gradient</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out x dim</em><em>]</em>) – Gradient of model function in grid points</li>
-<li><strong>lambda_eps</strong> (<em>float</em>) – Lower relative bound of eigenvalues (with respect to highest eigenvalue)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>p_matrix</strong> – Projection matrix eta = p_matrix * xi</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of ndarray of float [n_out][dim_reduced x dim]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="pygpc.Algorithm.Algorithm.get_gradient">
-<code class="descname">get_gradient</code><span class="sig-paren">(</span><em>results</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Algorithm.get_gradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Algorithm.get_gradient" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_gradient</code><span class="sig-paren">(</span><em>grid</em>, <em>results</em>, <em>gradient_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Algorithm.get_gradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Algorithm.get_gradient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines the gradient of the model function in the grid points (self.grid.coords).
 The method to determine the gradient can be specified in self.options[“gradient_calculation”] to be either:</p>
 <ul class="simple">
@@ -246,11 +220,18 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results of model function in grid points</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>grid</strong> (<em>Grid object</em>) – Grid object</li>
+<li><strong>results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results of model function in grid points</li>
+<li><strong>gradient_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid_old x n_out x dim</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – Gradient of model function in grid points, already determined in previous calculations.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>results_gradient</strong> – Gradient of model function in grid points</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gradient_results</strong> – Gradient of model function in grid points</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray of float [n_grid x n_out x dim]</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray of float [n_grid x n_out x dim]</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -267,6 +248,32 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 <dt id="pygpc.Algorithm.RegAdaptive.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptive.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptive.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs adaptive gPC algorithm to solve problem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>gpc</strong> (<em>GPC object instance</em>) – GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances</li>
+<li><strong>coeffs</strong> (<em>ndarray of float [n_basis x n_out]</em>) – GPC coefficients</li>
+<li><strong>res</strong> (<em>ndarray of float [n_grid x n_out]</em>) – Simulation results at n_grid points of the n_out output variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pygpc.Algorithm.RegAdaptiveProjection">
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptiveProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptiveProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptiveProjection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
+<p>Adaptive regression approach using projection and leave one out cross validation error estimation</p>
+<dl class="method">
+<dt id="pygpc.Algorithm.RegAdaptiveProjection.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptiveProjection.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptiveProjection.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs adaptive gPC algorithm using projection to solve problem.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -312,7 +319,7 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 
 <dl class="class">
 <dt id="pygpc.Algorithm.StaticProjection">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">StaticProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#StaticProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.StaticProjection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">StaticProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#StaticProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.StaticProjection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
 <p>Static gPC algorithm using Basis Projection approach</p>
 <dl class="method">
@@ -964,7 +971,7 @@ variance
 <span id="pygpc-gpc-module"></span><h2>pygpc.GPC module<a class="headerlink" href="#module-pygpc.GPC" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.GPC.GPC">
-<em class="property">class </em><code class="descclassname">pygpc.GPC.</code><code class="descname">GPC</code><span class="sig-paren">(</span><em>problem</em>, <em>fn_results</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.GPC.</code><code class="descname">GPC</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>General gPC base class</p>
 <dl class="attribute">
@@ -1127,6 +1134,7 @@ variance
 <dd><p>Default solver to determine the gPC coefficients (can be chosen during GPC.solve)
 - ‘Moore-Penrose’ … Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
 - ‘OMP’ … Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+- ‘LarsLasso’ … {“alpha”: float 0…1} Regularization parameter
 - ‘NumInt’ … Numerical integration, spectral projection (SGPC.Quad)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1343,7 +1351,8 @@ The loocv error is calculated analytically after eq. (35) in [1] but omitting th
 corresponds to 1 - Q^2.</p>
 <p>relative_error_loocv = GPC.loocv(sim_results, coeffs)</p>
 <div class="math">
-<p><img src="_images/math/a44beebe84df819e638ee21019d32e5c926cc9e1.png" alt="\epsilon_{LOOCV} = \frac{\frac{1}{N}\sum_{i=1}^N \left( \frac{y(\xi_i) - \hat{y}(\xi_i)}{1-h_i} \right)^2}{\frac{1}{N-1}\sum_{i=1}^N \left( y(\xi_i) - \bar{y} \right)^2}"/></p>
+<p><img src="_images/math/d6069fd386fd1c22765b8404410ed835f5fc1916.png" alt="\epsilon_{LOOCV} = \frac{\frac{1}{N}\sum_{i=1}^N \left( \frac{y(\xi_i) - \hat{y}(\xi_i)}{1-h_i}
+\right)^2}{\frac{1}{N-1}\sum_{i=1}^N \left( y(\xi_i) - \bar{y} \right)^2}"/></p>
 </div><p>with</p>
 <div class="math">
 <p><img src="_images/math/22fc1ecf32904db42e600d34e33f17e041cc27d6.png" alt="\mathbf{h} = \mathrm{diag}(\mathbf{\Psi} (\mathbf{\Psi}^T \mathbf{\Psi})^{-1} \mathbf{\Psi}^T)"/></p>
@@ -1416,10 +1425,12 @@ If a gpc matrix is already present, check for equality and save only appended ro
 <li><strong>solver</strong> (<em>str</em>) – Solver to determine the gPC coefficients
 - ‘Moore-Penrose’ … Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
 - ‘OMP’ … Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+- ‘LarsLasso’ … Least-Angle Regression using Lasso model (SGPC.Reg, EGPC)
 - ‘NumInt’ … Numerical integration, spectral projection (SGPC.Quad)</li>
 <li><strong>settings</strong> (<em>dict</em>) – Solver settings
 - ‘Moore-Penrose’ … None
 - ‘OMP’ … {“n_coeffs_sparse”: int} Number of gPC coefficients != 0 or “sparsity”: float 0…1
+- ‘LarsLasso’ … {“alpha”: float 0…1} Regularization parameter
 - ‘NumInt’ … None</li>
 <li><strong>gpc_matrix</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_basis</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: self.gpc_matrix</em>) – GPC matrix to invert</li>
 <li><strong>verbose</strong> (<em>bool</em>) – boolean value to determine if to print out the progress into the standard output</li>
@@ -1882,8 +1893,9 @@ BIT Numerical Mathematics, 46(1), 195-202.</td></tr>
 
 <dl class="method">
 <dt id="pygpc.Grid.RandomGrid.extend_random_grid">
-<code class="descname">extend_random_grid</code><span class="sig-paren">(</span><em>n_grid_new</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#RandomGrid.extend_random_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.RandomGrid.extend_random_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add sample points according to input pdfs to grid (old points are kept).</p>
+<code class="descname">extend_random_grid</code><span class="sig-paren">(</span><em>n_grid_new=None</em>, <em>coords=None</em>, <em>coords_norm=None</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#RandomGrid.extend_random_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.RandomGrid.extend_random_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add sample points according to input pdfs to grid (old points are kept). Define either the new total number of
+grid points with “n_grid_new” or add grid-points manually by providing “coords” and “coords_norm”.</p>
 <p>extend_random_grid(n_grid_new, seed=None):</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1892,6 +1904,8 @@ BIT Numerical Mathematics, 46(1), 195-202.</td></tr>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>n_grid_new</strong> (<em>float</em>) – Total number of grid points in extended random grid (old points are kept)
 (n_grid_add = n_grid_new - n_grid_old)</li>
+<li><strong>coords</strong> (<em>ndarray of float</em><em> [</em><em>n_grid_add x dim</em><em>]</em>) – Grid points to add (model space)</li>
+<li><strong>coords_norm</strong> (<em>ndarray of float</em><em> [</em><em>n_grid_add x dim</em><em>]</em>) – Grid points to add (normalized space [-1, 1])</li>
 <li><strong>seed</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Random seeding point</li>
 </ul>
 </td>
@@ -2453,14 +2467,14 @@ of the random parameters or the constants in model.validate.</p>
 <span id="pygpc-sgpc-module"></span><h2>pygpc.SGPC module<a class="headerlink" href="#module-pygpc.SGPC" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.SGPC.Quad">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Quad</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Quad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Quad" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Quad</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Quad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Quad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.SGPC.SGPC" title="pygpc.SGPC.SGPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.SGPC.SGPC</span></code></a></p>
 <p>Quadrature SGPC sub-class</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pygpc.SGPC.Reg">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Reg</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Reg</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.SGPC.SGPC" title="pygpc.SGPC.SGPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.SGPC.SGPC</span></code></a></p>
 <p>Regression gPC subclass</p>
 <p>Reg(problem, order, order_max, interaction_order, fn_results=None)</p>
@@ -2502,7 +2516,7 @@ of the random parameters or the constants in model.validate.</p>
 
 <dl class="class">
 <dt id="pygpc.SGPC.SGPC">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">SGPC</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>fn_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">SGPC</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.GPC.GPC" title="pygpc.GPC.GPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.GPC.GPC</span></code></a></p>
 <p>Sub-class for standard gPC (SGPC)</p>
 <dl class="attribute">
@@ -3659,6 +3673,33 @@ Methods of the provided object will be called here.</p>
 <div class="section" id="module-pygpc.misc">
 <span id="pygpc-misc-module"></span><h2>pygpc.misc module<a class="headerlink" href="#module-pygpc.misc" title="Permalink to this headline">¶</a></h2>
 <p>Functions and classes that provide data and methods with general usage in the pygpc package</p>
+<dl class="function">
+<dt id="pygpc.misc.determine_projection_matrix">
+<code class="descclassname">pygpc.misc.</code><code class="descname">determine_projection_matrix</code><span class="sig-paren">(</span><em>gradient_results</em>, <em>qoi_idx=0</em>, <em>lambda_eps=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#determine_projection_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.determine_projection_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines projection matrix [P].</p>
+<div class="math">
+<p><img src="_images/math/7b8f11785f69697578883f709ff9cc0c237c58a3.png" alt="\eta = [\mathbf{P}] \xi"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>gradient_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out x dim</em><em>]</em>) – Gradient of model function in grid points</li>
+<li><strong>qoi_idx</strong> (<em>int</em>) – Index of QOI the projection matrix is determined for</li>
+<li><strong>lambda_eps</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default: 1e-1</em>) – Lower relative bound of eigenvalues (with respect to highest eigenvalue)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>p_matrix</strong> – Projection matrix for QOI.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray of float [dim_reduced x dim]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="function">
 <dt id="pygpc.misc.display_fancy_bar">
 <code class="descclassname">pygpc.misc.</code><code class="descname">display_fancy_bar</code><span class="sig-paren">(</span><em>text</em>, <em>i</em>, <em>n_i</em>, <em>more_text=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#display_fancy_bar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.display_fancy_bar" title="Permalink to this definition">¶</a></dt>

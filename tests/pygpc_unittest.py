@@ -1635,7 +1635,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["print_func_time"] = True
     #     options["error_norm"] = "relative"
-    #     options["error_type"] = "nrmsd"
+    #     options["error_type"] = "loocv"
     #
     #     # define algorithm
     #     algorithm = pygpc.RegAdaptive(problem=problem, options=options)
@@ -1672,8 +1672,8 @@ class TestpygpcMethods(unittest.TestCase):
     #     # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
     #
     #     print("done!\n")
-    #
-    #
+
+
     # def test_21_static_gpc_reg_mp_randomgrid_Ishigami_2D(self):
     #     """
     #     Algorithm: Static
@@ -2032,70 +2032,475 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #     print("done!\n")
 
-    def test_26_regadaptiveprojection_gpc_reg_mp_randomgrid_OakleyOhagan2004(self):
-        """
-        Algorithm: Static
-        Method: Regression
-        Solver: Moore-Penrose
-        Grid: RandomGrid
-        """
-        global folder
-        test_name = 'pygpc_test_26_regadaptiveprojection_gpc_reg_mp_randomgrid_OakleyOhagan2004'
-        print(test_name)
+    # def test_26_regadaptiveprojection_gpc_reg_mp_randomgrid_OakleyOhagan2004(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Regression
+    #     Solver: Moore-Penrose
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_26_regadaptiveprojection_gpc_reg_mp_randomgrid_OakleyOhagan2004'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.OakleyOhagan2004
+    #
+    #     # define parameters
+    #     parameters = OrderedDict()
+    #
+    #     for i in range(15):
+    #         parameters["x{}".format(i + 1)] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-1, 1])
+    #
+    #     # define problem
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["order_start"] = 2
+    #     options["order_end"] = 10
+    #     options["interaction_order"] = 3
+    #     options["solver"] = "Moore-Penrose"
+    #     options["settings"] = None
+    #     options["seed"] = 1
+    #     options["matrix_ratio"] = 3
+    #     options["n_cpu"] = 0
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["gradient_calculation"] = "standard_forward"
+    #     options["n_grid_gradient"] = 100
+    #     options["projection_qoi"] = 0
+    #     options["eps_lambda_gradient"] = 0.05
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
 
-        # define model
-        model = pygpc.testfunctions.OakleyOhagan2004
+    # def test_27_regadaptivesampling_gpc_reg_larslasso_randomgrid_Peaks(self):
+    #         """
+    #         Algorithm: Adaptive
+    #         Method: Regression
+    #         Solver: OMP
+    #         Grid: RandomGrid
+    #         """
+    #         global folder
+    #         test_name = 'pygpc_test_27_regadaptivesampling_gpc_reg_larslasso_randomgrid_Peaks'
+    #         print(test_name)
+    #
+    #         # define model
+    #         model = pygpc.testfunctions.Peaks
+    #
+    #         # define problem
+    #         parameters = OrderedDict()
+    #         parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+    #         parameters["x2"] = 1.25
+    #         parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+    #         problem = pygpc.Problem(model, parameters)
+    #         problem.create_validation_set(n_samples=int(1e4), n_cpu=0)
+    #
+    #         # gPC options
+    #         options = dict()
+    #         options["order_start"] = 2
+    #         options["order_end"] = 15
+    #         options["interaction_order"] = 2
+    #         options["solver"] = "LarsLasso"  # "OMP"
+    #         options["settings"] = {"alpha": 1e-5}  # {"sparsity": 0.25}
+    #         options["seed"] = 1
+    #         options["matrix_ratio"] = 1
+    #         options["n_cpu"] = 0
+    #         options["fn_results"] = os.path.join(folder, test_name)
+    #         options["adaptive_sampling"] = True
+    #         options["n_grid_gradient"] = 25
+    #         options["projection_qoi"] = 0
+    #         options["eps_lambda_gradient"] = 0.1
+    #         options["gradient_calculation"] = "standard_forward"
+    #         options["error_type"] = "nrmsd"
+    #         options["error_norm"] = "relative"
+    #
+    #         # define algorithm
+    #         algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+    #
+    #         # run gPC algorithm
+    #         gpc, coeffs, results = algorithm.run()
+    #
+    #         # plot grid
+    #         pygpc.plot_2d_grid(coords=gpc.grid.coords,
+    #                            fn_plot=os.path.join(folder, test_name + '_grid'))
+    #
+    #         # Post-process gPC
+    #         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                      output_idx=None,
+    #                                      calc_sobol=True,
+    #                                      calc_global_sens=True,
+    #                                      calc_pdf=True)
+    #
+    #         # Validate gPC vs original model function
+    #         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                       coeffs=coeffs,
+    #                                       n_samples=int(1e4),
+    #                                       output_idx=0,
+    #                                       fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #         self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #         print("done!\n")
 
-        # define parameters
-        parameters = OrderedDict()
+    # def test_28_regadaptivesampling_gpc_reg_larslasso_randomgrid_SphereFun(self):
+    #     """
+    #     Algorithm: Adaptive
+    #     Method: Regression
+    #     Solver: OMP
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_28_regadaptivesampling_gpc_reg_larslasso_randomgrid_SphereFun'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.SphereFun
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-1, 1])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-1, 1])
+    #     parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-1, 1])
+    #     parameters["x4"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-1, 1])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["order_start"] = 2
+    #     options["order_end"] = 10
+    #     options["interaction_order"] = 2
+    #     options["solver"] = "LarsLasso"
+    #     options["settings"] = {"alpha": 1e-5}
+    #     options["seed"] = 1
+    #     options["matrix_ratio"] = 0.2
+    #     options["n_cpu"] = 0
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["adaptive_sampling"] = True
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
 
-        for i in range(15):
-            parameters["x{}".format(i + 1)] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-1, 1])
+    # def test_29_regadaptiveprojectionsampling_gpc_reg_larslasso_randomgrid_Ridge(self):
+    #     """
+    #     Algorithm: Adaptive
+    #     Method: Regression
+    #     Solver: OMP
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_29_regadaptiveprojectionsampling_gpc_reg_larslasso_randomgrid_Ridge'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.Ridge
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-4, 4])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-4, 4])
+    #     parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-4, 4])
+    #     parameters["x4"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-4, 4])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["order_start"] = 2
+    #     options["order_end"] = 10
+    #     options["interaction_order"] = 2
+    #     options["solver"] = "LarsLasso"
+    #     options["settings"] = {"alpha": 1e-5}
+    #     options["seed"] = 1
+    #     options["matrix_ratio"] = 1
+    #     options["n_cpu"] = 0
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["adaptive_sampling"] = False
+    #     options["n_grid_gradient"] = 3
+    #     options["projection_qoi"] = 0
+    #     options["eps_lambda_gradient"] = 0.1
+    #     options["gradient_calculation"] = "standard_forward"
+    #     options["error_type"] = "loocv"
+    #     options["error_norm"] = "relative"
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
 
-        # define problem
-        problem = pygpc.Problem(model, parameters)
+    # def test_30_regadaptiveprojectionsampling_gpc_reg_larslasso_randomgrid_Ishigami(self):
+    #     """
+    #     Algorithm: Adaptive
+    #     Method: Regression
+    #     Solver: OMP
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_30_regadaptiveprojectionsampling_gpc_reg_larslasso_randomgrid_Ishigami'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.Ishigami
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
+    #     parameters["x3"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
+    #     parameters["a"] = 7.
+    #     parameters["b"] = 0.1
+    #     problem = pygpc.Problem(model, parameters)
+    #     problem.create_validation_set(n_samples=1e4, n_cpu=0)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["order_start"] = 4
+    #     options["order_end"] = 15
+    #     options["interaction_order"] = 3
+    #     options["solver"] = "LarsLasso"  # "OMP"
+    #     options["settings"] = {"alpha": 1e-5}  # {"sparsity": 0.25}
+    #     options["seed"] = 1
+    #     options["matrix_ratio"] = 1
+    #     options["n_cpu"] = 0
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["adaptive_sampling"] = True
+    #     options["n_grid_gradient"] = 25
+    #     options["projection_qoi"] = 0
+    #     options["eps_lambda_gradient"] = 0.1
+    #     options["gradient_calculation"] = "standard_forward"
+    #     options["error_type"] = "loocv"
+    #     options["error_norm"] = "relative"
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
 
-        # gPC options
-        options = dict()
-        options["order_start"] = 2
-        options["order_end"] = 10
-        options["interaction_order"] = 3
-        options["solver"] = "Moore-Penrose"
-        options["settings"] = None
-        options["seed"] = 1
-        options["matrix_ratio"] = 3
-        options["n_cpu"] = 0
-        options["fn_results"] = os.path.join(folder, test_name)
-        options["gradient_calculation"] = "standard_forward"
-        options["n_grid_gradient"] = 100
-        options["projection_qoi"] = 0
-        options["eps_lambda_gradient"] = 0.05
+    # def test_31_regadaptiveprojectionsampling_gpc_reg_larslasso_randomgrid_ManufactureDecay(self):
+    #     """
+    #     Algorithm: Adaptive
+    #     Method: Regression
+    #     Solver: OMP
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_31_regadaptiveprojectionsampling_gpc_reg_larslasso_randomgrid_ManufactureDecay'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.ManufactureDecay
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+    #     parameters["x3"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+    #     parameters["x4"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["order_start"] = 2
+    #     options["order_end"] = 15
+    #     options["interaction_order"] = 2
+    #     options["solver"] = "LarsLasso"  # "OMP"
+    #     options["settings"] = {"alpha": 1e-5}  # {"sparsity": 0.25}
+    #     options["seed"] = 1
+    #     options["matrix_ratio"] = 1
+    #     options["n_cpu"] = 0
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["adaptive_sampling"] = True
+    #     options["n_grid_gradient"] = 5
+    #     options["projection_qoi"] = 0
+    #     options["eps_lambda_gradient"] = 0.1
+    #     options["gradient_calculation"] = "standard_forward"
+    #     options["error_type"] = "loocv"
+    #     options["error_norm"] = "relative"
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True)
+    #
+    #     # Validate gPC vs original model function
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
 
-        # define algorithm
-        algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
+    def test_32_regadaptivesampling_gpc_reg_larslasso_randomgrid_Lim2002(self):
+            """
+            Algorithm: Adaptive
+            Method: Regression
+            Solver: OMP
+            Grid: RandomGrid
+            """
+            global folder
+            test_name = 'pygpc_test_32_regadaptivesampling_gpc_reg_larslasso_randomgrid_Lim2002'
+            print(test_name)
 
-        # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+            # define model
+            model = pygpc.testfunctions.Lim2002
 
-        # Post-process gPC
-        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                     output_idx=None,
-                                     calc_sobol=True,
-                                     calc_global_sens=True,
-                                     calc_pdf=True)
+            # define problem
+            parameters = OrderedDict()
+            parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+            parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+            problem = pygpc.Problem(model, parameters)
+            problem.create_validation_set(n_samples=int(1e4), n_cpu=0)
 
-        # Validate gPC vs original model function
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                      coeffs=coeffs,
-                                      n_samples=int(1e4),
-                                      output_idx=0,
-                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
+            # gPC options
+            options = dict()
+            options["order_start"] = 2
+            options["order_end"] = 15
+            options["interaction_order"] = 2
+            options["solver"] = "LarsLasso"  # "OMP"
+            options["settings"] = {"alpha": 1e-5}  # {"sparsity": 0.25}
+            options["seed"] = 1
+            options["matrix_ratio"] = 1.5
+            options["n_cpu"] = 0
+            options["fn_results"] = os.path.join(folder, test_name)
+            options["adaptive_sampling"] = False
+            options["n_grid_gradient"] = 5
+            options["projection_qoi"] = 0
+            options["eps_lambda_gradient"] = 0.95
+            options["gradient_calculation"] = "standard_forward"
+            options["error_type"] = "loocv"
+            options["error_norm"] = "relative"
 
-        print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+            # define algorithm
+            algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
 
-        self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+            # run gPC algorithm
+            gpc, coeffs, results = algorithm.run()
 
-        print("done!\n")
+            # plot grid
+            pygpc.plot_2d_grid(coords=gpc.grid.coords,
+                               fn_plot=os.path.join(folder, test_name + '_grid'))
+
+            # Post-process gPC
+            pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+                                         output_idx=None,
+                                         calc_sobol=True,
+                                         calc_global_sens=True,
+                                         calc_pdf=True)
+
+            # Validate gPC vs original model function
+            nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+                                          coeffs=coeffs,
+                                          n_samples=int(1e4),
+                                          output_idx=0,
+                                          fn_out=os.path.join(folder, test_name + '_validation_mc'))
+
+            print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+
+            self.expect_true(np.max(nrmsd) < 5.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+
+            print("done!\n")
 
 if __name__ == '__main__':
     unittest.main()
