@@ -684,6 +684,59 @@
     <span class="k">return</span> <span class="n">points</span></div>
 
 
+<div class="viewcode-block" id="mat2ten"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.mat2ten">[docs]</a><span class="k">def</span> <span class="nf">mat2ten</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">incr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transforms gPC gradient matrix or gradient grid points from matrix to tensor form</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mat : ndarray of float [n_grid*incr, m]</span>
+<span class="sd">        Matrix to transform</span>
+<span class="sd">    incr : int</span>
+<span class="sd">        Increment after every row, a new tensor slice is created</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ten : ndarray of float [n_grid, m, incr]</span>
+<span class="sd">        Tensor</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Builds chunks after every &quot;incr&quot; row and writes it in a new slice [i, :, :]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ten</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">incr</span><span class="p">,</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">incr</span><span class="p">))</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">incr</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">incr</span><span class="p">):</span>
+        <span class="n">ten</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">ten</span></div>
+
+
+<div class="viewcode-block" id="ten2mat"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.ten2mat">[docs]</a><span class="k">def</span> <span class="nf">ten2mat</span><span class="p">(</span><span class="n">ten</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transforms gPC gradient tensor or gradient grid points from tensor to matrix form</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ten : ndarray of float [n_grid, m, incr]</span>
+<span class="sd">        Tensor to transform</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mat : ndarray of float [n_grid*incr, m]</span>
+<span class="sd">        Matrix</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Stacks slices [i, :, :] vertically</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">ten</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ten</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+
+    <span class="k">return</span> <span class="n">mat</span></div>
+
+
 <div class="viewcode-block" id="list2dict"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.list2dict">[docs]</a><span class="k">def</span> <span class="nf">list2dict</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform list of dicts with same keys to dict of list</span>
@@ -711,7 +764,7 @@
     <span class="k">return</span> <span class="n">d</span></div>
 
 
-<div class="viewcode-block" id="determine_projection_matrix"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.determine_projection_matrix">[docs]</a><span class="k">def</span> <span class="nf">determine_projection_matrix</span><span class="p">(</span><span class="n">gradient_results</span><span class="p">,</span> <span class="n">qoi_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lambda_eps</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">):</span>
+<div class="viewcode-block" id="determine_projection_matrix"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.determine_projection_matrix">[docs]</a><span class="k">def</span> <span class="nf">determine_projection_matrix</span><span class="p">(</span><span class="n">gradient_results</span><span class="p">,</span> <span class="n">qoi_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lambda_eps</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines projection matrix [P].</span>
 
@@ -723,8 +776,9 @@
 <span class="sd">        Gradient of model function in grid points</span>
 <span class="sd">    qoi_idx : int</span>
 <span class="sd">        Index of QOI the projection matrix is determined for</span>
-<span class="sd">    lambda_eps : float, optional, default: 1e-1</span>
-<span class="sd">        Lower relative bound of eigenvalues (with respect to highest eigenvalue)</span>
+<span class="sd">    lambda_eps : float, optional, default: 0.95</span>
+<span class="sd">        Bound of principal components in %. All eigenvectors are included until lambda_eps of total sum of all</span>
+<span class="sd">        eigenvalues is included in the system.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -734,8 +788,19 @@
 
     <span class="c1"># Determine projection matrices by SVD of gradients</span>
     <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">gradient_results</span><span class="p">[:,</span> <span class="n">qoi_idx</span><span class="p">,</span> <span class="p">:])</span>
-    <span class="n">s_filt</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span> <span class="o">&gt;</span> <span class="n">lambda_eps</span><span class="o">*</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-    <span class="n">v_filt</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">s</span> <span class="o">&gt;</span> <span class="n">lambda_eps</span><span class="o">*</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># determine dominant eigenvalues up to lambda_eps * s_sum</span>
+    <span class="n">s_mask</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">s_sum_part</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">s_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">i_s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">s_sum_part</span> <span class="o">&lt;=</span> <span class="n">lambda_eps</span><span class="o">*</span><span class="n">s_sum</span><span class="p">:</span>
+        <span class="n">s_sum_part</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="n">i_s</span><span class="p">]</span>
+        <span class="n">s_mask</span><span class="p">[</span><span class="n">i_s</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">i_s</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">s_filt</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s_mask</span><span class="p">]</span>
+    <span class="n">v_filt</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_mask</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">p_matrix</span> <span class="o">=</span> <span class="n">v_filt</span>
 
     <span class="k">return</span> <span class="n">p_matrix</span></div>

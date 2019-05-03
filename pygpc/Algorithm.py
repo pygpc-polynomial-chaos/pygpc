@@ -3,13 +3,14 @@ import copy
 import h5py
 import os
 import time
-
-from .EGPC import *
+import shutil
 from .Problem import *
 from .SGPC import *
 from .io import write_gpc_pkl
 from .misc import determine_projection_matrix
 from .misc import get_num_coeffs_sparse
+from .misc import ten2mat
+from .misc import mat2ten
 from .Grid import *
 
 
@@ -78,25 +79,36 @@ class Algorithm(object):
 
             results_gradient_tmp = com.run(model=self.problem.model,
                                            problem=self.problem,
-                                           coords=np.vstack(grid.coords_gradient[n_gradient_results:, :, :].transpose(2, 0, 1)),
-                                           coords_norm=np.vstack(grid.coords_gradient_norm[n_gradient_results:, :, :].transpose(2, 0, 1)),
-                                           i_iter=self.options["order_max"],
-                                           i_subiter=self.options["interaction_order"],
+                                           coords=ten2mat(grid.coords_gradient[n_gradient_results:, :, :]),
+                                           coords_norm=ten2mat(grid.coords_gradient_norm[n_gradient_results:, :, :]),
+                                           i_iter=None,
+                                           i_subiter=None,
                                            fn_results=None,
                                            print_func_time=self.options["print_func_time"])
 
-            # [n_grid x n_out x dim]
-            results_gradient = np.zeros((grid.coords.shape[0]-n_gradient_results, results_gradient_tmp.shape[1], self.problem.dim))
-            for i in range(self.problem.dim):
-                results_gradient[:, :, i] = results_gradient_tmp[(i*(grid.coords.shape[0]-n_gradient_results)):(i+1)*(grid.coords.shape[0]-n_gradient_results), :]
+            delta = np.repeat(np.linalg.norm(
+                ten2mat(grid.coords_gradient_norm[n_gradient_results:, :, :]) - \
+                ten2mat(np.repeat(grid.coords_norm[n_gradient_results:, :, np.newaxis], self.problem.dim, axis=2)),
+                axis=1)[:, np.newaxis], results_gradient_tmp.shape[1], axis=1)
 
-            delta = np.repeat(np.linalg.norm(grid.coords_gradient_norm[n_gradient_results:, :, :] -
-                                             np.repeat(grid.coords_norm[n_gradient_results:, :, np.newaxis], self.problem.dim, axis=2),
-                                             axis=2)[:, :, np.newaxis].transpose(0, 2, 1),
-                              results_gradient.shape[1], axis=1)
+            gradient_results_new = (ten2mat(np.repeat(results[n_gradient_results:, :, np.newaxis], self.problem.dim, axis=2)) - results_gradient_tmp) / delta
 
-            # [n_grid x n_out x dim]
-            gradient_results_new = (np.repeat(results[n_gradient_results:, :, np.newaxis], self.problem.dim, axis=2) - results_gradient) / delta
+            gradient_results_new = mat2ten(mat=gradient_results_new, incr=self.problem.dim)
+            # # [n_grid x n_out x dim]
+            # results_gradient = np.zeros((grid.coords.shape[0]-n_gradient_results,
+            #                              results_gradient_tmp.shape[1],
+            #                              self.problem.dim))
+            #
+            # for i in range(self.problem.dim):
+            #     results_gradient[:, :, i] = results_gradient_tmp[(i*(grid.coords.shape[0]-n_gradient_results)):(i+1)*(grid.coords.shape[0]-n_gradient_results), :]
+            #
+            # delta = np.repeat(np.linalg.norm(grid.coords_gradient_norm[n_gradient_results:, :, :] -
+            #                                  np.repeat(grid.coords_norm[n_gradient_results:, :, np.newaxis], self.problem.dim, axis=2),
+            #                                  axis=2)[:, :, np.newaxis].transpose(0, 2, 1),
+            #                   results_gradient.shape[1], axis=1)
+            #
+            # # [n_grid x n_out x dim]
+            # gradient_results_new = (np.repeat(results[n_gradient_results:, :, np.newaxis], self.problem.dim, axis=2) - results_gradient) / delta
 
             if gradient_results is not None:
                 gradient_results = np.vstack((gradient_results, gradient_results_new))
@@ -160,6 +172,13 @@ class Static(Algorithm):
         options["n_samples_validation"] : int, optional, default: 1e4
             Number of validation points used to determine the NRMSD if chosen as "error_type". Does not create a
             validation set if there is already one present in the Problem instance (problem.validation).
+        options["gradient_enhanced"] : boolean, optional, default: False
+            Use gradient information to determine the gPC coefficients.
+        options["gradient_calculation"] : str, optional, default="standard_forward"
+            Type of the calculation scheme to determine the gradient in the grid points
+            - "standard_forward" ... Forward approximation (creates additional dim*n_grid grid-points in the axis
+            directions)
+            - "???" ... ???
 
         Notes
         -----
@@ -234,6 +253,12 @@ class Static(Algorithm):
         if "n_samples_validation" not in self.options.keys():
             self.options["n_samples_validation"] = 1e4
 
+        if "gradient_enhanced" not in self.options.keys():
+            self.options["gradient_enhanced"] = False
+
+        if "gradient_calculation" not in self.options.keys():
+            self.options["gradient_calculation"] = "standard_forward"
+
     def run(self):
         """
         Runs static gPC algorithm to solve problem.
@@ -274,6 +299,9 @@ class Static(Algorithm):
         # Initialize gpc matrix
         gpc.init_gpc_matrix()
 
+        if self.options["gradient_enhanced"]:
+            gpc.init_gpc_matrix(gradient=True)
+
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu)
 
@@ -297,14 +325,29 @@ class Static(Algorithm):
 
         com.close()
 
+        # Determine gradient [n_grid x n_out x dim]
+        if self.options["gradient_enhanced"]:
+            start_time = time.time()
+            grad_res_3D = self.get_gradient(grid=gpc.grid, results=res)
+            iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                   tab=0, verbose=self.options["verbose"])
+
+            # reshape results [n_grid * dim x n_out]
+            grad_res = ten2mat(grad_res_3D)
+
+            # append gradient of results to results array
+            res_complete = np.vstack((res, grad_res))
+        else:
+            res_complete = res
+
         # Compute gpc coefficients
-        coeffs = gpc.solve(sim_results=res,
+        coeffs = gpc.solve(sim_results=res_complete,
                            solver=self.options["solver"],
                            settings=self.options["settings"],
                            verbose=True)
 
         # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-        eps = gpc.validate(coeffs=coeffs, sim_results=res)
+        eps = gpc.validate(coeffs=coeffs, sim_results=res_complete)
 
         iprint("-> {} {} error = {}".format(self.options["error_norm"],
                                             self.options["error_type"],
@@ -315,13 +358,50 @@ class Static(Algorithm):
             write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
 
             with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
+                if "grid" in f.keys():
+                    del f['grid']
+                f.create_dataset("grid/coords", data=gpc.grid.coords,
+                                 maxshape=None, dtype="float64")
+                f.create_dataset("grid/coords_norm", data=gpc.grid.coords_norm,
+                                 maxshape=None, dtype="float64")
+
+                if gpc.grid.coords_gradient.any():
+                    f.create_dataset("grid/coords_gradient", data=gpc.grid.coords_gradient,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("grid/coords_gradient_norm", data=gpc.grid.coords_gradient_norm,
+                                     maxshape=None, dtype="float64")
+
                 if "coeffs" in f.keys():
                     del f['coeffs']
-                f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+                f.create_dataset("coeffs", data=coeffs,
+                                 maxshape=None, dtype="float64")
 
                 if "gpc_matrix" in f.keys():
                     del f['gpc_matrix']
-                f.create_dataset("gpc_matrix", data=gpc.gpc_matrix, maxshape=None, dtype="float64")
+                f.create_dataset("gpc_matrix", data=gpc.gpc_matrix,
+                                 maxshape=None, dtype="float64")
+
+                if "gpc_matrix_gradient" in f.keys():
+                    del f['gpc_matrix_gradient']
+                if self.options["gradient_enhanced"]:
+                    f.create_dataset("gpc_matrix_gradient", data=gpc.gpc_matrix_gradient,
+                                     maxshape=None, dtype="float64")
+
+                if "p_matrix" in f.keys():
+                    del f['p_matrix']
+                f.create_dataset("p_matrix", data=gpc.p_matrix,
+                                 maxshape=None, dtype="float64")
+
+                if "results" in f.keys():
+                    del f['results']
+                f.create_dataset("results", data=res,
+                                 maxshape=None, dtype="float64")
+
+                if "gradient_results" in f.keys():
+                    del f['gradient_results']
+                if self.options["gradient_enhanced"]:
+                    f.create_dataset("gradient_results", data=grad_res,
+                                     maxshape=None, dtype="float64")
 
         return gpc, coeffs, res
 
@@ -394,6 +474,8 @@ class StaticProjection(Algorithm):
         options["n_samples_validation"] : int, optional, default: 1e4
             Number of validation points used to determine the NRMSD if chosen as "error_type". Does not create a
             validation set if there is already one present in the Problem instance (problem.validation).
+        options["gradient_enhanced"] : boolean, optional, default: False
+            Use gradient information to determine the gPC coefficients.
 
         Notes
         -----
@@ -485,6 +567,9 @@ class StaticProjection(Algorithm):
         if "n_samples_validation" not in self.options.keys():
             self.options["n_samples_validation"] = 1e4
 
+        if "gradient_enhanced" not in self.options.keys():
+            self.options["gradient_enhanced"] = False
+
     def run(self):
         """
         Runs static gPC algorithm using Projection to solve problem.
@@ -501,7 +586,7 @@ class StaticProjection(Algorithm):
 
         # make initial random grid to determine gradients and projection matrix
         grid_original = RandomGrid(parameters_random=self.problem.parameters_random,
-                                        options={"n_grid": self.options["n_grid_gradient"]})
+                                   options={"n_grid": self.options["n_grid_gradient"]})
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu)
@@ -529,7 +614,7 @@ class StaticProjection(Algorithm):
 
         # Determine gradient
         start_time = time.time()
-        grad_res = self.get_gradient(grid=grid_original, results=res)
+        grad_res_3D = self.get_gradient(grid=grid_original, results=res_init)
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
@@ -554,7 +639,7 @@ class StaticProjection(Algorithm):
                 res = res_init[:, q_idx][:, np.newaxis]
 
             # Determine projection matrix
-            p_matrix = determine_projection_matrix(gradient_results=grad_res,
+            p_matrix = determine_projection_matrix(gradient_results=grad_res_3D,
                                                    qoi_idx=q_idx,
                                                    lambda_eps=self.options["lambda_eps_gradient"])
 
@@ -618,6 +703,25 @@ class StaticProjection(Algorithm):
 
                 res = np.vstack((res, res_new))
 
+                # Determine gradient [n_grid x n_out x dim]
+                if self.options["gradient_enhanced"]:
+                    start_time = time.time()
+                    grad_res_3D = self.get_gradient(grid=grid_original, results=res, gradient_results=grad_res_3D)
+                    iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                           tab=0, verbose=self.options["verbose"])
+
+                # transform gradient of results
+                grad_res_3D = np.dot(grad_res_3D, gpc[i_qoi].p_matrix.transpose())
+
+                # reshape results [n_grid * dim x n_out]
+                grad_res = ten2mat(grad_res_3D)
+
+                # append gradient of results to results array
+                res_complete = np.vstack((res, grad_res))
+
+            else:
+                res_complete = res
+
             # copy grid to gPC object and initialize transformed grid
             gpc[i_qoi].grid_original = copy.deepcopy(grid_original)
             gpc[i_qoi].grid = copy.deepcopy(grid_original)
@@ -636,15 +740,19 @@ class StaticProjection(Algorithm):
             # Initialize gpc matrix
             gpc[i_qoi].init_gpc_matrix()
 
+            # Initialize gpc gradient matrix
+            if self.options["gradient_enhanced"]:
+                gpc[i_qoi].init_gpc_matrix(gradient=True)
+
             # Compute gpc coefficients
-            coeffs[i_qoi] = gpc[i_qoi].solve(sim_results=res,
+            coeffs[i_qoi] = gpc[i_qoi].solve(sim_results=res_complete,
                                              solver=self.options["solver"],
                                              settings=self.options["settings"],
                                              verbose=True)
 
             # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
             gpc[i_qoi].problem.validation = self.problem.validation
-            eps = gpc[i_qoi].validate(coeffs=coeffs[i_qoi], sim_results=res)
+            eps = gpc[i_qoi].validate(coeffs=coeffs[i_qoi], sim_results=res_complete)
 
             iprint("-> {} {} error = {}".format(self.options["error_norm"],
                                                 self.options["error_type"],
@@ -659,36 +767,46 @@ class StaticProjection(Algorithm):
 
                     if "grid" in f.keys():
                         del f['grid']
-                    f.create_dataset("grid/coords", data=gpc[i_qoi].grid.coords,
+                    f.create_dataset("grid/coords", data=grid_original.coords,
                                      maxshape=None, dtype="float64")
-                    f.create_dataset("grid/coords_norm", data=gpc[i_qoi].grid.coords_norm,
+                    f.create_dataset("grid/coords_norm", data=grid_original.coords_norm,
                                      maxshape=None, dtype="float64")
 
                     if gpc[i_qoi].grid.coords_gradient.any():
-                        f.create_dataset("grid/coords_gradient", data=gpc[i_qoi].grid.coords_gradient,
+                        f.create_dataset("grid/coords_gradient", data=grid_original.coords_gradient,
                                          maxshape=None, dtype="float64")
-                        f.create_dataset("grid/coords_gradient_norm", data=gpc[i_qoi].grid.coords_gradient_norm,
+                        f.create_dataset("grid/coords_gradient_norm", data=grid_original.coords_gradient_norm,
                                          maxshape=None, dtype="float64")
 
                     if "coeffs" in f.keys():
                         del f['coeffs']
-                    f.create_dataset("coeffs", data=coeffs[i_qoi], maxshape=None, dtype="float64")
+                    f.create_dataset("coeffs", data=coeffs[i_qoi],
+                                     maxshape=None, dtype="float64")
 
                     if "gpc_matrix" in f.keys():
                         del f['gpc_matrix']
-                    f.create_dataset("gpc_matrix", data=gpc[i_qoi].gpc_matrix, maxshape=None, dtype="float64")
+                    f.create_dataset("gpc_matrix", data=gpc[i_qoi].gpc_matrix,
+                                     maxshape=None, dtype="float64")
+
+                    if "gpc_matrix_gradient" in f.keys():
+                        del f['gpc_matrix_gradient']
+                    f.create_dataset("gpc_matrix_gradient", data=gpc[i_qoi].gpc_matrix_gradient,
+                                     maxshape=None, dtype="float64")
 
                     if "p_matrix" in f.keys():
                         del f['p_matrix']
-                    f.create_dataset("p_matrix", data=gpc[i_qoi].p_matrix, maxshape=None, dtype="float64")
+                    f.create_dataset("p_matrix", data=gpc[i_qoi].p_matrix,
+                                     maxshape=None, dtype="float64")
 
                     if "results" in f.keys():
                         del f['results']
-                    f.create_dataset("results", data=res, maxshape=None, dtype="float64")
+                    f.create_dataset("results", data=res,
+                                     maxshape=None, dtype="float64")
 
-                    if "results_gradient" in f.keys():
-                        del f['results_gradient']
-                    f.create_dataset("results_gradient", data=grad_res, maxshape=None, dtype="float64")
+                    if "gradient_results" in f.keys():
+                        del f['gradient_results']
+                    f.create_dataset("gradient_results", data=grad_res,
+                                     maxshape=None, dtype="float64")
 
         if n_qoi == 1:
             return gpc[0], coeffs[0], res
@@ -749,6 +867,13 @@ class RegAdaptive(Algorithm):
         options["n_samples_validation"] : int, optional, default: 1e4
             Number of validation points used to determine the NRMSD if chosen as "error_type". Does not create a
             validation set if there is already one present in the Problem instance (problem.validation).
+        options["gradient_enhanced"] : boolean, optional, default: False
+            Use gradient information to determine the gPC coefficients.
+        options["gradient_calculation"] : str, optional, default="standard_forward"
+            Type of the calculation scheme to determine the gradient in the grid points
+            - "standard_forward" ... Forward approximation (creates additional dim*n_grid grid-points in the axis
+            directions)
+            - "???" ... ???
 
         Examples
         --------
@@ -797,9 +922,12 @@ class RegAdaptive(Algorithm):
         if self.options["solver"] == "OMP" and "settings" not in self.options.keys():
             raise AssertionError("Please specify correct solver settings for OMP in 'settings'")
 
-        if self.options["solver"] == "LarsLasso" and ("settings" not in self.options.keys() or
-                                                      "alpha" not in self.options["settings"].keys()):
-            self.options["settings"]["alpha"] = 1e-5
+        if self.options["solver"] == "LarsLasso":
+            if self.options["settings"] is dict():
+                if "alpha" not in self.options["settings"].keys():
+                    self.options["settings"]["alpha"] = 1e-5
+            else:
+                self.options["settings"] = {"alpha": 1e-5}
 
         if "print_func_time" not in self.options.keys():
             self.options["print_func_time"] = False
@@ -818,6 +946,12 @@ class RegAdaptive(Algorithm):
 
         if "n_samples_validation" not in self.options.keys():
             self.options["n_samples_validation"] = 1e4
+
+        if "gradient_enhanced" not in self.options.keys():
+            self.options["gradient_enhanced"] = False
+
+        if "gradient_calculation" not in self.options.keys():
+            self.options["gradient_calculation"] = "standard_forward"
 
     def run(self):
         """
@@ -838,6 +972,8 @@ class RegAdaptive(Algorithm):
         order = self.options["order_start"]
         res_complete = None
         first_iter = True
+        grad_res_3D = None
+        grad_res = None
 
         # Add a validation set if nrmsd is chosen and no validation set is yet present
         if self.options["error_type"] == "nrmsd" and not isinstance(self.problem.validation, ValidationSet):
@@ -870,6 +1006,10 @@ class RegAdaptive(Algorithm):
         gpc.init_gpc_matrix()
         gpc.n_grid.pop(0)
         gpc.n_basis.pop(0)
+
+        if gpc.options["gradient_enhanced"]:
+            gpc.grid.create_gradient_grid()
+            gpc.init_gpc_matrix(gradient=True)
 
         # Main iterations (order)
         while (eps > self.options["eps"]) and order <= self.options["order_end"]:
@@ -957,6 +1097,7 @@ class RegAdaptive(Algorithm):
                             iprint("Extending grid from {} to {} by {} sampling points".format(
                                 gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
                                 tab=0, verbose=self.options["verbose"])
+
                             gpc.grid.extend_random_grid(n_grid_new=n_grid_new, seed=None)
 
                             # run simulations
@@ -965,23 +1106,39 @@ class RegAdaptive(Algorithm):
 
                             start_time = time.time()
 
-                            res = com.run(model=gpc.problem.model,
-                                          problem=gpc.problem,
-                                          coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
-                                          coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
-                                          i_iter=order,
-                                          i_subiter=gpc.interaction_order_current,
-                                          fn_results=gpc.fn_results,
-                                          print_func_time=self.options["print_func_time"])
+                            res_new = com.run(model=gpc.problem.model,
+                                              problem=gpc.problem,
+                                              coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
+                                              coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
+                                              i_iter=order,
+                                              i_subiter=gpc.interaction_order_current,
+                                              fn_results=gpc.fn_results,
+                                              print_func_time=self.options["print_func_time"])
 
                             iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
                                    tab=0, verbose=self.options["verbose"])
 
                             # Append result to solution matrix (RHS)
                             if i_grid == 0:
-                                res_complete = res
+                                res = res_new
                             else:
-                                res_complete = np.vstack([res_complete, res])
+                                res = np.vstack([res, res_new])
+
+                            if self.options["gradient_enhanced"]:
+                                start_time = time.time()
+                                grad_res_3D = self.get_gradient(grid=gpc.grid, results=res,
+                                                                gradient_results=grad_res_3D)
+                                iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                                       tab=0, verbose=self.options["verbose"])
+
+                                # reshape results [n_grid * dim x n_out]
+                                grad_res = ten2mat(grad_res_3D)
+
+                                # append gradient of results to results array
+                                res_complete = np.vstack((res, grad_res))
+
+                            else:
+                                res_complete = res
 
                             i_grid = gpc.grid.coords.shape[0]
 
@@ -994,7 +1151,11 @@ class RegAdaptive(Algorithm):
                                        tab=0, verbose=self.options["verbose"])
 
                         # update gpc matrix
-                        gpc.update_gpc_matrix()
+                        gpc.update_gpc_matrix(gradient=False)
+
+                        # update gpc gradient matrix
+                        if gpc.options["gradient_enhanced"]:
+                            gpc.update_gpc_matrix(gradient=gpc.options["gradient_enhanced"])
 
                         # determine gpc coefficients
                         coeffs = gpc.solve(sim_results=res_complete,
@@ -1031,6 +1192,10 @@ class RegAdaptive(Algorithm):
                         if "coeffs" in f.keys():
                             del f['coeffs']
                         f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+
+                        if "gradient_results" in f.keys():
+                            del f['gradient_results']
+                        f.create_dataset("gradient_results", data=grad_res, maxshape=None, dtype="float64")
 
                     write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
 
@@ -1138,6 +1303,8 @@ class RegAdaptiveProjection(Algorithm):
         options["n_samples_validation"] : int, optional, default: 1e4
             Number of validation points used to determine the NRMSD if chosen as "error_type". Does not create a
             validation set if there is already one present in the Problem instance (problem.validation).
+        options["gradient_enhanced"] : boolean, optional, default: False
+            Use gradient information to determine the gPC coefficients.
 
         Examples
         --------
@@ -1217,6 +1384,9 @@ class RegAdaptiveProjection(Algorithm):
         if "n_samples_validation" not in self.options.keys():
             self.options["n_samples_validation"] = 1e4
 
+        if "gradient_enhanced" not in self.options.keys():
+            self.options["gradient_enhanced"] = False
+
     def run(self):
         """
         Runs adaptive gPC algorithm using projection to solve problem.
@@ -1234,6 +1404,9 @@ class RegAdaptiveProjection(Algorithm):
         # initialize iterators
         eps = self.options["eps"] + 1.0
         order = self.options["order_start"]
+        error = []
+        nrmsd = []
+        loocv = []
 
         # make initial random grid to determine gradients and projection matrix
         grid_original = RandomGrid(parameters_random=self.problem.parameters_random,
@@ -1256,7 +1429,7 @@ class RegAdaptiveProjection(Algorithm):
                            coords_norm=grid_original.coords_norm,
                            i_iter=self.options["order_start"],
                            i_subiter=self.options["interaction_order"],
-                           fn_results=None,
+                           fn_results=os.path.splitext(self.options["fn_results"])[0] + "_temp",
                            print_func_time=self.options["print_func_time"])
 
         i_grid = grid_original.n_grid
@@ -1296,6 +1469,9 @@ class RegAdaptiveProjection(Algorithm):
             else:
                 fn_results = os.path.splitext(self.options["fn_results"])[0] + "_qoi_{}_".format(q_idx)
                 res_complete = res_init[:, q_idx][:, np.newaxis]
+
+            # copy results of initial simulation
+            shutil.copy2(os.path.splitext(self.options["fn_results"])[0] + "_temp.hdf5", fn_results + ".hdf5")
 
             # Set up initial reduced problem
             # Determine gradient
@@ -1573,13 +1749,14 @@ class RegAdaptiveProjection(Algorithm):
                                     # assign transformed grid
                                     gpc[i_qoi].grid = grid[i_qoi]
 
-                                    # Initialize gpc matrix
-                                    gpc[i_qoi].init_gpc_matrix()
-
+                                    # Save settings and options in gpc object
                                     gpc[i_qoi].interaction_order_current = interaction_order_current
                                     gpc[i_qoi].solver = self.options["solver"]
                                     gpc[i_qoi].settings = self.options["settings"]
                                     gpc[i_qoi].options = copy.deepcopy(self.options)
+                                    gpc[i_qoi].error = error
+                                    gpc[i_qoi].relative_error_nrmsd = nrmsd
+                                    gpc[i_qoi].relative_error_loocv = loocv
 
                                 else:
                                     coords_new = np.dot(grid_original.coords, #[gpc[i_qoi].grid.n_grid:, :]
@@ -1601,6 +1778,11 @@ class RegAdaptiveProjection(Algorithm):
                         # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
                         gpc[i_qoi].problem.validation = self.problem.validation
                         eps = gpc[i_qoi].validate(coeffs=coeffs[i_qoi], sim_results=res_complete[:, non_nan_mask])
+
+                        # save error in case that dimension has changed and the gpc object had to be reinitialized
+                        error = copy.deepcopy(gpc[i_qoi].error)
+                        nrmsd = copy.deepcopy(gpc[i_qoi].relative_error_nrmsd)
+                        loocv = copy.deepcopy(gpc[i_qoi].relative_error_loocv)
 
                         if extended_basis or first_iter:
                             eps_ref = copy.deepcopy(eps)
@@ -1673,6 +1855,9 @@ class RegAdaptiveProjection(Algorithm):
                     if "p_matrix" in f.keys():
                         del f['p_matrix']
                     f.create_dataset("p_matrix", data=p_matrix, maxshape=None, dtype="float64")
+
+        # remove results of initial simulation
+        os.remove(os.path.splitext(self.options["fn_results"])[0] + "_temp.hdf5")
 
         if n_qoi == 1:
             return gpc[0], coeffs[0], res_complete

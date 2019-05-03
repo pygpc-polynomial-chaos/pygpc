@@ -528,17 +528,23 @@ This base class provides basic properties and methods for the basis functions.
 It cannot be used directly, but inherits properties and methods to the specific basis function sub classes.</p>
 <dl class="method">
 <dt id="pygpc.BasisFunction.BasisFunction.__call__">
-<code class="descname">__call__</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/BasisFunction.html#BasisFunction.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.BasisFunction.BasisFunction.__call__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>x</em>, <em>derivative=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/BasisFunction.html#BasisFunction.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.BasisFunction.BasisFunction.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluates basis function for argument x</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>float</em><em> or </em><em>ndarray of float</em>) – Argument for which the basis function is evaluated</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>float</em><em> or </em><em>ndarray of float</em>) – Argument for which the basis function is evaluated</li>
+<li><strong>derivative</strong> (<em>boolean</em><em>, </em><em>optional</em><em>, </em><em>default: False</em>) – Returns derivative of basis function at argument x</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>y</strong> – Function value of basis function at argument x</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>y</strong> – Function value or derivative of basis function at argument x</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float or ndarray of float</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float or ndarray of float</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1019,7 +1025,7 @@ variance
 <dl class="attribute">
 <dt id="pygpc.GPC.GPC.gpc_matrix">
 <code class="descname">gpc_matrix</code><a class="headerlink" href="#pygpc.GPC.GPC.gpc_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>generalized polynomial chaos matrix</p>
+<dd><p>Generalized polynomial chaos matrix</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1031,14 +1037,28 @@ variance
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pygpc.GPC.GPC.gpc_matrix_inv">
-<code class="descname">gpc_matrix_inv</code><a class="headerlink" href="#pygpc.GPC.GPC.gpc_matrix_inv" title="Permalink to this definition">¶</a></dt>
-<dd><p>pseudo inverse of the generalized polynomial chaos matrix</p>
+<dt id="pygpc.GPC.GPC.gpc_matrix_gradient">
+<code class="descname">gpc_matrix_gradient</code><a class="headerlink" href="#pygpc.GPC.GPC.gpc_matrix_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Derivative of generalized polynomial chaos matrix</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">[N_poly x N_samples] ndarray of float</td>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">[N_samples * dim x N_poly] ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.GPC.GPC.matrix_inv">
+<code class="descname">matrix_inv</code><a class="headerlink" href="#pygpc.GPC.GPC.matrix_inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>pseudo inverse of the generalized polynomial chaos matrix (with or without gradient)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">[N_poly (+ N_gradient) x N_samples] ndarray of float</td>
 </tr>
 </tbody>
 </table>
@@ -1232,25 +1252,27 @@ variance
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.calc_gpc_matrix">
-<code class="descname">calc_gpc_matrix</code><span class="sig-paren">(</span><em>b</em>, <em>x</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.calc_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.calc_gpc_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Construct the gPC matrix.</p>
-<p>gpc_matrix = calc_gpc_matrix(b, x)</p>
+<code class="descname">calc_gpc_matrix</code><span class="sig-paren">(</span><em>b</em>, <em>x</em>, <em>gradient=False</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.calc_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.calc_gpc_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct the gPC matrix or its derivative.</p>
+<p>gpc_matrix = calc_gpc_matrix(b, x, gradient=False)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>b</strong> (<em>list of BasisFunction object instances</em><em> [</em><em>n_basis x n_dim</em><em>]</em>) – Parameter wise basis function objects used in gPC (Basis.b)
+<li><strong>b</strong> (<em>list of BasisFunction object instances</em><em> [</em><em>n_basis</em><em>]</em><em>[</em><em>n_dim</em><em>]</em>) – Parameter wise basis function objects used in gPC (Basis.b)
 Multiplying all elements in a row at location xi = (x1, x2, …, x_dim) yields the global basis function.</li>
 <li><strong>x</strong> (<em>ndarray of float</em><em> [</em><em>n_x x n_dim</em><em>]</em>) – Coordinates of x = (x1, x2, …, x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1])</li>
-<li><strong>verbose</strong> (<em>bool</em>) – boolean value to determine if to print out the progress into the standard output</li>
+<li><strong>gradient</strong> (<em>boolean</em><em>, </em><em>optional</em><em>, </em><em>default: False</em>) – Use gradient of basis function.</li>
+<li><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default: False</em>) – boolean value to determine if to print out the progress into the standard output</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gpc_matrix</strong> – GPC matrix where the columns correspond to the basis functions and the rows the to the sample coordinates</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gpc_matrix</strong> – GPC matrix where the columns correspond to the basis functions and the rows the to the sample coordinates.
+If gradient=True, the gradient is returned at the sample coordinates point by point.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray of float [n_x x n_basis]</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray of float [n_x (* dim) x n_basis]</p>
 </td>
 </tr>
 </tbody>
@@ -1339,8 +1361,16 @@ Multiplying all elements in a row at location xi = (x1, x2, …, x_dim) yields t
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.init_gpc_matrix">
-<code class="descname">init_gpc_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.init_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.init_gpc_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descname">init_gpc_matrix</code><span class="sig-paren">(</span><em>gradient=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.init_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.init_gpc_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets self.gpc_matrix with given self.basis and self.grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>gradient</strong> (<em>boolean</em><em>, </em><em>optional</em><em>, </em><em>default: False</em>) – Initialize standard gPC matrix or gradient gPC matrix</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1414,7 +1444,7 @@ If a gpc matrix is already present, check for equality and save only appended ro
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.solve">
-<code class="descname">solve</code><span class="sig-paren">(</span><em>sim_results</em>, <em>solver=None</em>, <em>settings=None</em>, <em>gpc_matrix=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.solve" title="Permalink to this definition">¶</a></dt>
+<code class="descname">solve</code><span class="sig-paren">(</span><em>sim_results</em>, <em>solver=None</em>, <em>settings=None</em>, <em>matrix=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.solve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines gPC coefficients</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1432,7 +1462,8 @@ If a gpc matrix is already present, check for equality and save only appended ro
 - ‘OMP’ … {“n_coeffs_sparse”: int} Number of gPC coefficients != 0 or “sparsity”: float 0…1
 - ‘LarsLasso’ … {“alpha”: float 0…1} Regularization parameter
 - ‘NumInt’ … None</li>
-<li><strong>gpc_matrix</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_basis</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: self.gpc_matrix</em>) – GPC matrix to invert</li>
+<li><strong>matrix</strong> (<em>ndarray of float</em><em>, </em><em>optional</em><em>, </em><em>default: self.gpc_matrix</em><em> or </em><em>[</em><em>self.gpc_matrix</em><em>, </em><em>self.gpc_matrix_gradient</em><em>]</em>) – Matrix to invert. Depending on gradient_enhanced option, this matrix consist of the standard gPC matrix and
+their derivatives.</li>
 <li><strong>verbose</strong> (<em>bool</em>) – boolean value to determine if to print out the progress into the standard output</li>
 </ul>
 </td>
@@ -1449,7 +1480,7 @@ If a gpc matrix is already present, check for equality and save only appended ro
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.update_gpc_matrix">
-<code class="descname">update_gpc_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.update_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.update_gpc_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update_gpc_matrix</code><span class="sig-paren">(</span><em>gradient=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.update_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.update_gpc_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update gPC matrix according to existing self.grid and self.basis.</p>
 <p>Call this method when self.gpc_matrix does not fit to self.grid and self.basis objects anymore
 The old gPC matrix with their self.gpc_matrix_b_id and self.gpc_matrix_coords_id is compared
@@ -1629,7 +1660,7 @@ original model. Skips this step if no validation set is present</p>
 <dt id="pygpc.Grid.Grid.create_gradient_grid">
 <code class="descname">create_gradient_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#Grid.create_gradient_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.Grid.create_gradient_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates new grid points to determine gradient of model function.
-Adds self.coords_gradient and self.coords_gradient_norm.</p>
+Adds or updates self.coords_gradient, self.coords_gradient_norm and self.coords_gradient_id.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2600,14 +2631,14 @@ Current interaction order counter (only used in case of adaptive algorithms)</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pygpc.SGPC.SGPC.fn_results">
-<code class="descname">fn_results</code><a class="headerlink" href="#pygpc.SGPC.SGPC.fn_results" title="Permalink to this definition">¶</a></dt>
-<dd><p>If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file</p>
+<dt id="pygpc.SGPC.SGPC.options">
+<code class="descname">options</code><a class="headerlink" href="#pygpc.SGPC.SGPC.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options of gPC</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">string, optional, default=None</td>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
@@ -3675,7 +3706,7 @@ Methods of the provided object will be called here.</p>
 <p>Functions and classes that provide data and methods with general usage in the pygpc package</p>
 <dl class="function">
 <dt id="pygpc.misc.determine_projection_matrix">
-<code class="descclassname">pygpc.misc.</code><code class="descname">determine_projection_matrix</code><span class="sig-paren">(</span><em>gradient_results</em>, <em>qoi_idx=0</em>, <em>lambda_eps=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#determine_projection_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.determine_projection_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pygpc.misc.</code><code class="descname">determine_projection_matrix</code><span class="sig-paren">(</span><em>gradient_results</em>, <em>qoi_idx=0</em>, <em>lambda_eps=0.95</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#determine_projection_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.determine_projection_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines projection matrix [P].</p>
 <div class="math">
 <p><img src="_images/math/7b8f11785f69697578883f709ff9cc0c237c58a3.png" alt="\eta = [\mathbf{P}] \xi"/></p>
@@ -3686,7 +3717,8 @@ Methods of the provided object will be called here.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>gradient_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out x dim</em><em>]</em>) – Gradient of model function in grid points</li>
 <li><strong>qoi_idx</strong> (<em>int</em>) – Index of QOI the projection matrix is determined for</li>
-<li><strong>lambda_eps</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default: 1e-1</em>) – Lower relative bound of eigenvalues (with respect to highest eigenvalue)</li>
+<li><strong>lambda_eps</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default: 0.95</em>) – Bound of principal components in %. All eigenvectors are included until lambda_eps of total sum of all
+eigenvalues is included in the system.</li>
 </ul>
 </td>
 </tr>
@@ -4006,6 +4038,32 @@ Values smaller than one restrict higher orders and shrink the basis.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="pygpc.misc.mat2ten">
+<code class="descclassname">pygpc.misc.</code><code class="descname">mat2ten</code><span class="sig-paren">(</span><em>mat</em>, <em>incr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#mat2ten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.mat2ten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms gPC gradient matrix or gradient grid points from matrix to tensor form</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mat</strong> (<em>ndarray of float</em><em> [</em><em>n_grid*incr</em><em>, </em><em>m</em><em>]</em>) – Matrix to transform</li>
+<li><strong>incr</strong> (<em>int</em>) – Increment after every row, a new tensor slice is created</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ten</strong> – Tensor</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray of float [n_grid, m, incr]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Builds chunks after every “incr” row and writes it in a new slice [i, :, :]</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pygpc.misc.mutual_coherence">
 <code class="descclassname">pygpc.misc.</code><code class="descname">mutual_coherence</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#mutual_coherence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.mutual_coherence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the mutual coherence of a matrix A. It can also be referred as the cosine of the smallest angle
@@ -4076,6 +4134,26 @@ evaluated. If False, the data points are assumed to be at the same location.</li
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.ten2mat">
+<code class="descclassname">pygpc.misc.</code><code class="descname">ten2mat</code><span class="sig-paren">(</span><em>ten</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#ten2mat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.ten2mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms gPC gradient tensor or gradient grid points from tensor to matrix form</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ten</strong> (<em>ndarray of float</em><em> [</em><em>n_grid</em><em>, </em><em>m</em><em>, </em><em>incr</em><em>]</em>) – Tensor to transform</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>mat</strong> – Matrix</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray of float [n_grid*incr, m]</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Stacks slices [i, :, :] vertically</p>
 </dd></dl>
 
 <dl class="function">

@@ -16,9 +16,10 @@ class BasisFunction(object):
         """
         self.p = p
         self.fun = None
+        self.fun_der = None
         self.fun_norm = None
 
-    def __call__(self, x):
+    def __call__(self, x, derivative=False):
         """
         Evaluates basis function for argument x
 
@@ -26,14 +27,19 @@ class BasisFunction(object):
         ----------
         x : float or ndarray of float
             Argument for which the basis function is evaluated
+        derivative : boolean, optional, default: False
+            Returns derivative of basis function at argument x
 
         Returns
         -------
         y : float or ndarray of float
-            Function value of basis function at argument x
+            Function value or derivative of basis function at argument x
         """
 
-        return self.fun(x)
+        if derivative:
+            return self.fun_der(x)
+        else:
+            return self.fun(x)
 
 
 class Jacobi(BasisFunction):
@@ -146,6 +152,9 @@ class StepUp(BasisFunction):
         # define basis function
         self.fun = lambda x: 0.0 if x < p["xs"] else (0.5 if x == p["xs"] else 1.0)
 
+        # derivative
+        self.fun_der = lambda x: 0.0
+
 
 class StepDown(BasisFunction):
     """
@@ -170,6 +179,9 @@ class StepDown(BasisFunction):
 
         # define basis function
         self.fun = lambda x: 1.0 if x < p["xs"] else (0.5 if x == p["xs"] else 0.0)
+
+        # derivative
+        self.fun_der = lambda x: 0.0
 
 
 class Rect(BasisFunction):
@@ -197,6 +209,9 @@ class Rect(BasisFunction):
         # define basis function
         self.fun = lambda x: 1.0 if p["x1"] < x < p["x2"] else (0.5 if x == p["x1"] or x == p["x2"] else 0.0)
 
+        # derivative
+        self.fun_der = lambda x: 0.0
+
 
 class SigmoidUp(BasisFunction):
     """
@@ -223,6 +238,9 @@ class SigmoidUp(BasisFunction):
         # define basis function
         self.fun = lambda x: 1.0 / (1 + np.exp(-p["r"] * (x - p["xs"])))
 
+        # derivative
+        self.fun_der = lambda x: (p["r"] * np.exp(-p["r"] * (x - p["xs"]))) / (1 + np.exp(-p["r"] * (x - p["xs"])))**2
+
 
 class SigmoidDown(BasisFunction):
     """
@@ -248,3 +266,6 @@ class SigmoidDown(BasisFunction):
 
         # define basis function
         self.fun = lambda x: 1.0 / (1 + np.exp(-p["r"] * (- x + p["xs"])))
+
+        # derivative
+        self.fun_der = lambda x: (- p["r"] * np.exp(-p["r"] * (- x + p["xs"]))) / (1 + np.exp(-p["r"] * (- x + p["xs"])))**2

@@ -35,8 +35,8 @@ class SGPC(GPC):
         Number of random variables, which can interact with each other.
         All polynomials are ignored, which have an interaction order greater than the specified
         Current interaction order counter (only used in case of adaptive algorithms)
-    fn_results : string, optional, default=None
-        If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+    options : dict
+            Options of gPC
     """
 
     def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options):
@@ -63,8 +63,8 @@ class SGPC(GPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
-        fn_results : string, optional, default=None
-            If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+        options : dict
+            Options of gPC
 
         Notes
         -----

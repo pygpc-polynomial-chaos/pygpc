@@ -4,6 +4,7 @@ Functions and classes that provide data and methods for the generation and proce
 """
 
 import uuid
+import copy
 import numpy as np
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
@@ -43,12 +44,13 @@ class Grid(object):
         parameters_random : OrderedDict of RandomParameter instances
             OrderedDict containing the RandomParameter instances the grids are generated for
         """
-        self.n_grid = 0             # Total number of grid points
-        self.n_grid_gradient = 0    # Total number of grid points for gradient calculation
-        self._coords = None         # Coordinates of gpc model calculation in the system space
-        self._coords_norm = None    # Coordinates of gpc model calculation in the gpc space [-1,1]
-        self.coords_id = None       # Unique IDs of grid points
-        self._weights = None        # Weights for numerical integration for every point in the coordinate space
+        self.n_grid = 0               # Total number of grid points
+        self.n_grid_gradient = 0      # Total number of grid points for gradient calculation
+        self._coords = None           # Coordinates of gpc model calculation in the system space
+        self._coords_norm = None      # Coordinates of gpc model calculation in the gpc space [-1,1]
+        self.coords_id = []           # Unique IDs of grid points
+        self.coords_gradient_id = []  # Unique IDs of grid gradient points
+        self._weights = None          # Weights for numerical integration for every point in the coordinate space
         self.parameters_random = parameters_random      # OrderedDict of RandomParameter instances
         self.dim = len(self.parameters_random)          # Number of random variables
         self._coords_gradient = None        # Shifted coordinates for gradient calculation in the system space
@@ -579,25 +581,38 @@ class Grid(object):
     def create_gradient_grid(self):
         """
         Creates new grid points to determine gradient of model function.
-        Adds self.coords_gradient and self.coords_gradient_norm.
+        Adds or updates self.coords_gradient, self.coords_gradient_norm and self.coords_gradient_id.
         """
-        self.coords_gradient = np.zeros((self.n_grid, self.dim, self.dim))
-        self.coords_gradient_norm = np.zeros((self.n_grid, self.dim, self.dim))
-
         # shift of gradient grid in normalized space [-1, 1]
         delta = 1e-3 * np.eye(self.dim)
 
-        # shift the grid
-        for i_dim in range(self.dim):
-            self.coords_gradient_norm[:, :, i_dim] = self.coords_norm - delta[i_dim, :]
+        # Create or update the gradient grid [n_grid x dim x dim]
+        if self.coords_gradient is not None:
+            n_grid_gradient = self.coords_gradient_norm.shape[0]
+            self.coords_gradient = np.vstack((self.coords_gradient,
+                                              np.zeros((self.n_grid-n_grid_gradient, self.dim, self.dim))))
+            self.coords_gradient_norm = np.vstack((self.coords_gradient_norm,
+                                                   np.zeros((self.n_grid-n_grid_gradient, self.dim, self.dim))))
+        else:
+            n_grid_gradient = 0
+            self.coords_gradient = np.zeros((self.n_grid, self.dim, self.dim))
+            self.coords_gradient_norm = np.zeros((self.n_grid, self.dim, self.dim))
 
-        # determine coordinates in original parameter space
-        self.coords_gradient = self.get_denormalized_coordinates(self.coords_gradient_norm)
+        if n_grid_gradient < self.coords_gradient.shape[0]:
+            # shift the grid
+            for i_dim in range(self.dim):
+                self.coords_gradient_norm[n_grid_gradient:, :, i_dim] = self.coords_norm[n_grid_gradient:, ] - \
+                                                                        delta[i_dim, :]
 
-        # number of grid points
-        self.n_grid_gradient = self.coords_gradient.shape[0]*self.coords_gradient.shape[2]
+            # determine coordinates in original parameter space
+            self.coords_gradient[n_grid_gradient:, :, :] = \
+                self.get_denormalized_coordinates(self.coords_gradient_norm[n_grid_gradient:, :, :])
 
-        # np.vstack(self.coords_gradient.transpose(2,0,1))
+            # total number of grid points
+            self.n_grid_gradient = self.coords_gradient.shape[0]*self.coords_gradient.shape[2]
+
+            # Generate unique IDs of grid points [n_grid]
+            self.coords_gradient_id = copy.deepcopy(self.coords_id)
 
 
 class TensorGrid(Grid):

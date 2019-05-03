@@ -603,6 +603,59 @@ def sample_sphere(n_points, r):
     return points
 
 
+def mat2ten(mat, incr):
+    """
+    Transforms gPC gradient matrix or gradient grid points from matrix to tensor form
+
+    Parameters
+    ----------
+    mat : ndarray of float [n_grid*incr, m]
+        Matrix to transform
+    incr : int
+        Increment after every row, a new tensor slice is created
+
+    Returns
+    -------
+    ten : ndarray of float [n_grid, m, incr]
+        Tensor
+
+    Notes
+    -----
+    Builds chunks after every "incr" row and writes it in a new slice [i, :, :]
+    """
+
+    ten = np.zeros((mat.shape[0]/incr, mat.shape[1], incr))
+    idx = np.arange(0, mat.shape[0], incr)
+
+    for i in range(incr):
+        ten[:, :, i] = mat[idx + i, :]
+
+    return ten
+
+
+def ten2mat(ten):
+    """
+    Transforms gPC gradient tensor or gradient grid points from tensor to matrix form
+
+    Parameters
+    ----------
+    ten : ndarray of float [n_grid, m, incr]
+        Tensor to transform
+
+    Returns
+    -------
+    mat : ndarray of float [n_grid*incr, m]
+        Matrix
+
+    Notes
+    -----
+    Stacks slices [i, :, :] vertically
+    """
+    mat = np.vstack([ten[i, :, :].transpose() for i in range(ten.shape[0])])
+
+    return mat
+
+
 def list2dict(l):
     """
     Transform list of dicts with same keys to dict of list
