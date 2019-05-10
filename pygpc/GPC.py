@@ -9,7 +9,8 @@ from .misc import display_fancy_bar
 from .misc import nrmsd
 from .misc import mat2ten
 from .misc import ten2mat
-from ValidationSet import *
+from .ValidationSet import *
+from .Computation import *
 import numpy as np
 import fastmat as fm
 import scipy.stats
@@ -28,6 +29,11 @@ class GPC(object):
         Basis of the gPC including BasisFunctions
     grid: Grid class instance
         Grid of the derived gPC approximation
+    validation: ValidationSet object (optional)
+        Object containing a set of validation points and corresponding solutions. Can be used
+        to validate gpc approximation setting options["error_type"]="nrmsd".
+        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+        - results: ndarray [n_grid x n_out] results
     gpc_matrix: [N_samples x N_poly] ndarray
         Generalized polynomial chaos matrix
     gpc_matrix_gradient: [N_samples * dim x N_poly] ndarray
@@ -36,6 +42,9 @@ class GPC(object):
         pseudo inverse of the generalized polynomial chaos matrix (with or without gradient)
     p_matrix: [dim_red x dim] ndarray of float
         Projection matrix to reduce number of efficient dimensions (\\eta = p_matrix * \\xi)
+    p_matrix_norm: [dim_red] ndarray of float
+        Maximal possible length of new axis in \\eta space. Since the projected variables are modelled in
+        the normalized space between [-1, 1], the transformed coordinates need to be scaled.
     nan_elm: ndarray of int
         Indices of NaN elements of model output
     gpc_matrix_coords_id: list of UUID4()
@@ -66,18 +75,21 @@ class GPC(object):
         Options of gPC algorithm
     """
 
-    def __init__(self, problem, options):
+    def __init__(self, problem, options, validation=None):
 
         # objects
         self.problem = problem
+        self.problem_original = None
         self.basis = None
         self.grid = None
+        self.validation = validation
 
         # arrays
         self.gpc_matrix = None
         self.gpc_matrix_gradient = None
         self.matrix_inv = None
         self.p_matrix = None
+        self.p_matrix_norm = None
         self.nan_elm = []
         self.gpc_matrix_coords_id = None
         self.gpc_matrix_b_id = None
@@ -310,13 +322,14 @@ class GPC(object):
             Estimated difference between gPC approximation and original model
         """
         # always determine nrmsd if a validation set is present
-        if isinstance(self.problem.validation, ValidationSet):
+        if isinstance(self.validation, ValidationSet):
 
             # transform variables from xi to eta space if gpc model is reduced
             if self.p_matrix is not None:
-                validation_coords_norm = np.dot(self.problem.validation.grid.coords_norm, self.p_matrix.transpose())
+                validation_coords_norm = np.dot(self.validation.grid.coords_norm,
+                                                self.p_matrix.transpose()/self.p_matrix_norm[np.newaxis, :])
             else:
-                validation_coords_norm = self.problem.validation.grid.coords_norm
+                validation_coords_norm = self.validation.grid.coords_norm
 
             gpc_results = self.get_approximation(coeffs, validation_coords_norm, output_idx=None)
 
@@ -324,7 +337,7 @@ class GPC(object):
                 gpc_results = gpc_results[:, np.newaxis]
 
             self.relative_error_nrmsd.append(float(np.mean(nrmsd(gpc_results,
-                                                                 self.problem.validation.results,
+                                                                 self.validation.results,
                                                                  error_norm=self.options["error_norm"],
                                                                  x_axis=False))))
 
@@ -444,7 +457,7 @@ class GPC(object):
         x: ndarray of float [n_x x n_dim]
             Coordinates of x = (x1, x2, ..., x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1])
         output_idx: ndarray of int, optional, default=None [n_out]
-            Index of output quantities to consider (Default: all).
+            Indices of output quantities to consider (Default: all).
 
         Returns
         -------
@@ -646,97 +659,16 @@ class GPC(object):
                 self.n_grid.append(self.gpc_matrix.shape[0])
                 self.n_basis.append(self.gpc_matrix.shape[1])
 
-
-    # def update_gpc_matrix(self):
-    #     """
-    #     Update gPC matrix according to existing self.grid and self.basis.
-    #
-    #     Call this method when self.gpc_matrix does not fit to self.grid and self.basis objects anymore
-    #     The old gPC matrix with their self.gpc_matrix_b_id and self.gpc_matrix_coords_id is compared
-    #     to self.basis.b_id and self.grid.coords_id. New rows and columns are computed when differences are found.
-    #     """
-    #
-    #     if not self.gpu:
-    #         # initialize updated gpc matrix
-    #         gpc_matrix_updated = np.zeros((len(self.grid.coords_id), len(self.basis.b_id)))
-    #
-    #         # # determine indices of new basis functions and grid_points
-    #         # idx_coords_new = [i for i, _id in enumerate(self.grid.coords_id) if _id not in self.gpc_matrix_coords_id]
-    #         # idx_basis_new = [i for i, _id in enumerate(self.basis.b_id) if _id not in self.gpc_matrix_b_id]
-    #
-    #         # determine indices of old grid points in updated gpc matrix
-    #         idx_coords_old = np.empty(len(self.gpc_matrix_coords_id))*np.nan
-    #         for i, coords_id_old in enumerate(self.gpc_matrix_coords_id):
-    #             for j, coords_id_new in enumerate(self.grid.coords_id):
-    #                 if coords_id_old == coords_id_new:
-    #                     idx_coords_old[i] = j
-    #                     break
-    #
-    #         # determine indices of old basis functions in updated gpc matrix
-    #         idx_b_old = np.empty(len(self.gpc_matrix_b_id))*np.nan
-    #         for i, b_id_old in enumerate(self.gpc_matrix_b_id):
-    #             for j, b_id_new in enumerate(self.basis.b_id):
-    #                 if b_id_old == b_id_new:
-    #                     idx_b_old[i] = j
-    #                     break
-    #
-    #         # filter out non-existent rows and columns
-    #         self.gpc_matrix = self.gpc_matrix[~np.isnan(idx_coords_old), :]
-    #         self.gpc_matrix = self.gpc_matrix[:, ~np.isnan(idx_b_old)]
-    #
-    #         idx_coords_old = idx_coords_old[~np.isnan(idx_coords_old)].astype(int)
-    #         idx_b_old = idx_b_old[~np.isnan(idx_b_old)].astype(int)
-    #
-    #         # indices of new coords and basis in updated gpc matrix (values have to be computed there)
-    #         idx_coords_new = np.array(list(set(np.arange(len(self.grid.coords_id))) - set(idx_coords_old))).astype(int)
-    #         idx_b_new = np.array(list(set(np.arange(len(self.basis.b_id))) - set(idx_b_old))).astype(int)
-    #
-    #         # write old results at correct location in updated gpc matrix
-    #         idx = get_cartesian_product([idx_coords_old, idx_b_old]).astype(int)
-    #         idx_row = np.reshape(idx[:, 0], self.gpc_matrix.shape).astype(int)
-    #         idx_col = np.reshape(idx[:, 1], self.gpc_matrix.shape).astype(int)
-    #
-    #         gpc_matrix_updated[idx_row, idx_col] = self.gpc_matrix
-    #
-    #         # determine new columns (new basis functions) with old grid
-    #         idx = get_cartesian_product([idx_coords_old, idx_b_new]).astype(int)
-    #         if idx.any():
-    #             iprint('Adding {} columns to gPC matrix...'.format(idx_b_new.size), tab=0, verbose=True)
-    #
-    #             idx_row = np.reshape(idx[:, 0], (idx_coords_old.size, idx_b_new.size)).astype(int)
-    #             idx_col = np.reshape(idx[:, 1], (idx_coords_old.size, idx_b_new.size)).astype(int)
-    #
-    #             gpc_matrix_updated[idx_row, idx_col] = self.calc_gpc_matrix(b=[self.basis.b[i] for i in idx_b_new],
-    #                                                                         x=self.grid.coords_norm[idx_coords_old, :],
-    #                                                                         verbose=False)
-    #
-    #         # determine new rows (new grid points) with all basis functions
-    #         idx = get_cartesian_product([idx_coords_new, np.arange(len(self.basis.b))]).astype(int)
-    #         if idx.any():
-    #             iprint('Adding {} rows to gPC matrix...'.format(idx_coords_new.size), tab=0, verbose=True)
-    #
-    #             idx_row = np.reshape(idx[:, 0], (idx_coords_new.size, len(self.basis.b))).astype(int)
-    #             idx_col = np.reshape(idx[:, 1], (idx_coords_new.size, len(self.basis.b))).astype(int)
-    #
-    #             gpc_matrix_updated[idx_row, idx_col] = self.calc_gpc_matrix(b=self.basis.b,
-    #                                                                         x=self.grid.coords_norm[idx_coords_new, :],
-    #                                                                         verbose=False)
-    #
-    #         # overwrite old attributes and append new sizes
-    #         self.gpc_matrix = gpc_matrix_updated
-    #         self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
-    #         self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
-    #         self.n_grid.append(self.gpc_matrix.shape[0])
-    #         self.n_basis.append(self.gpc_matrix.shape[1])
-
-
     def save_gpc_matrix_hdf5(self):
         """
-        Save gPC matrix in .hdf5 file <"fn_results" + ".hdf5"> under the key "gpc_matrix".
-        If a gpc matrix is already present, check for equality and save only appended rows and columns
+        Save gPC matrix and gPC gradient matrix in .hdf5 file <"fn_results" + ".hdf5"> under the key "gpc_matrix"
+        and "gpc_matrix_gradient". If matrices are already present, check for equality and save only appended
+        rows and columns.
         """
+
         with h5py.File(self.fn_results + ".hdf5", "a") as f:
             try:
+                # write gpc matrix
                 gpc_matrix_hdf5 = f["gpc_matrix"][:]
                 n_rows_hdf5 = gpc_matrix_hdf5.shape[0]
                 n_cols_hdf5 = gpc_matrix_hdf5.shape[1]
@@ -745,14 +677,14 @@ class GPC(object):
                 n_cols_current = self.gpc_matrix.shape[1]
 
                 # save only new rows and cols if current matrix > saved matrix
-                if n_rows_current >= n_rows_hdf5 and n_cols_current >= n_cols_hdf5:
-                    if (self.gpc_matrix[0:n_rows_hdf5, 0:n_cols_hdf5] == gpc_matrix_hdf5).all():
-                        # resize dataset and save new columns and rows
-                        f["gpc_matrix"].resize(self.gpc_matrix.shape[1], axis=1)
-                        f["gpc_matrix"][:, n_cols_hdf5:] = self.gpc_matrix[0:n_rows_hdf5, n_cols_hdf5:]
+                if n_rows_current >= n_rows_hdf5 and n_cols_current >= n_cols_hdf5 and \
+                        (self.gpc_matrix[0:n_rows_hdf5, 0:n_cols_hdf5] == gpc_matrix_hdf5).all():
+                    # resize dataset and save new columns and rows
+                    f["gpc_matrix"].resize(self.gpc_matrix.shape[1], axis=1)
+                    f["gpc_matrix"][:, n_cols_hdf5:] = self.gpc_matrix[0:n_rows_hdf5, n_cols_hdf5:]
 
-                        f["gpc_matrix"].resize(self.gpc_matrix.shape[0], axis=0)
-                        f["gpc_matrix"][n_rows_hdf5:, :] = self.gpc_matrix[n_rows_hdf5:, :]
+                    f["gpc_matrix"].resize(self.gpc_matrix.shape[0], axis=0)
+                    f["gpc_matrix"][n_rows_hdf5:, :] = self.gpc_matrix[n_rows_hdf5:, :]
 
                 else:
                     del f["gpc_matrix"]
@@ -762,6 +694,33 @@ class GPC(object):
                                      dtype="float64",
                                      data=self.gpc_matrix)
 
+                # write gpc gradient matrix if available
+                if self.gpc_matrix_gradient is not None:
+                    gpc_matrix_gradient_hdf5 = f["gpc_matrix_gradient"][:]
+                    n_rows_hdf5 = gpc_matrix_gradient_hdf5.shape[0]
+                    n_cols_hdf5 = gpc_matrix_gradient_hdf5.shape[1]
+
+                    n_rows_current = self.gpc_matrix_gradient.shape[0]
+                    n_cols_current = self.gpc_matrix_gradient.shape[1]
+
+                    # save only new rows and cols if current matrix > saved matrix
+                    if n_rows_current >= n_rows_hdf5 and n_cols_current >= n_cols_hdf5 and \
+                            (self.gpc_matrix_gradient[0:n_rows_hdf5, 0:n_cols_hdf5] == gpc_matrix_gradient_hdf5).all():
+                        # resize dataset and save new columns and rows
+                        f["gpc_matrix_gradient"].resize(self.gpc_matrix_gradient.shape[1], axis=1)
+                        f["gpc_matrix_gradient"][:, n_cols_hdf5:] = self.gpc_matrix_gradient[0:n_rows_hdf5, n_cols_hdf5:]
+
+                        f["gpc_matrix_gradient"].resize(self.gpc_matrix_gradient.shape[0], axis=0)
+                        f["gpc_matrix_gradient"][n_rows_hdf5:, :] = self.gpc_matrix_gradient[n_rows_hdf5:, :]
+
+                    else:
+                        del f["gpc_matrix_gradient"]
+                        f.create_dataset("gpc_matrix_gradient", (self.gpc_matrix_gradient.shape[0],
+                                                                 self.gpc_matrix_gradient.shape[1]),
+                                         maxshape=(None, None),
+                                         dtype="float64",
+                                         data=self.gpc_matrix_gradient)
+
             except KeyError:
                 # save whole matrix if not existent
                 f.create_dataset("gpc_matrix", (self.gpc_matrix.shape[0],
@@ -769,6 +728,14 @@ class GPC(object):
                                  maxshape=(None, None),
                                  dtype="float64",
                                  data=self.gpc_matrix)
+
+                # save whole gradient matrix if not existent and available
+                if self.gpc_matrix_gradient is not None:
+                    f.create_dataset("gpc_matrix_gradient", (self.gpc_matrix_gradient.shape[0],
+                                                             self.gpc_matrix_gradient.shape[1]),
+                                     maxshape=(None, None),
+                                     dtype="float64",
+                                     data=self.gpc_matrix_gradient)
 
     def solve(self, sim_results, solver=None, settings=None, matrix=None, verbose=False):
         """
@@ -915,3 +882,35 @@ class GPC(object):
             raise AttributeError("Unknown solver: '{}'!")
 
         return coeffs
+
+    def create_validation_set(self, n_samples, n_cpu=1):
+        """
+        Creates a ValidationSet instance (calls the model)
+
+        Parameters
+        ----------
+        n_samples: int
+            Number of sampling points contained in the validation set
+        n_cpu: int
+            Number of parallel function evaluations to evaluate validation set (n_cpu=0 assumes that the
+            model is capable to evaluate all grid points in parallel)
+        """
+        # create set of validation points
+        n_samples = n_samples
+
+        if self.problem_original is not None:
+            problem = self.problem_original
+        else:
+            problem = self.problem
+
+        grid = RandomGrid(parameters_random=problem.parameters_random,
+                          options={"n_grid": n_samples, "seed": None})
+
+        # Evaluate original model at grid points
+        com = Computation(n_cpu=n_cpu)
+        results = com.run(model=problem.model, problem=problem, coords=grid.coords)
+
+        if results.ndim == 1:
+            results = results[:, np.newaxis]
+
+        self.validation = ValidationSet(grid=grid, results=results)

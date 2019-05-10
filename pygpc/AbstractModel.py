@@ -168,14 +168,20 @@ class AbstractModel:
                                 else:
                                     ds[self.i_grid, :] = data_dict[d]
 
-                        except (KeyError, ValueError):
+                        except (KeyError, ValueError, TypeError):
                             # create
+                            try:
+                                del f[d]
+                            except KeyError:
+                                pass
+
                             if dtype is "str":
                                 f.create_dataset(d, data=data_dict[d].astype("|S"))
                             else:
                                 ds = f.create_dataset(d, (require_size, data_dict[d].shape[1]),
                                                       maxshape=(None, data_dict[d].shape[1]),
                                                       dtype=dtype)
+
                                 if type(self.i_grid) is list:
                                     ds[self.i_grid[0]:self.i_grid[1], :] = data_dict[d]
                                 else:

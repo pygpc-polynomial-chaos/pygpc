@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib
 
-folder = "/data/pt_01756/tmp/TestBench/TestBenchContinuousHD"
+folder = "/data/pt_01756/tmp/TestBench/TestBenchContinuous"
 algorithms = os.listdir(folder)
 algorithms.sort()
 testbench_objs = []
-order = [2, 3, 4]
-# order = [2, 3, 4, 5, 6, 8, 10, 12, 14]
+# order = [2, 3, 4]
+order = [2, 4, 6, 8, 10, 12, 14]
 for a in algorithms:
     with open(os.path.join(folder, a, "testbench.pkl"), 'rb') as f:
         testbench_objs.append(pickle.load(f))

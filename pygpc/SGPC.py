@@ -7,6 +7,9 @@ from .io import iprint, wprint
 from .misc import display_fancy_bar
 from .misc import get_array_unique_rows
 from .Basis import *
+from scipy.special import binom
+from .sobol_saltelli import get_sobol_indices_saltelli
+from .sobol_saltelli import saltelli_sampling
 
 
 class SGPC(GPC):
@@ -36,10 +39,15 @@ class SGPC(GPC):
         All polynomials are ignored, which have an interaction order greater than the specified
         Current interaction order counter (only used in case of adaptive algorithms)
     options : dict
-            Options of gPC
+        Options of gPC
+    validation: ValidationSet object (optional)
+        Object containing a set of validation points and corresponding solutions. Can be used
+        to validate gpc approximation setting options["error_type"]="nrmsd".
+        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+        - results: ndarray [n_grid x n_out] results
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options, validation=None):
         """
         Constructor; Initializes the SGPC class
 
@@ -65,13 +73,18 @@ class SGPC(GPC):
             All polynomials are ignored, which have an interaction order greater than the specified
         options : dict
             Options of gPC
+        validation: ValidationSet object (optional)
+            Object containing a set of validation points and corresponding solutions. Can be used
+            to validate gpc approximation setting options["error_type"]="nrmsd".
+            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+            - results: ndarray [n_grid x n_out] results
 
         Notes
         -----
         .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle 
            regression. Journal of Computational Physics, 230(6), 2345-2367.
         """
-        super(SGPC, self).__init__(problem, options)
+        super(SGPC, self).__init__(problem, options, validation)
 
         self.order = order
         self.order_max = order_max
@@ -87,125 +100,224 @@ class SGPC(GPC):
                                    interaction_order=interaction_order)
 
     @staticmethod
-    def get_mean(coeffs):
+    def get_mean(coeffs=None, samples=None):
         """
-        Calculate the expected mean value.
+        Calculate the expected mean value. Provide either gPC coeffs or a certain number of samples.
 
         mean = SGPC.get_mean(coeffs)
 
         Parameters
         ----------
-        coeffs: ndarray of float [n_basis x n_out]
+        coeffs : ndarray of float [n_basis x n_out], optional, default: None
             GPC coefficients
+        samples : ndarray of float [n_samples x n_out], optional, default: None
+            Model evaluations from gPC approximation
 
         Returns
         -------
         mean: ndarray of float [1 x n_out]
             Expected value of output quantities
         """
+        if coeffs is not None:
+            mean = coeffs[0, ]
 
-        mean = coeffs[0]
-        # TODO: check if 1-dimensional array should be (N,) or (N,1)
-        # mean = mean[np.newaxis, :]
+        elif samples is not None:
+            mean = np.mean(samples, axis=0)
+
+        else:
+            raise AssertionError("Provide either ""coeffs"" or ""samples"" to determine mean!")
+
+        mean = mean[np.newaxis, :]
+
         return mean
 
     @staticmethod
-    def get_standard_deviation(coeffs):
+    def get_standard_deviation(coeffs=None, samples=None):
         """
-        Calculate the standard deviation.
+        Calculate the standard deviation. Provide either gPC coeffs or a certain number of samples.
 
         std = SGPC.get_standard_deviation(coeffs)
 
         Parameters
         ----------
-        coeffs: ndarray of float [n_basis x n_out]
+        coeffs: ndarray of float [n_basis x n_out], optional, default: None
             GPC coefficients
+        samples : ndarray of float [n_samples x n_out], optional, default: None
+            Model evaluations from gPC approximation
 
         Returns
         -------
         std: ndarray of float [1 x n_out]
             Standard deviation of output quantities
         """
+        if coeffs is not None:
+            std = np.sqrt(np.sum(np.square(coeffs[1:]), axis=0))
 
-        std = np.sqrt(np.sum(np.square(coeffs[1:]), axis=0))
-        # TODO: check if 1-dimensional array should be (N,) or (N,1)
-        # std = std[np.newaxis, :]
+        elif samples is not None:
+            std = np.std(samples, axis=0)
+
+        else:
+            raise AssertionError("Provide either ""coeffs"" or ""samples"" to determine standard deviation!")
+
+        std = std[np.newaxis, :]
+
         return std
 
     # noinspection PyTypeChecker
-    def get_sobol_indices(self, coeffs):
+    def get_sobol_indices(self, coeffs, algorithm="standard", n_samples=1e4):
         """
-        Calculate the available sobol indices.
+        Calculate the available sobol indices from the gPC coefficients (standard) or by sampling.
 
-        sobol, sobol_idx = SGPC.get_sobol_indices(coeffs)
+        sobol, sobol_idx, sobol_idx_bool = SGPC.get_sobol_indices(coeffs)
 
         Parameters
         ----------
         coeffs:  ndarray of float [n_basis x n_out]
             GPC coefficients
+        algorithm : str, optional, default: "standard"
+            Algorithm to determine the Sobol indices
+            - "standard": Sobol indices are determined from the gPC coefficients
+            - "sampling": Sobol indices are determined from sampling using Saltelli's Sobol sampling sequence [1, 2, 3]
+        n_samples : int, optional, default: 1e4
+            Number of samples to determine Sobol indices by sampling. The efficient number of samples
+            increases to n_samples * (2*dim + 2) in Saltelli's Sobol sampling sequence.
 
         Returns
         -------
         sobol: ndarray of float [n_sobol x n_out]
-            Unnormalized Sobol indices
+            Normalized Sobol indices w.r.t. total variance
         sobol_idx: list of ndarray of int [n_sobol x (n_sobol_included)]
             Parameter combinations in rows of sobol.
         sobol_idx_bool: ndarray of bool [n_sobol x dim]
             Boolean mask which contains unique multi indices.
+
+        Notes
+        -----
+        .. [1] Sobol, I. M. (2001).  "Global sensitivity indices for nonlinear
+               mathematical models and their Monte Carlo estimates."  Mathematics
+               and Computers in Simulation, 55(1-3):271-280,
+               doi:10.1016/S0378-4754(00)00270-6.
+        .. [2] Saltelli, A. (2002).  "Making best use of model evaluations to
+               compute sensitivity indices."  Computer Physics Communications,
+               145(2):280-297, doi:10.1016/S0010-4655(02)00280-1.
+        .. [3] Saltelli, A., P. Annoni, I. Azzini, F. Campolongo, M. Ratto, and
+               S. Tarantola (2010).  "Variance based sensitivity analysis of model
+               output.  Design and estimator for the total sensitivity index."
+               Computer Physics Communications, 181(2):259-270,
+               doi:10.1016/j.cpc.2009.09.018.
         """
 
         # iprint("Determining Sobol indices...", tab=0)
 
-        # handle (N,) arrays
-        if len(coeffs.shape) == 1:
-            n_out = 1
+        if algorithm == "standard":
+            # handle (N,) arrays
+            if len(coeffs.shape) == 1:
+                n_out = 1
+            else:
+                n_out = coeffs.shape[1]
+
+            n_coeffs = coeffs.shape[0]
+
+            if n_coeffs == 1:
+                raise Exception('Number of coefficients is 1 ... no sobol indices to calculate ...')
+
+            # Generate boolean matrix of all basis functions where order > 0 = True
+            # size: [n_basis x dim]
+            multi_indices = np.array([list(map(lambda _b:_b.p["i"], b_row)) for b_row in self.basis.b])
+            sobol_mask = multi_indices != 0
+
+            # look for unique combinations (i.e. available sobol combinations)
+            # size: [N_sobol x dim]
+            sobol_idx_bool = get_array_unique_rows(sobol_mask)
+
+            # delete the first row where all polynomials are order 0 (no sensitivity)
+            sobol_idx_bool = np.delete(sobol_idx_bool, [0], axis=0)
+            n_sobol_available = sobol_idx_bool.shape[0]
+
+            # check which basis functions contribute to which sobol coefficient set
+            # True for specific coeffs if it contributes to sobol coefficient
+            # size: [N_coeffs x N_sobol]
+            sobol_poly_idx = np.zeros([n_coeffs, n_sobol_available])
+
+            for i_sobol in range(n_sobol_available):
+                sobol_poly_idx[:, i_sobol] = np.all(sobol_mask == sobol_idx_bool[i_sobol], axis=1)
+
+            # calculate sobol coefficients matrix by summing up the individual
+            # contributions to the respective sobol coefficients
+            # size [N_sobol x N_points]
+            sobol = np.zeros([n_sobol_available, n_out])
+
+            for i_sobol in range(n_sobol_available):
+                sobol[i_sobol] = np.sum(np.square(coeffs[sobol_poly_idx[:, i_sobol] == 1]), axis=0)
+
+            # sort sobol coefficients in descending order (w.r.t. first output only ...)
+            idx_sort_descend_1st = np.argsort(sobol[:, 0], axis=0)[::-1]
+            sobol = sobol[idx_sort_descend_1st, :]
+            sobol_idx_bool = sobol_idx_bool[idx_sort_descend_1st]
+
+            # get list of sobol indices
+            sobol_idx = [0 for _ in range(sobol_idx_bool.shape[0])]
+
+            for i_sobol in range(sobol_idx_bool.shape[0]):
+                sobol_idx[i_sobol] = np.array([i for i, x in enumerate(sobol_idx_bool[i_sobol, :]) if x])
+
+            var = self.get_standard_deviation(coeffs=coeffs)**2
+
+            sobol = sobol / var
+
+        elif algorithm == "sampling":
+
+            if self.p_matrix is None:
+                dim = self.problem.dim
+            else:
+                dim = self.problem_original.dim
+
+            # generate sobol sequence (original parameter space, scaled to [-1, 1])
+            coords_norm = 2 * saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True) - 1
+
+            # rescale coordinates in case of projection
+            if self.p_matrix is not None:
+                coords_norm = np.dot(coords_norm, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
+
+            # run model evaluations
+            res = self.get_approximation(coeffs=coeffs, x=coords_norm)
+
+            # determine sobol indices
+            sobol_dict = get_sobol_indices_saltelli(y=res.flatten(),
+                                                    dim=dim,
+                                                    calc_second_order=True,
+                                                    num_resamples=100,
+                                                    conf_level=0.95)
+
+            # reformat data
+            n_sobol = int(dim + binom(dim, 2))
+            sobol = np.zeros((n_sobol, coeffs.shape[1]))
+            sobol_idx = [np.nan for _ in range(n_sobol)]
+            sobol_idx_bool = np.zeros((n_sobol, dim)).astype(bool)
+
+            # first order
+            for i_dim in range(dim):
+                sobol[i_dim] = sobol_dict["S1"][i_dim]
+                sobol_idx[i_dim] = np.array([i_dim])
+                sobol_idx_bool[i_dim, i_dim] = True
+
+            # second order
+            i_sobol = dim
+            for i_dim, row in enumerate(sobol_dict["S2"]):
+                for j_dim in np.where(np.logical_not(np.isnan(row)))[0]:
+                    sobol[i_sobol] = sobol_dict["S2"][i_dim, j_dim]
+                    sobol_idx[i_sobol] = np.array([i_dim, j_dim])
+                    sobol_idx_bool[i_sobol, [i_dim, j_dim]] = True
+                    i_sobol += 1
+
+            # sort
+            idx = np.flip(np.argsort(sobol[:, 0], axis=0))
+            sobol = sobol[idx, :]
+            sobol_idx = [sobol_idx[i] for i in idx]
+            sobol_idx_bool = sobol_idx_bool[idx, :]
+
         else:
-            n_out = coeffs.shape[1]
-
-        n_coeffs = coeffs.shape[0]
-
-        if n_coeffs == 1:
-            raise Exception('Number of coefficients is 1 ... no sobol indices to calculate ...')
-
-        # Generate boolean matrix of all basis functions where order > 0 = True
-        # size: [n_basis x dim]
-        multi_indices = np.array([list(map(lambda _b:_b.p["i"], b_row)) for b_row in self.basis.b])
-        sobol_mask = multi_indices != 0
-
-        # look for unique combinations (i.e. available sobol combinations)
-        # size: [N_sobol x dim]
-        sobol_idx_bool = get_array_unique_rows(sobol_mask)
-
-        # delete the first row where all polynomials are order 0 (no sensitivity)
-        sobol_idx_bool = np.delete(sobol_idx_bool, [0], axis=0)
-        n_sobol_available = sobol_idx_bool.shape[0]
-
-        # check which basis functions contribute to which sobol coefficient set
-        # True for specific coeffs if it contributes to sobol coefficient
-        # size: [N_coeffs x N_sobol]
-        sobol_poly_idx = np.zeros([n_coeffs, n_sobol_available])
-
-        for i_sobol in range(n_sobol_available):
-            sobol_poly_idx[:, i_sobol] = np.all(sobol_mask == sobol_idx_bool[i_sobol], axis=1)
-
-        # calculate sobol coefficients matrix by summing up the individual
-        # contributions to the respective sobol coefficients
-        # size [N_sobol x N_points]
-        sobol = np.zeros([n_sobol_available, n_out])
-
-        for i_sobol in range(n_sobol_available):
-            sobol[i_sobol] = np.sum(np.square(coeffs[sobol_poly_idx[:, i_sobol] == 1]), axis=0)
-
-        # sort sobol coefficients in descending order (w.r.t. first output only ...)
-        idx_sort_descend_1st = np.argsort(sobol[:, 0], axis=0)[::-1]
-        sobol = sobol[idx_sort_descend_1st, :]
-        sobol_idx_bool = sobol_idx_bool[idx_sort_descend_1st]
-
-        # get list of sobol indices
-        sobol_idx = [0 for _ in range(sobol_idx_bool.shape[0])]
-
-        for i_sobol in range(sobol_idx_bool.shape[0]):
-            sobol_idx[i_sobol] = np.array([i for i, x in enumerate(sobol_idx_bool[i_sobol, :]) if x])
+            raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
 
         return sobol, sobol_idx, sobol_idx_bool
 
@@ -359,7 +471,7 @@ class SGPC(GPC):
         return sobol_n_order, sobol_idx_n_order
 
     # noinspection PyTypeChecker
-    def get_global_sens(self, coeffs):
+    def get_global_sens(self, coeffs, algorithm="standard", n_samples=1e5):
         """
         Determine the global derivative based sensitivity coefficients after Xiu (2009) [1].
 
@@ -367,8 +479,14 @@ class SGPC(GPC):
 
         Parameters
         ----------
-        coeffs: ndarray of float [n_basis x n_out]
+        coeffs: ndarray of float [n_basis x n_out], optional, default: None
             GPC coefficients
+        algorithm : str, optional, default: "standard"
+            Algorithm to determine the Sobol indices
+            - "standard": Sobol indices are determined from the gPC coefficients
+            - "sampling": Sobol indices are determined from sampling using Saltelli's Sobol sampling sequence [1, 2, 3]
+        n_samples : int, optional, default: 1e4
+            Number of samples
 
         Returns
         -------
@@ -381,27 +499,57 @@ class SGPC(GPC):
            Commun. Comput. Phys., 5 (2009), pp. 242-272 eq. (3.14) page 255
         """
 
-        b_int_global = np.zeros([self.problem.dim, self.basis.n_basis])
+        if algorithm == "standard":
+            b_int_global = np.zeros([self.problem.dim, self.basis.n_basis])
 
-        # construct matrix with integral expressions [n_basis x dim]
-        b_int = np.array([list(map(lambda _b: _b.fun_int, b_row)) for b_row in self.basis.b])
-        b_int_der = np.array([list(map(lambda _b: _b.fun_der_int, b_row)) for b_row in self.basis.b])
+            # construct matrix with integral expressions [n_basis x dim]
+            b_int = np.array([list(map(lambda _b: _b.fun_int, b_row)) for b_row in self.basis.b])
+            b_int_der = np.array([list(map(lambda _b: _b.fun_der_int, b_row)) for b_row in self.basis.b])
 
-        for i_sens in range(self.problem.dim):
-            # replace column with integral expressions from derivative of parameter[i_dim]
-            tmp = copy.deepcopy(b_int)
-            tmp[:, i_sens] = b_int_der[:, i_sens]
+            for i_sens in range(self.problem.dim):
+                # replace column with integral expressions from derivative of parameter[i_dim]
+                tmp = copy.deepcopy(b_int)
+                tmp[:, i_sens] = b_int_der[:, i_sens]
 
-            # determine global integral expression
-            b_int_global[i_sens, :] = np.prod(tmp, axis=1)
+                # determine global integral expression
+                b_int_global[i_sens, :] = np.prod(tmp, axis=1)
 
-        global_sens = np.dot(b_int_global, coeffs)
-        # global_sens = np.dot(b_int_global, coeffs) / (2 ** self.problem.dim)
+            global_sens = np.dot(b_int_global, coeffs) / (2 ** self.problem.dim)
+            # global_sens = np.dot(b_int_global, coeffs)
+
+        elif algorithm == "sampling":
+            # generate sample coordinates (original parameter space)
+            if self.p_matrix is not None:
+                grid = RandomGrid(parameters_random=self.problem_original.parameters_random,
+                                  options={"n_grid": n_samples, "seed": None})
+            else:
+                grid = RandomGrid(parameters_random=self.problem.parameters_random,
+                                  options={"n_grid": n_samples, "seed": None})
+
+            local_sens = self.get_local_sens(coeffs, grid.coords_norm)
+
+            # # transform the coordinates to the reduced parameter space
+            # coords_norm = np.dot(coords_norm, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
+            #
+            # # construct gPC gradient matrix [n_samples x n_basis x dim_red]
+            # gpc_matrix_gradient = self.calc_gpc_matrix(b=self.basis.b, x=coords_norm, gradient=True)
+            #
+            # # determine gradient in each sampling point [n_samples x n_out x dim_red]
+            # grad_samples_projected = np.dot(gpc_matrix_gradient.transpose(2, 0, 1), coeffs).transpose(1, 2, 0)
+            #
+            # # project the gradient back to the original parameter space if necessary [n_samples x n_out x dim]
+            # grad_samples = np.dot(grad_samples_projected, self.p_matrix / self.p_matrix_norm[:, np.newaxis])
+
+            # average the results and reshape [dim x n_out]
+            global_sens = np.mean(local_sens, axis=0).transpose()
+
+        else:
+            raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
 
         return global_sens
 
     # noinspection PyTypeChecker
-    def get_local_sens(self, coeffs, x):
+    def get_local_sens(self, coeffs, x=None):
         """
         Determine the local derivative based sensitivity coefficients in the point of interest x
         (normalized coordinates [-1, 1]).
@@ -412,7 +560,7 @@ class SGPC(GPC):
         ----------
         coeffs: ndarray of float [n_basis x n_out]
             GPC coefficients
-        x: ndarray of float [n_basis x n_out]
+        x: ndarray of float [dim], optional, default: center of parameter space
             Point in variable space to evaluate local sensitivity in (normalized coordinates [-1, 1])
 
         Returns
@@ -421,21 +569,21 @@ class SGPC(GPC):
             Local sensitivity of output quantities in point x
         """
 
-        b_x_global = np.zeros([self.problem.dim, self.basis.n_basis])
+        if x is None:
+            x = np.zeros(self.problem.dim)[np.newaxis, :]
 
-        # evaluate fun(x) and fun_der(x) at point of operation x [n_basis x dim]
-        b_x = np.array([list(map(lambda _b: _b.fun(x), b_row)) for b_row in self.basis.b])
-        b_der_x = np.array([list(map(lambda _b: _b.fun_der(x), b_row)) for b_row in self.basis.b])
+        # project coordinate to reduced parameter space if necessary
+        if self.p_matrix is not None:
+            x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
-        for i_sens in range(self.problem.dim):
-            # replace column with integral expressions from derivative of parameter[i_dim]
-            tmp = copy.deepcopy(b_x)
-            tmp[:, i_sens] = b_der_x[:, i_sens]
+        # construct gPC gradient matrix [n_samples x n_basis x dim(_red)]
+        gpc_matrix_gradient = self.calc_gpc_matrix(b=self.basis.b, x=x, gradient=True)
 
-            # determine global integral expression
-            b_x_global[i_sens, :] = np.prod(tmp, axis=1)
+        local_sens = np.dot(gpc_matrix_gradient.transpose(2, 0, 1), coeffs).transpose(1, 2, 0)
 
-        local_sens = np.dot(b_x_global, coeffs)
+        # project the gradient back to the original space if necessary
+        if self.p_matrix is not None:
+            local_sens = np.dot(local_sens, self.p_matrix / self.p_matrix_norm[:, np.newaxis])
 
         return local_sens
 
@@ -460,7 +608,7 @@ class Reg(SGPC):
         - 'NumInt' ... None
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options, validation=None):
         """
         Constructor; Initializes Regression SGPC class
 
@@ -484,8 +632,13 @@ class Reg(SGPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
-        fn_results : string, optional, default=None
-            If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+        options : dict
+            Options of gPC
+        validation: ValidationSet object (optional)
+            Object containing a set of validation points and corresponding solutions. Can be used
+            to validate gpc approximation setting options["error_type"]="nrmsd".
+            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+            - results: ndarray [n_grid x n_out] results
 
         Notes
         -----
@@ -503,7 +656,7 @@ class Reg(SGPC):
         >>>                 fn_results="/tmp/my_results")
         """
 
-        super(Reg, self).__init__(problem, order, order_max, order_max_norm, interaction_order, options)
+        super(Reg, self).__init__(problem, order, order_max, order_max_norm, interaction_order, options, validation)
         self.solver = 'Moore-Penrose'   # Default solver
         self.settings = None            # Default Solver settings
 
@@ -513,7 +666,7 @@ class Quad(SGPC):
     Quadrature SGPC sub-class
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options, validation=None):
         """
         Constructor; Initializes Quadrature SGPC sub-class
 
@@ -539,8 +692,13 @@ class Quad(SGPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
-        fn_results : string, optional, default=None
-            If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
+        options : dict
+            Options of gPC
+        validation: ValidationSet object (optional)
+            Object containing a set of validation points and corresponding solutions. Can be used
+            to validate gpc approximation setting options["error_type"]="nrmsd".
+            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+            - results: ndarray [n_grid x n_out] results
 
         Notes
         -----
@@ -557,6 +715,6 @@ class Quad(SGPC):
         >>>                 interaction_order=2,
         >>>                 fn_results="/tmp/my_results")
         """
-        super(Quad, self).__init__(problem, order, order_max, order_max_norm, interaction_order, options)
+        super(Quad, self).__init__(problem, order, order_max, order_max_norm, interaction_order, options, validation)
         self.solver = 'NumInt'  # Default solver
         self.settings = None    # Default solver settings

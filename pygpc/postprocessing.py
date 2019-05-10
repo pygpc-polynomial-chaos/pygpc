@@ -1,13 +1,15 @@
 import h5py
 import numpy as np
 from .io import read_gpc_pkl
+from .Grid import RandomGrid
 
 
-def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_global_sens=False, calc_pdf=False):
+def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_global_sens=False, calc_pdf=False,
+                           algorithm = "standard", n_samples=1e5):
     """
-    Post-processes the gPC expansion and adds mean, standard deviation, relative standard deviation, variance, Sobol
-    indices, global derivative based sensitivity coefficients and probability density functions of output quantities to
-    .hdf5 file of gPC.
+    Post-processes the gPC expansion from the gPC coefficients (standard) or by sampling. Adds mean,
+    standard deviation, relative standard deviation, variance, Sobol indices, global derivative based
+    sensitivity coefficients and probability density functions of output quantities to .hdf5 file of gPC.
 
     Parameters
     ----------
@@ -22,6 +24,13 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
         Calculate global derivative based sensitivities (default: False)
     calc_pdf : bool
         Calculate probability density functions of output quantities (default: False)
+    algorithm : str, optional, default: "standard"
+        Algorithm to determine the Sobol indices
+        - "standard": Sobol indices are determined from the gPC coefficients
+        - "sampling": Sobol indices are determined from sampling using Saltelli's Sobol sampling sequence [1, 2, 3]
+    n_samples : int, optional, default: 1e4
+        Number of samples to determine Sobol indices by sampling. The efficient number of samples
+        increases to n_samples * (2*dim + 2) in Saltelli's Sobol sampling sequence.
 
     Returns
     -------
@@ -45,6 +54,16 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
         I---/pdf_x              [100 x n_qoi]           x-axis values of output PDFs
         I---/pdf_y              [100 x n_qoi]           y-axis values of output PDFs
     """
+    p_matrix = None
+    p_matrix_norm = None
+    sobol = None
+    sobol_idx_bool = None
+    global_sens = None
+    pdf_x = None
+    pdf_y = None
+    grid = None
+    res = None
+
     print("> Loading gpc object: {}".format(fn_gpc + ".pkl"))
     gpc = read_gpc_pkl(fn_gpc + ".pkl")
 
@@ -52,14 +71,43 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
     with h5py.File(fn_gpc + ".hdf5", 'r') as f:
         coeffs = np.array(f['coeffs'][:])
 
+        if "p_matrix" in f.keys():
+            p_matrix = np.array(f['p_matrix'][:])
+            p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
+
     if not output_idx:
         output_idx = np.arange(coeffs.shape[1])
 
-    # determine mean
-    mean = gpc.get_mean(coeffs[:, output_idx])
+    if algorithm == "standard":
+        # determine mean
+        mean = gpc.get_mean(coeffs[:, output_idx])
 
-    # determine standard deviation
-    std = gpc.get_standard_deviation(coeffs[:, output_idx])
+        # determine standard deviation
+        std = gpc.get_standard_deviation(coeffs[:, output_idx])
+
+    elif algorithm == "sampling":
+        # generate samples
+        if p_matrix is not None:
+            grid = RandomGrid(parameters_random=gpc.problem_original.parameters_random,
+                              options={"n_grid": n_samples, "seed": None})
+
+            # rescale coordinates in case of projection
+            grid.coords_norm = np.dot(grid.coords_norm, p_matrix.transpose() / p_matrix_norm[np.newaxis, :])
+        else:
+            grid = RandomGrid(parameters_random=gpc.problem.parameters_random,
+                              options={"n_grid": n_samples, "seed": None})
+
+        # run model evaluations
+        res = gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
+
+        # determine mean
+        mean = gpc.get_mean(samples=res[:, output_idx])
+
+        # determine standard deviation
+        std = gpc.get_standard_deviation(samples=res[:, output_idx])
+
+    else:
+        raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
 
     # determine relative standard deviation
     rstd = std / mean
@@ -69,15 +117,19 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
 
     # determine Sobol indices
     if calc_sobol:
-        sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs[:, output_idx])
+        sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs[:, output_idx],
+                                                                 algorithm=algorithm,
+                                                                 n_samples=n_samples)
 
     # determine global derivative based sensitivity coefficients
     if calc_global_sens:
-        global_sens = gpc.get_global_sens(coeffs[:, output_idx])
+        global_sens = gpc.get_global_sens(coeffs=coeffs[:, output_idx],
+                                          algorithm=algorithm,
+                                          n_samples=n_samples)
 
     # determine pdfs
     if calc_pdf:
-        pdf_x, pdf_y = gpc.get_pdf(coeffs, n_samples=1E3, output_idx=output_idx)
+        pdf_x, pdf_y = gpc.get_pdf(coeffs, n_samples=n_samples, output_idx=output_idx)
 
     print("> Adding results to: {}".format(fn_gpc + ".hdf5"))
     # save results in .hdf5 file (overwrite existing quantities in sens/...)
@@ -92,6 +144,10 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
         f.create_dataset(data=std, name="sens/std")
         f.create_dataset(data=rstd, name="sens/rstd")
         f.create_dataset(data=var, name="sens/var")
+
+        if algorithm == "sampling":
+            f.create_dataset(data=grid.coords_norm, name="sens/coords_norm")
+            f.create_dataset(data=res, name="sens/res")
 
         if calc_sobol:
             f.create_dataset(data=sobol, name="sens/sobol")

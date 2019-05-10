@@ -12,6 +12,7 @@ import pygpc.Basis
 import pygpc.BasisFunction
 import pygpc.Worker
 import pygpc.Grid
+import pygpc.sobol_saltelli
 from .io import *
 from .misc import *
 from .Test import *
