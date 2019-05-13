@@ -444,6 +444,7 @@ class GPC(object):
 
         return grid.coords_norm, pce
 
+    # TODO: @Lucas: Bitte multicore CPU version (laeuft derzeit nur auf 1 Kern) und GPU support implementieren
     def get_approximation(self, coeffs, x, output_idx=None):
         """
         Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).
@@ -481,7 +482,7 @@ class GPC(object):
             # multiply with gPC coeffs
             pce = np.matmul(gpc_matrix, coeffs)
 
-        # TODO: @Lucas: Bitte GPU support implementieren
+
         # else:
         #     # initialize matrices and parameters
         #     pce = np.zeros([xi.shape[0], coeffs.shape[1]])

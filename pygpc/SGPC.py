@@ -167,6 +167,7 @@ class SGPC(GPC):
     def get_sobol_indices(self, coeffs, algorithm="standard", n_samples=1e4):
         """
         Calculate the available sobol indices from the gPC coefficients (standard) or by sampling.
+        In case of sampling, the Sobol indices are calculated up to second order.
 
         sobol, sobol_idx, sobol_idx_bool = SGPC.get_sobol_indices(coeffs)
 
@@ -283,32 +284,11 @@ class SGPC(GPC):
             res = self.get_approximation(coeffs=coeffs, x=coords_norm)
 
             # determine sobol indices
-            sobol_dict = get_sobol_indices_saltelli(y=res.flatten(),
-                                                    dim=dim,
-                                                    calc_second_order=True,
-                                                    num_resamples=100,
-                                                    conf_level=0.95)
-
-            # reformat data
-            n_sobol = int(dim + binom(dim, 2))
-            sobol = np.zeros((n_sobol, coeffs.shape[1]))
-            sobol_idx = [np.nan for _ in range(n_sobol)]
-            sobol_idx_bool = np.zeros((n_sobol, dim)).astype(bool)
-
-            # first order
-            for i_dim in range(dim):
-                sobol[i_dim] = sobol_dict["S1"][i_dim]
-                sobol_idx[i_dim] = np.array([i_dim])
-                sobol_idx_bool[i_dim, i_dim] = True
-
-            # second order
-            i_sobol = dim
-            for i_dim, row in enumerate(sobol_dict["S2"]):
-                for j_dim in np.where(np.logical_not(np.isnan(row)))[0]:
-                    sobol[i_sobol] = sobol_dict["S2"][i_dim, j_dim]
-                    sobol_idx[i_sobol] = np.array([i_dim, j_dim])
-                    sobol_idx_bool[i_sobol, [i_dim, j_dim]] = True
-                    i_sobol += 1
+            sobol, sobol_idx, sobol_idx_bool = get_sobol_indices_saltelli(y=res,
+                                                                          dim=dim,
+                                                                          calc_second_order=True,
+                                                                          num_resamples=100,
+                                                                          conf_level=0.95)
 
             # sort
             idx = np.flip(np.argsort(sobol[:, 0], axis=0))

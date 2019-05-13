@@ -900,14 +900,13 @@ class TestpygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.Ridge
+        model = pygpc.testfunctions.Peaks
 
         # define problem
         parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        parameters["x3"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        parameters["x4"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        parameters["x1"] = pygpc.Beta(pdf_shape=[5, 5], pdf_limits=[1.2, 2])
+        parameters["x2"] = 1.25
+        parameters["x3"] = pygpc.Beta(pdf_shape=[4, 2], pdf_limits=[1.2, 2])
         problem = pygpc.Problem(model, parameters)
 
         # gPC options
@@ -915,7 +914,7 @@ class TestpygpcMethods(unittest.TestCase):
         options["method"] = "reg"
         options["solver"] = "Moore-Penrose"
         options["settings"] = None
-        options["order"] = [9, 9, 9, 9]
+        options["order"] = [9, 9]
         options["order_max"] = 9
         options["interaction_order"] = 3
         options["matrix_ratio"] = 2
@@ -937,10 +936,14 @@ class TestpygpcMethods(unittest.TestCase):
                                 options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
 
         # define algorithm
-        algorithm = pygpc.StaticProjection(problem=problem, options=options)
+        algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
 
         # run gPC algorithm
         gpc, coeffs, results = algorithm.run()
+
+        # test sobol calculation
+        sobol_ref, sobol_idx_ref, sobol_idx_bool_ref = gpc.get_sobol_indices(coeffs=coeffs, algorithm="standard", n_samples=1e4)
+        sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs, algorithm="sampling", n_samples=5e4)
 
         var = gpc.get_standard_deviation(coeffs)**2
 

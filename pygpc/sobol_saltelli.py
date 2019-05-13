@@ -3,6 +3,7 @@ import math
 import numpy as np
 import h5py
 from scipy.stats import norm
+from scipy.special import binom
 
 ##############################################################################
 # The following code is based on the Sobol sequence generator by Frances
@@ -222,10 +223,10 @@ def get_sobol_indices_saltelli(y, dim, calc_second_order=True, num_resamples=100
            doi:10.1016/j.cpc.2009.09.018.
     """
 
-    if calc_second_order and y.size % (2 * dim + 2) == 0:
-        n = int(y.size / (2 * dim + 2))
-    elif not calc_second_order and y.size % (dim + 2) == 0:
-        n = int(y.size / (dim + 2))
+    if calc_second_order and y.shape[0] % (2 * dim + 2) == 0:
+        n = int(y.shape[0] / (2 * dim + 2))
+    elif not calc_second_order and y.shape[0] % (dim + 2) == 0:
+        n = int(y.shape[0] / (dim + 2))
     else:
         raise RuntimeError("""
         Incorrect number of samples in model output file.
@@ -235,30 +236,42 @@ def get_sobol_indices_saltelli(y, dim, calc_second_order=True, num_resamples=100
         raise RuntimeError("Confidence level must be between 0-1.")
 
     # normalize the model output
-    y = (y - y.mean()) / y.std()
+    y = (y - y.mean(axis=0)) / y.std(axis=0)
 
     a, b, ab, ba = separate_output_values(y, dim, n, calc_second_order)
     r = np.random.randint(n, size=(n, num_resamples))
     z = norm.ppf(0.5 + conf_level / 2)
 
-    s = create_si_dict(dim, calc_second_order)
+    n_sobol = int(dim + binom(dim, 2))
+    sobol = np.zeros((n_sobol, y.shape[1]))
+    sobol_total = np.zeros((dim, y.shape[1]))
+    sobol_total_conf = np.zeros((dim, y.shape[1]))
+    sobol_conf = np.zeros((n_sobol, y.shape[1]))
+    sobol_idx = [np.nan for _ in range(n_sobol)]
+    sobol_idx_bool = np.zeros((n_sobol, dim)).astype(bool)
 
+    # first and total order (+ confidence interval)
+    i_sobol = 0
     for j in range(dim):
-        s['S1'][j] = first_order(a, ab[:, j], b)
-        s['S1_conf'][j] = z * first_order(a[r], ab[r, j], b[r]).std(ddof=1)
-        s['ST'][j] = total_order(a, ab[:, j], b)
-        s['ST_conf'][j] = z * total_order(a[r], ab[r, j], b[r]).std(ddof=1)
+        sobol[j, :] = first_order(a, ab[:, j, :], b)
+        sobol_conf[j, :] = z * first_order(a[r], ab[r, j], b[r]).std(ddof=1)
+        sobol_total[j, :] = z * total_order(a, ab[:, j], b)
+        sobol_total_conf[j, :] = z * total_order(a[r], ab[r, j], b[r]).std(ddof=1)
+        sobol_idx[j] = np.array([j])
+        sobol_idx_bool[j, j] = True
+        i_sobol += 1
 
-    # Second order (+conf.)
+    # Second order (+ confidence interval)
     if calc_second_order:
         for j in range(dim):
             for k in range(j + 1, dim):
-                s['S2'][j, k] = second_order(
-                    a, ab[:, j], ab[:, k], ba[:, j], b)
-                s['S2_conf'][j, k] = z * second_order(a[r], ab[r, j],
-                                                      ab[r, k], ba[r, j], b[r]).std(ddof=1)
+                sobol[i_sobol, :] = second_order(a, ab[:, j, :], ab[:, k, :], ba[:, j, :], b)
+                sobol_conf[i_sobol, :] = z * second_order(a[r], ab[r, j], ab[r, k], ba[r, j], b[r]).std(ddof=1)
+                sobol_idx[i_sobol] = np.array([j, k])
+                sobol_idx_bool[i_sobol, [j, k]] = True
+                i_sobol += 1
 
-    return s
+    return sobol, sobol_idx, sobol_idx_bool
 
 
 def first_order(a, ab, b):
@@ -296,15 +309,15 @@ def create_si_dict(dim, calc_second_order):
 
 
 def separate_output_values(y, dim, n, calc_second_order):
-    ab = np.zeros((n, dim))
-    ba = np.zeros((n, dim)) if calc_second_order else None
+    ab = np.zeros((n, dim, y.shape[1]))
+    ba = np.zeros((n, dim, y.shape[1])) if calc_second_order else None
     step = 2 * dim + 2 if calc_second_order else dim + 2
 
-    a = y[0:y.size:step]
-    b = y[(step - 1):y.size:step]
+    a = y[0:y.shape[0]:step, :]
+    b = y[(step - 1):y.shape[0]:step, :]
     for j in range(dim):
-        ab[:, j] = y[(j + 1):y.size:step]
+        ab[:, j, :] = y[(j + 1):y.shape[0]:step, :]
         if calc_second_order:
-            ba[:, j] = y[(j + 1 + dim):y.size:step]
+            ba[:, j, :] = y[(j + 1 + dim):y.shape[0]:step, :]
 
     return a, b, ab, ba
