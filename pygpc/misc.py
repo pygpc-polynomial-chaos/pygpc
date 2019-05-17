@@ -624,7 +624,7 @@ def mat2ten(mat, incr):
     Builds chunks after every "incr" row and writes it in a new slice [i, :, :]
     """
 
-    ten = np.zeros((mat.shape[0]/incr, mat.shape[1], incr))
+    ten = np.zeros((int(mat.shape[0]/incr), mat.shape[1], incr))
     idx = np.arange(0, mat.shape[0], incr)
 
     for i in range(incr):

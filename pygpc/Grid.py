@@ -26,6 +26,8 @@ class Grid(object):
         Denormalized coordinates xi
     _coords_norm: ndarray of float [n_grid x dim]
         Normalized [-1, 1] coordinates xi
+    _domains: ndarray of float [n_grid]
+        Domain IDs of grid points for multi-element gPC
     _coords_gradient: ndarray of float [n_grid x dim x dim]
         Denormalized coordinates xi
     _coords_gradient_norm: ndarray of float [n_grid x dim x dim]
@@ -35,7 +37,8 @@ class Grid(object):
     n_grid: int
         Total number of nodes in grid.
     """
-    def __init__(self, parameters_random):
+    def __init__(self, parameters_random, coords=None, coords_norm=None,
+                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None):
         """
         Constructor; Initialize Grid class
 
@@ -44,17 +47,25 @@ class Grid(object):
         parameters_random : OrderedDict of RandomParameter instances
             OrderedDict containing the RandomParameter instances the grids are generated for
         """
-        self.n_grid = 0               # Total number of grid points
-        self.n_grid_gradient = 0      # Total number of grid points for gradient calculation
-        self._coords = None           # Coordinates of gpc model calculation in the system space
-        self._coords_norm = None      # Coordinates of gpc model calculation in the gpc space [-1,1]
-        self.coords_id = []           # Unique IDs of grid points
-        self.coords_gradient_id = []  # Unique IDs of grid gradient points
-        self._weights = None          # Weights for numerical integration for every point in the coordinate space
-        self.parameters_random = parameters_random      # OrderedDict of RandomParameter instances
-        self.dim = len(self.parameters_random)          # Number of random variables
-        self._coords_gradient = None        # Shifted coordinates for gradient calculation in the system space
-        self._coords_gradient_norm = None   # Shifted coordinates for gradient calculation in the gpc space [-1,1]
+        self.n_grid = 0                               # Total number of grid points
+        self.n_grid_gradient = 0                      # Total number of grid points for gradient calculation
+        self._coords = coords                         # Coordinates of gpc model calculation in the system space
+        self._coords_norm = coords_norm               # Coordinates of gpc model calculation in the gpc space [-1,1]
+        self.coords_id = coords_id                    # Unique IDs of grid points
+        self.coords_gradient_id = coords_gradient_id  # Unique IDs of grid gradient points
+        self._weights = None                          # Weights for numerical integration
+        self.parameters_random = parameters_random    # OrderedDict of RandomParameter instances
+        self.dim = len(self.parameters_random)        # Number of random variables
+        self._coords_gradient = coords_gradient       # Shifted coordinates for gradient calculation in the system space
+        self._coords_gradient_norm = coords_gradient_norm  # Shifted (normalized) coordinates for gradient calculation [-1,1]
+
+        if coords_id is None and coords is not None:
+            self.coords_id = self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+            self.n_grid = self._coords.shape[0]
+
+        if coords_gradient_id is None and coords_gradient is not None:
+            self.coords_gradient_id = [uuid.uuid4() for _ in range(self.n_grid)]
+            self.n_grid_gradient = self._coords_gradient.shape[0]
 
     @property
     def coords(self):
@@ -89,6 +100,11 @@ class Grid(object):
     @coords_gradient.setter
     def coords_gradient(self, value):
         self._coords_gradient = value
+        self.n_grid_gradient = self._coords_gradient.shape[0]
+
+        # Generate unique IDs of grid gradient points
+        if self.coords_gradient_id is None:
+            self.coords_gradient_id = [uuid.uuid4() for _ in range(self.n_grid_gradient)]
 
     @property
     def coords_gradient_norm(self):
@@ -97,6 +113,11 @@ class Grid(object):
     @coords_gradient_norm.setter
     def coords_gradient_norm(self, value):
         self._coords_gradient_norm = value
+        self.n_grid_gradient = self._coords_gradient_norm.shape[0]
+
+        # Generate unique IDs of grid gradient points
+        if self.coords_gradient_id is None:
+            self.coords_gradient_id = [uuid.uuid4() for _ in range(self.n_grid_gradient)]
 
     @property
     def weights(self):

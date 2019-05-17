@@ -4,7 +4,6 @@ A package that provides submodules to perform polynomial chaos uncertainty analy
 
 import pygpc.GPC
 import pygpc.SGPC
-import pygpc.EGPC
 import pygpc.testfunctions
 import pygpc.Visualization
 import pygpc.AbstractModel

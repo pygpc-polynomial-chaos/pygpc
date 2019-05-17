@@ -2,10 +2,11 @@ import h5py
 import numpy as np
 from .io import read_gpc_pkl
 from .Grid import RandomGrid
+from .MEGPC import *
 
 
 def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_global_sens=False, calc_pdf=False,
-                           algorithm = "standard", n_samples=1e5):
+                           algorithm="standard", n_samples=1e5):
     """
     Post-processes the gPC expansion from the gPC coefficients (standard) or by sampling. Adds mean,
     standard deviation, relative standard deviation, variance, Sobol indices, global derivative based
@@ -63,48 +64,66 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
     pdf_y = None
     grid = None
     res = None
+    projection = False
 
     print("> Loading gpc object: {}".format(fn_gpc + ".pkl"))
     gpc = read_gpc_pkl(fn_gpc + ".pkl")
 
     print("> Loading gpc coeffs: {}".format(fn_gpc + ".hdf5"))
     with h5py.File(fn_gpc + ".hdf5", 'r') as f:
-        coeffs = np.array(f['coeffs'][:])
+        if isinstance(gpc, MEGPC):
+            coeffs = [None for _ in range(gpc.n_gpc)]
+
+            for i in range(gpc.n_gpc):
+                coeffs[i] =np.array(f['coeffs/' + str(i)][:])
+
+        else:
+            coeffs = np.array(f['coeffs/' + str(i)][:])
 
         if "p_matrix" in f.keys():
-            p_matrix = np.array(f['p_matrix'][:])
-            p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
+            projection = True
 
     if not output_idx:
-        output_idx = np.arange(coeffs.shape[1])
+        if isinstance(gpc, MEGPC):
+            output_idx = np.arange(coeffs[0].shape[1])
+        else:
+            output_idx = coeffs.shape[1]
+
+    # crop coeffs to qoi
+    if isinstance(gpc, MEGPC):
+        coeffs_qoi = []
+
+        for c in coeffs:
+            coeffs_qoi.append(c[:, output_idx])
+
+    else:
+        coeffs_qoi = coeffs[:, output_idx]
 
     if algorithm == "standard":
         # determine mean
-        mean = gpc.get_mean(coeffs[:, output_idx])
+        mean = gpc.get_mean(coeffs_qoi)
 
         # determine standard deviation
-        std = gpc.get_standard_deviation(coeffs[:, output_idx])
+        std = gpc.get_standard_deviation(coeffs_qoi)
 
     elif algorithm == "sampling":
         # generate samples
-        if p_matrix is not None:
+        if projection and not isinstance(gpc, MEGPC):
             grid = RandomGrid(parameters_random=gpc.problem_original.parameters_random,
                               options={"n_grid": n_samples, "seed": None})
 
-            # rescale coordinates in case of projection
-            grid.coords_norm = np.dot(grid.coords_norm, p_matrix.transpose() / p_matrix_norm[np.newaxis, :])
         else:
             grid = RandomGrid(parameters_random=gpc.problem.parameters_random,
                               options={"n_grid": n_samples, "seed": None})
 
         # run model evaluations
-        res = gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
+        res = gpc.get_approximation(coeffs=coeffs_qoi, x=grid.coords_norm)
 
         # determine mean
-        mean = gpc.get_mean(samples=res[:, output_idx])
+        mean = gpc.get_mean(samples=res)
 
         # determine standard deviation
-        std = gpc.get_standard_deviation(samples=res[:, output_idx])
+        std = gpc.get_standard_deviation(samples=res)
 
     else:
         raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
@@ -117,13 +136,13 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
 
     # determine Sobol indices
     if calc_sobol:
-        sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs[:, output_idx],
+        sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs_qoi,
                                                                  algorithm=algorithm,
                                                                  n_samples=n_samples)
 
     # determine global derivative based sensitivity coefficients
     if calc_global_sens:
-        global_sens = gpc.get_global_sens(coeffs=coeffs[:, output_idx],
+        global_sens = gpc.get_global_sens(coeffs=coeffs_qoi,
                                           algorithm=algorithm,
                                           n_samples=n_samples)
 

@@ -76,7 +76,21 @@ class GPC(object):
     """
 
     def __init__(self, problem, options, validation=None):
+        """
+        Constructor; Initializes MEGPC class
 
+        Parameters
+        ----------
+        problem: Problem class instance
+            GPC Problem under investigation
+        options : dict
+            Options of gPC algorithm
+        validation: ValidationSet object (optional)
+            Object containing a set of validation points and corresponding solutions. Can be used
+            to validate gpc approximation setting options["error_type"]="nrmsd".
+            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+            - results: ndarray [n_grid x n_out] results
+        """
         # objects
         self.problem = problem
         self.problem_original = None
@@ -136,6 +150,7 @@ class GPC(object):
             self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
 
+    # TODO: @Lucas: Bitte multicore CPU version (laeuft derzeit nur auf 1 Kern) und GPU support implementieren
     def calc_gpc_matrix(self, b, x, gradient=False, verbose=False):
         """
         Construct the gPC matrix or its derivative.
@@ -182,7 +197,6 @@ class GPC(object):
                             gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[:, i_dim],
                                                                                         derivative=derivative)
 
-        # TODO: @Lucas: Bitte GPU support implementieren
         # else:
         #     # get parameters
         #     number_of_variables = len(self.poly[0])
@@ -210,7 +224,7 @@ class GPC(object):
 
         return gpc_matrix
 
-        # TODO: @Lucas: Implement this on the GPU
+    # TODO: @Lucas: Implement this on the GPU
     def loocv(self, coeffs, sim_results, error_norm="relative"):
         """
         Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
@@ -264,7 +278,7 @@ class GPC(object):
             if error_norm == "relative":
                 norm = np.var(sim_results, axis=0, ddof=1)
             else:
-                norm = 1
+                norm = 1.
 
             # normalize
             relative_error_loocv = np.mean(err / norm)
@@ -285,16 +299,22 @@ class GPC(object):
                 mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
 
                 # determine gpc coefficients (this takes a lot of time for large problems)
-                coeffs_loo = self.solve(sim_results=sim_results[mask, :],
+                coeffs_loo = self.solve(results=sim_results[mask, :],
                                         solver=self.options["solver"],
                                         matrix=matrix[mask, :],
                                         settings=self.options["settings"],
                                         verbose=False)
 
                 sim_results_temp = sim_results[loocv_point_idx[i], :]
+
+                if error_norm == "relative":
+                    norm = scipy.linalg.norm(sim_results_temp)
+                else:
+                    norm = 1.
+
                 relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx[i], :],
                                                                                 coeffs_loo))\
-                                    / scipy.linalg.norm(sim_results_temp)
+                                    / norm
                 display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
 
             # store result in relative_error_loocv
@@ -324,14 +344,7 @@ class GPC(object):
         # always determine nrmsd if a validation set is present
         if isinstance(self.validation, ValidationSet):
 
-            # transform variables from xi to eta space if gpc model is reduced
-            if self.p_matrix is not None:
-                validation_coords_norm = np.dot(self.validation.grid.coords_norm,
-                                                self.p_matrix.transpose()/self.p_matrix_norm[np.newaxis, :])
-            else:
-                validation_coords_norm = self.validation.grid.coords_norm
-
-            gpc_results = self.get_approximation(coeffs, validation_coords_norm, output_idx=None)
+            gpc_results = self.get_approximation(coeffs, self.validation.grid.coords_norm, output_idx=None)
 
             if gpc_results.ndim == 1:
                 gpc_results = gpc_results[:, np.newaxis]
@@ -444,7 +457,6 @@ class GPC(object):
 
         return grid.coords_norm, pce
 
-    # TODO: @Lucas: Bitte multicore CPU version (laeuft derzeit nur auf 1 Kern) und GPU support implementieren
     def get_approximation(self, coeffs, x, output_idx=None):
         """
         Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).
@@ -456,7 +468,8 @@ class GPC(object):
         coeffs: ndarray of float [n_basis x n_out]
             GPC coefficients for each output variable
         x: ndarray of float [n_x x n_dim]
-            Coordinates of x = (x1, x2, ..., x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1])
+            Coordinates of x = (x1, x2, ..., x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1]).
+            The coordinates will be transformed in case of projected gPC.
         output_idx: ndarray of int, optional, default=None [n_out]
             Indices of output quantities to consider (Default: all).
 
@@ -472,10 +485,15 @@ class GPC(object):
         if output_idx is not None:
             # convert to 1d array
             output_idx = np.asarray(output_idx).flatten()
+
             # crop coeffs array if output index is specified
             coeffs = coeffs[:, output_idx]
 
         if not self.gpu:
+            # transform variables from xi to eta space if gpc model is reduced
+            if self.p_matrix is not None:
+                x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
+
             # determine gPC matrix at coordinates x
             gpc_matrix = self.calc_gpc_matrix(self.basis.b, x, gradient=False)
 
@@ -660,17 +678,26 @@ class GPC(object):
                 self.n_grid.append(self.gpc_matrix.shape[0])
                 self.n_basis.append(self.gpc_matrix.shape[1])
 
-    def save_gpc_matrix_hdf5(self):
+    def save_gpc_matrix_hdf5(self, hdf5_path_gpc_matrix=None, hdf5_path_gpc_matrix_gradient=None):
         """
         Save gPC matrix and gPC gradient matrix in .hdf5 file <"fn_results" + ".hdf5"> under the key "gpc_matrix"
         and "gpc_matrix_gradient". If matrices are already present, check for equality and save only appended
         rows and columns.
+
+        Parameters
+        ----------
+        hdf5_path_gpc_matrix : str
+            Path in .hdf5 file, where the gPC matrix is saved in
+        hdf5_path_gpc_matrix_gradient : str
+            Path in .hdf5 file, where the gPC gradient matrix is saved in
         """
 
         with h5py.File(self.fn_results + ".hdf5", "a") as f:
             try:
                 # write gpc matrix
-                gpc_matrix_hdf5 = f["gpc_matrix"][:]
+                if hdf5_path_gpc_matrix is None:
+                    hdf5_path_gpc_matrix = "gpc_matrix"
+                gpc_matrix_hdf5 = f[hdf5_path_gpc_matrix][:]
                 n_rows_hdf5 = gpc_matrix_hdf5.shape[0]
                 n_cols_hdf5 = gpc_matrix_hdf5.shape[1]
 
@@ -681,23 +708,25 @@ class GPC(object):
                 if n_rows_current >= n_rows_hdf5 and n_cols_current >= n_cols_hdf5 and \
                         (self.gpc_matrix[0:n_rows_hdf5, 0:n_cols_hdf5] == gpc_matrix_hdf5).all():
                     # resize dataset and save new columns and rows
-                    f["gpc_matrix"].resize(self.gpc_matrix.shape[1], axis=1)
-                    f["gpc_matrix"][:, n_cols_hdf5:] = self.gpc_matrix[0:n_rows_hdf5, n_cols_hdf5:]
+                    f[hdf5_path_gpc_matrix].resize(self.gpc_matrix.shape[1], axis=1)
+                    f[hdf5_path_gpc_matrix][:, n_cols_hdf5:] = self.gpc_matrix[0:n_rows_hdf5, n_cols_hdf5:]
 
-                    f["gpc_matrix"].resize(self.gpc_matrix.shape[0], axis=0)
-                    f["gpc_matrix"][n_rows_hdf5:, :] = self.gpc_matrix[n_rows_hdf5:, :]
+                    f[hdf5_path_gpc_matrix].resize(self.gpc_matrix.shape[0], axis=0)
+                    f[hdf5_path_gpc_matrix][n_rows_hdf5:, :] = self.gpc_matrix[n_rows_hdf5:, :]
 
                 else:
-                    del f["gpc_matrix"]
-                    f.create_dataset("gpc_matrix", (self.gpc_matrix.shape[0],
-                                                    self.gpc_matrix.shape[1]),
+                    del f[hdf5_path_gpc_matrix]
+                    f.create_dataset(hdf5_path_gpc_matrix, (self.gpc_matrix.shape[0],
+                                                            self.gpc_matrix.shape[1]),
                                      maxshape=(None, None),
                                      dtype="float64",
                                      data=self.gpc_matrix)
 
                 # write gpc gradient matrix if available
                 if self.gpc_matrix_gradient is not None:
-                    gpc_matrix_gradient_hdf5 = f["gpc_matrix_gradient"][:]
+                    if hdf5_path_gpc_matrix_gradient is None:
+                        hdf5_path_gpc_matrix_gradient = "gpc_matrix_gradient"
+                    gpc_matrix_gradient_hdf5 = f[hdf5_path_gpc_matrix_gradient][:]
                     n_rows_hdf5 = gpc_matrix_gradient_hdf5.shape[0]
                     n_cols_hdf5 = gpc_matrix_gradient_hdf5.shape[1]
 
@@ -708,44 +737,44 @@ class GPC(object):
                     if n_rows_current >= n_rows_hdf5 and n_cols_current >= n_cols_hdf5 and \
                             (self.gpc_matrix_gradient[0:n_rows_hdf5, 0:n_cols_hdf5] == gpc_matrix_gradient_hdf5).all():
                         # resize dataset and save new columns and rows
-                        f["gpc_matrix_gradient"].resize(self.gpc_matrix_gradient.shape[1], axis=1)
-                        f["gpc_matrix_gradient"][:, n_cols_hdf5:] = self.gpc_matrix_gradient[0:n_rows_hdf5, n_cols_hdf5:]
+                        f[hdf5_path_gpc_matrix_gradient].resize(self.gpc_matrix_gradient.shape[1], axis=1)
+                        f[hdf5_path_gpc_matrix_gradient][:, n_cols_hdf5:] = self.gpc_matrix_gradient[0:n_rows_hdf5, n_cols_hdf5:]
 
-                        f["gpc_matrix_gradient"].resize(self.gpc_matrix_gradient.shape[0], axis=0)
-                        f["gpc_matrix_gradient"][n_rows_hdf5:, :] = self.gpc_matrix_gradient[n_rows_hdf5:, :]
+                        f[hdf5_path_gpc_matrix_gradient].resize(self.gpc_matrix_gradient.shape[0], axis=0)
+                        f[hdf5_path_gpc_matrix_gradient][n_rows_hdf5:, :] = self.gpc_matrix_gradient[n_rows_hdf5:, :]
 
                     else:
-                        del f["gpc_matrix_gradient"]
-                        f.create_dataset("gpc_matrix_gradient", (self.gpc_matrix_gradient.shape[0],
-                                                                 self.gpc_matrix_gradient.shape[1]),
+                        del f[hdf5_path_gpc_matrix_gradient]
+                        f.create_dataset(hdf5_path_gpc_matrix_gradient, (self.gpc_matrix_gradient.shape[0],
+                                                                         self.gpc_matrix_gradient.shape[1]),
                                          maxshape=(None, None),
                                          dtype="float64",
                                          data=self.gpc_matrix_gradient)
 
             except KeyError:
                 # save whole matrix if not existent
-                f.create_dataset("gpc_matrix", (self.gpc_matrix.shape[0],
-                                                self.gpc_matrix.shape[1]),
+                f.create_dataset(hdf5_path_gpc_matrix, (self.gpc_matrix.shape[0],
+                                                        self.gpc_matrix.shape[1]),
                                  maxshape=(None, None),
                                  dtype="float64",
                                  data=self.gpc_matrix)
 
                 # save whole gradient matrix if not existent and available
                 if self.gpc_matrix_gradient is not None:
-                    f.create_dataset("gpc_matrix_gradient", (self.gpc_matrix_gradient.shape[0],
-                                                             self.gpc_matrix_gradient.shape[1]),
+                    f.create_dataset(hdf5_path_gpc_matrix_gradient, (self.gpc_matrix_gradient.shape[0],
+                                                                     self.gpc_matrix_gradient.shape[1]),
                                      maxshape=(None, None),
                                      dtype="float64",
                                      data=self.gpc_matrix_gradient)
 
-    def solve(self, sim_results, solver=None, settings=None, matrix=None, verbose=False):
+    def solve(self, results, solver=None, settings=None, matrix=None, verbose=False):
         """
         Determines gPC coefficients
 
         Parameters
         ----------
-        sim_results : [N_grid x N_out] np.ndarray of float
-            results from simulations with N_out output quantities
+        results : [n_grid x n_out] np.ndarray of float
+            Results from simulations with N_out output quantities
         solver : str
             Solver to determine the gPC coefficients
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
@@ -801,7 +830,7 @@ class GPC(object):
             self.matrix_inv = np.linalg.pinv(matrix)
 
             try:
-                coeffs = np.dot(self.matrix_inv, sim_results)
+                coeffs = np.dot(self.matrix_inv, results)
             except ValueError:
                 raise AttributeError("Please check format of parameter sim_results: [n_grid (* dim) x n_out] "
                                      "np.ndarray.")
@@ -813,8 +842,8 @@ class GPC(object):
             # transform gPC matrix to fastmat format
             matrix_fm = fm.Matrix(matrix)
 
-            if sim_results.ndim == 1:
-                sim_results = sim_results[:, np.newaxis]
+            if results.ndim == 1:
+                results = results[:, np.newaxis]
 
             # determine gPC-coefficients of extended basis using OMP
             if "n_coeffs_sparse" in settings.keys():
@@ -824,19 +853,19 @@ class GPC(object):
             else:
                 raise AttributeError("Please specify 'n_coeffs_sparse' or 'sparsity' in solver settings dictionary!")
 
-            coeffs = fm.algs.OMP(matrix_fm, sim_results, n_coeffs_sparse)
+            coeffs = fm.algs.OMP(matrix_fm, results, n_coeffs_sparse)
 
         ################################
         # Least-Angle Regression Lasso #
         ################################
         elif solver == 'LarsLasso':
 
-            if sim_results.ndim == 1:
-                sim_results = sim_results[:, np.newaxis]
+            if results.ndim == 1:
+                results = results[:, np.newaxis]
 
             # determine gPC-coefficients of extended basis using LarsLasso
             reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False)
-            reg.fit(matrix, sim_results)
+            reg.fit(matrix, results)
             coeffs = reg.coef_
 
             if coeffs.ndim == 1:
@@ -871,13 +900,13 @@ class GPC(object):
                 joint_pdf = np.array([np.prod(joint_pdf, axis=1)]).transpose()
 
                 # weight sim_results with the joint pdf
-                sim_results = sim_results * joint_pdf * 2 ** self.problem.dim
+                results = results * joint_pdf * 2 ** self.problem.dim
 
             # scale rows of gpc matrix with quadrature weights
             matrix_weighted = np.dot(np.diag(self.grid.weights), matrix)
 
             # determine gpc coefficients [n_coeffs x n_output]
-            coeffs = np.dot(sim_results.transpose(), matrix_weighted).transpose()
+            coeffs = np.dot(results.transpose(), matrix_weighted).transpose()
 
         else:
             raise AttributeError("Unknown solver: '{}'!")

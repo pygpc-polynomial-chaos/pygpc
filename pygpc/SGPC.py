@@ -169,7 +169,7 @@ class SGPC(GPC):
         Calculate the available sobol indices from the gPC coefficients (standard) or by sampling.
         In case of sampling, the Sobol indices are calculated up to second order.
 
-        sobol, sobol_idx, sobol_idx_bool = SGPC.get_sobol_indices(coeffs)
+        sobol, sobol_idx, sobol_idx_bool = SGPC.get_sobol_indices(coeffs, algorithm="standard", n_samples=1e4)
 
         Parameters
         ----------
@@ -275,10 +275,6 @@ class SGPC(GPC):
 
             # generate sobol sequence (original parameter space, scaled to [-1, 1])
             coords_norm = 2 * saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True) - 1
-
-            # rescale coordinates in case of projection
-            if self.p_matrix is not None:
-                coords_norm = np.dot(coords_norm, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
             # run model evaluations
             res = self.get_approximation(coeffs=coeffs, x=coords_norm)
@@ -453,9 +449,10 @@ class SGPC(GPC):
     # noinspection PyTypeChecker
     def get_global_sens(self, coeffs, algorithm="standard", n_samples=1e5):
         """
-        Determine the global derivative based sensitivity coefficients after Xiu (2009) [1].
+        Determine the global derivative based sensitivity coefficients after Xiu (2009) [1]
+        from the gPC coefficients (standard) or by sampling.
 
-        global_sens = SGPC.get_global_sens(coeffs)
+        global_sens = SGPC.get_global_sens(coeffs, algorithm="standard", n_samples=1e5)
 
         Parameters
         ----------

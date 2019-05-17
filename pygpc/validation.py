@@ -8,6 +8,7 @@ import os
 import scipy.stats
 import matplotlib
 import h5py
+from .MEGPC import *
 
 
 def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=None):
@@ -40,11 +41,13 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
     <file> : .pdf file
         Plot showing the pdfs of the original and the gpc approximation
     """
-
-    if gpc.p_matrix is not None:
-        problem = gpc.problem_original
-    else:
+    if isinstance(gpc, MEGPC):
         problem = gpc.problem
+    else:
+        if gpc.p_matrix is not None:
+            problem = gpc.problem_original
+        else:
+            problem = gpc.problem
 
     if gpc.validation is None:
         # Create sampling points
@@ -74,14 +77,8 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
         coords_norm = gpc.validation.grid.coords_norm
         coords = gpc.validation.grid.coords
 
-    # transform variables of original grid to reduced parameter space
-    if gpc.p_matrix is not None:
-        coords_norm_gpc = np.dot(coords_norm, gpc.p_matrix.transpose() / gpc.p_matrix_norm[np.newaxis, :])
-    else:
-        coords_norm_gpc = coords_norm
-
     # Evaluate gPC approximation at grid points
-    y_gpc = gpc.get_approximation(coeffs=coeffs, x=coords_norm_gpc, output_idx=None)
+    y_gpc = gpc.get_approximation(coeffs=coeffs, x=coords_norm, output_idx=None)
 
     if y_gpc.ndim == 1:
         y_gpc = y_gpc[:, np.newaxis]
@@ -165,10 +162,13 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         Plot comparing original vs gPC model
     """
 
-    if gpc.p_matrix is not None:
-        problem = gpc.problem_original
-    else:
+    if isinstance(gpc, MEGPC):
         problem = gpc.problem
+    else:
+        if gpc.p_matrix is not None:
+            problem = gpc.problem_original
+        else:
+            problem = gpc.problem
 
     if type(random_vars) is not list:
         random_vars = random_vars.tolist()
@@ -214,13 +214,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     # Normalize grid
     grid_norm = Grid(parameters_random=problem.parameters_random).get_normalized_coordinates(grid)
 
-    if gpc.p_matrix is not None:
-        grid_norm_gpc = np.dot(grid_norm, gpc.p_matrix.transpose() / gpc.p_matrix_norm[np.newaxis, :])
-    else:
-        grid_norm_gpc = grid_norm
-
     # Evaluate gPC expansion on grid
-    y_gpc = gpc.get_approximation(coeffs=coeffs, x=grid_norm_gpc, output_idx=output_idx)
+    y_gpc = gpc.get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx)
 
     # Evaluate original model function on grid
     if data_original is None:

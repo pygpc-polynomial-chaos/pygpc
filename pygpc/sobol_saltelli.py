@@ -71,7 +71,7 @@ def sobol_sampling(n, dim):
         raise ValueError("Error in Sobol sequence: not enough bits")
 
     for i in range(dim):
-        v = np.zeros(ll + 1, dtype=long)
+        v = np.zeros(ll + 1, dtype=int)
 
         if i == 0:
             for j in range(1, ll + 1):
@@ -94,7 +94,7 @@ def sobol_sampling(n, dim):
                     for k in range(1, s):
                         v[j] ^= ((a >> (s - 1 - k)) & 1) * v[j - k]
 
-        x = long(0)
+        x = int(0)
         for j in range(1, n):
             x ^= v[index_of_least_significant_zero_bit(j - 1)]
             result[j][i] = float(x / math.pow(2, scale))

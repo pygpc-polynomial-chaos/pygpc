@@ -35,5 +35,6 @@ setup(name='pygpc',
                         'matplotlib',
                         'dispy',
                         'pytest',
-                        'numpy'],
+                        'numpy',
+                        'hdbscan'],
       zip_safe=False)

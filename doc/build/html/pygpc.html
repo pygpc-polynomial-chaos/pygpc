@@ -203,7 +203,7 @@ executed in parallel.</p>
 <span id="pygpc-algorithm-module"></span><h2>pygpc.Algorithm module<a class="headerlink" href="#module-pygpc.Algorithm" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.Algorithm.Algorithm">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">Algorithm</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Algorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Algorithm" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">Algorithm</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid=None</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Algorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Algorithm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for GPC algorithms</p>
 <dl class="method">
@@ -241,7 +241,7 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 
 <dl class="class">
 <dt id="pygpc.Algorithm.RegAdaptive">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptive</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptive" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptive</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
 <p>Adaptive regression approach based on leave one out cross validation error estimation</p>
 <dl class="method">
@@ -267,7 +267,7 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 
 <dl class="class">
 <dt id="pygpc.Algorithm.RegAdaptiveProjection">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptiveProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptiveProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptiveProjection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptiveProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptiveProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptiveProjection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
 <p>Adaptive regression approach using projection and leave one out cross validation error estimation</p>
 <dl class="method">
@@ -293,7 +293,7 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 
 <dl class="class">
 <dt id="pygpc.Algorithm.Static">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">Static</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Static"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Static" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">Static</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#Static"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.Static" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
 <p>Static gPC algorithm</p>
 <dl class="method">
@@ -319,7 +319,7 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 
 <dl class="class">
 <dt id="pygpc.Algorithm.StaticProjection">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">StaticProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#StaticProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.StaticProjection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">StaticProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#StaticProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.StaticProjection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
 <p>Static gPC algorithm using Basis Projection approach</p>
 <dl class="method">
@@ -977,7 +977,7 @@ variance
 <span id="pygpc-gpc-module"></span><h2>pygpc.GPC module<a class="headerlink" href="#module-pygpc.GPC" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.GPC.GPC">
-<em class="property">class </em><code class="descclassname">pygpc.GPC.</code><code class="descname">GPC</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.GPC.</code><code class="descname">GPC</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>General gPC base class</p>
 <dl class="attribute">
@@ -1017,6 +1017,23 @@ variance
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Grid class instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.GPC.GPC.validation">
+<code class="descname">validation</code><a class="headerlink" href="#pygpc.GPC.GPC.validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object containing a set of validation points and corresponding solutions. Can be used
+to validate gpc approximation setting options[“error_type”]=”nrmsd”.
+- grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+- results: ndarray [n_grid x n_out] results</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ValidationSet object (optional)</td>
 </tr>
 </tbody>
 </table>
@@ -1295,6 +1312,25 @@ If gradient=True, the gradient is returned at the sample coordinates point by po
 </dd></dl>
 
 <dl class="method">
+<dt id="pygpc.GPC.GPC.create_validation_set">
+<code class="descname">create_validation_set</code><span class="sig-paren">(</span><em>n_samples</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.create_validation_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.create_validation_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a ValidationSet instance (calls the model)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n_samples</strong> (<em>int</em>) – Number of sampling points contained in the validation set</li>
+<li><strong>n_cpu</strong> (<em>int</em>) – Number of parallel function evaluations to evaluate validation set (n_cpu=0 assumes that the
+model is capable to evaluate all grid points in parallel)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="pygpc.GPC.GPC.get_approximation">
 <code class="descname">get_approximation</code><span class="sig-paren">(</span><em>coeffs</em>, <em>x</em>, <em>output_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.get_approximation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.get_approximation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).</p>
@@ -1306,7 +1342,7 @@ If gradient=True, the gradient is returned at the sample coordinates point by po
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_basis x n_out</em><em>]</em>) – GPC coefficients for each output variable</li>
 <li><strong>x</strong> (<em>ndarray of float</em><em> [</em><em>n_x x n_dim</em><em>]</em>) – Coordinates of x = (x1, x2, …, x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1])</li>
-<li><strong>output_idx</strong> (<em>ndarray of int</em><em>, </em><em>optional</em><em>, </em><em>default=None</em><em> [</em><em>n_out</em><em>]</em>) – Index of output quantities to consider (Default: all).</li>
+<li><strong>output_idx</strong> (<em>ndarray of int</em><em>, </em><em>optional</em><em>, </em><em>default=None</em><em> [</em><em>n_out</em><em>]</em>) – Indices of output quantities to consider (Default: all).</li>
 </ul>
 </td>
 </tr>
@@ -2219,7 +2255,7 @@ grid points with “n_grid_new” or add grid-points manually by providing “co
 <span id="pygpc-problem-module"></span><h2>pygpc.Problem module<a class="headerlink" href="#module-pygpc.Problem" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.Problem.Problem">
-<em class="property">class </em><code class="descclassname">pygpc.Problem.</code><code class="descname">Problem</code><span class="sig-paren">(</span><em>model</em>, <em>parameters</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Problem.html#Problem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Problem.Problem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Problem.</code><code class="descname">Problem</code><span class="sig-paren">(</span><em>model</em>, <em>parameters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Problem.html#Problem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Problem.Problem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data wrapper for the gpc problem containing the model to investigate and the associated parameters.</p>
 <p class="rubric">Notes</p>
 <p>Add Attributes:</p>
@@ -2260,25 +2296,6 @@ normal-dist: [[], … [0, 0], …, []] (not used)</dd>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="method">
-<dt id="pygpc.Problem.Problem.create_validation_set">
-<code class="descname">create_validation_set</code><span class="sig-paren">(</span><em>n_samples</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Problem.html#Problem.create_validation_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Problem.Problem.create_validation_set" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a ValidationSet instance (calls the model)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_samples</strong> (<em>int</em>) – Number of sampling points contained in the validation set</li>
-<li><strong>n_cpu</strong> (<em>int</em>) – Number of parallel function evaluations to evaluate validation set (n_cpu=0 assumes that the
-model is capable to evaluate all grid points in parallel)</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="method">
 <dt id="pygpc.Problem.Problem.validate">
 <code class="descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Problem.html#Problem.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Problem.Problem.validate" title="Permalink to this definition">¶</a></dt>
@@ -2514,14 +2531,14 @@ of the random parameters or the constants in model.validate.</p>
 <span id="pygpc-sgpc-module"></span><h2>pygpc.SGPC module<a class="headerlink" href="#module-pygpc.SGPC" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.SGPC.Quad">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Quad</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Quad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Quad" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Quad</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Quad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Quad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.SGPC.SGPC" title="pygpc.SGPC.SGPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.SGPC.SGPC</span></code></a></p>
 <p>Quadrature SGPC sub-class</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pygpc.SGPC.Reg">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Reg</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Reg</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.SGPC.SGPC" title="pygpc.SGPC.SGPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.SGPC.SGPC</span></code></a></p>
 <p>Regression gPC subclass</p>
 <p>Reg(problem, order, order_max, interaction_order, fn_results=None)</p>
@@ -2563,7 +2580,7 @@ of the random parameters or the constants in model.validate.</p>
 
 <dl class="class">
 <dt id="pygpc.SGPC.SGPC">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">SGPC</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">SGPC</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.GPC.GPC" title="pygpc.GPC.GPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.GPC.GPC</span></code></a></p>
 <p>Sub-class for standard gPC (SGPC)</p>
 <dl class="attribute">
@@ -2660,6 +2677,23 @@ Current interaction order counter (only used in case of adaptive algorithms)</p>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="pygpc.SGPC.SGPC.validation">
+<code class="descname">validation</code><a class="headerlink" href="#pygpc.SGPC.SGPC.validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object containing a set of validation points and corresponding solutions. Can be used
+to validate gpc approximation setting options[“error_type”]=”nrmsd”.
+- grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+- results: ndarray [n_grid x n_out] results</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ValidationSet object (optional)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="staticmethod">
 <dt id="pygpc.SGPC.SGPC.get_extracted_sobol_order">
 <em class="property">static </em><code class="descname">get_extracted_sobol_order</code><span class="sig-paren">(</span><em>sobol</em>, <em>sobol_idx_bool</em>, <em>order=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC.get_extracted_sobol_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC.get_extracted_sobol_order" title="Permalink to this definition">¶</a></dt>
@@ -2689,18 +2723,27 @@ Current interaction order counter (only used in case of adaptive algorithms)</p>
 
 <dl class="method">
 <dt id="pygpc.SGPC.SGPC.get_global_sens">
-<code class="descname">get_global_sens</code><span class="sig-paren">(</span><em>coeffs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC.get_global_sens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC.get_global_sens" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_global_sens</code><span class="sig-paren">(</span><em>coeffs</em>, <em>algorithm='standard'</em>, <em>n_samples=100000.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC.get_global_sens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC.get_global_sens" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine the global derivative based sensitivity coefficients after Xiu (2009) [1].</p>
 <p>global_sens = SGPC.get_global_sens(coeffs)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_basis x n_out</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – GPC coefficients</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_basis x n_out</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – GPC coefficients</li>
+<li><strong>algorithm</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: &quot;standard&quot;</em>) – Algorithm to determine the Sobol indices
+- “standard”: Sobol indices are determined from the gPC coefficients
+- “sampling”: Sobol indices are determined from sampling using Saltelli’s Sobol sampling sequence [1, 2, 3]</li>
+<li><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: 1e4</em>) – Number of samples</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>global_sens</strong> – Global derivative based sensitivity coefficients</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>global_sens</strong> – Global derivative based sensitivity coefficients</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray [dim x n_out]</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray [dim x n_out]</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -2809,7 +2852,8 @@ variance
 <dl class="method">
 <dt id="pygpc.SGPC.SGPC.get_sobol_indices">
 <code class="descname">get_sobol_indices</code><span class="sig-paren">(</span><em>coeffs</em>, <em>algorithm='standard'</em>, <em>n_samples=10000.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC.get_sobol_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC.get_sobol_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the available sobol indices from the gPC coefficients (standard) or by sampling.</p>
+<dd><p>Calculate the available sobol indices from the gPC coefficients (standard) or by sampling.
+In case of sampling, the Sobol indices are calculated up to second order.</p>
 <p>sobol, sobol_idx, sobol_idx_bool = SGPC.get_sobol_indices(coeffs)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2820,8 +2864,8 @@ variance
 <li><strong>algorithm</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: &quot;standard&quot;</em>) – Algorithm to determine the Sobol indices
 - “standard”: Sobol indices are determined from the gPC coefficients
 - “sampling”: Sobol indices are determined from sampling using Saltelli’s Sobol sampling sequence [1, 2, 3]</li>
-<li><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: 1e4</em>) – Number of samples to determine Sobol indices by sampling. The number is getting increased by
-n_samples * (2*dim + 2) in Saltelli’s Sobol sampling sequence.</li>
+<li><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: 1e4</em>) – Number of samples to determine Sobol indices by sampling. The efficient number of samples
+increases to n_samples * (2*dim + 2) in Saltelli’s Sobol sampling sequence.</li>
 </ul>
 </td>
 </tr>
@@ -4252,10 +4296,10 @@ evaluated. If False, the data points are assumed to be at the same location.</li
 <span id="pygpc-postprocessing-module"></span><h2>pygpc.postprocessing module<a class="headerlink" href="#module-pygpc.postprocessing" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="pygpc.postprocessing.get_sensitivities_hdf5">
-<code class="descclassname">pygpc.postprocessing.</code><code class="descname">get_sensitivities_hdf5</code><span class="sig-paren">(</span><em>fn_gpc</em>, <em>output_idx=False</em>, <em>calc_sobol=True</em>, <em>calc_global_sens=False</em>, <em>calc_pdf=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/postprocessing.html#get_sensitivities_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.postprocessing.get_sensitivities_hdf5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Post-processes the gPC expansion and adds mean, standard deviation, relative standard deviation, variance, Sobol
-indices, global derivative based sensitivity coefficients and probability density functions of output quantities to
-.hdf5 file of gPC.</p>
+<code class="descclassname">pygpc.postprocessing.</code><code class="descname">get_sensitivities_hdf5</code><span class="sig-paren">(</span><em>fn_gpc</em>, <em>output_idx=False</em>, <em>calc_sobol=True</em>, <em>calc_global_sens=False</em>, <em>calc_pdf=False</em>, <em>algorithm='standard'</em>, <em>n_samples=100000.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/postprocessing.html#get_sensitivities_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.postprocessing.get_sensitivities_hdf5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-processes the gPC expansion from the gPC coefficients (standard) or by sampling. Adds mean,
+standard deviation, relative standard deviation, variance, Sobol indices, global derivative based
+sensitivity coefficients and probability density functions of output quantities to .hdf5 file of gPC.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -4267,6 +4311,11 @@ indices, global derivative based sensitivity coefficients and probability densit
 <li><strong>calc_sobol</strong> (<em>bool</em>) – Calculate Sobol indices (default: True)</li>
 <li><strong>calc_global_sens</strong> (<em>bool</em>) – Calculate global derivative based sensitivities (default: False)</li>
 <li><strong>calc_pdf</strong> (<em>bool</em>) – Calculate probability density functions of output quantities (default: False)</li>
+<li><strong>algorithm</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: &quot;standard&quot;</em>) – Algorithm to determine the Sobol indices
+- “standard”: Sobol indices are determined from the gPC coefficients
+- “sampling”: Sobol indices are determined from sampling using Saltelli’s Sobol sampling sequence [1, 2, 3]</li>
+<li><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: 1e4</em>) – Number of samples to determine Sobol indices by sampling. The efficient number of samples
+increases to n_samples * (2*dim + 2) in Saltelli’s Sobol sampling sequence.</li>
 </ul>
 </td>
 </tr>
@@ -4314,7 +4363,7 @@ and saves the plot as fn_pdf.png and fn_pdf.pdf.</p>
 <li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_coeffs x n_out</em><em>]</em>) – GPC coefficients</li>
 <li><strong>n_samples</strong> (<em>int</em>) – Number of samples to validate the gPC approximation</li>
 <li><strong>output_idx</strong> (<em>ndarray</em><em>, </em><em>optional</em><em>, </em><em>default=None</em><em> [</em><em>1 x n_out</em><em>]</em>) – Index of output quantities to consider (if output_idx=None, all output quantities are considered)</li>
-<li><strong>ncpu</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default=1</em>) – Number of CPU cores to use (parallel function evaluations) to evaluate original model function</li>
+<li><strong>n_cpu</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default=1</em>) – Number of CPU cores to use (parallel function evaluations) to evaluate original model function</li>
 <li><strong>fn_out</strong> (<em>str</em>) – Filename of validation results and pdf plot comparing original vs gPC model</li>
 </ul>
 </td>

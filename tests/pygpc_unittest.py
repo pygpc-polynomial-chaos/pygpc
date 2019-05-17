@@ -888,105 +888,105 @@ class TestpygpcMethods(unittest.TestCase):
     #     print("done!\n")
 
 
-    def test_12_static_gpc_reg_mp_randomgrid_ManufactureDecay(self):
-        """
-        Algorithm: Static
-        Method: Regression
-        Solver: Moore-Penrose
-        Grid: RandomGrid
-        """
-        global folder
-        test_name = 'pygpc_test_12_static_reg_mp_randomgrid_ManufactureDecay'
-        print(test_name)
-
-        # define model
-        model = pygpc.testfunctions.Peaks
-
-        # define problem
-        parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[5, 5], pdf_limits=[1.2, 2])
-        parameters["x2"] = 1.25
-        parameters["x3"] = pygpc.Beta(pdf_shape=[4, 2], pdf_limits=[1.2, 2])
-        problem = pygpc.Problem(model, parameters)
-
-        # gPC options
-        options = dict()
-        options["method"] = "reg"
-        options["solver"] = "Moore-Penrose"
-        options["settings"] = None
-        options["order"] = [9, 9]
-        options["order_max"] = 9
-        options["interaction_order"] = 3
-        options["matrix_ratio"] = 2
-        options["n_cpu"] = 0
-        options["gradient_enhanced"] = True
-        options["gradient_calculation"] = "standard_forward"
-        options["error_type"] = "nrmsd"
-        options["n_samples_validation"] = 1e4
-        options["n_grid_gradient"] = 4
-        options["fn_results"] = os.path.join(folder, test_name)
-
-        # generate grid
-        n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-                                               order_glob_max=options["order_max"],
-                                               order_inter_max=options["interaction_order"],
-                                               dim=problem.dim)
-
-        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
-
-        # define algorithm
-        algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
-
-        # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
-
-        # test sobol calculation
-        sobol_ref, sobol_idx_ref, sobol_idx_bool_ref = gpc.get_sobol_indices(coeffs=coeffs, algorithm="standard", n_samples=1e4)
-        sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs, algorithm="sampling", n_samples=5e4)
-
-        var = gpc.get_standard_deviation(coeffs)**2
-
-        # Post-process gPC
-        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                     output_idx=None,
-                                     calc_sobol=True,
-                                     calc_global_sens=True,
-                                     calc_pdf=True,
-                                     algorithm="sampling",
-                                     n_samples=1e3)
-
-        # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                      coeffs=coeffs,
-                                      n_samples=int(1e4),
-                                      output_idx=0,
-                                      n_cpu=options["n_cpu"],
-                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
-
-        # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
-
-        # # Validate gPC vs original model function (1D-slice)
-        # pygpc.validate_gpc_plot(gpc=gpc,
-        #                         coeffs=coeffs,
-        #                         random_vars=["x1"],
-        #                         n_grid=[51],
-        #                         output_idx=[0],
-        #                         fn_out=os.path.join(folder, test_name + '_validation_1d'),
-        #                         n_cpu=options["n_cpu"])
-
-        # Validate gPC vs original model function (2D-surface)
-        pygpc.validate_gpc_plot(gpc=gpc,
-                                coeffs=coeffs,
-                                random_vars=["x1", "x2"],
-                                n_grid=[101, 101],
-                                output_idx=[0],
-                                fn_out=os.path.join(folder, test_name + '_validation_2d'),
-                                n_cpu=options["n_cpu"])
-
-        # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
-
-        print("done!\n")
+    # def test_12_static_gpc_reg_mp_randomgrid_ManufactureDecay(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Regression
+    #     Solver: Moore-Penrose
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_12_static_reg_mp_randomgrid_ManufactureDecay'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.Peaks
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[5, 5], pdf_limits=[1.2, 2])
+    #     parameters["x2"] = 1.25
+    #     parameters["x3"] = pygpc.Beta(pdf_shape=[4, 2], pdf_limits=[1.2, 2])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["method"] = "reg"
+    #     options["solver"] = "Moore-Penrose"
+    #     options["settings"] = None
+    #     options["order"] = [9, 9]
+    #     options["order_max"] = 9
+    #     options["interaction_order"] = 3
+    #     options["matrix_ratio"] = 2
+    #     options["n_cpu"] = 0
+    #     options["gradient_enhanced"] = True
+    #     options["gradient_calculation"] = "standard_forward"
+    #     options["error_type"] = "nrmsd"
+    #     options["n_samples_validation"] = 1e4
+    #     options["n_grid_gradient"] = 4
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #
+    #     # generate grid
+    #     n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
+    #                                            order_glob_max=options["order_max"],
+    #                                            order_inter_max=options["interaction_order"],
+    #                                            dim=problem.dim)
+    #
+    #     grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+    #                             options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # test sobol calculation
+    #     sobol_ref, sobol_idx_ref, sobol_idx_bool_ref = gpc.get_sobol_indices(coeffs=coeffs, algorithm="standard", n_samples=1e4)
+    #     sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs, algorithm="sampling", n_samples=5e4)
+    #
+    #     var = gpc.get_standard_deviation(coeffs)**2
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True,
+    #                                  algorithm="sampling",
+    #                                  n_samples=1e3)
+    #
+    #     # Validate gPC vs original model function (Monte Carlo)
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   n_cpu=options["n_cpu"],
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #
+    #     # # Validate gPC vs original model function (1D-slice)
+    #     # pygpc.validate_gpc_plot(gpc=gpc,
+    #     #                         coeffs=coeffs,
+    #     #                         random_vars=["x1"],
+    #     #                         n_grid=[51],
+    #     #                         output_idx=[0],
+    #     #                         fn_out=os.path.join(folder, test_name + '_validation_1d'),
+    #     #                         n_cpu=options["n_cpu"])
+    #
+    #     # Validate gPC vs original model function (2D-surface)
+    #     pygpc.validate_gpc_plot(gpc=gpc,
+    #                             coeffs=coeffs,
+    #                             random_vars=["x1", "x2"],
+    #                             n_grid=[101, 101],
+    #                             output_idx=[0],
+    #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
+    #                             n_cpu=options["n_cpu"])
+    #
+    #     # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+    #
+    #     print("done!\n")
 
     # def test_13_static_gpc_reg_mp_randomgrid_GenzContinuous(self):
     #     """
@@ -2747,6 +2747,100 @@ class TestpygpcMethods(unittest.TestCase):
     #         # self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
     #
     #         print("done!\n")
+
+    def test_36_static_megpc_reg_mp_randomgrid_BinaryDiscontinuousSphere(self):
+        """
+        Algorithm: Static
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: RandomGrid
+        """
+        global folder
+        test_name = 'pygpc_test_36_static_megpc_reg_mp_randomgrid_BinaryDiscontinuousSphere'
+        print(test_name)
+
+        # define model
+        # model = pygpc.testfunctions.GenzDiscontinuous
+        model = pygpc.testfunctions.SurfaceCoverageSpecies
+        # model = pygpc.testfunctions.HyperbolicTangent
+        # model = pygpc.testfunctions.BinaryDiscontinuousSphere
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["rho_0"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["beta"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 20])
+        parameters["alpha"] = 1.
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "Moore-Penrose"
+        options["settings"] = None
+        options["order"] = [9, 9]
+        options["order_max"] = 9
+        options["interaction_order"] = 2
+        options["matrix_ratio"] = 2
+        options["n_cpu"] = 0
+        options["gradient_enhanced"] = True
+        options["gradient_calculation"] = "standard_forward"
+        options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e4
+        options["n_grid_gradient"] = 5
+        options["classifier"] = "learning"
+        options["classifier_options"] = {"clusterer": "KMeans",
+                                         "n_clusters": 2,
+                                         "classifier": "MLPClassifier",
+                                         "classifier_solver": "lbfgs"}
+        options["fn_results"] = os.path.join(folder, test_name)
+
+        # generate grid
+        n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
+                                               order_glob_max=options["order_max"],
+                                               order_inter_max=options["interaction_order"],
+                                               dim=problem.dim)
+
+        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+                                options={"n_grid": 200, "seed": 1})  # options["matrix_ratio"] * n_coeffs
+
+        # define algorithm
+        algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
+
+        # run gPC algorithm
+        gpc, coeffs, results = algorithm.run()
+
+        # test sobol calculation
+        # sobol_ref, sobol_idx_ref, sobol_idx_bool_ref = gpc.get_sobol_indices(coeffs=coeffs, algorithm="standard", n_samples=1e4)
+        # sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs, algorithm="sampling", n_samples=5e4)
+
+        # Validate gPC vs original model function (2D-surface)
+        pygpc.validate_gpc_plot(gpc=gpc,
+                                coeffs=coeffs,
+                                random_vars=list(problem.parameters_random.keys()),
+                                n_grid=[101, 101],
+                                output_idx=[0],
+                                fn_out=os.path.join(folder, test_name + '_validation_2d'),
+                                n_cpu=options["n_cpu"])
+
+        # Post-process gPC
+        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True,
+                                     algorithm="sampling",
+                                     n_samples=1e3)
+
+        # Validate gPC vs original model function (Monte Carlo)
+        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      n_cpu=options["n_cpu"],
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
+
+        # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+        print("done!\n")
 
 
 if __name__ == '__main__':

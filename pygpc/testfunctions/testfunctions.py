@@ -488,7 +488,7 @@ class ManufactureDecay(AbstractModel):
 
     def simulate(self, process_id=None):
         # determine sum in exponent
-        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             s += np.sin(i + 1) * self.p[key] / (i + 1.)
@@ -556,7 +556,7 @@ class GenzContinuous(AbstractModel):
         a = 5 * np.ones(n)
 
         # determine sum in exponent
-        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             s += a[i] * np.abs(self.p[key] - u[i])
@@ -628,7 +628,7 @@ class GenzCornerPeak(AbstractModel):
         a = 5 * np.ones(n)
 
         # determine sum
-        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             s += a[i] * self.p[key]
@@ -696,14 +696,14 @@ class GenzDiscontinuous(AbstractModel):
         u = 0.5 * np.ones(n)
         a = 5 * np.ones(n)
 
-        mask = np.zeros((len(self.p[self.p.keys()[0]]), n))
+        mask = np.zeros((len(self.p[list(self.p.keys())[0]]), n))
 
         for i, key in enumerate(self.p.keys()):
             mask[:, i] = self.p[key] > u[i]
         mask = mask.any(axis=1)
 
         # determine sum
-        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             s += a[i] * self.p[key]
@@ -772,7 +772,7 @@ class GenzGaussianPeak(AbstractModel):
         a = 5 * np.ones(n)
 
         # determine sum
-        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             s += a[i] ** 2 * (self.p[key] - u[i]) ** 2
@@ -840,7 +840,7 @@ class GenzOscillatory(AbstractModel):
         a = 5 * np.ones(n)
 
         # determine sum
-        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             s += a[i] * self.p[key]
@@ -908,7 +908,7 @@ class GenzProductPeak(AbstractModel):
         a = 5 * np.ones(n)
 
         # determine output
-        y = np.ones(np.array(self.p[self.p.keys()[0]]).size)
+        y = np.ones(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             y *= 1 / (a[i] ** (-2) + (self.p[key] - u[i]) ** 2)
@@ -969,7 +969,7 @@ class Ridge(AbstractModel):
         n = len(self.p.keys())
 
         # determine sum
-        s = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             s += self.p[key]
@@ -1174,7 +1174,7 @@ class SphereFun(AbstractModel):
 
     def simulate(self, process_id=None):
         # determine output
-        y = np.zeros(np.array(self.p[self.p.keys()[0]]).size)
+        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             y += self.p[key] ** 2
@@ -1251,11 +1251,148 @@ class GFunction(AbstractModel):
 
     def simulate(self, process_id=None):
         # determine output
-        y = np.ones(np.array(self.p[self.p.keys()[0]]).size)
+        y = np.ones(np.array(self.p[list(self.p.keys())[0]]).size)
 
         for i, key in enumerate(self.p.keys()):
             if "x" in key:
                 y *= (np.abs(4.0 * self.p[key] - 2) + self.p["a"][:, i]) / (1.0 + self.p["a"][:, i])
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class BinaryDiscontinuousSphere(AbstractModel):
+    """
+    N-dimensional testfunction containing a spherical discontinuity.
+    Inside the sphere the output is 2 and outside of the sphere it is 1.
+
+    .. math::
+       y = \\begin{cases}
+       2, & \\text{if } \\sqrt{\\sum_{i=1}^{N}(x_i-0.5)^2} \\leq 0.25 \\\\
+       1, & \\text{otherwise}
+       \\end{cases}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 500)
+       parameters["x2"] = np.linspace(0, 1, 500)
+
+       plot("BinaryDiscontinuousSphere", parameters)
+    """
+
+    def __init__(self, p, context=None):
+        super(BinaryDiscontinuousSphere, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None):
+
+        x = np.vstack([self.p[key] for key in self.p.keys()])
+
+        y = np.ones(x.shape[1])
+        y[np.linalg.norm(x-0.5, axis=0) <= 0.25] = 2.
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class ContinuousDiscontinuousSphere(AbstractModel):
+    """
+    N-dimensional testfunction containing a spherical discontinuity.
+    Inside the sphere the output corresponds to the ManufactureDecay function (shifted by -2)
+    and outside of the sphere it correspond to the GenzOscillatory testfunction (scaled by 2).
+
+    .. math::
+       y = \\begin{cases}
+       \\text{ManufactureDecay}(x) - 2, & \\text{if } \\sqrt{\\sum_{i=1}^{N}x_i^2} \\leq 0.25 \\\\
+       \\text{GenzOscillatory}(x) * 2, & \\text{otherwise}
+       \\end{cases}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 500)
+       parameters["x2"] = np.linspace(0, 1, 500)
+
+       plot("ContinuousDiscontinuousSphere", parameters)
+    """
+
+    def __init__(self, p, context=None):
+        super(ContinuousDiscontinuousSphere, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None):
+
+        for key in self.p.keys():
+            if self.p[key].ndim == 1:
+                self.p[key] = self.p[key][:, np.newaxis]
+
+        x = np.hstack([self.p[key] for key in self.p.keys()])
+
+        y = np.zeros(x.shape[0])
+        mask = (np.linalg.norm(x-0.5, axis=1) <= 0.25).flatten()
+
+        p_1 = dict()
+        p_2 = dict()
+
+        for i, key in enumerate(self.p.keys()):
+            p_1[key] = x[mask, i]
+            p_2[key] = x[np.logical_not(mask), i]
+
+        model_1 = ManufactureDecay(p_1)
+        model_2 = GenzOscillatory(p_2)
+
+        y_1 = model_1.simulate() - 2
+        y_2 = model_2.simulate() * 2
+
+        y[mask] = y_1.flatten()
+        y[np.logical_not(mask)] = y_2.flatten()
 
         y_out = y[:, np.newaxis]
 
@@ -1309,7 +1446,7 @@ class OakleyOhagan2004(AbstractModel):
         a2 = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_a2.txt"))
         a3 = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_a3.txt"))
 
-        x = np.zeros((self.p[self.p.keys()[0]].size, 15))
+        x = np.zeros((self.p[list(self.p.keys())[0]].size, 15))
 
         for i, key in enumerate(self.p.keys()):
             x[:, i] = self.p[key]
