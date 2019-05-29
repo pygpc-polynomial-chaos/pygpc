@@ -14,6 +14,7 @@ from .Computation import *
 import numpy as np
 import fastmat as fm
 import scipy.stats
+import ctypes
 from sklearn import linear_model
 
 
@@ -179,6 +180,7 @@ class GPC(object):
         iprint('Constructing gPC matrix...', verbose=verbose, tab=0)
 
         if not self.gpu:
+
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
                 for i_basis in range(len(b)):
@@ -197,30 +199,75 @@ class GPC(object):
                             gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[:, i_dim],
                                                                                         derivative=derivative)
 
-        # else:
-        #     # get parameters
-        #     number_of_variables = len(self.poly[0])
-        #     highest_degree = len(self.poly)
-        #
-        #     # handle pointer
-        #     polynomial_coeffs_pointer = self.poly_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        #     polynomial_index_pointer = self.poly_idx_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-        #     xi_pointer = self.grid.coords.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        #     polynomial_matrix_pointer = gpc_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        #     number_of_psi_size_t = ctypes.c_size_t(self.N_poly)
-        #     number_of_variables_size_t = ctypes.c_size_t(number_of_variables)
-        #     highest_degree_size_t = ctypes.c_size_t(highest_degree)
-        #     number_of_xi_size_t = ctypes.c_size_t(self.grid.coords.shape[0])
-        #
-        #     # handle shared object
-        #     dll = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'pckg', 'gpc.so'), mode=ctypes.RTLD_GLOBAL)
-        #     cuda_pce = dll.polynomial_chaos_matrix
-        #     cuda_pce.argtypes = [ctypes.POINTER(ctypes.c_double)] + [ctypes.POINTER(ctypes.c_int)] + \
-        #                         [ctypes.POINTER(ctypes.c_double)] * 2 + [ctypes.c_size_t] * 4
-        #
-        #     # evaluate CUDA implementation
-        #     cuda_pce(polynomial_coeffs_pointer, polynomial_index_pointer, xi_pointer, polynomial_matrix_pointer,
-        #              number_of_psi_size_t, number_of_variables_size_t, highest_degree_size_t, number_of_xi_size_t)
+        else:
+            if not gradient:
+                gpc_matrix = np.ones([x.shape[0], len(b)])
+                polynomial_coeffs = np.array(())
+                for i_basis in range(len(b)):
+                    for i_dim in range(self.problem.dim):
+                        polynomial_order = b[i_basis][i_dim].fun.order
+                        polynomial_coeffs = np.append(polynomial_coeffs, polynomial_order)
+                        polynomial_coeffs = np.append(polynomial_coeffs, np.flip(b[i_basis][i_dim].fun.c))
+
+                # handle pointer
+                polynomial_coeffs_pointer = polynomial_coeffs.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                xi_pointer = x.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                polynomial_matrix_pointer = gpc_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                number_of_psi_size_t = ctypes.c_size_t(int(len(b)))
+                number_of_variables_size_t = ctypes.c_size_t(int(self.problem.dim))
+                number_of_polynomial_coeffs_size_t = ctypes.c_size_t(int(polynomial_coeffs.size))
+                number_of_xi_size_t = ctypes.c_size_t(x.shape[0])
+
+                # handle shared object
+                dll = ctypes.CDLL(os.path.join(os.path.dirname(__file__), '..', 'pckg', 'lib', 'cuda', 'gpc.so'),
+                                  mode=ctypes.RTLD_GLOBAL)
+                cuda_pce = dll.polynomial_chaos_matrix
+                cuda_pce.argtypes = [ctypes.POINTER(ctypes.c_double)] * 3 + [ctypes.c_size_t] * 4
+
+                # evaluate CUDA implementation
+                cuda_pce(polynomial_coeffs_pointer, xi_pointer, polynomial_matrix_pointer,
+                         number_of_psi_size_t, number_of_variables_size_t, number_of_xi_size_t,
+                         number_of_polynomial_coeffs_size_t)
+
+            else:
+                gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
+                for i_dim_gradient in range(self.problem.dim):
+                    _gpc_matrix = np.ones([x.shape[0], len(b)])
+                    polynomial_coeffs = np.array(())
+                    for i_basis in range(len(b)):
+                        for i_dim in range(self.problem.dim):
+                            if i_dim == i_dim_gradient:
+                                polynomial = b[i_basis][i_dim].fun.deriv()
+                                polynomial_order = polynomial.order
+                                polynomial_coeffs = np.append(polynomial_coeffs, polynomial_order)
+                                polynomial_coeffs = np.append(polynomial_coeffs, np.flip(polynomial.c))
+                            else:
+                                polynomial_order = b[i_basis][i_dim].fun.order
+                                polynomial_coeffs = np.append(polynomial_coeffs, polynomial_order)
+                                polynomial_coeffs = np.append(polynomial_coeffs, np.flip(b[i_basis][i_dim].fun.c))
+
+                    # handle pointer
+                    polynomial_coeffs_pointer = polynomial_coeffs.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                    xi_pointer = x.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                    polynomial_matrix_pointer = _gpc_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                    number_of_psi_size_t = ctypes.c_size_t(int(len(b)))
+                    number_of_variables_size_t = ctypes.c_size_t(int(self.problem.dim))
+                    number_of_polynomial_coeffs_size_t = ctypes.c_size_t(int(polynomial_coeffs.size))
+                    number_of_xi_size_t = ctypes.c_size_t(x.shape[0])
+
+                    # handle shared object
+                    dll = ctypes.CDLL(os.path.join(os.path.dirname(__file__), '..', 'pckg', 'lib', 'cuda', 'gpc.so'),
+                                      mode=ctypes.RTLD_GLOBAL)
+                    cuda_pce = dll.polynomial_chaos_matrix
+                    cuda_pce.argtypes = [ctypes.POINTER(ctypes.c_double)] * 3 + [ctypes.c_size_t] * 4
+
+                    # evaluate CUDA implementation
+                    cuda_pce(polynomial_coeffs_pointer, xi_pointer, polynomial_matrix_pointer,
+                             number_of_psi_size_t, number_of_variables_size_t, number_of_xi_size_t,
+                             number_of_polynomial_coeffs_size_t)
+
+                    # write into gradient matrix
+                    gpc_matrix[:, :, i_dim_gradient] = _gpc_matrix
 
         return gpc_matrix
 
