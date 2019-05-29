@@ -88,12 +88,18 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
 
     if fn_out:
         # Calculating output PDFs
-        kde_gpc = scipy.stats.gaussian_kde(y_gpc[:, output_idx].flatten(), bw_method=0.15 / y_gpc.std(ddof=1))
-        pdf_x_gpc = np.linspace(y_gpc.min(), y_gpc.max(), 100)
-        pdf_y_gpc = kde_gpc(pdf_x_gpc)
-        kde_orig = scipy.stats.gaussian_kde(y_orig[:, output_idx].flatten(), bw_method=0.15 / y_orig.std(ddof=1))
-        pdf_x_orig = np.linspace(y_orig.min(), y_orig.max(), 100)
-        pdf_y_orig = kde_orig(pdf_x_orig)
+        # kde_gpc = scipy.stats.gaussian_kde(y_gpc[:, output_idx].flatten(), bw_method=0.15 / y_gpc.std(ddof=1))
+        # pdf_x_gpc = np.linspace(y_gpc.min(), y_gpc.max(), 100)
+        # pdf_y_gpc = kde_gpc(pdf_x_gpc)
+        # kde_orig = scipy.stats.gaussian_kde(y_orig[:, output_idx].flatten(), bw_method=0.15 / y_orig.std(ddof=1))
+        # pdf_x_orig = np.linspace(y_orig.min(), y_orig.max(), 100)
+        # pdf_y_orig = kde_orig(pdf_x_orig)
+
+        pdf_y_gpc, tmp = np.histogram(y_gpc[:, output_idx].flatten(), bins=100, density=True)
+        pdf_x_gpc = (tmp[1:] + tmp[0:-1]) / 2.
+
+        pdf_y_orig, tmp = np.histogram(y_orig[:, output_idx].flatten(), bins=100, density=True)
+        pdf_x_orig = (tmp[1:] + tmp[0:-1]) / 2.
 
         # save results in .hdf5 file
         with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
@@ -145,7 +151,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         A cartesian grid is generated based on the limits of the specified random_vars
     coords : ndarray of float [n_coords x n_dim]
         Parameter combinations for the random_vars the comparison is conducted with
-    output_idx : int or list of int, optional, default=0
+    output_idx : int, optional, default=0
         Indices of output quantity to consider
     data_original: ndarray of float [n_coords x n_out], optional, default: None
         If available, data of original model function at grid
@@ -161,6 +167,12 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     <file> : .png and .pdf file
         Plot comparing original vs gPC model
     """
+    output_idx_gpc = output_idx
+
+    if type(gpc) is list:
+        gpc = gpc[output_idx]
+        coeffs = coeffs[output_idx]
+        output_idx_gpc = 0
 
     if isinstance(gpc, MEGPC):
         problem = gpc.problem
@@ -215,7 +227,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     grid_norm = Grid(parameters_random=problem.parameters_random).get_normalized_coordinates(grid)
 
     # Evaluate gPC expansion on grid
-    y_gpc = gpc.get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx)
+    y_gpc = gpc.get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx_gpc)
 
     # Evaluate original model function on grid
     if data_original is None:
@@ -229,10 +241,13 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
                          fn_results=None,
                          print_func_time=False)[:, output_idx]
     else:
-        y_orig = data_original[:, output_idx]
+        y_orig = data_original
 
     # add axes if necessary
     if y_gpc.ndim == 1:
+        y_gpc = y_gpc[:, np.newaxis]
+
+    if y_orig.ndim == 1:
         y_orig = y_orig[:, np.newaxis]
 
     # Evaluate difference between original and gPC approximation
@@ -247,77 +262,75 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         f.create_dataset('grid/coords_norm', data=grid_norm)
 
     # Plot results
-    for i, idx in enumerate(output_idx):
+    matplotlib.rc('text', usetex=True)
+    matplotlib.rc('xtick', labelsize=13)
+    matplotlib.rc('ytick', labelsize=13)
+    fs = 14
 
-        matplotlib.rc('text', usetex=True)
-        matplotlib.rc('xtick', labelsize=13)
-        matplotlib.rc('ytick', labelsize=13)
-        fs = 14
+    # One random variable
+    if len(random_vars) == 1:
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, squeeze=True, figsize=(12, 5))
 
-        # One random variable
-        if len(random_vars) == 1:
-            fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, squeeze=True, figsize=(12, 5))
+        ax1.plot(coords, y_orig)
+        ax1.plot(coords, y_gpc)
+        ax1.legend([r"original", r"gPC"], fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$y(%s)$" % random_vars[0], fontsize=fs)
+        ax1.grid()
 
-            ax1.plot(coords, y_orig[:, i])
-            ax1.plot(coords, y_gpc[:, i])
-            ax1.legend([r"original", r"gPC"], fontsize=fs)
-            ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-            ax1.set_ylabel(r"$y(%s)$" % random_vars[0], fontsize=fs)
-            ax1.grid()
+        ax2.plot(coords, y_dif, '--k')
+        ax2.legend([r"difference"], fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax2.grid()
 
-            ax2.plot(coords, y_dif[:, i], '--k')
-            ax2.legend([r"difference"], fontsize=fs)
-            ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-            ax2.grid()
+    # Two random variables
+    elif len(random_vars) == 2:
+        fig, (ax1, ax2, ax3) = matplotlib.pyplot.subplots(nrows=1, ncols=3,
+                                                          sharex='all', sharey='all',
+                                                          squeeze=True, figsize=(16, 5))
 
-        # Two random variables
-        elif len(random_vars) == 2:
-            fig, (ax1, ax2, ax3) = matplotlib.pyplot.subplots(nrows=1, ncols=3,
-                                                              sharex='all', sharey='all',
-                                                              squeeze=True, figsize=(16, 5))
+        x1_2d, x2_2d = np.meshgrid(x[0], x[1])
 
-            x1_2d, x2_2d = np.meshgrid(x[0], x[1])
+        min_all = np.min(np.array(np.min(y_orig), np.min(y_gpc)))
+        max_all = np.max(np.array(np.max(y_orig), np.max(y_gpc)))
 
-            min_all = np.min(np.array(np.min(y_orig[:, i]), np.min(y_gpc[:, i])))
-            max_all = np.max(np.array(np.max(y_orig[:, i]), np.max(y_gpc[:, i])))
+        # Original model function
+        im1 = ax1.pcolor(x1_2d, x2_2d, np.reshape(y_orig, (x[1].size, x[0].size), order='f'),
+                         cmap="jet",
+                         vmin=min_all,
+                         vmax=max_all)
+        ax1.set_title(r'Original model', fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
 
-            # Original model function
-            im1 = ax1.pcolor(x1_2d, x2_2d, np.reshape(y_orig[:, i], (x[1].size, x[0].size), order='f'),
-                             cmap="jet",
-                             vmin=min_all,
-                             vmax=max_all)
-            ax1.set_title(r'Original model', fontsize=fs)
-            ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-            ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
+        # gPC approximation
+        # Original model function
+        im2 = ax2.pcolor(x1_2d, x2_2d, np.reshape(y_gpc, (x[1].size, x[0].size), order='f'),
+                         cmap="jet",
+                         vmin=min_all,
+                         vmax=max_all)
+        ax2.set_title(r'gPC approximation', fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
 
-            # gPC approximation
-            # Original model function
-            im2 = ax2.pcolor(x1_2d, x2_2d, np.reshape(y_gpc[:, i], (x[1].size, x[0].size), order='f'),
-                             cmap="jet",
-                             vmin=min_all,
-                             vmax=max_all)
-            ax2.set_title(r'gPC approximation', fontsize=fs)
-            ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-            ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
+        # Difference
+        min_dif = np.min(y_dif)
+        max_dif = np.max(y_dif)
+        b2rcw_cmap = make_cmap(b2rcw(min_dif, max_dif))
 
-            # Difference
-            min_dif = np.min(y_dif[:, i])
-            max_dif = np.max(y_dif[:, i])
-            b2rcw_cmap = make_cmap(b2rcw(min_dif, max_dif))
+        im3 = ax3.pcolor(x1_2d, x2_2d, np.reshape(y_dif, (x[1].size, x[0].size), order='f'),
+                         cmap=b2rcw_cmap,
+                         vmin=min_dif,
+                         vmax=max_dif)
+        ax3.set_title(r'Difference (Original vs gPC)', fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
 
-            im3 = ax3.pcolor(x1_2d, x2_2d, np.reshape(y_dif[:, i], (x[1].size, x[0].size), order='f'),
-                             cmap=b2rcw_cmap,
-                             vmin=min_dif,
-                             vmax=max_dif)
-            ax3.set_title(r'Difference (Original vs gPC)', fontsize=fs)
-            ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-            ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
+        fig.colorbar(im1, ax=ax1, orientation='vertical')
+        fig.colorbar(im2, ax=ax2, orientation='vertical')
+        fig.colorbar(im3, ax=ax3, orientation='vertical')
 
-            fig.colorbar(im1, ax=ax1, orientation='vertical')
-            fig.colorbar(im2, ax=ax2, orientation='vertical')
-            fig.colorbar(im3, ax=ax3, orientation='vertical')
+        plt.tight_layout()
 
-            plt.tight_layout()
-
-        plt.savefig(os.path.splitext(fn_out)[0] + "_QOI_idx_" + str(idx) + '.png', dpi=600)
-        plt.savefig(os.path.splitext(fn_out)[0] + "_QOI_idx_" + str(idx) + '.pdf')
+    plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.png', dpi=600)
+    plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.pdf')

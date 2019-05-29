@@ -240,6 +240,59 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 </dd></dl>
 
 <dl class="class">
+<dt id="pygpc.Algorithm.MEStatic">
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">MEStatic</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MEStatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MEStatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
+<p>Multi-Element Static gPC algorithm</p>
+<dl class="method">
+<dt id="pygpc.Algorithm.MEStatic.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MEStatic.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MEStatic.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs Multi-Element Static gPC algorithm to solve problem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>megpc</strong> (<em>Multi-element GPC object instance</em>) – MEGPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances</li>
+<li><strong>coeffs</strong> (<em>list of ndarray of float [n_gpc][n_basis x n_out]</em>) – GPC coefficients</li>
+<li><strong>res</strong> (<em>ndarray of float [n_grid x n_out]</em>) – Simulation results at n_grid points of the n_out output variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pygpc.Algorithm.MEStaticProjection">
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">MEStaticProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MEStaticProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MEStaticProjection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
+<p>Static gPC algorithm using Basis Projection approach</p>
+<dl class="method">
+<dt id="pygpc.Algorithm.MEStaticProjection.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MEStaticProjection.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MEStaticProjection.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs static multi-element gPC algorithm using Projection to solve problem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>megpc</strong> (<em>MEGPC object instance</em>) – MEGPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
+and sub-gPCs</li>
+<li><strong>coeffs</strong> (<em>list of list of ndarray of float [n_qoi][n_gpc][n_basis x n_out]</em>) – GPC coefficients of different qoi and sub-gPCs</li>
+<li><strong>res</strong> (<em>ndarray of float [n_grid x n_out]</em>) – Simulation results at n_grid points of the n_out output variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pygpc.Algorithm.RegAdaptive">
 <em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptive</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
@@ -332,7 +385,7 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
 <li><strong>gpc</strong> (<em>GPC object instance</em>) – GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances</li>
-<li><strong>coeffs</strong> (<em>ndarray of float [n_basis x n_out]</em>) – GPC coefficients</li>
+<li><strong>coeffs</strong> (<em>list ndarray of float [n_qoi][n_basis x n_out]</em>) – GPC coefficients of dofferent qoi</li>
 <li><strong>res</strong> (<em>ndarray of float [n_grid x n_out]</em>) – Simulation results at n_grid points of the n_out output variables</li>
 </ul>
 </td>
@@ -733,245 +786,8 @@ running somewhere on the cluster.</li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-pygpc.EGPC">
-<span id="pygpc-egpc-module"></span><h2>pygpc.EGPC module<a class="headerlink" href="#module-pygpc.EGPC" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="pygpc.EGPC.EGPC">
-<em class="property">class </em><code class="descclassname">pygpc.EGPC.</code><code class="descname">EGPC</code><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pygpc.GPC.GPC" title="pygpc.GPC.GPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.GPC.GPC</span></code></a></p>
-<dl class="method">
-<dt id="pygpc.EGPC.EGPC.get_approximation">
-<code class="descname">get_approximation</code><span class="sig-paren">(</span><em>coeffs=None</em>, <em>xi=None</em>, <em>output_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_approximation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_approximation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).</p>
-<p>pce = EGPC.get_approximation(coeffs=None, xi=None, output_idx=None)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>coeffs</strong> (<em>[</em><em>N_coeffs x N_out</em><em>] </em><em>np.ndarray</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Gpc coefficients</li>
-<li><strong>xi</strong> (<em>[</em><em>1 x dim</em><em>] </em><em>np.ndarray</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Point in variable space to evaluate local sensitivity in normalized coordinates</li>
-<li><strong>output_idx</strong> (<em>[</em><em>1 x N_out</em><em>] </em><em>np.ndarray</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Index of output quantities to consider (Default: all outputs).</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pce</strong> – Gpc approximation at normalized coordinates xi.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[N_xi x N_out] np.ndarray</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pygpc.EGPC.EGPC.get_global_sens">
-<code class="descname">get_global_sens</code><span class="sig-paren">(</span><em>coeffs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_global_sens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_global_sens" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine the global derivative based sensitivity coefficients after Xiu (2009) [1].</p>
-<p>global_sens = EGPC.get_global_sens(coeffs)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coeffs</strong> (<em>[</em><em>N_coeffs x N_out</em><em>] </em><em>np.ndarray</em>) – Gpc coefficients</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>global_sens</strong> – Global derivative based sensitivity coefficients</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[dim x N_out] np.ndarray</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id2" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label">[1]</td><td>D. Xiu, Fast Numerical Methods for Stochastic Computations: A Review,
-Commun. Comput. Phys., 5 (2009), pp. 242-272 eq. (3.14) page 255</td></tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pygpc.EGPC.EGPC.get_local_sens">
-<code class="descname">get_local_sens</code><span class="sig-paren">(</span><em>coeffs</em>, <em>xi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_local_sens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_local_sens" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine the local derivative based sensitivity coefficients in the point of interest xi
-(normalized coordinates [-1, 1]).</p>
-<p>local_sens = EGPC.calc_localsens(coeffs, xi)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>coeffs</strong> (<em>[</em><em>N_coeffs x N_out</em><em>] </em><em>np.ndarray</em>) – Gpc coefficients</li>
-<li><strong>xi</strong> (<em>[</em><em>N_coeffs x N_out</em><em>] </em><em>np.ndarray</em>) – Point in variable space to evaluate local sensitivity in (normalized coordinates!)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>local_sens</strong> – Local sensitivity</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[dim x N_out] np.ndarray</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="pygpc.EGPC.EGPC.get_mean">
-<em class="property">static </em><code class="descname">get_mean</code><span class="sig-paren">(</span><em>coeffs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_mean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the expected mean value.</p>
-<p>mean = SGPC.get_mean(coeffs)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coeffs</strong> (<em>[</em><em>N_coeffs x N_out</em><em>] </em><em>np.ndarray</em>) – Gpc coefficients</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>mean</strong> – Expected mean value</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[1 x N_out] np.ndarray</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pygpc.EGPC.EGPC.get_pdf">
-<code class="descname">get_pdf</code><span class="sig-paren">(</span><em>coeffs</em>, <em>n_samples</em>, <em>output_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_pdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_pdf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine the estimated pdfs of the output quantities</p>
-<p>pdf_x, pdf_y = EGPC.get_pdf(coeffs, N_samples, output_idx=None)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>coeffs</strong> (<em>[</em><em>N_coeffs x N_out</em><em>] </em><em>np.ndarray</em>) – Gpc coefficients</li>
-<li><strong>n_samples</strong> (<em>int</em>) – Number of samples used to estimate output pdf</li>
-<li><strong>output_idx</strong> (<em>[</em><em>1 x N_out</em><em>] </em><em>np.ndarray</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Index of output quantities to consider.
-If output_idx=None, all output quantities are considered</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>pdf_x</strong> (<em>[100 x N_out] np.ndarray</em>) – x-coordinates of output pdf (output quantity),</li>
-<li><strong>pdf_y</strong> (<em>[100 x N_out] np.ndarray</em>) – y-coordinates of output pdf (probability density of output quantity)</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="pygpc.EGPC.EGPC.get_samples">
-<em class="property">static </em><code class="descname">get_samples</code><span class="sig-paren">(</span><em>self</em>, <em>coeffs=None</em>, <em>n_samples=100</em>, <em>output_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_samples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_samples" title="Permalink to this definition">¶</a></dt>
-<dd><p>Randomly sample the gPC expansion to determine output pdfs in specific points.</p>
-<p>xi = EGPC.get_pdf_mc(N_samples, coeffs=None, output_idx=None)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>coeffs</strong> (<em>[</em><em>N_coeffs x N_out</em><em>] </em><em>np.ndarray</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – gPC coefficients</li>
-<li><strong>n_samples</strong> (<em>int</em>) – Number of random samples drawn from the respective input pdfs.</li>
-<li><strong>output_idx</strong> (<em>[</em><em>1 x N_out</em><em>] </em><em>np.ndarray</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Index of output quantities to consider.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>xi</strong> (<em>[N_samples x dim] np.ndarray</em>) – Generated samples in normalized coordinates.</li>
-<li><strong>pce</strong> (<em>[N_samples x N_out] np.ndarray</em>) – GPC approximation at points xi.</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pygpc.EGPC.EGPC.get_sobol_composition">
-<code class="descname">get_sobol_composition</code><span class="sig-paren">(</span><em>sobol=None</em>, <em>sobol_idx=None</em>, <em>sobol_idx_bool=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_sobol_composition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_sobol_composition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine average ratios of Sobol indices over all output quantities:
-(i) over all orders and (e.g. 1st: 90%, 2nd: 8%, 3rd: 2%)
-(ii) for the 1st order indices w.r.t. each random variable. (1st: x1: 50%, x2: 40%)</p>
-<p>sobol, sobol_idx, sobol_rel_order_mean, sobol_rel_order_std, sobol_rel_1st_order_mean, sobol_rel_1st_order_std
-= EGPC.get_sobol_composition(coeffs=None, sobol=None, sobol_idx=None, sobol_idx_bool=None)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sobol</strong> (<em>[</em><em>N_sobol x N_out</em><em>] </em><em>np.ndarray</em>) – Unnormalized sobol_indices</li>
-<li><strong>sobol_idx</strong> (<em>list of</em><em> [</em><em>N_sobol x dim</em><em>] </em><em>np.ndarray</em>) – Parameter combinations in rows of sobol.</li>
-<li><strong>sobol_idx_bool</strong> (<em>list of np.ndarray of bool</em>) – Boolean mask that determines which multi indices are unique.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>sobol_rel_order_mean</strong> (<em>np.ndarray</em>) – Average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,),
-(over all output quantities)</li>
-<li><strong>sobol_rel_order_std</strong> (<em>np.ndarray</em>) – Standard deviation of the proportion of the Sobol indices of the different order to the total variance
-(1st, 2nd, etc..,), (over all output quantities)</li>
-<li><strong>sobol_rel_1st_order_mean</strong> (<em>np.ndarray</em>) – Average proportion of the random variables of the 1st order Sobol indices to the total variance,
-(over all output quantities)</li>
-<li><strong>sobol_rel_1st_order_std</strong> (<em>np.ndarray</em>) – Standard deviation of the proportion of the random variables of the 1st order Sobol indices to the total
-variance
-(over all output quantities)</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="pygpc.EGPC.EGPC.get_sobol_indices">
-<em class="property">static </em><code class="descname">get_sobol_indices</code><span class="sig-paren">(</span><em>self</em>, <em>coeffs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_sobol_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_sobol_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the available sobol indices.</p>
-<p>sobol, sobol_idx = EGPC.get_sobol_indices(coeffs=None)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coeffs</strong> (<em>[</em><em>N_coeffs x N_out</em><em>] </em><em>np.ndarray</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Gpc coefficients</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
-<li><strong>sobol</strong> (<em>[N_sobol x N_out] np.ndarray</em>) – Unnormalized sobol_indices</li>
-<li><strong>sobol_idx</strong> (<em>list of [N_sobol x dim] np.ndarray</em>) – Parameter combinations in rows of sobol.</li>
-<li><strong>sobol_idx_bool</strong> (<em>list of np.ndarray of bool</em>) – Boolean mask that determines which multi indices are unique.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="pygpc.EGPC.EGPC.get_standard_deviation">
-<em class="property">static </em><code class="descname">get_standard_deviation</code><span class="sig-paren">(</span><em>coeffs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/EGPC.html#EGPC.get_standard_deviation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.EGPC.EGPC.get_standard_deviation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the standard deviation.</p>
-<p>std = EGPC.get_standard_deviation(coeffs)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coeffs</strong> (<em>np.array of float</em><em> [</em><em>N_coeffs x N_out</em><em>]</em>) – Gpc coefficients</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>std</strong> – Standard deviation</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[1 x N_out] np.ndarray</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="pygpc-egpc-module">
+<h2>pygpc.EGPC module<a class="headerlink" href="#pygpc-egpc-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-pygpc.GPC">
 <span id="pygpc-gpc-module"></span><h2>pygpc.GPC module<a class="headerlink" href="#module-pygpc.GPC" title="Permalink to this headline">¶</a></h2>
@@ -1341,7 +1157,8 @@ model is capable to evaluate all grid points in parallel)</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_basis x n_out</em><em>]</em>) – GPC coefficients for each output variable</li>
-<li><strong>x</strong> (<em>ndarray of float</em><em> [</em><em>n_x x n_dim</em><em>]</em>) – Coordinates of x = (x1, x2, …, x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1])</li>
+<li><strong>x</strong> (<em>ndarray of float</em><em> [</em><em>n_x x n_dim</em><em>]</em>) – Coordinates of x = (x1, x2, …, x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1]).
+The coordinates will be transformed in case of projected gPC.</li>
 <li><strong>output_idx</strong> (<em>ndarray of int</em><em>, </em><em>optional</em><em>, </em><em>default=None</em><em> [</em><em>n_out</em><em>]</em>) – Indices of output quantities to consider (Default: all).</li>
 </ul>
 </td>
@@ -1457,7 +1274,7 @@ corresponds to 1 - Q^2.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="id2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Blatman, G., &amp; Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions
@@ -1488,22 +1305,34 @@ for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.save_gpc_matrix_hdf5">
-<code class="descname">save_gpc_matrix_hdf5</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.save_gpc_matrix_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.save_gpc_matrix_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_gpc_matrix_hdf5</code><span class="sig-paren">(</span><em>hdf5_path_gpc_matrix=None</em>, <em>hdf5_path_gpc_matrix_gradient=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.save_gpc_matrix_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.save_gpc_matrix_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save gPC matrix and gPC gradient matrix in .hdf5 file &lt;”fn_results” + “.hdf5”&gt; under the key “gpc_matrix”
 and “gpc_matrix_gradient”. If matrices are already present, check for equality and save only appended
 rows and columns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hdf5_path_gpc_matrix</strong> (<em>str</em>) – Path in .hdf5 file, where the gPC matrix is saved in</li>
+<li><strong>hdf5_path_gpc_matrix_gradient</strong> (<em>str</em>) – Path in .hdf5 file, where the gPC gradient matrix is saved in</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.solve">
-<code class="descname">solve</code><span class="sig-paren">(</span><em>sim_results</em>, <em>solver=None</em>, <em>settings=None</em>, <em>matrix=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.solve" title="Permalink to this definition">¶</a></dt>
+<code class="descname">solve</code><span class="sig-paren">(</span><em>results</em>, <em>solver=None</em>, <em>settings=None</em>, <em>matrix=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.solve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines gPC coefficients</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sim_results</strong> (<em>[</em><em>N_grid x N_out</em><em>] </em><em>np.ndarray of float</em>) – results from simulations with N_out output quantities</li>
+<li><strong>results</strong> (<em>[</em><em>n_grid x n_out</em><em>] </em><em>np.ndarray of float</em>) – Results from simulations with N_out output quantities</li>
 <li><strong>solver</strong> (<em>str</em>) – Solver to determine the gPC coefficients
 - ‘Moore-Penrose’ … Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
 - ‘OMP’ … Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
@@ -1573,7 +1402,7 @@ original model. Skips this step if no validation set is present</p>
 <p>Functions and classes that provide data and methods for the generation and processing of numerical grids</p>
 <dl class="class">
 <dt id="pygpc.Grid.Grid">
-<em class="property">class </em><code class="descclassname">pygpc.Grid.</code><code class="descname">Grid</code><span class="sig-paren">(</span><em>parameters_random</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#Grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.Grid" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Grid.</code><code class="descname">Grid</code><span class="sig-paren">(</span><em>parameters_random</em>, <em>coords=None</em>, <em>coords_norm=None</em>, <em>coords_gradient=None</em>, <em>coords_gradient_norm=None</em>, <em>coords_id=None</em>, <em>coords_gradient_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#Grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.Grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Grid class</p>
 <dl class="attribute">
@@ -1627,6 +1456,20 @@ original model. Skips this step if no validation set is present</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray of float [n_grid x dim]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygpc.Grid.Grid._domains">
+<code class="descname">_domains</code><a class="headerlink" href="#pygpc.Grid.Grid._domains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Domain IDs of grid points for multi-element gPC</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">ndarray of float [n_grid]</td>
 </tr>
 </tbody>
 </table>
@@ -1796,21 +1639,21 @@ The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fouri
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+<table class="docutils footnote" frame="void" id="id3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Davis, P. J., Rabinowitz, P. (2007). Methods of numerical integration.
 Courier Corporation, second edition, ISBN: 0486453391.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
+<table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
 SIAM Journal on Numerical Analysis, 4(3), 357-362.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id6" rules="none">
+<table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[3]</td><td>Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
@@ -1841,21 +1684,21 @@ The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fouri
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id7" rules="none">
+<table class="docutils footnote" frame="void" id="id6" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Davis, P. J., Rabinowitz, P. (2007). Methods of numerical integration.
 Courier Corporation, second edition, ISBN: 0486453391.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
 SIAM Journal on Numerical Analysis, 4(3), 357-362.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
+<table class="docutils footnote" frame="void" id="id8" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[3]</td><td>Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
@@ -2724,8 +2567,9 @@ to validate gpc approximation setting options[“error_type”]=”nrmsd”.
 <dl class="method">
 <dt id="pygpc.SGPC.SGPC.get_global_sens">
 <code class="descname">get_global_sens</code><span class="sig-paren">(</span><em>coeffs</em>, <em>algorithm='standard'</em>, <em>n_samples=100000.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC.get_global_sens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC.get_global_sens" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine the global derivative based sensitivity coefficients after Xiu (2009) [1].</p>
-<p>global_sens = SGPC.get_global_sens(coeffs)</p>
+<dd><p>Determine the global derivative based sensitivity coefficients after Xiu (2009) [1]
+from the gPC coefficients (standard) or by sampling.</p>
+<p>global_sens = SGPC.get_global_sens(coeffs, algorithm=”standard”, n_samples=1e5)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2748,7 +2592,7 @@ to validate gpc approximation setting options[“error_type”]=”nrmsd”.
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id10" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>D. Xiu, Fast Numerical Methods for Stochastic Computations: A Review,
@@ -2854,7 +2698,7 @@ variance
 <code class="descname">get_sobol_indices</code><span class="sig-paren">(</span><em>coeffs</em>, <em>algorithm='standard'</em>, <em>n_samples=10000.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC.get_sobol_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC.get_sobol_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the available sobol indices from the gPC coefficients (standard) or by sampling.
 In case of sampling, the Sobol indices are calculated up to second order.</p>
-<p>sobol, sobol_idx, sobol_idx_bool = SGPC.get_sobol_indices(coeffs)</p>
+<p>sobol, sobol_idx, sobol_idx_bool = SGPC.get_sobol_indices(coeffs, algorithm=”standard”, n_samples=1e4)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2880,7 +2724,7 @@ increases to n_samples * (2*dim + 2) in Saltelli’s Sobol sampling sequence.</l
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<table class="docutils footnote" frame="void" id="id11" rules="none">
+<table class="docutils footnote" frame="void" id="id10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[1]</td><td>Sobol, I. M. (2001).  “Global sensitivity indices for nonlinear
@@ -2889,7 +2733,7 @@ and Computers in Simulation, 55(1-3):271-280,
 doi:10.1016/S0378-4754(00)00270-6.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id12" rules="none">
+<table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>Saltelli, A. (2002).  “Making best use of model evaluations to
@@ -2897,7 +2741,7 @@ compute sensitivity indices.”  Computer Physics Communications,
 145(2):280-297, doi:10.1016/S0010-4655(02)00280-1.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id13" rules="none">
+<table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[3]</td><td>Saltelli, A., P. Annoni, I. Azzini, F. Campolongo, M. Ratto, and
@@ -4385,7 +4229,7 @@ and saves the plot as fn_pdf.png and fn_pdf.pdf.</p>
 <code class="descclassname">pygpc.validation.</code><code class="descname">validate_gpc_plot</code><span class="sig-paren">(</span><em>gpc</em>, <em>coeffs</em>, <em>random_vars</em>, <em>n_grid=None</em>, <em>coords=None</em>, <em>output_idx=0</em>, <em>data_original=None</em>, <em>fn_out=None</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/validation.html#validate_gpc_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.validation.validate_gpc_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
 calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
-<a href="#id14"><span class="problematic" id="id15">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
+<a href="#id13"><span class="problematic" id="id14">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -4399,7 +4243,7 @@ A cartesian grid is generated based on the limits of the specified random_vars</
 <li><strong>coords</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_dim</em><em>]</em>) – Parameter combinations for the random_vars the comparison is conducted with</li>
 <li><strong>output_idx</strong> (<em>int</em><em> or </em><em>list of int</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Indices of output quantity to consider</li>
 <li><strong>data_original</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_out</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – If available, data of original model function at grid</li>
-<li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id16"><span class="problematic" id="id17">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
+<li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id15"><span class="problematic" id="id16">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
 <li><strong>n_cpu</strong> (<em>int</em><em>, </em><em>default=1</em>) – Number of CPU cores to use to calculate results of original model on grid.</li>
 </ul>
 </td>
@@ -4438,7 +4282,7 @@ A cartesian grid is generated based on the limits of the specified random_vars</
 <li><a class="reference internal" href="#module-pygpc.Basis">pygpc.Basis module</a></li>
 <li><a class="reference internal" href="#module-pygpc.BasisFunction">pygpc.BasisFunction module</a></li>
 <li><a class="reference internal" href="#module-pygpc.Computation">pygpc.Computation module</a></li>
-<li><a class="reference internal" href="#module-pygpc.EGPC">pygpc.EGPC module</a></li>
+<li><a class="reference internal" href="#pygpc-egpc-module">pygpc.EGPC module</a></li>
 <li><a class="reference internal" href="#module-pygpc.GPC">pygpc.GPC module</a></li>
 <li><a class="reference internal" href="#module-pygpc.Grid">pygpc.Grid module</a></li>
 <li><a class="reference internal" href="#module-pygpc.Problem">pygpc.Problem module</a></li>

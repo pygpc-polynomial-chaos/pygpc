@@ -372,6 +372,8 @@ class SurfaceCoverageSpecies(AbstractModel):
                        args=(self.p["alpha"].flatten()[i], self.p["beta"].flatten()[i], gamma,))
             y_out[i, 0] = np.array([y[-1]])
 
+        y_out = np.hstack((y_out, 2.*y_out))
+
         return y_out
 
 
@@ -849,6 +851,8 @@ class GenzOscillatory(AbstractModel):
         y = np.cos(2 * np.pi * u[0] + s)
 
         y_out = y[:, np.newaxis]
+
+        y_out = np.hstack((y_out, 2*y_out))
 
         return y_out
 
@@ -1378,8 +1382,8 @@ class ContinuousDiscontinuousSphere(AbstractModel):
         y = np.zeros(x.shape[0])
         mask = (np.linalg.norm(x-0.5, axis=1) <= 0.25).flatten()
 
-        p_1 = dict()
-        p_2 = dict()
+        p_1 = OrderedDict()
+        p_2 = OrderedDict()
 
         for i, key in enumerate(self.p.keys()):
             p_1[key] = x[mask, i]
@@ -1395,6 +1399,87 @@ class ContinuousDiscontinuousSphere(AbstractModel):
         y[np.logical_not(mask)] = y_2.flatten()
 
         y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class DiscontinuousRidgeManufactureDecay(AbstractModel):
+    """
+    N-dimensional testfunction containing a linear discontinuity.
+    On the one side the output corresponds to the Ridge function
+    and on the other side it correspond to the ManufactureDecay testfunction.
+
+    .. math::
+       y = \\begin{cases}
+       \\text{ManufactureDecay}(x), & \\text{if } \\sum_{i=1}^{N}x_i \\leq 1 \\\\
+       \\text{Ridge}(x), & \\text{otherwise}
+       \\end{cases}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 250)
+       parameters["x2"] = np.linspace(0, 1, 250)
+
+       plot("DiscontinuousRidgeManufactureDecay", parameters)
+    """
+
+    def __init__(self, p, context=None):
+        super(DiscontinuousRidgeManufactureDecay, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None):
+
+        for key in self.p.keys():
+            if self.p[key].ndim == 1:
+                self.p[key] = self.p[key][:, np.newaxis]
+
+        x = np.hstack([self.p[key] for key in self.p.keys()])
+
+        y = np.zeros(x.shape[0])
+        mask = (np.sum(x, axis=1) <= 1.).flatten()
+
+        p_1 = OrderedDict()
+        p_2 = OrderedDict()
+
+        for i, key in enumerate(self.p.keys()):
+            p_1[key] = x[mask, i]
+            p_2[key] = x[np.logical_not(mask), i]
+
+        model_1 = ManufactureDecay(p_1)
+        model_2 = Ridge(p_2)
+
+        y_1 = model_1.simulate()
+        y_2 = model_2.simulate()
+
+        y[mask] = y_1.flatten()
+        y[np.logical_not(mask)] = y_2.flatten()
+
+        y_out = y[:, np.newaxis]
+
+        y_out = np.hstack((y_out, 2.*y_out))
 
         return y_out
 

@@ -498,7 +498,7 @@ def plot_beta_pdf_fit(data, a_beta, b_beta, p_beta, q_beta, a_uni=None, b_uni=No
     plt.xlabel(xlabel, fontsize=22)
     plt.ylabel(ylabel, fontsize=22)
     ax.set_xlim(a_beta - 0.05 * (b_beta - a_beta), b_beta + 0.05 * (b_beta - a_beta))
-    ax.set_ylim(0, 1.1 * max([max(n), max(beta_y[np.logical_not(beta_y == np.inf)]), max(uni_y)]))
+    # ax.set_ylim(0, 1.1 * max([max(n), max(beta_y[np.logical_not(beta_y == np.inf)]), max(uni_y)]))
 
     if interactive > 0:
         plt.show()

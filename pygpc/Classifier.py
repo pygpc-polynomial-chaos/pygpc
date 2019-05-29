@@ -94,7 +94,7 @@ class ClassifierLearning(object):
         Parameters
         ----------
         coords: ndarray of float [n_grid, n_dim]
-            Grid points to classify
+            Grid points to classify (has to be a 2D array)
 
         Returns
         -------

@@ -103,7 +103,7 @@ def run(obj):
             res = res.transpose()
 
         # add results to data_dict
-        data_dict["results"] = res
+        data_dict["model_evaluations/results"] = res
 
         end_time = time.time()
 
