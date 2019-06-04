@@ -298,7 +298,8 @@ def iprint(message, verbose=True, tab=None):
     if verbose:
         if tab:
             message = '\t' * tab + message
-        console_logger.info(message)
+        # console_logger.info(message)
+        print(message)
 
 
 def wprint(message, verbose=True, tab=None):
