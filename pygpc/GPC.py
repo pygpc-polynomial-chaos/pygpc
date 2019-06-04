@@ -197,13 +197,6 @@ class GPC(object):
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
 
-                # polynomial_coeffs = np.array(())
-                # for i_basis in range(len(b)):
-                #     for i_dim in range(self.problem.dim):
-                #         polynomial_order = b[i_basis][i_dim].fun.order
-                #         polynomial_coeffs = np.append(polynomial_coeffs, polynomial_order)
-                #         polynomial_coeffs = np.append(polynomial_coeffs, np.flip(b[i_basis][i_dim].fun.c))
-
                 # handle pointer
                 polynomial_coeffs_pointer = self.basis.b_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
                 xi_pointer = x.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
@@ -229,19 +222,6 @@ class GPC(object):
 
                 for i_dim_gradient in range(self.problem.dim):
                     _gpc_matrix = np.ones([x.shape[0], len(b)])
-
-                #     polynomial_coeffs = np.array(())
-                #     for i_basis in range(len(b)):
-                #         for i_dim in range(self.problem.dim):
-                #             if i_dim == i_dim_gradient:
-                #                 polynomial = b[i_basis][i_dim].fun.deriv()
-                #                 polynomial_order = polynomial.order
-                #                 polynomial_coeffs = np.append(polynomial_coeffs, polynomial_order)
-                #                 polynomial_coeffs = np.append(polynomial_coeffs, np.flip(polynomial.c))
-                #             else:
-                #                 polynomial_order = b[i_basis][i_dim].fun.order
-                #                 polynomial_coeffs = np.append(polynomial_coeffs, polynomial_order)
-                #                 polynomial_coeffs = np.append(polynomial_coeffs, np.flip(b[i_basis][i_dim].fun.c))
 
                     # handle pointer
                     polynomial_coeffs_pointer = self.basis.b_gpu_grad[i_dim_gradient].ctypes.data_as(ctypes.POINTER(ctypes.c_double))
