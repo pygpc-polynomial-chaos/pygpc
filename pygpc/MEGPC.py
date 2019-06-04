@@ -12,6 +12,7 @@ from .misc import mat2ten
 from .misc import ten2mat
 from .ValidationSet import *
 from .Computation import *
+from .Classifier import *
 import numpy as np
 import fastmat as fm
 import scipy.stats
@@ -70,9 +71,10 @@ class MEGPC(object):
 
         # objects
         self.problem = problem
+        # self.sub_problems = None
         self.grid = None
         self.validation = validation
-        self.gpc = []
+        self.gpc = None
         self.classifier = None
         self.domains = None
 
@@ -83,8 +85,11 @@ class MEGPC(object):
         self.relative_error_loocv = []
         self.relative_error_nrmsd = []
         self.error = []
+        self.mask_res_domains = None
+        self.mask_grad_res_domains = None
 
         # options
+        self.gradient = options["gradient_enhanced"]
         self.solver = None
         self.settings = None
         self.gpu = None
@@ -94,49 +99,115 @@ class MEGPC(object):
         self.fn_results = options["fn_results"]
         self.options = options
 
-    def init_sub_gpcs(self, gradient=False):
+    def init_classifier(self, coords, results, algorithm, options):
         """
-        Initializes sub-gPCs
-        """
-        # get domains of grid-points
-        self.domains = self.classifier.domains
-        self.n_gpc = np.max(self.domains) + 1
-        self.gpc = [None for _ in range(self.n_gpc)]
-
-        # create sub-gpc objects
-        for d in np.unique(self.domains):
-            self.gpc[d] = Reg(problem=self.problem,
-                              order=self.options["order"],
-                              order_max=self.options["order_max"],
-                              order_max_norm=self.options["order_max_norm"],
-                              interaction_order=self.options["interaction_order"],
-                              options=self.options,
-                              validation=self.validation)
-
-        # assign grids to sub-gPCs
-        self.assign_grids()
-
-        # initialize sub-gPC matrices
-        self.init_gpc_matrices(gradient=False)
-
-        # initialize sub-gPC gradient matrices
-        if gradient:
-            self.init_gpc_matrices(gradient=True)
-
-    def init_gpc_matrices(self, gradient=False):
-        """
-        Sets self.gpc_matrix with given self.basis and self.grid
+        Initializes Classifier object in MEGPC class
 
         Parameters
         ----------
-        gradient : boolean, optional, default: False
-            Initialize standard gPC matrix or gradient gPC matrix
+        coords : ndarray of float [n_grid, n_dim]
+            Set of n_grid parameter combinations
+        results : ndarray [n_grid x n_out]
+            Results of the model evaluation
+        algorithm : str, optional, default: "learning"
+            Algorithm to classify grid points
+            - "learning" ... 2-step procedure with unsupervised and supervised learning
+            - ...
+        options : dict, optional, default=None
+            Classifier options
+        """
+        self.classifier = Classifier(coords=coords,
+                                     results=results,
+                                     algorithm=algorithm,
+                                     options=options)
+
+        self.domains = self.classifier.domains
+        self.n_gpc = len(np.unique(self.domains))
+
+        if self.gradient:
+            self.mask_res_domains = np.hstack((self.domains,
+                                               self.domains.repeat(self.problem.dim)))
+            self.mask_grad_res_domains = np.hstack((np.array([np.nan]).repeat(len(self.domains)),
+                                                    self.domains.repeat(self.problem.dim)))
+        else:
+            self.mask_res_domains = self.domains
+
+    # def init_sub_problems(self, sub_problems=None):
+    #     """
+    #     Initialize sub-problems
+    #
+    #     Parameters
+    #     ----------
+    #     sub_problems : list of Problem class instances [n_gpc], optional, default: self.problem * n_gpc
+    #         GPC sub-problems under investigation (might be dimensional reduced)
+    #     """
+    #     if sub_problems is None:
+    #         self.sub_problems = [self.problem for _ in range(self.n_gpc)]
+    #     else:
+    #         self.sub_problems = sub_problems
+
+    def add_sub_gpc(self, problem, order, order_max, order_max_norm, interaction_order, options, domain,
+                    validation=None):
+        """
+        Add sub-gPC
+        """
+        if self.gpc is None:
+            if self.n_gpc is not None:
+                self.gpc = [0 for _ in range(self.n_gpc)]
+            else:
+                self.gpc = [0 for _ in range(domain)]
+
+        # create sub-gpc objects
+        self.gpc[domain] = Reg(problem=problem,
+                               order=order,
+                               order_max=order_max,
+                               order_max_norm=order_max_norm,
+                               interaction_order=interaction_order,
+                               options=options,
+                               validation=validation)
+
+    def init_gpc_matrices(self):
+        """
+        Sets self.gpc_matrix with given self.basis and self.grid
         """
 
         for gpc in self.gpc:
-            gpc.init_gpc_matrix(gradient=gradient)
+            gpc.init_gpc_matrix()
 
-    def loocv(self, coeffs, sim_results, error_norm="relative"):
+    def assign_grids(self):
+        """
+        Assign sub-grids to sub-gPCs (including transformation in case of projection)
+        """
+
+        for d in np.unique(self.domains):
+            coords = self.grid.coords[self.domains == d, :]
+            coords_norm = self.grid.coords_norm[self.domains == d, :]
+            coords_id = np.array(self.grid.coords_id)[self.domains == d].tolist()
+
+            # transform variables of original grid to reduced parameter space
+            if self.gpc[d].p_matrix is not None:
+                coords = np.dot(coords, self.gpc[d].p_matrix.transpose())
+                coords_norm = np.dot(coords_norm,self.gpc[d].p_matrix.transpose() /
+                                     self.gpc[d].p_matrix_norm[np.newaxis, :])
+
+            if self.grid.coords_gradient is not None:
+                coords_gradient = self.grid.coords_gradient[self.domains == d, :, :]
+                coords_gradient_norm = self.grid.coords_gradient_norm[self.domains == d, :, :]
+                coords_gradient_id = np.array(self.grid.coords_gradient_id)[self.domains == d].tolist()
+            else:
+                coords_gradient = None
+                coords_gradient_norm = None
+                coords_gradient_id = None
+
+            self.gpc[d].grid = Grid(parameters_random=self.problem.parameters_random,
+                                    coords=coords,
+                                    coords_norm=coords_norm,
+                                    coords_gradient=coords_gradient,
+                                    coords_gradient_norm=coords_gradient_norm,
+                                    coords_id=coords_id,
+                                    coords_gradient_id=coords_gradient_id)
+
+    def loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
         """
         Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
         The loocv error is calculated analytically after eq. (35) in [1] but omitting the "1 - " term, i.e. it
@@ -157,8 +228,10 @@ class MEGPC(object):
         ----------
         coeffs: ndarray of float [n_basis x n_out]
             GPC coefficients
-        sim_results: ndarray of float [n_grid x n_out]
+        results: ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
+        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
+            Gradient of results in original parameter space (tensor)
         error_norm: str, optional, default="relative"
             Decide if error is determined "relative" or "absolute"
 
@@ -176,10 +249,10 @@ class MEGPC(object):
         n_loocv = 25
 
         # define number of performed cross validations (max 100)
-        n_loocv_points = np.min((sim_results.shape[0], n_loocv))
+        n_loocv_points = np.min((results.shape[0], n_loocv))
 
-        # make list of indices, which are randomly sampled
-        loocv_point_idx = random.sample(list(range(sim_results.shape[0])), n_loocv_points)
+        # make list of indices, which are randomly sampled (this index is w.r.t. to all points)
+        loocv_point_idx = random.sample(list(range(results.shape[0])), n_loocv_points)
 
         start = time.time()
         relative_error = np.zeros(n_loocv_points)
@@ -187,31 +260,34 @@ class MEGPC(object):
         for i in range(n_loocv_points):
 
             # determine domain of loocv point
-            domain = self.classifier.predict(self.grid.coords_norm[loocv_point_idx[i]])
+            domain = int(self.classifier.predict(self.grid.coords_norm[loocv_point_idx[i]][np.newaxis, :]))
 
-            if self.options["gradient_enhanced"]:
-                matrix = np.vstack((self.gpc[domain].gpc_matrix, self.gpc[domain].gpc_matrix_gradient))
-            else:
-                matrix = self.gpc[domain].gpc_matrix
+            # select right gPC matrix
+            matrix = self.gpc[domain].gpc_matrix
+
+            # select right results
+            results_domain = results[self.domains == domain, :]
 
             # get mask of eliminated row
-            mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
+            mask = np.arange(matrix.shape[0]) != loocv_point_idx[i]
 
             # determine gpc coefficients (this takes a lot of time for large problems)
-            coeffs_loo = self.gpc[domain].solve(results=sim_results[mask, :],
+            coeffs_loo = self.gpc[domain].solve(results=results_domain[mask, :],
                                                 solver=self.options["solver"],
                                                 matrix=matrix[mask, :],
                                                 settings=self.options["settings"],
                                                 verbose=False)
 
-            sim_results_temp = sim_results[loocv_point_idx[i], :]
+            sim_results_temp = results[loocv_point_idx[i], :]
 
             if error_norm == "relative":
                 norm = scipy.linalg.norm(sim_results_temp)
             else:
                 norm = 1.
 
-            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx[i], :],
+            # determine row in sub-gPC matrix of loocv point
+            loocv_point_idx_domain = np.sum(np.array(self.domains == domain)[0:loocv_point_idx[i]])
+            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx_domain, :],
                                                                             coeffs_loo)) \
                                 / norm
             display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
@@ -222,7 +298,7 @@ class MEGPC(object):
 
         return relative_error_loocv
 
-    def validate(self, coeffs, sim_results=None):
+    def validate(self, coeffs, results=None, gradient_results=None, domain=None):
         """
         Validate gPC approximation using the ValidationSet object contained in the Problem object.
         Determines the normalized root mean square deviation between the gpc approximation and the
@@ -232,37 +308,70 @@ class MEGPC(object):
         ----------
         coeffs: list of ndarray of float [n_gpc][n_coeffs x n_out]
             GPC coefficients
-        sim_results: ndarray of float [n_grid x n_out]
+        results: ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
+        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
+            Gradient of results in original parameter space (tensor)
+        domain : int, optional, default: None
+            Determine error in specified domain only. Default: None (all domains)
 
         Returns
         -------
         error: float
             Estimated difference between gPC approximation and original model
         """
+        if domain is None:
+            domain_idx = np.arange(len(coeffs))
+        else:
+            domain_idx = domain
+
+        # Determine QOIs with NaN in results and exclude them from validation
+        non_nan_mask = np.where(np.all(~np.isnan(results), axis=0))[0]
+        n_nan = results.shape[1] - non_nan_mask.size
+
+        if n_nan > 0:
+            iprint("In {}/{} output quantities NaN's were found.".format(n_nan, results.shape[1]),
+                   tab=0, verbose=self.options["verbose"])
+
+        results = results[:, non_nan_mask]
+
         # always determine nrmsd if a validation set is present
         if isinstance(self.validation, ValidationSet):
 
-            gpc_results = self.get_approximation(coeffs, self.validation.grid.coords_norm, output_idx=None)
+            gpc_results = self.get_approximation(coeffs[domain_idx], self.validation.grid.coords_norm, output_idx=None)
 
             if gpc_results.ndim == 1:
                 gpc_results = gpc_results[:, np.newaxis]
 
-            self.relative_error_nrmsd.append(float(np.mean(nrmsd(gpc_results,
-                                                                 self.validation.results,
-                                                                 error_norm=self.options["error_norm"],
-                                                                 x_axis=False))))
+            error_nrmsd = float(np.mean(nrmsd(gpc_results,
+                                              self.validation.results,
+                                              error_norm=self.options["error_norm"],
+                                              x_axis=False)))
+
+            if domain is None:
+                self.relative_error_nrmsd.append(error_nrmsd)
 
         if self.options["error_type"] == "nrmsd":
-            self.error.append(self.relative_error_nrmsd[-1])
+            if domain is None:
+                self.error.append(self.relative_error_nrmsd[-1])
 
         elif self.options["error_type"] == "loocv":
-            self.relative_error_loocv.append(self.loocv(coeffs=coeffs,
-                                                        sim_results=sim_results,
-                                                        error_norm=self.options["error_norm"]))
-            self.error.append(self.relative_error_loocv[-1])
+            error_loocv = self.loocv(coeffs=coeffs[domain_idx],
+                                     results=results,
+                                     gradient_results=gradient_results,
+                                     error_norm=self.options["error_norm"])
 
-        return self.error[-1]
+            if domain is None:
+                self.relative_error_loocv.append(error_loocv)
+                self.error.append(self.relative_error_loocv[-1])
+
+        if domain is None:
+            return self.error[-1]
+        else:
+            if self.options["error_type"] == "nrmsd":
+                return error_nrmsd
+            elif self.options["error_type"] == "loocv":
+                return error_loocv
 
     def get_pdf(self, coeffs, n_samples, output_idx=None):
         """ Determine the estimated pdfs of the output quantities
@@ -305,14 +414,12 @@ class MEGPC(object):
         pdf_y = np.zeros([100, n_out])
 
         for i_out in range(n_out):
-            try:
-                kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
-                pdf_y[:, i_out] = kde(pdf_x[:, i_out])
+            pdf_y[:, i_out], tmp = np.histogram(samples_out, bins=100, density=True)
+            pdf_x[:, i_out] = (tmp[1:] + tmp[0:-1])/2.
 
-            except np.linalg.linalg.LinAlgError:
-                Warning("Singular matrix during pdf calculation ...")
-
-            pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
+            # kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
+            # pdf_y[:, i_out] = kde(pdf_x[:, i_out])
+            # pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
 
         return pdf_x, pdf_y
 
@@ -334,7 +441,7 @@ class MEGPC(object):
         Returns
         -------
         x: ndarray of float [n_samples x dim]
-            Generated samples in normalized coordinates [-1, 1].
+            Generated samples in normalized coordinates [-1, 1]. (original parameter space)
         pce: ndarray of float [n_samples x n_out]
             GPC approximation at points x.
         """
@@ -366,7 +473,7 @@ class MEGPC(object):
         coeffs: list of ndarray of float [n_gpc][n_basis x n_out]
             GPC coefficients for each output variable of each sub-domain
         x: ndarray of float [n_x x n_dim]
-            Normalized coordinates, where the gPC approximation is calculated
+            Normalized coordinates, where the gPC approximation is calculated (original parameter space)
         output_idx: ndarray of int, optional, default=None [n_out]
             Indices of output quantities to consider (Default: all).
 
@@ -375,7 +482,13 @@ class MEGPC(object):
         pce: ndarray of float [n_x x n_out]
             GPC approximation at normalized coordinates x.
         """
-        pce = np.zeros((x.shape[0], coeffs[0].shape[1]))
+        if type(output_idx) != np.ndarray and output_idx is not None:
+            output_idx = np.array([output_idx])
+
+        if output_idx is None:
+            pce = np.zeros((x.shape[0], coeffs[0].shape[1]))
+        else:
+            pce = np.zeros((x.shape[0], len(output_idx)))
 
         # get classes of grid-points
         domains = self.classifier.predict(x)
@@ -387,33 +500,6 @@ class MEGPC(object):
                                                                  output_idx=output_idx)
 
         return pce
-
-    def assign_grids(self):
-        """
-        Assign sub-grids to sub-gPCs
-        """
-
-        for i, gpc in enumerate(self.gpc):
-            coords = self.grid.coords[self.domains == i, :]
-            coords_norm = self.grid.coords_norm[self.domains == i, :]
-            coords_id = np.array(self.grid.coords_id)[self.domains == i].tolist()
-
-            if self.grid.coords_gradient is not None:
-                coords_gradient = self.grid.coords_gradient[self.domains == i, :, :]
-                coords_gradient_norm = self.grid.coords_gradient_norm[self.domains == i, :, :]
-                coords_gradient_id = np.array(self.grid.coords_gradient_id)[self.domains == i].tolist()
-            else:
-                coords_gradient = None
-                coords_gradient_norm = None
-                coords_gradient_id = None
-
-            gpc.grid = Grid(parameters_random=self.problem.parameters_random,
-                            coords=coords,
-                            coords_norm=coords_norm,
-                            coords_gradient=coords_gradient,
-                            coords_gradient_norm=coords_gradient_norm,
-                            coords_id=coords_id,
-                            coords_gradient_id=coords_gradient_id)
 
     def update_gpc_matrices(self, gradient=False):
         """
@@ -428,22 +514,24 @@ class MEGPC(object):
 
     def save_gpc_matrices_hdf5(self):
         """
-        Save gPC matrix and gPC gradient matrix in .hdf5 file <"fn_results" + ".hdf5"> under the key "gpc_matrix/x"
-        and "gpc_matrix_gradient/x". If matrices are already present, check for equality and save only appended
+        Save gPC matrix and gPC gradient matrix in .hdf5 file <"fn_results" + ".hdf5"> under the key "gpc_matrix/dom_x"
+        and "gpc_matrix_gradient/dom_x". If matrices are already present, check for equality and save only appended
         rows and columns.
         """
         for i, gpc in enumerate(self.gpc):
-            gpc.save_gpc_matrix_hdf5(hdf5_path_gpc_matrix="gpc_matrix/" + str(i),
-                                     hdf5_path_gpc_matrix_gradient="gpc_matrix_gradient/" + str(i))
+            gpc.save_gpc_matrix_hdf5(hdf5_path_gpc_matrix="gpc_matrix/dom_" + str(i),
+                                     hdf5_path_gpc_matrix_gradient="gpc_matrix_gradient/dom_" + str(i))
 
-    def solve(self, results, solver=None, settings=None, verbose=False):
+    def solve(self, results, gradient_results=None, solver=None, settings=None, verbose=False):
         """
         Determines gPC coefficients of sub-gPCs
 
         Parameters
         ----------
-        results : [N_grid x N_out] np.ndarray of float
-            results from simulations with N_out output quantities
+        results : ndarray of float [n_grid x n_out]
+            Results from simulations with n_out output quantities
+        gradient_results : ndarray of float [n_grid x dim x n_out x dim], optional, default: None
+            Gradient of results in original parameter space (tensor)
         solver : str
             Solver to determine the gPC coefficients
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
@@ -472,44 +560,47 @@ class MEGPC(object):
         if solver is None:
             settings = self.settings
 
-        domains_unique = np.unique(self.domains)
-
         coeffs = [0 for _ in range(self.n_gpc)]
 
-        for i, gpc in enumerate(self.gpc):
+        # determine coeffs of sub-gPCs
+        for d in np.unique(self.domains):
+            if gradient_results is not None:
+                gradient_results_passed = gradient_results[self.domains == d, :, :]
+            else:
+                gradient_results_passed = None
 
-            # determine coeffs of sub-gPC
-            coeffs[i] = gpc.solve(results=self.extract_domain(results, domains_unique[i]),
-                                  solver=solver,
-                                  settings=settings,
-                                  verbose=verbose)
+            coeffs[d] = self.gpc[d].solve(results=results[self.domains == d, :],
+                                          gradient_results=gradient_results_passed,
+                                          solver=solver,
+                                          settings=settings,
+                                          verbose=verbose)
 
         return coeffs
 
-    def extract_domain(self, data, domain):
-        """
-        Extract data from dataset of specified domain
-
-        Parameters
-        ----------
-        data : ndarray of float [n_data x m]
-            Dataset
-        domain : int
-            Domain index to extract
-        """
-        mask_results = self.domains == domain
-
-        # determine mask
-        if self.gpc[domain].gpc_matrix_gradient is not None:
-            mask_gradient = np.zeros((self.grid.coords_norm.shape[0], 1, self.problem.dim)).astype(bool)
-            mask_gradient[mask_results, :, :] = True
-            mask = np.vstack((mask_results[:, np.newaxis], ten2mat(mask_gradient)))
-
-        else:
-            mask = np.zeros((data.shape[0], 1)).astype(bool)
-            mask[mask_results, :] = True
-
-        return data[mask.flatten(), :]
+    # def extract_domain(self, data, domain):
+    #     """
+    #     Extract data from dataset of specified domain
+    #
+    #     Parameters
+    #     ----------
+    #     data : ndarray of float [n_data x m]
+    #         Dataset
+    #     domain : int
+    #         Domain index to extract
+    #     """
+    #     mask_results = self.domains == domain
+    #
+    #     # determine mask
+    #     if self.gpc[domain].gpc_matrix_gradient is not None:
+    #         mask_gradient = np.zeros((self.grid.coords_norm.shape[0], 1, self.problem.dim)).astype(bool)
+    #         mask_gradient[mask_results, :, :] = True
+    #         mask = np.vstack((mask_results[:, np.newaxis], ten2mat(mask_gradient)))
+    #
+    #     else:
+    #         mask = np.zeros((data.shape[0], 1)).astype(bool)
+    #         mask[mask_results, :] = True
+    #
+    #     return data[mask.flatten(), :]
 
     def create_validation_set(self, n_samples, n_cpu=1):
         """
@@ -843,12 +934,13 @@ class MEGPC(object):
         ----------
         coeffs: list of ndarray of float [n_gpc][n_basis x n_out]
             GPC coefficients
-        x: ndarray of float [dim], optional, default: center of parameter space
-            Point in variable space to evaluate local sensitivity in (normalized coordinates [-1, 1])
+        x: ndarray of float [n_points x dim], optional, default: center of parameter space
+            Points in variable space to evaluate local sensitivity in (normalized coordinates [-1, 1])
+            (original parameter space)
 
         Returns
         -------
-        local_sens: ndarray [dim x n_out]
+        local_sens: ndarray [n_points x n_out x dim]
             Local sensitivity of output quantities in point x
         """
 
@@ -858,7 +950,7 @@ class MEGPC(object):
         # classify coordinates
         domains = self.classifier.predict(x)
 
-        local_sens = np.zeros((x.shape[0], self.problem.dim))
+        local_sens = np.zeros((x.shape[0], coeffs[0].shape[1], self.problem.dim))
 
         for d in np.unique(domains):
             # project coordinate to reduced parameter space if necessary
@@ -879,10 +971,8 @@ class MEGPC(object):
             if self.gpc[d].p_matrix is not None:
                 local_sens_domain = np.dot(local_sens_domain, self.gpc[d].p_matrix /
                                            self.gpc[d].p_matrix_norm[:, np.newaxis])
-            else:
-                local_sens_domain = local_sens_domain[:, 0, :]
 
-            local_sens[domains == d, :] = local_sens_domain
+            local_sens[domains == d, :, :] = local_sens_domain
 
         return local_sens
 

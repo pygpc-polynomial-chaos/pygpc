@@ -66,49 +66,85 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
     res = None
     projection = False
 
-    print("> Loading gpc object: {}".format(fn_gpc + ".pkl"))
-    gpc = read_gpc_pkl(fn_gpc + ".pkl")
-
-    print("> Loading gpc coeffs: {}".format(fn_gpc + ".hdf5"))
     with h5py.File(fn_gpc + ".hdf5", 'r') as f:
+
+        # list of filenames of gPC .pkl files
+        fn_gpc_pkl = [fn.astype(str) for fn in list(f["misc/fn_gpc_pkl"][:].flatten())]
+
+        print("> Loading gpc object: {}".format(fn_gpc_pkl[0]))
+
+        gpc = read_gpc_pkl(os.path.join(os.path.split(fn_gpc)[0], fn_gpc_pkl[0]))
+
+        # check if we have qoi specific gPCs here
+        try:
+            if "qoi" in list(f["coeffs"].keys())[0]:
+                qoi_keys = list(f["coeffs"].keys())
+                qoi_idx = [int(key.split("qoi_")[1]) for key in qoi_keys]
+                qoi_specific = True
+            else:
+                qoi_specific = False
+
+        except AttributeError:
+            qoi_specific = False
+
         if isinstance(gpc, MEGPC):
-            coeffs = [None for _ in range(gpc.n_gpc)]
-
-            for i in range(gpc.n_gpc):
-                coeffs[i] =np.array(f['coeffs/' + str(i)][:])
-
+            multi_element_gpc = True
         else:
-            coeffs = np.array(f['coeffs/' + str(i)][:])
+            multi_element_gpc = False
+
+        # load coeffs depending on gpc type
+        print("> Loading gpc coeffs: {}".format(fn_gpc + ".hdf5"))
+
+        if not qoi_specific and not multi_element_gpc:
+            coeffs = np.array(f['coeffs'][:])
+
+            if not output_idx:
+                output_idx = np.arange(coeffs.shape[1])
+
+        elif not qoi_specific and multi_element_gpc:
+
+            coeffs = [None for _ in range(len(list(f['coeffs'].keys())))]
+
+            for i, d in enumerate(list(f['coeffs'].keys())):
+                coeffs[i] = np.array(f['coeffs/' + str(d)])[:]
+
+            if not output_idx:
+                output_idx = np.arange(coeffs[0].shape[1])
+
+        elif qoi_specific and not multi_element_gpc:
+
+            algorithm = "sampling"
+            coeffs = dict()
+
+            for key in qoi_keys:
+                coeffs[key] = np.array(f['coeffs/' + key])[:]
+
+            if not output_idx:
+                output_idx = np.arange(len(list(coeffs.keys())))
+
+        elif qoi_specific and multi_element_gpc:
+
+            algorithm = "sampling"
+            coeffs = dict()
+
+            for key in qoi_keys:
+                coeffs[key] = [None for _ in range(len(list(f['coeffs/' + key].keys())))]
+
+                for i, d in enumerate(list(f['coeffs/' + key].keys())):
+                    coeffs[key][i] = np.array(f['coeffs/' + key + "/" + str(d)])[:]
+
+            if not output_idx:
+                output_idx = np.arange(len(list(coeffs.keys())))
 
         if "p_matrix" in f.keys():
             projection = True
 
-    if not output_idx:
-        if isinstance(gpc, MEGPC):
-            output_idx = np.arange(coeffs[0].shape[1])
-        else:
-            output_idx = coeffs.shape[1]
+        dim = f["grid/coords"][:].shape[1]
 
-    # crop coeffs to qoi
-    if isinstance(gpc, MEGPC):
-        coeffs_qoi = []
+    # generate samples in case of sampling approach
+    if algorithm == "sampling":
 
-        for c in coeffs:
-            coeffs_qoi.append(c[:, output_idx])
-
-    else:
-        coeffs_qoi = coeffs[:, output_idx]
-
-    if algorithm == "standard":
-        # determine mean
-        mean = gpc.get_mean(coeffs_qoi)
-
-        # determine standard deviation
-        std = gpc.get_standard_deviation(coeffs_qoi)
-
-    elif algorithm == "sampling":
-        # generate samples
-        if projection and not isinstance(gpc, MEGPC):
+        if projection and not multi_element_gpc:
             grid = RandomGrid(parameters_random=gpc.problem_original.parameters_random,
                               options={"n_grid": n_samples, "seed": None})
 
@@ -116,8 +152,99 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             grid = RandomGrid(parameters_random=gpc.problem.parameters_random,
                               options={"n_grid": n_samples, "seed": None})
 
-        # run model evaluations
-        res = gpc.get_approximation(coeffs=coeffs_qoi, x=grid.coords_norm)
+    # start prostprocessing depending on gPC type
+    if not qoi_specific and not multi_element_gpc:
+
+        coeffs = coeffs[:, output_idx]
+
+        if algorithm == "standard":
+            # determine mean
+            mean = gpc.get_mean(coeffs=coeffs)
+
+            # determine standard deviation
+            std = gpc.get_standard_deviation(coeffs=coeffs)
+
+        elif algorithm == "sampling":
+            # run model evaluations
+            res = gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
+
+            # determine mean
+            mean = gpc.get_mean(samples=res)
+
+            # determine standard deviation
+            std = gpc.get_standard_deviation(samples=res)
+
+        # determine Sobol indices
+        if calc_sobol:
+            sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs,
+                                                                     algorithm=algorithm,
+                                                                     n_samples=n_samples)
+
+        # determine global derivative based sensitivity coefficients
+        if calc_global_sens:
+            global_sens = gpc.get_global_sens(coeffs=coeffs,
+                                              algorithm=algorithm,
+                                              n_samples=n_samples)
+
+        # determine pdfs
+        if calc_pdf:
+            pdf_x, pdf_y = gpc.get_pdf(coeffs, n_samples=n_samples, output_idx=output_idx)
+
+        else:
+            raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
+
+    elif qoi_specific and not multi_element_gpc:
+
+        gpc = []
+        pdf_x = np.zeros((100, len(output_idx)))
+        pdf_y = np.zeros((100, len(output_idx)))
+        global_sens = np.zeros((dim, len(output_idx)))
+
+        res = np.zeros((grid.coords_norm.shape[0], len(output_idx)))
+
+        # loop over qoi (there may be different approximations and projections)
+        for i, idx in enumerate(output_idx):
+            # load gpc object
+            gpc = read_gpc_pkl(fn_gpc + "_qoi_" + str(idx) + ".pkl")
+
+            # run model evaluations
+            res[:, i] = gpc.get_approximation(coeffs=coeffs["qoi_" + str(idx)], x=grid.coords_norm).flatten()
+
+            # determine Sobol indices
+            if calc_sobol:
+                sobol_qoi, sobol_idx_qoi, sobol_idx_bool_qoi = gpc.get_sobol_indices(coeffs=coeffs["qoi_" + str(idx)],
+                                                                                     algorithm=algorithm,
+                                                                                     n_samples=n_samples)
+
+            # rearrange sobol indices according to first qoi (reference)
+            # (they are sorted w.r.t. highest contribution and this may change between qoi)
+            if i == 0:
+                sobol = copy.deepcopy(sobol_qoi)
+                sobol_idx = copy.deepcopy(sobol_idx_qoi)
+                sobol_idx_bool = copy.deepcopy(sobol_idx_bool_qoi)
+
+            else:
+                sobol = np.hstack((sobol, np.zeros(sobol.shape)))
+                sobol_sort_idx = []
+                for ii, s_idx in enumerate(sobol_idx):
+                    for jj, s_idx_qoi in enumerate(sobol_idx_qoi):
+                        if (s_idx == s_idx_qoi).all():
+                            sobol_sort_idx.append(jj)
+
+                for jj, s in enumerate(sobol_sort_idx):
+                    sobol[jj, i] = sobol_qoi[s]
+
+            # determine global derivative based sensitivity coefficients
+            if calc_global_sens:
+                global_sens[:, ] = gpc.get_global_sens(coeffs=coeffs["qoi_" + str(idx)],
+                                                       algorithm=algorithm,
+                                                       n_samples=n_samples)
+
+            # determine pdfs
+            if calc_pdf:
+                pdf_x[:, ], pdf_y[:, ] = gpc.get_pdf(coeffs=coeffs["qoi_" + str(idx)],
+                                                     n_samples=n_samples,
+                                                     output_idx=0)
 
         # determine mean
         mean = gpc.get_mean(samples=res)
@@ -125,30 +252,118 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
         # determine standard deviation
         std = gpc.get_standard_deviation(samples=res)
 
-    else:
-        raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
+    elif not qoi_specific and multi_element_gpc:
+
+        pdf_x = np.zeros((100, len(output_idx)))
+        pdf_y = np.zeros((100, len(output_idx)))
+        global_sens = np.zeros((dim, len(output_idx)))
+
+        if algorithm == "sampling":
+
+            res = np.zeros((grid.coords_norm.shape[0], len(output_idx)))
+
+            # load gpc object
+            gpc = read_gpc_pkl(os.path.join(os.path.split(fn_gpc)[0], fn_gpc_pkl[0]))
+
+            # run model evaluations
+            res = gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
+
+            # determine Sobol indices
+            if calc_sobol:
+                sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs,
+                                                                         algorithm=algorithm,
+                                                                         n_samples=n_samples)
+
+            # determine global derivative based sensitivity coefficients
+            if calc_global_sens:
+                global_sens[:, ] = gpc.get_global_sens(coeffs=coeffs,
+                                                       algorithm=algorithm,
+                                                       n_samples=n_samples)
+
+            # determine pdfs
+            if calc_pdf:
+                pdf_x[:, ], pdf_y[:, ] = gpc.get_pdf(coeffs=coeffs,
+                                                     n_samples=n_samples,
+                                                     output_idx=output_idx)
+
+            # determine mean
+            mean = gpc.get_mean(samples=res)
+
+            # determine standard deviation
+            std = gpc.get_standard_deviation(samples=res)
+
+        else:
+            raise AssertionError("Please use ""sampling"" algorithm in case of multi-element gPC!")
+
+    elif qoi_specific and multi_element_gpc:
+
+        pdf_x = np.zeros((100, len(output_idx)))
+        pdf_y = np.zeros((100, len(output_idx)))
+        global_sens = np.zeros((dim, len(output_idx)))
+
+        if algorithm == "sampling":
+
+            res = np.zeros((grid.coords_norm.shape[0], len(output_idx)))
+
+            # loop over qoi (there may be different approximations and projections)
+            for i, idx in enumerate(output_idx):
+
+                # load gpc object
+                gpc = read_gpc_pkl(os.path.join(os.path.split(fn_gpc)[0], fn_gpc_pkl[0]))
+
+                # run model evaluations
+                res[:, i] = gpc.get_approximation(coeffs=coeffs["qoi_" + str(idx)], x=grid.coords_norm).flatten()
+
+                # determine Sobol indices
+                if calc_sobol:
+                    sobol_qoi, sobol_idx_qoi, sobol_idx_bool_qoi = gpc.get_sobol_indices(coeffs=coeffs["qoi_" + str(idx)],
+                                                                                         algorithm=algorithm,
+                                                                                         n_samples=n_samples)
+
+                # rearrange sobol indices according to first qoi (reference)
+                # (they are sorted w.r.t. highest contribution and this may change between qoi)
+                if i == 0:
+                    sobol = copy.deepcopy(sobol_qoi)
+                    sobol_idx = copy.deepcopy(sobol_idx_qoi)
+                    sobol_idx_bool = copy.deepcopy(sobol_idx_bool_qoi)
+
+                else:
+                    sobol = np.hstack((sobol, np.zeros((sobol.shape[0], 1))))
+                    sobol_sort_idx = []
+                    for ii, s_idx in enumerate(sobol_idx):
+                        for jj, s_idx_qoi in enumerate(sobol_idx_qoi):
+                            if (s_idx == s_idx_qoi).all():
+                                sobol_sort_idx.append(jj)
+
+                    for jj, s in enumerate(sobol_sort_idx):
+                        sobol[jj, i] = sobol_qoi[s]
+
+                # determine global derivative based sensitivity coefficients
+                if calc_global_sens:
+                    global_sens[:, ] = gpc.get_global_sens(coeffs=coeffs["qoi_" + str(idx)],
+                                                           algorithm=algorithm,
+                                                           n_samples=n_samples)
+
+                # determine pdfs
+                if calc_pdf:
+                    pdf_x[:, ], pdf_y[:, ] = gpc.get_pdf(coeffs=coeffs["qoi_" + str(idx)],
+                                                         n_samples=n_samples,
+                                                         output_idx=0)
+
+            # determine mean
+            mean = gpc.get_mean(samples=res)
+
+            # determine standard deviation
+            std = gpc.get_standard_deviation(samples=res)
+
+        else:
+            raise AssertionError("Please use ""sampling"" algorithm in case of multi-element gPC!")
 
     # determine relative standard deviation
     rstd = std / mean
 
     # determine variance
     var = std ** 2
-
-    # determine Sobol indices
-    if calc_sobol:
-        sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs_qoi,
-                                                                 algorithm=algorithm,
-                                                                 n_samples=n_samples)
-
-    # determine global derivative based sensitivity coefficients
-    if calc_global_sens:
-        global_sens = gpc.get_global_sens(coeffs=coeffs_qoi,
-                                          algorithm=algorithm,
-                                          n_samples=n_samples)
-
-    # determine pdfs
-    if calc_pdf:
-        pdf_x, pdf_y = gpc.get_pdf(coeffs, n_samples=n_samples, output_idx=output_idx)
 
     print("> Adding results to: {}".format(fn_gpc + ".hdf5"))
     # save results in .hdf5 file (overwrite existing quantities in sens/...)

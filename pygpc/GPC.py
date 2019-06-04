@@ -118,6 +118,7 @@ class GPC(object):
         self.n_out = []
 
         # options
+        self.gradient = options["gradient_enhanced"]
         self.solver = None
         self.settings = None
         self.gpu = None
@@ -127,31 +128,24 @@ class GPC(object):
         self.fn_results = options["fn_results"]
         self.options = options
 
-    def init_gpc_matrix(self, gradient=False):
+    def init_gpc_matrix(self):
         """
-        Sets self.gpc_matrix with given self.basis and self.grid
-
-        Parameters
-        ----------
-        gradient : boolean, optional, default: False
-            Initialize standard gPC matrix or gradient gPC matrix
+        Sets self.gpc_matrix and self.gpc_matrix_gradient with given self.basis and self.grid
         """
 
-        if gradient:
-            self.gpc_matrix_gradient = self.calc_gpc_matrix(b=self.basis.b, x=self.grid.coords_norm,
-                                                            gradient=self.options["gradient_enhanced"])
+        self.gpc_matrix = self.calc_gpc_matrix(b=self.basis.b, x=self.grid.coords_norm)
+        self.n_grid.append(self.gpc_matrix.shape[0])
+        self.n_basis.append(self.gpc_matrix.shape[1])
+        self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
+        self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
+
+        if self.gradient:
+            self.gpc_matrix_gradient = self.calc_gpc_matrix(b=self.basis.b, x=self.grid.coords_norm, gradient=True)
             self.gpc_matrix_gradient = ten2mat(self.gpc_matrix_gradient)
             self.gpc_matrix_gradient_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_gradient_b_id = copy.deepcopy(self.basis.b_id)
 
-        else:
-            self.gpc_matrix = self.calc_gpc_matrix(b=self.basis.b, x=self.grid.coords_norm)
-            self.n_grid.append(self.gpc_matrix.shape[0])
-            self.n_basis.append(self.gpc_matrix.shape[1])
-            self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
-            self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
-
-    # TODO: @Lucas: Bitte multicore CPU version (laeuft derzeit nur auf 1 Kern) und GPU support implementieren
+    # TODO: @Lucas: Bitte multicore CPU version (laeuft derzeit nur auf 1 Kern)
     def calc_gpc_matrix(self, b, x, gradient=False, verbose=False):
         """
         Construct the gPC matrix or its derivative.
@@ -275,7 +269,7 @@ class GPC(object):
         return gpc_matrix
 
     # TODO: @Lucas: Implement this on the GPU
-    def loocv(self, coeffs, sim_results, error_norm="relative"):
+    def loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
         """
         Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
         The loocv error is calculated analytically after eq. (35) in [1] but omitting the "1 - " term, i.e. it
@@ -296,10 +290,12 @@ class GPC(object):
         ----------
         coeffs: ndarray of float [n_basis x n_out]
             GPC coefficients
-        sim_results: ndarray of float [n_grid x n_out]
+        results: ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
         error_norm: str, optional, default="relative"
             Decide if error is determined "relative" or "absolute"
+        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
+            Gradient of results in original parameter space (tensor)
 
         Returns
         -------
@@ -313,8 +309,19 @@ class GPC(object):
         """
         if self.options["gradient_enhanced"]:
             matrix = np.vstack((self.gpc_matrix, self.gpc_matrix_gradient))
+
+            # transform gradient of results in case of projection
+            if self.p_matrix is not None:
+                gradient_results = np.dot(gradient_results,
+                                          self.p_matrix.transpose() * self.p_matrix_norm[np.newaxis, :])
+
+            results_complete = np.vstack((results, ten2mat(gradient_results)))
         else:
             matrix = self.gpc_matrix
+            results_complete = results
+
+        # matrix = self.gpc_matrix
+        # results_complete = results
 
         # Analytical error estimation in case of overdetermined systems
         if matrix.shape[0] > 2*matrix.shape[1]:
@@ -322,11 +329,11 @@ class GPC(object):
             h = np.dot(np.dot(matrix, np.linalg.inv(np.dot(matrix.transpose(), matrix))), matrix.transpose())
 
             # determine loocv error
-            err = np.mean(((sim_results - np.dot(matrix, coeffs)) /
+            err = np.mean(((results_complete - np.dot(matrix, coeffs)) /
                            (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
 
             if error_norm == "relative":
-                norm = np.var(sim_results, axis=0, ddof=1)
+                norm = np.var(results_complete, axis=0, ddof=1)
             else:
                 norm = 1.
 
@@ -334,28 +341,32 @@ class GPC(object):
             relative_error_loocv = np.mean(err / norm)
 
         else:
+            # perform manual loocv without gradient
+            matrix = self.gpc_matrix
+            results_complete = results
+
             n_loocv = 25
 
             # define number of performed cross validations (max 100)
-            n_loocv_points = np.min((sim_results.shape[0], n_loocv))
+            n_loocv_points = np.min((results_complete.shape[0], n_loocv))
 
             # make list of indices, which are randomly sampled
-            loocv_point_idx = random.sample(list(range(sim_results.shape[0])), n_loocv_points)
+            loocv_point_idx = random.sample(list(range(results_complete.shape[0])), n_loocv_points)
 
             start = time.time()
             relative_error = np.zeros(n_loocv_points)
             for i in range(n_loocv_points):
                 # get mask of eliminated row
-                mask = np.arange(sim_results.shape[0]) != loocv_point_idx[i]
+                mask = np.arange(results_complete.shape[0]) != loocv_point_idx[i]
 
                 # determine gpc coefficients (this takes a lot of time for large problems)
-                coeffs_loo = self.solve(results=sim_results[mask, :],
+                coeffs_loo = self.solve(results=results_complete[mask, :],
                                         solver=self.options["solver"],
                                         matrix=matrix[mask, :],
                                         settings=self.options["settings"],
                                         verbose=False)
 
-                sim_results_temp = sim_results[loocv_point_idx[i], :]
+                sim_results_temp = results_complete[loocv_point_idx[i], :]
 
                 if error_norm == "relative":
                     norm = scipy.linalg.norm(sim_results_temp)
@@ -373,7 +384,7 @@ class GPC(object):
 
         return relative_error_loocv
 
-    def validate(self, coeffs, sim_results=None):
+    def validate(self, coeffs, results=None, gradient_results=None, qoi_idx=None):
         """
         Validate gPC approximation using the ValidationSet object contained in the Problem object.
         Determines the normalized root mean square deviation between the gpc approximation and the
@@ -383,14 +394,34 @@ class GPC(object):
         ----------
         coeffs: ndarray of float [n_coeffs x n_out]
             GPC coefficients
-        sim_results: ndarray of float [n_grid x n_out]
+        results: ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
+        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
+            Gradient of results in original parameter space (tensor)
+        qoi_idx : int, optional, default: None
+            Index of QOI to validate (if None, all QOI are considered)
 
         Returns
         -------
         error: float
             Estimated difference between gPC approximation and original model
         """
+        if qoi_idx is None:
+            qoi_idx = np.arange(0, results.shape[1])
+
+        # Determine QOIs with NaN in results and exclude them from validation
+        non_nan_mask = np.where(np.all(~np.isnan(results), axis=0))[0]
+        n_nan = results.shape[1] - non_nan_mask.size
+
+        if n_nan > 0:
+            iprint("In {}/{} output quantities NaN's were found.".format(n_nan, results.shape[1]),
+                   tab=0, verbose=self.options["verbose"])
+
+        results = results[:, non_nan_mask]
+
+        if gradient_results is not None:
+            gradient_results = gradient_results[:, non_nan_mask, :]
+
         # always determine nrmsd if a validation set is present
         if isinstance(self.validation, ValidationSet):
 
@@ -399,8 +430,13 @@ class GPC(object):
             if gpc_results.ndim == 1:
                 gpc_results = gpc_results[:, np.newaxis]
 
+            if self.validation.results[:, qoi_idx].ndim == 1:
+                validation_results = self.validation.results[:, qoi_idx][:, np.newaxis]
+            else:
+                validation_results = self.validation.results[:, qoi_idx]
+
             self.relative_error_nrmsd.append(float(np.mean(nrmsd(gpc_results,
-                                                                 self.validation.results,
+                                                                 validation_results,
                                                                  error_norm=self.options["error_norm"],
                                                                  x_axis=False))))
 
@@ -409,7 +445,8 @@ class GPC(object):
 
         elif self.options["error_type"] == "loocv":
             self.relative_error_loocv.append(self.loocv(coeffs=coeffs,
-                                                        sim_results=sim_results,
+                                                        results=results,
+                                                        gradient_results=gradient_results,
                                                         error_norm=self.options["error_norm"]))
             self.error.append(self.relative_error_loocv[-1])
 
@@ -456,14 +493,13 @@ class GPC(object):
         pdf_y = np.zeros([100, n_out])
 
         for i_out in range(n_out):
-            try:
-                kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
-                pdf_y[:, i_out] = kde(pdf_x[:, i_out])
 
-            except np.linalg.linalg.LinAlgError:
-                Warning("Singular matrix during pdf calculation ...")
+            pdf_y[:, i_out], tmp = np.histogram(samples_out[:, i_out], bins=100, density=True)
+            pdf_x[:, i_out] = (tmp[1:] + tmp[0:-1]) / 2.
 
-            pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
+            # kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
+            # pdf_y[:, i_out] = kde(pdf_x[:, i_out])
+            # pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
 
         return pdf_x, pdf_y
 
@@ -493,8 +529,13 @@ class GPC(object):
         # seed the random numbers generator
         np.random.seed()
 
+        if self.p_matrix is not None:
+            problem = self.problem_original
+        else:
+            problem = self.problem
+
         # generate temporary grid with random samples for each random input variable [n_samples x dim]
-        grid = RandomGrid(parameters_random=self.problem.parameters_random,
+        grid = RandomGrid(parameters_random=problem.parameters_random,
                           options={"n_grid": n_samples, "seed": None})
 
         # if output index list is not provided, sample all gpc outputs
@@ -507,6 +548,7 @@ class GPC(object):
 
         return grid.coords_norm, pce
 
+    # TODO: @Lucas: matmul mit calc_gpc "verbinden" in diesem Fall
     def get_approximation(self, coeffs, x, output_idx=None):
         """
         Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).
@@ -540,6 +582,10 @@ class GPC(object):
             coeffs = coeffs[:, output_idx]
 
         if not self.gpu:
+
+            if coeffs.ndim == 1:
+                coeffs = coeffs[:, np.newaxis]
+
             # transform variables from xi to eta space if gpc model is reduced
             if self.p_matrix is not None:
                 x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
@@ -609,8 +655,7 @@ class GPC(object):
         # determine new rows of gpc matrix and overwrite rows of gpc matrix
         self.gpc_matrix[idx, :] = self.calc_gpc_matrix(self.basis.b, new_grid_points.coords_norm)
 
-    # TODO: @Lucas: Bitte GPU support implementieren
-    def update_gpc_matrix(self, gradient=False):
+    def update_gpc_matrix(self):
         """
         Update gPC matrix according to existing self.grid and self.basis.
 
@@ -618,15 +663,20 @@ class GPC(object):
         The old gPC matrix with their self.gpc_matrix_b_id and self.gpc_matrix_coords_id is compared
         to self.basis.b_id and self.grid.coords_id. New rows and columns are computed when differences are found.
         """
+        self._update_gpc_matrix(gradient=False)
 
+        if self.gradient:
+            self._update_gpc_matrix(gradient=True)
+
+    def _update_gpc_matrix(self, gradient=False):
+        """
+        Update gPC matrix or gPC gradient matrix
+        """
         if not self.gpu:
             # initialize updated matrix and variables
             if gradient:
                 # reshape gpc gradient matrix from 2D to 3D representation [n_grid x n_basis x n_dim]
                 matrix = mat2ten(mat=self.gpc_matrix_gradient, incr=self.problem.dim)
-                # matrix = self.gpc_matrix_gradient.reshape((self.gpc_matrix_gradient.shape[0]/self.problem.dim,
-                #                                            len(self.gpc_matrix_gradient_b_id),
-                #                                            self.problem.dim))
                 matrix_updated = np.zeros((len(self.grid.coords_id), len(self.basis.b_id), self.problem.dim))
                 coords_id = self.gpc_matrix_gradient_coords_id  # self.gpc_matrix_gradient_coords_id
                 coords_id_ref = self.grid.coords_gradient_id  # np.array(self.grid.coords_gradient_id).flatten()
@@ -736,11 +786,15 @@ class GPC(object):
             Path in .hdf5 file, where the gPC gradient matrix is saved in
         """
 
+        if hdf5_path_gpc_matrix is None:
+            hdf5_path_gpc_matrix = "gpc_matrix"
+
+        if hdf5_path_gpc_matrix_gradient is None:
+            hdf5_path_gpc_matrix_gradient = "gpc_matrix_gradient"
+
         with h5py.File(self.fn_results + ".hdf5", "a") as f:
             try:
                 # write gpc matrix
-                if hdf5_path_gpc_matrix is None:
-                    hdf5_path_gpc_matrix = "gpc_matrix"
                 gpc_matrix_hdf5 = f[hdf5_path_gpc_matrix][:]
                 n_rows_hdf5 = gpc_matrix_hdf5.shape[0]
                 n_cols_hdf5 = gpc_matrix_hdf5.shape[1]
@@ -768,8 +822,6 @@ class GPC(object):
 
                 # write gpc gradient matrix if available
                 if self.gpc_matrix_gradient is not None:
-                    if hdf5_path_gpc_matrix_gradient is None:
-                        hdf5_path_gpc_matrix_gradient = "gpc_matrix_gradient"
                     gpc_matrix_gradient_hdf5 = f[hdf5_path_gpc_matrix_gradient][:]
                     n_rows_hdf5 = gpc_matrix_gradient_hdf5.shape[0]
                     n_cols_hdf5 = gpc_matrix_gradient_hdf5.shape[1]
@@ -811,7 +863,7 @@ class GPC(object):
                                      dtype="float64",
                                      data=self.gpc_matrix_gradient)
 
-    def solve(self, results, solver=None, settings=None, matrix=None, verbose=False):
+    def solve(self, results, gradient_results=None, solver=None, settings=None, matrix=None, verbose=False):
         """
         Determines gPC coefficients
 
@@ -819,6 +871,8 @@ class GPC(object):
         ----------
         results : [n_grid x n_out] np.ndarray of float
             Results from simulations with N_out output quantities
+        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
+            Gradient of results in original parameter space (tensor)
         solver : str
             Solver to determine the gPC coefficients
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
@@ -866,6 +920,17 @@ class GPC(object):
         iprint("Determine gPC coefficients using '{}' solver {}...".format(solver, ge_str),
                tab=0, verbose=verbose)
 
+        # construct results array
+        if gradient_results is not None:
+            # transform gradient of results according to projection
+            if self.p_matrix is not None:
+                gradient_results = np.dot(gradient_results,
+                                          self.p_matrix.transpose() * self.p_matrix_norm[np.newaxis, :])
+
+            results_complete = np.vstack((results, ten2mat(gradient_results)))
+        else:
+            results_complete = results
+
         #################
         # Moore-Penrose #
         #################
@@ -874,7 +939,7 @@ class GPC(object):
             self.matrix_inv = np.linalg.pinv(matrix)
 
             try:
-                coeffs = np.dot(self.matrix_inv, results)
+                coeffs = np.dot(self.matrix_inv, results_complete)
             except ValueError:
                 raise AttributeError("Please check format of parameter sim_results: [n_grid (* dim) x n_out] "
                                      "np.ndarray.")
@@ -886,8 +951,8 @@ class GPC(object):
             # transform gPC matrix to fastmat format
             matrix_fm = fm.Matrix(matrix)
 
-            if results.ndim == 1:
-                results = results[:, np.newaxis]
+            if results_complete.ndim == 1:
+                results_complete = results_complete[:, np.newaxis]
 
             # determine gPC-coefficients of extended basis using OMP
             if "n_coeffs_sparse" in settings.keys():
@@ -897,19 +962,19 @@ class GPC(object):
             else:
                 raise AttributeError("Please specify 'n_coeffs_sparse' or 'sparsity' in solver settings dictionary!")
 
-            coeffs = fm.algs.OMP(matrix_fm, results, n_coeffs_sparse)
+            coeffs = fm.algs.OMP(matrix_fm, results_complete, n_coeffs_sparse)
 
         ################################
         # Least-Angle Regression Lasso #
         ################################
         elif solver == 'LarsLasso':
 
-            if results.ndim == 1:
-                results = results[:, np.newaxis]
+            if results_complete.ndim == 1:
+                results_complete = results_complete[:, np.newaxis]
 
             # determine gPC-coefficients of extended basis using LarsLasso
             reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False)
-            reg.fit(matrix, results)
+            reg.fit(matrix, results_complete)
             coeffs = reg.coef_
 
             if coeffs.ndim == 1:
@@ -944,13 +1009,13 @@ class GPC(object):
                 joint_pdf = np.array([np.prod(joint_pdf, axis=1)]).transpose()
 
                 # weight sim_results with the joint pdf
-                results = results * joint_pdf * 2 ** self.problem.dim
+                results_complete = results_complete * joint_pdf * 2 ** self.problem.dim
 
             # scale rows of gpc matrix with quadrature weights
             matrix_weighted = np.dot(np.diag(self.grid.weights), matrix)
 
             # determine gpc coefficients [n_coeffs x n_output]
-            coeffs = np.dot(results.transpose(), matrix_weighted).transpose()
+            coeffs = np.dot(results_complete.transpose(), matrix_weighted).transpose()
 
         else:
             raise AttributeError("Unknown solver: '{}'!")

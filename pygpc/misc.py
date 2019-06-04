@@ -9,6 +9,7 @@ import scipy.stats
 import sys
 import math
 import itertools
+import random
 from .Visualization import plot_beta_pdf_fit
 
 
@@ -440,7 +441,7 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, o
 
     # generate multi-index list up to maximum order
     if dim == 1:
-        poly_idx = np.array([np.linspace(0, order_dim_max, order_dim_max + 1)]).astype(int).transpose()
+        poly_idx = np.array([np.linspace(0, order_dim_max[0], order_dim_max[0] + 1)]).astype(int).transpose()
     else:
         poly_idx = get_multi_indices_max_order(int(dim), order_glob_max, order_glob_max_norm)
 
@@ -723,3 +724,114 @@ def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=0.95):
     p_matrix = v_filt
 
     return p_matrix
+
+
+def get_indices_of_k_smallest(arr, k):
+    """
+    Find indices of k smallest elements in ndarray
+
+    Parameters
+    ----------
+    arr : ndarray of float
+        Array
+    k : int
+        Number of smallest values to extract
+
+    Returns
+    -------
+    idx : tuple of ndarray [k]
+        Indices of k smallest elements in array
+    """
+    index = np.argpartition(arr.ravel(), k)
+    idx = tuple(np.array(np.unravel_index(index, arr.shape))[:, range(min(k, 0), max(k, 0))])
+
+    return idx
+
+
+def get_coords_discontinuity(classifier, x_min, x_max, n_coords_disc=10, border_sampling="structured"):
+    """
+    Determine n_coords_disc grid points close to discontinuity
+
+    Parameters
+    ----------
+    classifier : Classifier object
+        Classifier object to predict classes from coordinates (needs to contain a classifier.predict() method)
+    x_min : ndarray of float [n_dim]
+        Minimal values in parameter space to search discontinuity
+    x_max : ndarray of float [n_dim]
+        Maximal values in parameter space to search discontinuity
+    n_coords_disc : int, optional, default: 10
+        Number of grid points to determine close to discontinuity
+    border_sampling : str, optional, default: "structured"
+        Sampling method to determine location of discontinuity
+
+
+    Returns
+    -------
+    coords_disc : ndarray of float [n_coords_disc]
+    """
+
+    # if border_sampling == "random":
+    #     coords_border_det = grid_learn_cluster.coords
+    #     domains = model_kmeans.labels_
+    dim = len(x_min)
+
+    # create tensored mesh to find discontinuity
+    if border_sampling == "structured":
+        n_samples = 1E4**(1./dim)
+        eval_str = "np.array(np.meshgrid("
+
+        for i in range(dim):
+            eval_str += "np.linspace(x_min[{}], x_max[{}], {})".format(i, i, n_samples)
+
+            if i < dim-1:
+                eval_str += ", "
+
+        eval_str += ")).T.reshape(-1, {})".format(dim)
+
+        coords_border_det = eval(eval_str)
+
+        domains = classifier.predict(coords_border_det)
+    else:
+        raise NotImplementedError("Please use valid border sampling method (""structured"")")
+
+    # determine mask of not equaling domain points
+    # dom_mat = np.tile(domains[:, np.newaxis], (1, domains.shape[0]))
+    dom_mat = np.broadcast_to(domains, (len(domains), len(domains))).T
+    mask = dom_mat != dom_mat.transpose()
+    mask = np.tril(mask) * False + np.triu(mask)
+
+    # determine distances between grid points in different domains
+    distance_matrix = np.ones(mask.shape) * np.nan
+    for i_c, c in enumerate(coords_border_det):
+        distance_matrix[i_c, mask[i_c, :]] = np.linalg.norm(coords_border_det[mask[i_c, :], :] - c, axis=1)
+
+    np.fill_diagonal(distance_matrix, np.nan)
+
+    # find n_smallest distances and determine midpoints between those points
+    n_smallest = 1000
+    idx = get_indices_of_k_smallest(distance_matrix, n_smallest)
+    coords_border = (coords_border_det[idx[0], :] + coords_border_det[idx[1], :]) / 2
+
+    # resample n_coords_disc equally distributed points from n_smallest points on discontinuity
+    n_reps = 10000  # number of repetitions
+    idx = np.zeros((n_coords_disc, n_reps))
+    distance_mean = np.zeros(n_reps)
+
+    # select n_coords_disc points randomly and determine average minimal distance between points
+    for i in range(n_reps):
+        # sample n_resample points from coords_border
+        idx[:, i] = random.sample(list(range(coords_border.shape[0])), n_coords_disc)
+
+        # determine all to all distances
+        distance_matrix_resample = np.ones((n_coords_disc, n_coords_disc)) * np.nan
+
+        for i_c, c in enumerate(coords_border[idx[:, i].astype(int), :]):
+            distance_matrix_resample[i_c, :] = np.linalg.norm(coords_border[idx[:, i].astype(int), :] - c, axis=1)
+
+        np.fill_diagonal(distance_matrix_resample, 1000)
+        distance_mean[i] = np.mean(np.min(distance_matrix_resample, axis=1))
+
+    coords_disc = coords_border[idx[:, np.argmax(distance_mean)].astype(int), :]
+
+    return coords_disc

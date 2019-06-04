@@ -77,10 +77,10 @@ class AbstractModel:
                         with h5py.File(self.fn_results + ".hdf5", 'r') as f:
 
                             if type(self.i_grid) is list:
-                                res = f['results'][self.i_grid[0]:self.i_grid[1], :]
+                                res = f['model_evaluations/results'][self.i_grid[0]:self.i_grid[1], :]
                                 coords_read = f['grid/coords'][self.i_grid[0]:self.i_grid[1], :]
                             else:
-                                res = f['results'][self.i_grid, :]
+                                res = f['model_evaluations/results'][self.i_grid, :]
                                 coords_read = f['grid/coords'][self.i_grid, :]
 
                             if np.isclose(coords_read, coords).all():

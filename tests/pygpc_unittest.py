@@ -44,90 +44,95 @@ class TestpygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    # def test_1_static_gpc_reg_mp_randomgrid(self):
-    #     """
-    #     Algorithm: Static
-    #     Method: Regression
-    #     Solver: Moore-Penrose
-    #     Grid: RandomGrid
-    #     """
-    #     global folder
-    #     test_name = 'pygpc_test_1_static_reg_mp_randomgrid'
-    #     print(test_name)
-    #
-    #     # define model
-    #     model = pygpc.testfunctions.Peaks
-    #
-    #     # define problem
-    #     parameters = OrderedDict()
-    #     parameters["x1"] = pygpc.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
-    #     parameters["x2"] = 1.25
-    #     parameters["x3"] = pygpc.Norm(pdf_shape=[0.1, 0.15])
-    #     problem = pygpc.Problem(model, parameters)
-    #
-    #     # gPC options
-    #     options = dict()
-    #     options["method"] = "reg"
-    #     options["solver"] = "Moore-Penrose"
-    #     options["settings"] = None
-    #     options["order"] = [7, 7]
-    #     options["order_max"] = 7
-    #     options["interaction_order"] = 2
-    #     options["n_cpu"] = 4
-    #     options["fn_results"] = os.path.join(folder, test_name)
-    #
-    #     # generate grid
-    #     n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-    #                                            order_glob_max=options["order_max"],
-    #                                            order_inter_max=options["interaction_order"],
-    #                                            dim=problem.dim)
-    #
-    #     grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-    #                             options={"n_grid": 1.5 * n_coeffs, "seed": 1})
-    #
-    #     pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
-    #
-    #     # define algorithm
-    #     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
-    #
-    #     # run gPC algorithm
-    #     gpc, coeffs, results = algorithm.run()
-    #
-    #     # Post-process gPC
-    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-    #                                  output_idx=None,
-    #                                  calc_sobol=True,
-    #                                  calc_global_sens=True,
-    #                                  calc_pdf=True)
-    #
-    #     # Validate gPC vs original model function (Monte Carlo)
-    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-    #                                   coeffs=coeffs,
-    #                                   n_samples=int(1e4),
-    #                                   output_idx=0,
-    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
-    #
-    #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
-    #
-    #     # Validate gPC vs original model function (2D-slice)
-    #     pygpc.validate_gpc_plot(gpc=gpc,
-    #                             coeffs=coeffs,
-    #                             random_vars=["x3", "x1"],
-    #                             n_grid=[10, 25],
-    #                             output_idx=[0, 1],
-    #                             fn_out=os.path.join(folder, test_name + '_validation_2d'))
-    #
-    #     # Validate gPC vs original model function (1D-slice)
-    #     pygpc.validate_gpc_plot(gpc=gpc,
-    #                             coeffs=coeffs,
-    #                             random_vars=["x3"],
-    #                             n_grid=[125],
-    #                             output_idx=[0, 1],
-    #                             fn_out=os.path.join(folder, test_name + '_validation_1d'))
-    #
-    #     self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
-    #
-    #     print("done!\n")
+    def test_1_static_gpc_reg_mp_randomgrid(self):
+        """
+        Algorithm: Static
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: RandomGrid
+        """
+        global folder
+        test_name = 'pygpc_test_1_static_reg_mp_randomgrid'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.Peaks
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[5, 2], pdf_limits=[1.2, 2])
+        parameters["x2"] = 1.25
+        parameters["x3"] = pygpc.Norm(pdf_shape=[0.1, 0.15])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "Moore-Penrose"
+        options["settings"] = None
+        options["order"] = [7, 7]
+        options["order_max"] = 7
+        options["interaction_order"] = 2
+        options["matrix_ratio"] = 2
+        options["error_type"] = "nrmsd"
+        options["n_cpu"] = 0
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["gradient_enhanced"] = True
+        options["GPU"] = True
+
+        # generate grid
+        n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
+                                               order_glob_max=options["order_max"],
+                                               order_inter_max=options["interaction_order"],
+                                               dim=problem.dim)
+
+        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+                                options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
+
+        pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
+
+        # define algorithm
+        algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+
+        # run gPC algorithm
+        gpc, coeffs, results = algorithm.run()
+
+        # Post-process gPC
+        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True,
+                                     algorithm="sampling")
+
+        # Validate gPC vs original model function (Monte Carlo)
+        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
+
+        print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+
+        # Validate gPC vs original model function (2D-slice)
+        pygpc.validate_gpc_plot(gpc=gpc,
+                                coeffs=coeffs,
+                                random_vars=["x3", "x1"],
+                                n_grid=[10, 25],
+                                output_idx=[0, 1],
+                                fn_out=os.path.join(folder, test_name + '_validation_2d'))
+
+        # Validate gPC vs original model function (1D-slice)
+        pygpc.validate_gpc_plot(gpc=gpc,
+                                coeffs=coeffs,
+                                random_vars=["x3"],
+                                n_grid=[125],
+                                output_idx=[0, 1],
+                                fn_out=os.path.join(folder, test_name + '_validation_1d'))
+
+        self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
+
+        print("done!\n")
 
     # def test_2_static_gpc_reg_omp_randomgrid(self):
     #     """
@@ -369,7 +374,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["solver"] = "Moore-Penrose"
     #     options["settings"] = None
     #     options["seed"] = 1
-    #     options["matrix_ratio"] = 1.5
+    #     options["matrix_ratio"] = 2
     #     options["n_cpu"] = 1
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["print_func_time"] = True
@@ -389,7 +394,8 @@ class TestpygpcMethods(unittest.TestCase):
     #                                  output_idx=None,
     #                                  calc_sobol=True,
     #                                  calc_global_sens=True,
-    #                                  calc_pdf=True)
+    #                                  calc_pdf=True,
+    #                                  algorithm="sampling")
     #
     #     # Validate gPC vs original model function
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
@@ -619,7 +625,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -627,7 +633,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[31, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -703,7 +709,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -781,7 +787,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["rho_0"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -790,7 +796,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["rho_0", "beta"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -870,7 +876,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -879,7 +885,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -971,7 +977,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     #                         coeffs=coeffs,
     #     #                         random_vars=["x1"],
     #     #                         n_grid=[51],
-    #     #                         output_idx=[0],
+    #     #                         output_idx=0,
     #     #                         fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #     #                         n_cpu=options["n_cpu"])
     #
@@ -980,7 +986,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[101, 101],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1059,7 +1065,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1068,7 +1074,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1147,7 +1153,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1156,7 +1162,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1235,7 +1241,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1244,7 +1250,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1324,7 +1330,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1333,7 +1339,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1368,29 +1374,31 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["method"] = "reg"
     #     options["solver"] = "Moore-Penrose"
     #     options["settings"] = None
-    #     options["order"] = [15]
-    #     options["order_max"] = 15
+    #     options["order"] = [10]
+    #     options["order_max"] = 10
     #     options["interaction_order"] = 1
     #     options["n_cpu"] = 0
-    #     options["error_type"] = "loocv"
+    #     options["error_type"] = "nrmsd"
     #     options["error_norm"] = "relative"
     #     options["matrix_ratio"] = 2
-    #     options["projection_qoi"] = 0
+    #     options["qoi"] = 1
     #     options["n_grid_gradient"] = 5
     #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["gradient_enhanced"] = True
     #
     #     # define algorithm
     #     algorithm = pygpc.StaticProjection(problem=problem, options=options)
     #
     #     # run gPC algorithm
-    #     gpc, coeffs, results = algorithm.run
+    #     gpc, coeffs, results = algorithm.run()
     #
     #     # Post-process gPC
     #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
     #                                  output_idx=None,
     #                                  calc_sobol=True,
     #                                  calc_global_sens=True,
-    #                                  calc_pdf=True)
+    #                                  calc_pdf=True,
+    #                                  algorithm="sampling")
     #
     #     # Validate gPC vs original model function (Monte Carlo)
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
@@ -1407,7 +1415,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1416,7 +1424,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1497,7 +1505,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1506,7 +1514,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1592,7 +1600,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1601,7 +1609,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1676,7 +1684,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1752,7 +1760,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1832,7 +1840,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1"],
     #                             n_grid=[51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_1d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1841,7 +1849,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                             coeffs=coeffs,
     #                             random_vars=["x1", "x2"],
     #                             n_grid=[51, 51],
-    #                             output_idx=[0],
+    #                             output_idx=0,
     #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                             n_cpu=options["n_cpu"])
     #
@@ -1884,8 +1892,11 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["gradient_calculation"] = "standard_forward"
     #     options["n_grid_gradient"] = 5
-    #     options["projection_qoi"] = 0
-    #     options["eps_lambda_gradient"] = 0.1
+    #     options["qoi"] = 1
+    #     options["error_type"] = "loocv"
+    #     options["eps_lambda_gradient"] = 0.95
+    #     options["gradient_enhanced"] = True
+    #     options["adaptive_sampling"] = False
     #
     #     # define algorithm
     #     algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
@@ -1906,6 +1917,15 @@ class TestpygpcMethods(unittest.TestCase):
     #                                   n_samples=int(1e4),
     #                                   output_idx=0,
     #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     # Validate gPC vs original model function (2D-surface)
+    #     pygpc.validate_gpc_plot(gpc=gpc,
+    #                             coeffs=coeffs,
+    #                             random_vars=["x1", "x3"],
+    #                             n_grid=[51, 51],
+    #                             output_idx=0,
+    #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
+    #                             n_cpu=options["n_cpu"])
     #
     #     print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
     #
@@ -1949,7 +1969,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["gradient_calculation"] = "standard_forward"
     #     options["n_grid_gradient"] = 25
-    #     options["projection_qoi"] = 0
+    #     options["qoi"] = 0
     #     options["eps_lambda_gradient"] = 0.95
     #     options["gradient_enhanced"] = True
     #     options["adaptive_sampling"] = False
@@ -2016,7 +2036,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["gradient_calculation"] = "standard_forward"
     #     options["n_grid_gradient"] = 100
-    #     options["projection_qoi"] = 0
+    #     options["qoi"] = 0
     #     options["eps_lambda_gradient"] = 0.95
     #     options["gradient_enhanced"] = True
     #     options["adaptive_sampling"] = True
@@ -2083,7 +2103,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["gradient_calculation"] = "standard_forward"
     #     options["n_grid_gradient"] = 100
-    #     options["projection_qoi"] = 0
+    #     options["qoi"] = 0
     #     options["eps_lambda_gradient"] = 0.05
     #
     #     # define algorithm
@@ -2132,7 +2152,6 @@ class TestpygpcMethods(unittest.TestCase):
     #         parameters["x2"] = 1.25
     #         parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
     #         problem = pygpc.Problem(model, parameters)
-    #         problem.create_validation_set(n_samples=int(1e4), n_cpu=0)
     #
     #         # gPC options
     #         options = dict()
@@ -2147,11 +2166,12 @@ class TestpygpcMethods(unittest.TestCase):
     #         options["fn_results"] = os.path.join(folder, test_name)
     #         options["adaptive_sampling"] = True
     #         options["n_grid_gradient"] = 25
-    #         options["projection_qoi"] = 0
+    #         options["qoi"] = 0
     #         options["eps_lambda_gradient"] = 0.1
     #         options["gradient_calculation"] = "standard_forward"
     #         options["error_type"] = "nrmsd"
     #         options["error_norm"] = "relative"
+    #         options["gradient_enhanced"] = True
     #
     #         # define algorithm
     #         algorithm = pygpc.RegAdaptive(problem=problem, options=options)
@@ -2176,6 +2196,15 @@ class TestpygpcMethods(unittest.TestCase):
     #                                       n_samples=int(1e4),
     #                                       output_idx=0,
     #                                       fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #         # Validate gPC vs original model function (2D-surface)
+    #         pygpc.validate_gpc_plot(gpc=gpc,
+    #                                 coeffs=coeffs,
+    #                                 random_vars=["x1", "x3"],
+    #                                 n_grid=[51, 51],
+    #                                 output_idx=0,
+    #                                 fn_out=os.path.join(folder, test_name + '_validation_2d'),
+    #                                 n_cpu=options["n_cpu"])
     #
     #         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
     #
@@ -2279,7 +2308,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["adaptive_sampling"] = False
     #     options["n_grid_gradient"] = 3
-    #     options["projection_qoi"] = 0
+    #     options["qoi"] = 0
     #     options["eps_lambda_gradient"] = 0.1
     #     options["gradient_calculation"] = "standard_forward"
     #     options["error_type"] = "loocv"
@@ -2348,7 +2377,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["adaptive_sampling"] = True
     #     options["n_grid_gradient"] = 25
-    #     options["projection_qoi"] = 0
+    #     options["qoi"] = 0
     #     options["eps_lambda_gradient"] = 0.1
     #     options["gradient_calculation"] = "standard_forward"
     #     options["error_type"] = "loocv"
@@ -2415,7 +2444,7 @@ class TestpygpcMethods(unittest.TestCase):
     #     options["fn_results"] = os.path.join(folder, test_name)
     #     options["adaptive_sampling"] = True
     #     options["n_grid_gradient"] = 5
-    #     options["projection_qoi"] = 0
+    #     options["qoi"] = 0
     #     options["eps_lambda_gradient"] = 0.1
     #     options["gradient_calculation"] = "standard_forward"
     #     options["error_type"] = "loocv"
@@ -2481,7 +2510,7 @@ class TestpygpcMethods(unittest.TestCase):
     #         options["fn_results"] = os.path.join(folder, test_name)
     #         options["adaptive_sampling"] = False
     #         options["n_grid_gradient"] = 5
-    #         options["projection_qoi"] = 0
+    #         options["qoi"] = 0
     #         options["eps_lambda_gradient"] = 0.95
     #         options["gradient_calculation"] = "standard_forward"
     #         options["error_type"] = "loocv"
@@ -2552,7 +2581,7 @@ class TestpygpcMethods(unittest.TestCase):
     #         options["fn_results"] = os.path.join(folder, test_name)
     #         options["adaptive_sampling"] = False
     #         options["n_grid_gradient"] = 5
-    #         options["projection_qoi"] = 0
+    #         options["qoi"] = 0
     #         options["eps_lambda_gradient"] = 0.95
     #         options["gradient_calculation"] = "standard_forward"
     #         options["error_type"] = "loocv"
@@ -2740,7 +2769,7 @@ class TestpygpcMethods(unittest.TestCase):
     #                                 coeffs=coeffs,
     #                                 random_vars=["x1", "x2"],
     #                                 n_grid=[51, 51],
-    #                                 output_idx=[0],
+    #                                 output_idx=0,
     #                                 fn_out=os.path.join(folder, test_name + '_validation_2d'),
     #                                 n_cpu=options["n_cpu"])
     #
@@ -2748,99 +2777,174 @@ class TestpygpcMethods(unittest.TestCase):
     #
     #         print("done!\n")
 
-    def test_36_static_megpc_reg_mp_randomgrid_BinaryDiscontinuousSphere(self):
-        """
-        Algorithm: Static
-        Method: Regression
-        Solver: Moore-Penrose
-        Grid: RandomGrid
-        """
-        global folder
-        test_name = 'pygpc_test_36_static_megpc_reg_mp_randomgrid_BinaryDiscontinuousSphere'
-        print(test_name)
+    # def test_36_static_megpc_reg_mp_randomgrid_BinaryDiscontinuousSphere(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Regression
+    #     Solver: Moore-Penrose
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_36_static_megpc_reg_mp_randomgrid_SurfaceCoverageSpecies'
+    #     print(test_name)
+    #
+    #     # define model
+    #     # model = pygpc.testfunctions.GenzDiscontinuous
+    #     model = pygpc.testfunctions.SurfaceCoverageSpecies
+    #     # model = pygpc.testfunctions.HyperbolicTangent
+    #     # model = pygpc.testfunctions.BinaryDiscontinuousSphere
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["rho_0"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+    #     parameters["beta"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 20])
+    #     parameters["alpha"] = 1.
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["method"] = "reg"
+    #     options["solver"] = "Moore-Penrose"
+    #     options["settings"] = None
+    #     options["order"] = [9, 9]
+    #     options["order_max"] = 9
+    #     options["interaction_order"] = 2
+    #     options["matrix_ratio"] = 2
+    #     options["n_cpu"] = 0
+    #     options["gradient_enhanced"] = True
+    #     options["gradient_calculation"] = "standard_forward"
+    #     options["error_type"] = "loocv"
+    #     options["n_samples_validation"] = 1e4
+    #     options["qoi"] = "all"
+    #     options["n_grid_gradient"] = 5
+    #     options["classifier"] = "learning"
+    #     options["classifier_options"] = {"clusterer": "KMeans",
+    #                                      "n_clusters": 2,
+    #                                      "classifier": "MLPClassifier",
+    #                                      "classifier_solver": "lbfgs"}
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #
+    #     # generate grid
+    #     n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
+    #                                            order_glob_max=options["order_max"],
+    #                                            order_inter_max=options["interaction_order"],
+    #                                            dim=problem.dim)
+    #
+    #     grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+    #                             options={"n_grid": 200, "seed": 1})  # options["matrix_ratio"] * n_coeffs
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Validate gPC vs original model function (2D-surface)
+    #     # pygpc.validate_gpc_plot(gpc=gpc,
+    #     #                         coeffs=coeffs,
+    #     #                         random_vars=list(problem.parameters_random.keys()),
+    #     #                         n_grid=[51, 51],
+    #     #                         output_idx=1,
+    #     #                         fn_out=os.path.join(folder, test_name + '_validation_2d'),
+    #     #                         n_cpu=options["n_cpu"])
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True,
+    #                                  algorithm="sampling",
+    #                                  n_samples=1e3)
+    #
+    #     # Validate gPC vs original model function (Monte Carlo)
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   n_cpu=options["n_cpu"],
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #     print("done!\n")
 
-        # define model
-        # model = pygpc.testfunctions.GenzDiscontinuous
-        model = pygpc.testfunctions.SurfaceCoverageSpecies
-        # model = pygpc.testfunctions.HyperbolicTangent
-        # model = pygpc.testfunctions.BinaryDiscontinuousSphere
-
-        # define problem
-        parameters = OrderedDict()
-        parameters["rho_0"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-        parameters["beta"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 20])
-        parameters["alpha"] = 1.
-        problem = pygpc.Problem(model, parameters)
-
-        # gPC options
-        options = dict()
-        options["method"] = "reg"
-        options["solver"] = "Moore-Penrose"
-        options["settings"] = None
-        options["order"] = [9, 9]
-        options["order_max"] = 9
-        options["interaction_order"] = 2
-        options["matrix_ratio"] = 2
-        options["n_cpu"] = 0
-        options["gradient_enhanced"] = True
-        options["gradient_calculation"] = "standard_forward"
-        options["error_type"] = "nrmsd"
-        options["n_samples_validation"] = 1e4
-        options["n_grid_gradient"] = 5
-        options["classifier"] = "learning"
-        options["classifier_options"] = {"clusterer": "KMeans",
-                                         "n_clusters": 2,
-                                         "classifier": "MLPClassifier",
-                                         "classifier_solver": "lbfgs"}
-        options["fn_results"] = os.path.join(folder, test_name)
-
-        # generate grid
-        n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-                                               order_glob_max=options["order_max"],
-                                               order_inter_max=options["interaction_order"],
-                                               dim=problem.dim)
-
-        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                options={"n_grid": 200, "seed": 1})  # options["matrix_ratio"] * n_coeffs
-
-        # define algorithm
-        algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
-
-        # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
-
-        # test sobol calculation
-        # sobol_ref, sobol_idx_ref, sobol_idx_bool_ref = gpc.get_sobol_indices(coeffs=coeffs, algorithm="standard", n_samples=1e4)
-        # sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs, algorithm="sampling", n_samples=5e4)
-
-        # Validate gPC vs original model function (2D-surface)
-        pygpc.validate_gpc_plot(gpc=gpc,
-                                coeffs=coeffs,
-                                random_vars=list(problem.parameters_random.keys()),
-                                n_grid=[101, 101],
-                                output_idx=[0],
-                                fn_out=os.path.join(folder, test_name + '_validation_2d'),
-                                n_cpu=options["n_cpu"])
-
-        # Post-process gPC
-        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-                                     output_idx=None,
-                                     calc_sobol=True,
-                                     calc_global_sens=True,
-                                     calc_pdf=True,
-                                     algorithm="sampling",
-                                     n_samples=1e3)
-
-        # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                      coeffs=coeffs,
-                                      n_samples=int(1e4),
-                                      output_idx=0,
-                                      n_cpu=options["n_cpu"],
-                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
-
-        # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
-        print("done!\n")
+    # def test_37_staticprojection_megpc_reg_mp_randomgrid_DiscontinuousRidgeManufactureDecay(self):
+    #     """
+    #     Algorithm: Static
+    #     Method: Regression
+    #     Solver: Moore-Penrose
+    #     Grid: RandomGrid
+    #     """
+    #     global folder
+    #     test_name = 'pygpc_test_37_staticprojection_megpc_reg_mp_randomgrid_DiscontinuousRidgeManufactureDecay'
+    #     print(test_name)
+    #
+    #     # define model
+    #     model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay
+    #
+    #     # define problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["method"] = "reg"
+    #     options["solver"] = "Moore-Penrose"
+    #     options["settings"] = None
+    #     options["order"] = [3, 3]
+    #     options["order_max"] = 3
+    #     options["interaction_order"] = 2
+    #     options["matrix_ratio"] = 2
+    #     options["n_cpu"] = 0
+    #     options["gradient_enhanced"] = True
+    #     options["gradient_calculation"] = "standard_forward"
+    #     options["n_grid_gradient"] = 50
+    #     options["error_type"] = "nrmsd"
+    #     options["n_samples_validation"] = 1e4
+    #     options["qoi"] = "all"
+    #     options["classifier"] = "learning"
+    #     options["classifier_options"] = {"clusterer": "KMeans",
+    #                                      "n_clusters": 2,
+    #                                      "classifier": "MLPClassifier",
+    #                                      "classifier_solver": "lbfgs"}
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     # Validate gPC vs original model function (2D-surface)
+    #     pygpc.validate_gpc_plot(gpc=gpc,
+    #                             coeffs=coeffs,
+    #                             random_vars=list(problem.parameters_random.keys()),
+    #                             n_grid=[101, 101],
+    #                             output_idx=1,
+    #                             fn_out=os.path.join(folder, test_name + '_validation_2d'),
+    #                             n_cpu=options["n_cpu"])
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True,
+    #                                  algorithm="sampling",
+    #                                  n_samples=1e3)
+    #
+    #     # Validate gPC vs original model function (Monte Carlo)
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e5),
+    #                                   output_idx=0,
+    #                                   n_cpu=options["n_cpu"],
+    #                                   fn_out=os.path.join(folder, test_name + '_validation_mc'))
+    #
+    #     # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #     print("done!\n")
 
 
 if __name__ == '__main__':
