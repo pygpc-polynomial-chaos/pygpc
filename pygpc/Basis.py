@@ -1,6 +1,7 @@
 from .BasisFunction import *
 from .misc import get_multi_indices_max_order
 import uuid
+import numpy as np
 
 
 class Basis:
@@ -30,7 +31,8 @@ class Basis:
         Constructor; initializes the Basis class
         """
         self.b = None
-        self.b_gpu = None
+        self.b_gpu = np.array(())
+        self.b_gpu_grad = []
         self.b_id = None
         self.b_norm = None
         self.b_norm_basis = None
@@ -127,9 +129,8 @@ class Basis:
         # initialize normalization factor (self.b_norm and self.b_norm_basis)
         self.init_b_norm()
 
-        # TODO: @Lucas (GPU) adapt this to BasisFunction objects in self.b
-        # Convert to np.int32 for GPU
-        # self.b_gpu = self.b.astype(np.int32)
+        # initialize gpu coefficient array
+        self.init_polynomial_basis_gpu(problem)
 
     def init_b_norm(self):
         """
@@ -164,36 +165,36 @@ class Basis:
         # update normalization factors
         self.init_b_norm()
 
-
     # TODO: @Lucas (GPU) adapt this to function objects
-    # def init_polynomial_basis_gpu(self):
-    #     """
-    #     Initialized polynomial basis coefficients for graphic card. Converts list of lists of self.polynomial_bases
-    #     into np.ndarray that can be processed on a graphic card.
-    #
-    #     init_polynomial_basis_gpu()
-    #     """
-    #
-    #     # transform list of lists of polynom objects into np.ndarray
-    #     number_of_variables = len(self.poly[0])
-    #     highest_degree = len(self.poly)
-    #     number_of_polynomial_coeffs = number_of_variables * (highest_degree + 1) * (highest_degree + 2) / 2
-    #     self.poly_gpu = np.empty([number_of_polynomial_coeffs])
-    #     for degree in range(highest_degree):
-    #         degree_offset = number_of_variables * degree * (degree + 1) / 2
-    #         single_degree_coeffs = np.empty([degree + 1, number_of_variables])
-    #         for var in range(number_of_variables):
-    #             single_degree_coeffs[:, var] = np.flipud(self.poly[degree][var].c)
-    #         self.poly_gpu[degree_offset:degree_offset + single_degree_coeffs.size] = single_degree_coeffs.flatten(
-    #             order='C')
+    def init_polynomial_basis_gpu(self, problem):
+        """
+        Initialize polynomial basis coefficients for GPU. Converts list of lists of self.b
+        into np.ndarray that can be processed on a GPU.
 
+        """
+        for i_basis in range(len(self.b)):
+            for i_dim in range(problem.dim):
+                polynomial_order = self.b[i_basis][i_dim].fun.order
+                self.b_gpu = np.append(self.b_gpu, polynomial_order)
+                self.b_gpu = np.append(self.b_gpu, np.flip(self.b[i_basis][i_dim].fun.c))
 
+        for i_dim_gradient in range(problem.dim):
+            _b_gpu_grad = np.array(())
+            for i_basis in range(len(self.b)):
+                for i_dim in range(problem.dim):
+                    if i_dim == i_dim_gradient:
+                        polynomial = self.b[i_basis][i_dim].fun.deriv()
+                        polynomial_order = polynomial.order
+                        _b_gpu_grad = np.append(_b_gpu_grad, polynomial_order)
+                        _b_gpu_grad = np.append(_b_gpu_grad, np.flip(polynomial.c))
+                    else:
+                        polynomial_order = self.b[i_basis][i_dim].fun.order
+                        _b_gpu_grad = np.append(_b_gpu_grad, polynomial_order)
+                        _b_gpu_grad = np.append(_b_gpu_grad, np.flip(self.b[i_basis][i_dim].fun.c))
 
+            self.b_gpu_grad.append(_b_gpu_grad)
 
-
-
-
-   # # TODO: implement this into "init_basis" -> MAYBE NOT NEEDED HERE -> SHOULD BE IN BASIS
+# # TODO: implement this into "init_basis" -> MAYBE NOT NEEDED HERE -> SHOULD BE IN BASIS
    #  def init_polynomial_coeffs(self, order_begin, order_end):
    #      """
    #      Calculate polynomial basis functions of a given order range and add it to the polynomial lookup tables.
