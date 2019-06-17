@@ -458,10 +458,10 @@ def plot_beta_pdf_fit(data, a_beta, b_beta, p_beta, q_beta, a_uni=None, b_uni=No
     <file> .png and .pdf files
         Plots
     """
-    if not interactive:
-        plt.ioff()
-    else:
-        plt.ion()
+    #if not interactive:
+    #    plt.ioff()
+    #else:
+    #    plt.ion()
 
     plt.figure(1)
     plt.clf()

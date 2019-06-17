@@ -11,8 +11,8 @@ import sys
 import os
 
 # temporary output folder
-# folder = "/home/kporzig/tmp"
-folder = "/NOBACKUP2/tmp"
+folder = "/home/kporzig/tmp"
+# folder = "/NOBACKUP2/tmp"
 
 
 # first test fixture (class)
@@ -78,7 +78,7 @@ class TestpygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
-        options["GPU"] = True
+        options["GPU"] = False
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
@@ -103,7 +103,7 @@ class TestpygpcMethods(unittest.TestCase):
                                      calc_sobol=True,
                                      calc_global_sens=True,
                                      calc_pdf=True,
-                                     algorithm="sampling")
+                                     algorithm="standard")
 
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
@@ -119,7 +119,7 @@ class TestpygpcMethods(unittest.TestCase):
                                 coeffs=coeffs,
                                 random_vars=["x3", "x1"],
                                 n_grid=[10, 25],
-                                output_idx=[0, 1],
+                                output_idx=[0],
                                 fn_out=os.path.join(folder, test_name + '_validation_2d'))
 
         # Validate gPC vs original model function (1D-slice)
@@ -127,7 +127,7 @@ class TestpygpcMethods(unittest.TestCase):
                                 coeffs=coeffs,
                                 random_vars=["x3"],
                                 n_grid=[125],
-                                output_idx=[0, 1],
+                                output_idx=[0],
                                 fn_out=os.path.join(folder, test_name + '_validation_1d'))
 
         self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))

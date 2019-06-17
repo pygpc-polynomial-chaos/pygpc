@@ -2471,24 +2471,57 @@ class MERegAdaptive(Algorithm):
             # if gpc.options["gradient_enhanced"]:
             #     gpc.grid.create_gradient_grid()
 
-        # Main iterations (order)
-        while ((eps > self.options["eps"]).any()) and (order <= self.options["order_end"]).any():
+            # Main iterations (order)
+            while ((eps > self.options["eps"]).any()) and (order <= self.options["order_end"]).any():
 
-            # determine grid points close to discontinuity
-            coords_norm_disc = get_coords_discontinuity(classifier=,
-                                                        x_min=,
-                                                        x_max=,
-                                                        n_coords_disc=10,
-                                                        border_sampling="structured")
+                # determine grid points close to discontinuity
+                coords_norm_disc = get_coords_discontinuity(classifier=megpc[i_qoi].classifier,
+                                                            x_min=[-1 for _ in range(megpc[i_qoi].problem.dim)],
+                                                            x_max=[+1 for _ in range(megpc[i_qoi].problem.dim)],
+                                                            n_coords_disc=self.options["n_samples_discontinuity"],
+                                                            border_sampling="structured")
+                coords_disc = grid.get_denormalized_coordinates(coords_norm_disc)
 
-            # run simulations
+                # run simulations close to discontinuity
+                iprint("Performing {} simulations to refine discontinuity location!".format(
+                    self.options["n_samples_discontinuity"]), tab=0, verbose=self.options["verbose"])
 
-            # update classifier
-            megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
-                                         results=res_all[:, q_idx][:, np.newaxis],
-                                         algorithm=self.options["classifier"],
-                                         options=self.options["classifier_options"])
+                start_time = time.time()
 
+                res_disc = com.run(model=self.problem.model,
+                                   problem=self.problem,
+                                   coords=coords_disc,
+                                   coords_norm=coords_norm_disc,
+                                   i_iter=None,
+                                   i_subiter=None,
+                                   fn_results=os.path.splitext(self.options["fn_results"])[0],  # + "_temp"
+                                   print_func_time=self.options["print_func_time"])
+
+                iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
+                       tab=0, verbose=self.options["verbose"])
+
+                # add results to results array
+                res_all = np.vstack((res_all, res_disc))
+
+                # add grid points close to discontinuity to grid
+                grid.extend_random_grid(coords=coords_disc, coords_norm=coords_norm_disc)
+                i_grid = grid.n_grid
+
+                # Determine gradient [n_grid x n_out x dim]
+                if self.options["gradient_enhanced"]:
+                    start_time = time.time()
+                    grad_res_3D_all = self.get_gradient(grid=grid, results=res_all)
+                    iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                           tab=0, verbose=self.options["verbose"])
+
+                # update classifier
+                megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                             results=res_all[:, q_idx][:, np.newaxis],
+                                             algorithm=self.options["classifier"],
+                                             options=self.options["classifier_options"])
+
+                if len(np.unique(megpc[i_qoi].domains)) > len(megpc[i_qoi].gpc):
+                    a=1
 
 
 
