@@ -45,22 +45,22 @@ class Basis:
 
         Parameters
         ----------
-        problem: Problem object
+        problem : Problem object
             GPC Problem to analyze
-        order: [dim] list of int
+        order : list of int [dim]
             Maximum individual expansion order
             Generates individual polynomials also if maximum expansion order in order_max is exceeded
-        order_max: int
+        order_max : int
             Maximum global expansion order.
             The maximum expansion order considers the sum of the orders of combined polynomials together with the
             chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
             monomial orders.
-        order_max_norm: float
+        order_max_norm : float
             Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
             of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
             is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
             where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        interaction_order: int
+        interaction_order : int
             Number of random variables, which can interact with each other
             All polynomials are ignored, which have an interaction order greater than specified
 
@@ -143,9 +143,66 @@ class Basis:
         # determine global normalization factor of basis function
         self.b_norm_basis = np.prod(self.b_norm, axis=1)
 
+    def set_basis_poly(self, order, order_max, order_max_norm, interaction_order, problem):
+        """
+        Sets up polynomial basis self.b for given order, order_max_norm and interaction order.
+
+        Parameters
+        ----------
+        order : list of int
+            Maximum individual expansion order
+            Generates individual polynomials also if maximum expansion order in order_max is exceeded
+        order_max: int
+            Maximum global expansion order.
+            The maximum expansion order considers the sum of the orders of combined polynomials together with the
+            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+            monomial orders.
+        order_max_norm: float
+            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+            of polynomials in the expansion such that interaction terms are penalized more.
+            sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
+        interaction_order :
+            Number of random variables, which can interact with each other
+            All polynomials are ignored, which have an interaction order greater than specified
+        problem :
+            GPC Problem to analyze
+        """
+        dim = len(order)
+
+        # determine new possible set of basis functions for next main iteration
+        multi_indices_all_new = get_multi_indices_max_order(dim=dim,
+                                                            order_max=order_max,
+                                                            order_max_norm=order_max_norm)
+
+        # delete multi-indices, which are already present
+        if self.b is not None:
+            multi_indices_all_current = np.array([list(map(lambda x: x.p["i"], _b)) for _b in b])
+
+            idx_old = np.hstack([np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
+                                 for i in range(multi_indices_all_current.shape[0])])
+
+            multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
+
+        # filter out polynomials of interaction_order
+        interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
+        multi_indices_added = multi_indices_all_new[interaction_order_list <= interaction_order, :]
+
+        if multi_indices_added.any():
+
+            # construct 2D list with new BasisFunction objects
+            b_added = [[0 for _ in range(dim)] for _ in range(multi_indices_added.shape[0])]
+
+            for i_basis in range(multi_indices_added.shape[0]):
+                for i_p, p in enumerate(problem.parameters_random):
+                    b_added[i_basis][i_p] = problem.parameters_random[p].init_basis_function(
+                        order=multi_indices_added[i_basis, i_p])
+
+            # extend basis
+            self.extend_basis(b_added)
+
     def extend_basis(self, b_added):
         """
-        Extend set of basis functions and update gpc matrix (append columns).
+        Extend set of basis functions. Skips basis functions, which are already present in self.b.
 
         Parameters
         ----------
@@ -170,7 +227,6 @@ class Basis:
         """
         Initialize polynomial basis coefficients for GPU. Converts list of lists of self.b
         into np.ndarray that can be processed on a GPU.
-
         """
         for i_basis in range(len(self.b)):
             for i_dim in range(problem.dim):

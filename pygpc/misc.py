@@ -519,7 +519,7 @@ def get_all_combinations(array, number_elements):
 
 def get_multi_indices_max_order(dim, order_max, order_max_norm=1.):
     """
-    Computes all multi-indices with a maximum overall order of max_order.
+    Computes all multi-indices with a maximum overall order of max_order considering a certain maximum order norm.
 
     multi_indices = get_multi_indices_max_order(length, max_order)
 
@@ -539,7 +539,7 @@ def get_multi_indices_max_order(dim, order_max, order_max_norm=1.):
 
     Returns
     -------
-    multi_indices: np.ndarray [n_basis x dim]
+    multi_indices: ndarray [n_basis x dim]
         Multi-indices for a maximum order gPC assuming a certain order norm.
     """
 
@@ -835,3 +835,53 @@ def get_coords_discontinuity(classifier, x_min, x_max, n_coords_disc=10, border_
     coords_disc = coords_border[idx[:, np.argmax(distance_mean)].astype(int), :]
 
     return coords_disc
+
+
+def increment_basis(order_current, interaction_order_current, interaction_order_max, incr):
+    """
+    Increments basis
+
+    Parameters
+    ----------
+    order_current: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    interaction_order_current : int
+        Current number of random variables, which can interact with each other
+        All polynomials are ignored, which have an interaction order greater than specified
+    interaction_order_max : int
+        Maximum number of random variables, which can interact with each other
+        All polynomials are ignored, which have an interaction order greater than specified
+    incr : int
+        Number of sub-iteration increments
+
+    Returns
+    -------
+    order : int
+        Updated order
+    interaction_order : int
+        Updated interaction order
+    """
+
+    carry = [incr]
+    order = order_current
+
+    while carry[-1] > 0:
+        interaction_order_current_max = np.min([order, interaction_order_max])
+
+        carry.append(carry[-1] - (interaction_order_current_max - interaction_order_current))
+
+        if carry[-1] > 0:
+            order += 1
+            interaction_order_current = 0
+
+            if carry[-1] == 0:
+                interaction_order = interaction_order_current_max
+            else:
+                interaction_order = carry[-1]
+
+                print(carry[-1])
+
+    return order, interaction_order

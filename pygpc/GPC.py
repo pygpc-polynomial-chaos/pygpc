@@ -528,7 +528,6 @@ class GPC(object):
 
         return grid.coords_norm, pce
 
-    # TODO: @Lucas: matmul mit calc_gpc "verbinden" in diesem Fall
     def get_approximation(self, coeffs, x, output_idx=None):
         """
         Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).
@@ -603,7 +602,6 @@ class GPC(object):
 
         return pce
 
-    # TODO: @Lucas: Bitte GPU support implementieren
     def replace_gpc_matrix_samples(self, idx, seed=None):
         """
         Replace distinct sample points from the gPC matrix with new ones.

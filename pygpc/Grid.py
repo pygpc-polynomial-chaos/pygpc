@@ -1151,12 +1151,13 @@ class RandomGrid(Grid):
         # Generate unique IDs of grid points
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
-    def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, seed=None):
+    def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, seed=None,
+                           classifier=None, domain=None):
         """
         Add sample points according to input pdfs to grid (old points are kept). Define either the new total number of
         grid points with "n_grid_new" or add grid-points manually by providing "coords" and "coords_norm".
 
-        extend_random_grid(n_grid_new, seed=None):
+        extend_random_grid(n_grid_new, coords=None, coords_norm=None, seed=None, classifier=None, domain=None):
 
         Parameters
         ----------
@@ -1169,6 +1170,10 @@ class RandomGrid(Grid):
             Grid points to add (normalized space [-1, 1])
         seed : float, optional, default=None
             Random seeding point
+        classifier : Classifier object, optional, default: None
+            Classifier
+        domain : int, optional, default: None
+            Adds grid points only in specified domain (needs Classifier object indlucing a predict() method)
         """
 
         if n_grid_new is not None:
@@ -1177,16 +1182,39 @@ class RandomGrid(Grid):
 
             if n_grid_add > 0:
                 # Generate new grid points
-                new_grid = RandomGrid(parameters_random=self.parameters_random,
-                                      options={"n_grid": n_grid_add, "seed": seed})
+                if classifier is None:
+                    new_grid = RandomGrid(parameters_random=self.parameters_random,
+                                          options={"n_grid": n_grid_add, "seed": seed})
 
-                # append points to existing grid
-                self.coords = np.vstack([self.coords, new_grid.coords])
-                self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+                    # append points to existing grid
+                    self.coords = np.vstack([self.coords, new_grid.coords])
+                    self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+
+                else:
+                    coords = np.zeros((n_grid_add, len(self.parameters_random)))
+                    coords_norm = np.zeros((n_grid_add, len(self.parameters_random)))
+
+                    # add grid points one by one because we are looking for samples in the right domain
+                    for i in range(n_grid_add):
+                        resample = True
+
+                        while resample:
+                            new_grid = RandomGrid(parameters_random=self.parameters_random,
+                                                  options={"n_grid": 1, "seed": seed})
+
+                            if classifier.predict(new_grid.coords_norm) == domain:
+                                coords[i, :] = new_grid.coords
+                                coords_norm[i, :] = new_grid.coords_norm
+                                resample = False
 
         elif coords is not None and coords_norm is not None:
             # Number of new grid points
             n_grid_add = coords.shape[0]
+
+            # check if specified points are lying in right domain
+            if classifier is not None:
+                if not (classifier.predict(coords_norm) == domain).all():
+                    raise AssertionError("Specified coordinates are not lying in right domain!")
 
             # append points to existing grid
             self.coords = np.vstack([self.coords, coords])
