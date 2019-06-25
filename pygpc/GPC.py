@@ -596,7 +596,6 @@ class GPC(object):
 
         return pce
 
-    # TODO: @Lucas: Bitte GPU support implementieren
     def replace_gpc_matrix_samples(self, idx, seed=None):
         """
         Replace distinct sample points from the gPC matrix with new ones.

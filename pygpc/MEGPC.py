@@ -549,7 +549,7 @@ class MEGPC(object):
 
         Returns
         -------
-        coeffs: ndarray of float [n_coeffs x n_out]
+        coeffs: list of ndarray of float [n_gpc][n_coeffs x n_out]
             gPC coefficients
         """
         # use default solver if not specified
