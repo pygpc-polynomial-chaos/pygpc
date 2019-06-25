@@ -1,4 +1,8 @@
 from setuptools import setup, find_packages
+from distutils.core import setup
+from distutils.extension import Extension
+from Cython.Build import cythonize
+
 
 # pygpc software framework for uncertainty and sensitivity
 # analysis of complex systems. See also:
@@ -21,6 +25,17 @@ from setuptools import setup, find_packages
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+ext_modules = [
+    Extension(
+        name="calc_gpc_matrix_cpu",
+        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
+        libraries=['gpc'],
+        library_dirs=['./pckg/extensions/calc_gpc_matrix_cpu'],
+        include_dirs=['./pckg/extensions/calc_gpc_matrix_cpu']
+    )
+]
+
+
 setup(name='pygpc',
       version='0.1',
       description='A Sensitivity and uncertainty analysis toolbox for Python',
@@ -33,8 +48,9 @@ setup(name='pygpc',
                         'sklearn',
                         'h5py',
                         'matplotlib',
-                        'dispy',
+                        # 'dispy', needed?
                         'pytest',
                         'numpy',
                         'hdbscan'],
-      zip_safe=False)
+      zip_safe=False,
+      ext_modules=cythonize(ext_modules))

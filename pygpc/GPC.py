@@ -16,6 +16,7 @@ import fastmat as fm
 import scipy.stats
 import ctypes
 from sklearn import linear_model
+from .calc_gpc_matrix_cpu import calc_gpc_matrix_cpu
 
 
 class GPC(object):
@@ -145,12 +146,12 @@ class GPC(object):
             self.gpc_matrix_gradient_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_gradient_b_id = copy.deepcopy(self.basis.b_id)
 
-    # TODO: @Lucas: Bitte multicore CPU version (laeuft derzeit nur auf 1 Kern)
+    # TODO: @Lucas: multicore CPU version
     def calc_gpc_matrix(self, b, x, gradient=False, verbose=False):
         """
         Construct the gPC matrix or its derivative.
 
-        gpc_matrix = calc_gpc_matrix(b, x, gradient=False)
+        gpc_matrix = calc_gpc_matrix_cpu(b, x, gradient=False)
 
         Parameters
         ----------
@@ -177,21 +178,14 @@ class GPC(object):
 
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
-                for i_basis in range(len(b)):
-                    for i_dim in range(self.problem.dim):
-                        gpc_matrix[:, i_basis] *= b[i_basis][i_dim](x[:, i_dim])
+                calc_gpc_matrix_cpu(self.basis.b_gpu, x, gpc_matrix, int(len(b)))
 
             else:
                 gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
                 for i_dim_gradient in range(self.problem.dim):
-                    for i_basis in range(len(b)):
-                        for i_dim in range(self.problem.dim):
-                            if i_dim == i_dim_gradient:
-                                derivative = True
-                            else:
-                                derivative = False
-                            gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[:, i_dim],
-                                                                                        derivative=derivative)
+                    _gpc_matrix = np.ones((x.shape[0], len(b)))
+                    calc_gpc_matrix_cpu(self.basis.b_gpu_grad[i_dim_gradient], x, _gpc_matrix, int(len(b)))
+                    gpc_matrix[:, :, i_dim_gradient] = _gpc_matrix
 
         else:
             if not gradient:
@@ -528,7 +522,6 @@ class GPC(object):
 
         return grid.coords_norm, pce
 
-    # TODO: @Lucas: matmul mit calc_gpc "verbinden" in diesem Fall
     def get_approximation(self, coeffs, x, output_idx=None):
         """
         Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).

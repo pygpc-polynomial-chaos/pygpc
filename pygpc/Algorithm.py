@@ -2417,7 +2417,9 @@ class MERegAdaptive(Algorithm):
                                          options=self.options["classifier_options"])
 
             # initialize sub-gPCs
-            for d in np.unique(megpc[i_qoi].domains):
+            basis_order = OrderedDict()
+
+            for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
                 megpc[i_qoi].add_sub_gpc(problem=megpc[i_qoi].problem,
                                          order=self.options["order_start"] * np.ones(self.problem.dim),
                                          order_max=self.options["order_start"],
@@ -2426,6 +2428,15 @@ class MERegAdaptive(Algorithm):
                                          options=self.options,
                                          domain=d,
                                          validation=None)
+                # initialize dict containing approximation orders of sub-gPCs
+                basis_order["poly"] = np.array([self.options["order_start"], self.options["interaction_order"]])
+
+                # initialize domain specific interaction order and other settings
+                megpc[i_qoi].gpc[i_gpc].interaction_order_current = min(self.options["interaction_order"],
+                                                                        self.options["order_start"])
+                megpc[i_qoi].gpc[i_gpc].solver = self.options["solver"]
+                megpc[i_qoi].gpc[i_gpc].settings = self.options["settings"]
+                megpc[i_qoi].gpc[i_gpc].options = copy.deepcopy(self.options)
 
             # create validation set if necessary
             if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
@@ -2436,17 +2447,9 @@ class MERegAdaptive(Algorithm):
 
             extended_basis = True
 
-            # initialize domain specific interaction order and other settings
-            for d in np.unique(megpc[i_qoi].domains):
-                megpc[i_qoi].gpc[d].interaction_order_current = min(self.options["interaction_order"],
-                                                                    self.options["order_start"])
-                megpc[i_qoi].gpc[d].solver = self.options["solver"]
-                megpc[i_qoi].gpc[d].settings = self.options["settings"]
-                megpc[i_qoi].gpc[d].options = copy.deepcopy(self.options)
-
             # initialize domain specific error and order
-            eps = np.array([self.options["eps"] + 1.0 for _ in range(np.unique(megpc[i_qoi].domains))])
-            order = np.array([self.options["order_start"] for _ in range(np.unique(megpc[i_qoi].domains))])
+            eps = np.array([self.options["eps"] + 1.0 for _ in megpc[i_qoi].n_gpc])
+            order = np.array([self.options["order_start"] for _ in megpc[i_qoi].n_gpc])
 
             # # Determine number of necessary simulations for first iteration
             # if self.options["gradient_enhanced"]:
@@ -2471,180 +2474,302 @@ class MERegAdaptive(Algorithm):
             # if gpc.options["gradient_enhanced"]:
             #     gpc.grid.create_gradient_grid()
 
-        # Main iterations (order)
-        while ((eps > self.options["eps"]).any()) and (order <= self.options["order_end"]).any():
+            # Main iterations (order)
+            while ((eps > self.options["eps"]).any()) and (order <= self.options["order_end"]).any():
 
-            # determine grid points close to discontinuity
-            coords_norm_disc = get_coords_discontinuity(classifier=,
-                                                        x_min=,
-                                                        x_max=,
-                                                        n_coords_disc=10,
-                                                        border_sampling="structured")
+                # determine grid points close to discontinuity
+                coords_norm_disc = get_coords_discontinuity(classifier=megpc[i_qoi].classifier,
+                                                            x_min=[-1 for _ in range(megpc[i_qoi].problem.dim)],
+                                                            x_max=[+1 for _ in range(megpc[i_qoi].problem.dim)],
+                                                            n_coords_disc=self.options["n_samples_discontinuity"],
+                                                            border_sampling="structured")
 
-            # run simulations
+                coords_disc = grid.get_denormalized_coordinates(coords_norm_disc)
 
-            # update classifier
-            megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
-                                         results=res_all[:, q_idx][:, np.newaxis],
-                                         algorithm=self.options["classifier"],
-                                         options=self.options["classifier_options"])
+                # add grid points close to discontinuity to global grid
+                grid.extend_random_grid(coords=coords_disc, coords_norm=coords_norm_disc)
+                i_grid = grid.n_grid
 
+                # run simulations close to discontinuity
+                iprint("Performing {} simulations to refine discontinuity location!".format(
+                    self.options["n_samples_discontinuity"]), tab=0, verbose=self.options["verbose"])
 
+                start_time = time.time()
 
+                res_disc = com.run(model=self.problem.model,
+                                   problem=self.problem,
+                                   coords=coords_disc,
+                                   coords_norm=coords_norm_disc,
+                                   i_iter=None,
+                                   i_subiter=None,
+                                   fn_results=os.path.splitext(self.options["fn_results"])[0],  # + "_temp"
+                                   print_func_time=self.options["print_func_time"])
 
-            iprint("Order #{}".format(order), tab=0, verbose=self.options["verbose"])
-            iprint("==========", tab=0, verbose=self.options["verbose"])
-
-            # determine new possible set of basis functions for next main iteration
-            multi_indices_all_new = get_multi_indices_max_order(self.problem.dim, order, self.options["order_max_norm"])
-            multi_indices_all_current = np.array([list(map(lambda x:x.p["i"], _b)) for _b in gpc.basis.b])
-
-            idx_old = np.hstack([np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
-                                 for i in range(multi_indices_all_current.shape[0])])
-
-            multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
-
-            interaction_order_current_max = np.min([order, self.options["interaction_order"]])
-
-            # sub-iterations (interaction orders)
-            while (gpc.interaction_order_current <= self.options["interaction_order"] and
-                   gpc.interaction_order_current <= interaction_order_current_max) and eps > self.options["eps"]:
-
-                iprint("Sub-iteration #{}".format(gpc.interaction_order_current),
-                       tab=0, verbose=self.options["verbose"])
-                iprint("================",
+                iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
                        tab=0, verbose=self.options["verbose"])
 
-                if order != self.options["order_start"]:
+                # add results to results array
+                res_all = np.vstack((res_all, res_disc))
 
-                    # filter out polynomials of interaction_order = interaction_order_current
-                    interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
-                    multi_indices_added = multi_indices_all_new[
-                                          interaction_order_list == gpc.interaction_order_current, :]
+                # Determine gradient [n_grid x n_out x dim]
+                if self.options["gradient_enhanced"]:
+                    start_time = time.time()
+                    grad_res_3D_all = self.get_gradient(grid=grid, results=res_all)
+                    iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                           tab=0, verbose=self.options["verbose"])
 
-                    # continue while loop if no basis function was added because of max norm constraint
-                    if not multi_indices_added.any():
-                        iprint("-> No basis functions to add because of max_norm constraint ... Continuing ... ",
-                               tab=0, verbose=self.options["verbose"])
+                # update classifier
+                iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
+                megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                             results=res_all[:, q_idx][:, np.newaxis],
+                                             algorithm=self.options["classifier"],
+                                             options=self.options["classifier_options"])
 
-                        # increase current interaction order
-                        gpc.interaction_order_current = gpc.interaction_order_current + 1
+                # update sub-gPCs if number of domains changed
+                if len(np.unique(megpc[i_qoi].domains)) > len(megpc[i_qoi].gpc):
 
-                        continue
+                    iprint("New domains found! Updating number of sub-gPCs from {} to {} ".
+                           format(len(megpc[i_qoi].gpc),len(np.unique(megpc[i_qoi].domains))),
+                           tab=0, verbose=self.options["verbose"])
 
-                    # construct 2D list with new BasisFunction objects
-                    b_added = [[0 for _ in range(self.problem.dim)] for _ in range(multi_indices_added.shape[0])]
+                    del megpc[i_qoi].gpc
 
-                    for i_basis in range(multi_indices_added.shape[0]):
-                        for i_p, p in enumerate(self.problem.parameters_random):  # Ordered Dict of RandomParameter
-                            b_added[i_basis][i_p] = self.problem.parameters_random[p].init_basis_function(
-                                order=multi_indices_added[i_basis, i_p])
+                    for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
+                        megpc[i_qoi].add_sub_gpc(problem=megpc[i_qoi].problem,
+                                                 order=self.options["order_start"] * np.ones(self.problem.dim),
+                                                 order_max=self.options["order_start"],
+                                                 order_max_norm=self.options["order_max_norm"],
+                                                 interaction_order=self.options["interaction_order"],
+                                                 options=self.options,
+                                                 domain=d,
+                                                 validation=None)
 
-                    # extend basis
-                    gpc.basis.extend_basis(b_added)
-                    extended_basis = True
+                        # initialize domain specific interaction order and other settings
+                        megpc[i_qoi].gpc[i_gpc].interaction_order_current = min(self.options["interaction_order"],
+                                                                                self.options["order_start"])
+                        megpc[i_qoi].gpc[i_gpc].solver = self.options["solver"]
+                        megpc[i_qoi].gpc[i_gpc].settings = self.options["settings"]
+                        megpc[i_qoi].gpc[i_gpc].options = copy.deepcopy(self.options)
 
-                if self.options["adaptive_sampling"]:
-                    iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
+                # update gpc approximation with new grid points close to discontinuity
+                # assign grids to sub-gPCs (rotate sub-grids in case of projection)
+                megpc[i_qoi].assign_grids()
 
-                add_samples = True   # if adaptive sampling is False, the while loop will be only executed once
-                delta_eps_target = 1e-1
-                delta_eps = delta_eps_target + 1
-                delta_samples = 5e-2
+                # Initialize gpc matrices
+                megpc[i_qoi].init_gpc_matrices()
 
-                while add_samples and delta_eps > delta_eps_target and eps > self.options["eps"]:
+                # Compute gpc coefficients
+                coeffs[i_qoi] = megpc[i_qoi].solve(results=res,
+                                                   gradient_results=grad_res_3D,
+                                                   solver=self.options["solver"],
+                                                   settings=self.options["settings"],
+                                                   verbose=True)
 
-                    if not self.options["adaptive_sampling"]:
-                        add_samples = False
+                # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+                # global error (appends error to megpc.error)
+                eps_global = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
+                                                   results=res,
+                                                   gradient_results=grad_res_3D_all,
+                                                   domain=None)
 
-                    # new sample size
-                    if extended_basis and self.options["adaptive_sampling"]:
-                        # do not increase sample size immediately when basis was extended, try first with old samples
-                        n_grid_new = gpc.grid.n_grid
-                    elif self.options["adaptive_sampling"] and not first_iter:
-                        # increase sample size stepwise (adaptive sampling)
-                        n_grid_new = int(np.ceil(gpc.grid.n_grid + delta_samples * gpc.basis.n_basis))
-                    else:
-                        # increase sample size according to matrix ratio w.r.t. bnumber of basis functions
-                        n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
+                # domain specific error
+                for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
+                    eps[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
+                                                   results=res,
+                                                   gradient_results=grad_res_3D_all,
+                                                   domain=d)
 
-                    # run model if grid points were added
-                    if i_grid < n_grid_new or extended_basis:
-                        # extend grid
-                        if i_grid < n_grid_new:
-                            iprint("Extending grid from {} to {} by {} sampling points".format(
-                                gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
-                                tab=0, verbose=self.options["verbose"])
+                # loop over domains and increase order if necessary
+                for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
+                    if (eps[d] > self.options["eps"]) and (order[d] <= self.options["order_end"]):
 
-                            gpc.grid.extend_random_grid(n_grid_new=n_grid_new, seed=None)
+                        iprint("Domain: {}: Order #{}".format(d, order[d]), tab=0, verbose=self.options["verbose"])
+                        iprint("=====================", tab=0, verbose=self.options["verbose"])
 
-                            # run simulations
-                            iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
+                        # determine new possible set of basis functions for next main iteration
+                        multi_indices_all_new = get_multi_indices_max_order(dim=self.problem.dim,
+                                                                            order_max=order[d],
+                                                                            order_max_norm=self.options["order_max_norm"])
+                        multi_indices_all_current = np.array([list(map(lambda x:x.p["i"], _b))
+                                                              for _b in megpc[i_qoi].gpc[d].basis.b])
+
+                        idx_old = np.hstack([np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
+                                             for i in range(multi_indices_all_current.shape[0])])
+
+                        multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
+
+                        interaction_order_current_max = np.min([order[d], self.options["interaction_order"]])
+
+                        # sub-iterations (interaction orders)
+                        while (megpc[i_qoi].gpc[d].interaction_order_current <= self.options["interaction_order"] and
+                               megpc[i_qoi].gpc[d].interaction_order_current <= interaction_order_current_max) and eps > self.options["eps"]:
+
+                            iprint("Sub-iteration #{}".format(megpc[i_qoi].gpc[d].interaction_order_current),
+                                   tab=0, verbose=self.options["verbose"])
+                            iprint("================",
                                    tab=0, verbose=self.options["verbose"])
 
-                            start_time = time.time()
+                            if order != self.options["order_start"]:
 
-                            res_new = com.run(model=gpc.problem.model,
-                                              problem=gpc.problem,
-                                              coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
-                                              coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
-                                              i_iter=order,
-                                              i_subiter=gpc.interaction_order_current,
-                                              fn_results=gpc.fn_results,
-                                              print_func_time=self.options["print_func_time"])
+                                # filter out polynomials of interaction_order = interaction_order_current
+                                interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
+                                multi_indices_added = multi_indices_all_new[
+                                                      interaction_order_list == megpc[i_qoi].gpc[d].interaction_order_current, :]
 
-                            iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-                                   tab=0, verbose=self.options["verbose"])
+                                # continue while loop if no basis function was added because of max norm constraint
+                                if not multi_indices_added.any():
+                                    iprint("-> No basis functions to add because of max_norm constraint ..."
+                                           "Continuing ... ",
+                                           tab=0, verbose=self.options["verbose"])
 
-                            # Append result to solution matrix (RHS)
-                            if i_grid == 0:
-                                res = res_new
-                            else:
-                                res = np.vstack([res, res_new])
+                                    # increase current interaction order
+                                    megpc[i_qoi].gpc[d].interaction_order_current += 1
 
-                            if self.options["gradient_enhanced"]:
-                                start_time = time.time()
-                                grad_res_3D = self.get_gradient(grid=gpc.grid, results=res,
-                                                                gradient_results=grad_res_3D)
-                                iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-                                       tab=0, verbose=self.options["verbose"])
+                                    continue
 
-                            i_grid = gpc.grid.coords.shape[0]
+                                # construct 2D list with new BasisFunction objects
+                                b_added = [[0 for _ in range(self.problem.dim)] for _ in range(multi_indices_added.shape[0])]
 
-                        # update gpc matrix
-                        gpc.update_gpc_matrix()
+                                for i_basis in range(multi_indices_added.shape[0]):
+                                    for i_p, p in enumerate(self.problem.parameters_random):
+                                        b_added[i_basis][i_p] = self.problem.parameters_random[p].init_basis_function(
+                                            order=multi_indices_added[i_basis, i_p])
 
-                        # determine gpc coefficients
-                        coeffs = gpc.solve(results=res,
-                                           gradient_results=grad_res_3D,
-                                           solver=gpc.solver,
-                                           settings=gpc.settings,
-                                           verbose=True)
+                                # extend basis
+                                megpc[i_qoi].gpc[d].basis.extend_basis(b_added)
+                                extended_basis = True
 
-                        # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-                        eps = gpc.validate(coeffs=coeffs,
-                                           results=res,
-                                           gradient_results=grad_res_3D)
+                            if self.options["adaptive_sampling"]:
+                                iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
 
-                        if extended_basis:
-                            eps_ref = copy.deepcopy(eps)
-                        else:
-                            delta_eps = np.abs((gpc.error[-1] - gpc.error[-2]) / eps_ref)
+                            add_samples = True  # if adaptive sampling is False, the loop will be only executed once
+                            delta_eps_target = 1e-1
+                            delta_eps = delta_eps_target + 1
+                            delta_samples = 5e-2
 
-                        iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                                            self.options["error_type"],
-                                                            eps), tab=0, verbose=self.options["verbose"])
+                            while add_samples and delta_eps > delta_eps_target and eps[d] > self.options["eps"]:
 
-                        # extend basis further if error was decreased (except in very first iteration)
-                        if not first_iter and extended_basis and gpc.error[-1] < gpc.error[-2]:
-                            break
+                                if not self.options["adaptive_sampling"]:
+                                    add_samples = False
 
-                        extended_basis = False
-                        first_iter = False
+                                # new sample size
+                                if extended_basis and self.options["adaptive_sampling"]:
+                                    # do not increase sample size immediately when basis was extended
+                                    # try first with old samples
+                                    n_grid_new = megpc[i_qoi].gpc[d].grid.n_grid
+                                elif self.options["adaptive_sampling"] and not first_iter:
+                                    # increase sample size stepwise (adaptive sampling)
+                                    n_grid_new = int(np.ceil(megpc[i_qoi].gpc[d].grid.n_grid +
+                                                             delta_samples * megpc[i_qoi].gpc[d].basis.n_basis))
+                                else:
+                                    # increase sample size according to matrix ratio w.r.t. bnumber of basis functions
+                                    n_grid_new = int(np.ceil(megpc[i_qoi].gpc[d].basis.n_basis * self.options["matrix_ratio"]))
 
-                        # exit adaptive sampling loop if no adaptive sampling was chosen
-                        if not self.options["adaptive_sampling"]:
-                            break
+                                # run model if grid points were added
+                                if megpc[i_qoi].gpc[d].grid.n_grid < n_grid_new or extended_basis:
+                                    # extend grid
+                                    if megpc[i_qoi].gpc[d].grid.n_grid < n_grid_new:
+                                        iprint("Extending grid in domain {} from {} to {} by {} sampling points "
+                                               "(global grid: {})".format(d, megpc[i_qoi].gpc[d].grid.n_grid, n_grid_new,
+                                                                          n_grid_new - megpc[i_qoi].gpc[d].grid.n_grid,
+                                                                          megpc[i_qoi].grid.n_grid),
+                                               tab=0, verbose=self.options["verbose"])
+
+                                        # add grid points in this domain to global grid
+                                        grid.extend_random_grid(n_grid_new=n_grid_new,
+                                                                seed=None,
+                                                                classifier=megpc[i_qoi].classifier,
+                                                                domain=d)
+
+                                        # update and assign grids
+                                        megpc[i_qoi].grid = copy.deepcopy(grid)
+                                        megpc[i_qoi].assign_grids()
+
+                                        # run simulations
+                                        iprint("Performing simulations {} to {}".format(
+                                            i_grid + 1, megpc[i_qoi].grid.coords.shape[0]),
+                                            tab=0, verbose=self.options["verbose"])
+
+                                        start_time = time.time()
+
+                                        res_new = com.run(model=self.problem.model,
+                                                          problem=self.problem,
+                                                          coords=grid.coords[int(i_grid):, :],
+                                                          coords_norm=grid.coords_norm[int(i_grid):, :],
+                                                          i_iter=order[d],
+                                                          i_subiter=megpc[i_qoi].gpc[d].interaction_order_current,
+                                                          fn_results=os.path.splitext(self.options["fn_results"])[0],
+                                                          print_func_time=self.options["print_func_time"])
+
+                                        iprint('Total parallel function evaluation {} sec'.format(
+                                            str(time.time() - start_time)),
+                                            tab=0, verbose=self.options["verbose"])
+
+                                        # append to results array containing all qoi
+                                        res_all = np.vstack([res_all, res_new])
+
+                                        if self.options["gradient_enhanced"]:
+                                            start_time = time.time()
+                                            grad_res_3D_all = self.get_gradient(grid=grid, results=res_all,
+                                                                                gradient_results=grad_res_3D_all)
+                                            iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                                                   tab=0, verbose=self.options["verbose"])
+
+                                        # crop results to considered qoi
+                                        if self.options["qoi"] != "all":
+                                            res = copy.deepcopy(res_all)
+                                            grad_res_3D = copy.deepcopy(grad_res_3D_all)
+
+                                        else:
+                                            res = res_all[:, q_idx][:, np.newaxis]
+
+                                            if grad_res_3D_all is not None:
+                                                grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+
+                                        i_grid = grid.coords.shape[0]
+
+                                        # update gpc matrix
+                                        megpc[i_qoi].gpc[d].update_gpc_matrix()
+
+                                        # determine gpc coefficients
+                                        coeffs[i_qoi][d] = megpc[i_qoi].gpc.solve(results=res,
+                                                                                  gradient_results=grad_res_3D,
+                                                                                  solver=megpc[i_qoi].gpc[d].solver,
+                                                                                  settings=megpc[i_qoi].gpc[d].settings,
+                                                                                  verbose=True)
+
+                                    # validate gpc approximation
+                                    eps[d] = megpc[i_qoi].gpc[d].validate(coeffs=coeffs[i_qoi][d],
+                                                                          results=res,
+                                                                          gradient_results=grad_res_3D)
+                                    if extended_basis:
+                                        eps_ref = copy.deepcopy(eps[d])
+                                    else:
+                                        delta_eps = np.abs((megpc[i_qoi].gpc[d].error[-1] -
+                                                            megpc[i_qoi].gpc[d].error[-2]) / eps_ref)
+
+                                    iprint("-> Domain: {} {} {} "
+                                           "error = {}".format(d,
+                                                               self.options["error_norm"],
+                                                               self.options["error_type"],
+                                                               eps[d]), tab=0, verbose=self.options["verbose"])
+
+                                    # stop adaptive sampling and extend basis further if error
+                                    # was decreased (except in very first iteration)
+                                    if not first_iter and extended_basis and \
+                                            megpc[i_qoi].gpc[d].error[-1] < megpc[i_qoi].gpc[d].error[-2]:
+                                        break
+
+                                    extended_basis = False
+                                    first_iter = False
+
+                                    # exit adaptive sampling loop if no adaptive sampling was chosen
+                                    if not self.options["adaptive_sampling"]:
+                                        break
+
+
+
+
 
                 # save gpc object and coeffs for this sub-iteration
                 if self.options["fn_results"]:
