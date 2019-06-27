@@ -10,6 +10,7 @@ from .misc import display_fancy_bar
 from .misc import nrmsd
 from .misc import mat2ten
 from .misc import ten2mat
+from .misc import increment_basis
 from .ValidationSet import *
 from .Computation import *
 from .Classifier import *
@@ -146,16 +147,18 @@ class MEGPC(object):
     #     else:
     #         self.sub_problems = sub_problems
 
-    def add_sub_gpc(self, problem, order, order_max, order_max_norm, interaction_order, options, domain,
-                    validation=None):
+    def add_sub_gpc(self, problem, order, order_max, order_max_norm, interaction_order,
+                    interaction_order_current, options, domain, validation=None):
         """
         Add sub-gPC
         """
         if self.gpc is None:
             if self.n_gpc is not None:
-                self.gpc = [0 for _ in range(self.n_gpc)]
+                self.gpc = [None for _ in range(self.n_gpc)]
             else:
                 self.gpc = [0 for _ in range(domain)]
+        elif len(self.gpc) < domain:
+            self.gpc = self.gpc + [None for _ in range(domain - len(self.gpc))]
 
         # create sub-gpc objects
         self.gpc[domain] = Reg(problem=problem,
@@ -163,6 +166,7 @@ class MEGPC(object):
                                order_max=order_max,
                                order_max_norm=order_max_norm,
                                interaction_order=interaction_order,
+                               interaction_order_current=interaction_order_current,
                                options=options,
                                validation=validation)
 
@@ -178,6 +182,9 @@ class MEGPC(object):
         """
         Assign sub-grids to sub-gPCs (including transformation in case of projection)
         """
+        # update domain indices if grid points were added
+        if len(self.domains) != self.grid.coords_norm.shape[0]:
+            self.domains = self.classifier.predict(self.grid.coords_norm)
 
         for d in np.unique(self.domains):
             coords = self.grid.coords[self.domains == d, :]
@@ -187,7 +194,7 @@ class MEGPC(object):
             # transform variables of original grid to reduced parameter space
             if self.gpc[d].p_matrix is not None:
                 coords = np.dot(coords, self.gpc[d].p_matrix.transpose())
-                coords_norm = np.dot(coords_norm,self.gpc[d].p_matrix.transpose() /
+                coords_norm = np.dot(coords_norm, self.gpc[d].p_matrix.transpose() /
                                      self.gpc[d].p_matrix_norm[np.newaxis, :])
 
             if self.grid.coords_gradient is not None:
@@ -338,13 +345,21 @@ class MEGPC(object):
         # always determine nrmsd if a validation set is present
         if isinstance(self.validation, ValidationSet):
 
-            gpc_results = self.get_approximation(coeffs[domain_idx], self.validation.grid.coords_norm, output_idx=None)
+            if domain is None:
+                mask_domain = np.ones(self.validation.grid.coords_norm.shape[0]).astype(bool)
+                gpc_results = self.get_approximation(coeffs, self.validation.grid.coords_norm, output_idx=None)
+            else:
+                mask_domain = self.classifier.predict(self.validation.grid.coords_norm) == domain
+                coords_domain = self.validation.grid.coords_norm[mask_domain, ]
+                gpc_results = self.gpc[domain].get_approximation(coeffs[domain],
+                                                                 coords_domain,
+                                                                 output_idx=None)
 
             if gpc_results.ndim == 1:
                 gpc_results = gpc_results[:, np.newaxis]
 
             error_nrmsd = float(np.mean(nrmsd(gpc_results,
-                                              self.validation.results,
+                                              self.validation.results[mask_domain, ],
                                               error_norm=self.options["error_norm"],
                                               x_axis=False)))
 
@@ -484,11 +499,13 @@ class MEGPC(object):
         """
         if type(output_idx) != np.ndarray and output_idx is not None:
             output_idx = np.array([output_idx])
-
-        if output_idx is None:
-            pce = np.zeros((x.shape[0], coeffs[0].shape[1]))
         else:
-            pce = np.zeros((x.shape[0], len(output_idx)))
+            if type(coeffs) is list:
+                output_idx = np.arange(coeffs[0].shape[1])
+            else:
+                output_idx = np.arange(coeffs.shape[1])
+
+        pce = np.zeros((x.shape[0], len(output_idx)))
 
         # get classes of grid-points
         domains = self.classifier.predict(x)

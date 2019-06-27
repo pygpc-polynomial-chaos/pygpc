@@ -1,5 +1,5 @@
 from .BasisFunction import *
-from .misc import get_multi_indices_max_order
+from .misc import get_multi_indices
 import uuid
 import numpy as np
 
@@ -39,7 +39,8 @@ class Basis:
         self.dim = None
         self.n_basis = 0
 
-    def init_basis_sgpc(self, problem, order, order_max, order_max_norm, interaction_order):
+    def init_basis_sgpc(self, problem, order, order_max, order_max_norm, interaction_order,
+                        interaction_order_current=None):
         """
         Initializes basis functions for standard gPC.
 
@@ -62,7 +63,10 @@ class Basis:
             where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
         interaction_order : int
             Number of random variables, which can interact with each other
-            All polynomials are ignored, which have an interaction order greater than specified
+        interaction_order_current : int, optional, default: interaction_order
+            Number of random variables currently interacting with respect to the highest order.
+            (interaction_order_current <= interaction_order)
+            The parameters for lower orders are all interacting with "interaction order".
 
         Notes
         -----
@@ -92,25 +96,11 @@ class Basis:
         if self.dim == 1:
             multi_indices = np.linspace(0, order_max, order_max + 1, dtype=int)[:, np.newaxis]
         else:
-            multi_indices = get_multi_indices_max_order(self.dim, order_max, order_max_norm)
-
-        for i_dim in range(self.dim):
-            # add multi-indexes to list when not yet included
-            if order[i_dim] > order_max:
-                multi_indices_add_dim = np.linspace(order_max + 1,
-                                                    order[i_dim],
-                                                    order[i_dim] - (order_max + 1) + 1)
-                multi_indices_add_all = np.zeros([multi_indices_add_dim.shape[0], self.dim])
-                multi_indices_add_all[:, i_dim] = multi_indices_add_dim
-                multi_indices = np.vstack([multi_indices, multi_indices_add_all.astype(int)])
-
-            # delete multi-indexes from list when they exceed individual max order of parameter
-            elif order[i_dim] < order_max:
-                multi_indices = multi_indices[multi_indices[:, i_dim] <= order[i_dim], :]
-
-        # Consider interaction order (filter out multi-indices exceeding it)
-        if interaction_order < self.dim:
-            multi_indices = multi_indices[np.sum(multi_indices > 0, axis=1) <= interaction_order, :]
+            multi_indices = get_multi_indices(order=order,
+                                              order_max=order_max,
+                                              order_max_norm=order_max_norm,
+                                              interaction_order=interaction_order,
+                                              interaction_order_current=interaction_order_current)
 
         # get total number of basis functions
         self.n_basis = multi_indices.shape[0]
@@ -143,9 +133,10 @@ class Basis:
         # determine global normalization factor of basis function
         self.b_norm_basis = np.prod(self.b_norm, axis=1)
 
-    def set_basis_poly(self, order, order_max, order_max_norm, interaction_order, problem):
+    def set_basis_poly(self, order, order_max, order_max_norm, interaction_order, interaction_order_current, problem):
         """
-        Sets up polynomial basis self.b for given order, order_max_norm and interaction order.
+        Sets up polynomial basis self.b for given order, order_max_norm and interaction order. Adds only the basis
+        functions, which are not yet included.
 
         Parameters
         ----------
@@ -164,41 +155,47 @@ class Basis:
         interaction_order :
             Number of random variables, which can interact with each other
             All polynomials are ignored, which have an interaction order greater than specified
+        interaction_order_current : int, optional, default: interaction_order
+            Number of random variables currently interacting with respect to the highest order.
+            (interaction_order_current <= interaction_order)
+            The parameters for lower orders are all interacting with interaction_order.
         problem :
             GPC Problem to analyze
         """
+        b_added = None
+
         dim = len(order)
 
         # determine new possible set of basis functions for next main iteration
-        multi_indices_all_new = get_multi_indices_max_order(dim=dim,
-                                                            order_max=order_max,
-                                                            order_max_norm=order_max_norm)
+        multi_indices_all_new = get_multi_indices(order=order,
+                                                  order_max=order_max,
+                                                  order_max_norm=order_max_norm,
+                                                  interaction_order=interaction_order,
+                                                  interaction_order_current=interaction_order_current)
 
         # delete multi-indices, which are already present
         if self.b is not None:
-            multi_indices_all_current = np.array([list(map(lambda x: x.p["i"], _b)) for _b in b])
+            multi_indices_all_current = np.array([list(map(lambda x: x.p["i"], _b)) for _b in self.b])
 
             idx_old = np.hstack([np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
                                  for i in range(multi_indices_all_current.shape[0])])
 
             multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
 
-        # filter out polynomials of interaction_order
-        interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
-        multi_indices_added = multi_indices_all_new[interaction_order_list <= interaction_order, :]
-
-        if multi_indices_added.any():
+        if multi_indices_all_new.any():
 
             # construct 2D list with new BasisFunction objects
-            b_added = [[0 for _ in range(dim)] for _ in range(multi_indices_added.shape[0])]
+            b_added = [[0 for _ in range(dim)] for _ in range(multi_indices_all_new.shape[0])]
 
-            for i_basis in range(multi_indices_added.shape[0]):
+            for i_basis in range(multi_indices_all_new.shape[0]):
                 for i_p, p in enumerate(problem.parameters_random):
                     b_added[i_basis][i_p] = problem.parameters_random[p].init_basis_function(
-                        order=multi_indices_added[i_basis, i_p])
+                        order=multi_indices_all_new[i_basis, i_p])
 
             # extend basis
             self.extend_basis(b_added)
+
+        return b_added
 
     def extend_basis(self, b_added):
         """

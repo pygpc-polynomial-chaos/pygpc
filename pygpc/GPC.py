@@ -146,7 +146,6 @@ class GPC(object):
             self.gpc_matrix_gradient_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_gradient_b_id = copy.deepcopy(self.basis.b_id)
 
-    # TODO: @Lucas: multicore CPU version
     def calc_gpc_matrix(self, b, x, gradient=False, verbose=False):
         """
         Construct the gPC matrix or its derivative.

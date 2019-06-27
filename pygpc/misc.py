@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Functions and classes that provide data and methods with general usage in the pygpc package
 """
@@ -62,8 +61,11 @@ def display_fancy_bar(text, i, n_i, more_text=None):
         print(more_text)
     sys.stdout.write(text + i.zfill(fill_width) + " from " + str(n_i))
     # this prints [50-spaces], i% * =
-    sys.stdout.write(" [%-40s] %d%%" % (
-        '=' * int((float(i) + 0) / n_i * 100 / 2.5), float(i) / n_i * 100))
+    # sys.stdout.write(" [%-40s] %d%%" % (
+    #     '=' * int((float(i) + 0) / n_i * 100 / 2.5), float(i) / n_i * 100.))
+    sys.stdout.write(" [{}{}] {:.2}%".format('=' * int(int(i) / n_i * 40),
+                                             " " * (40 - int(int(i) / n_i * 40)),
+                                             int(i) / n_i * 100))
     sys.stdout.flush()
     # if int(i) == n_i:
     #     print("")
@@ -443,7 +445,7 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, o
     if dim == 1:
         poly_idx = np.array([np.linspace(0, order_dim_max[0], order_dim_max[0] + 1)]).astype(int).transpose()
     else:
-        poly_idx = get_multi_indices_max_order(int(dim), order_glob_max, order_glob_max_norm)
+        poly_idx = get_multi_indices(int(dim), order_glob_max, order_glob_max_norm)
 
     for i_dim in range(dim):
         # add multi-indexes to list when not yet included
@@ -517,31 +519,45 @@ def get_all_combinations(array, number_elements):
     return np.array([c for c in combinations])
 
 
-def get_multi_indices_max_order(dim, order_max, order_max_norm=1.):
+def get_multi_indices(order, order_max, interaction_order, order_max_norm=1., interaction_order_current=None):
     """
     Computes all multi-indices with a maximum overall order of max_order considering a certain maximum order norm.
 
-    multi_indices = get_multi_indices_max_order(length, max_order)
+    multi_indices = get_multi_indices(length, max_order)
 
     Parameters
     ----------
-    dim : int
-        Number of random parameters (length of multi-index tuples)
-    order_max: int
+    order : list of int [dim]
+        Maximum individual expansion order
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max : int
         Maximum global expansion order.
         The maximum expansion order considers the sum of the orders of combined polynomials together with the
         chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
         monomial orders.
-    order_max_norm: float
+    order_max_norm : float
         Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
         of polynomials in the expansion such that interaction terms are penalized more.
         sum(a_i^q)^1/q <= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).
+    interaction_order : int
+        Number of random variables, which can interact with each other
+    interaction_order_current : int, optional, default: interaction_order
+        Number of random variables currently interacting with respect to the highest order.
+        (interaction_order_current <= interaction_order)
+        The parameters for lower orders are all interacting with interaction_order.
 
     Returns
     -------
     multi_indices: ndarray [n_basis x dim]
         Multi-indices for a maximum order gPC assuming a certain order norm.
     """
+
+    dim = len(order)
+
+    if interaction_order_current is None or interaction_order_current > interaction_order:
+        interaction_order_current = interaction_order
+    else:
+        interaction_order_current = interaction_order_current
 
     multi_indices = []
     for i_order_max in range(order_max + 1):
@@ -563,6 +579,32 @@ def get_multi_indices_max_order(dim, order_max, order_max_norm=1.):
     # remove polynomials exceeding order_max considering max_order_norm
     if order_max_norm != 1:
         multi_indices = multi_indices[np.linalg.norm(multi_indices, ord=order_max_norm, axis=1) <= (order_max + 1e-6), :]
+
+    # add or delete monomials specified in order
+    for i_dim in range(dim):
+        # add multi-indexes to list when not yet included
+        if order[i_dim] > order_max:
+            multi_indices_add_dim = np.linspace(order_max + 1,
+                                                order[i_dim],
+                                                order[i_dim] - (order_max + 1) + 1)
+            multi_indices_add_all = np.zeros([multi_indices_add_dim.shape[0], dim])
+            multi_indices_add_all[:, i_dim] = multi_indices_add_dim
+            multi_indices = np.vstack([multi_indices, multi_indices_add_all.astype(int)])
+
+        # delete multi-indexes from list when they exceed individual max order of parameter
+        elif order[i_dim] < order_max:
+            multi_indices = multi_indices[multi_indices[:, i_dim] <= order[i_dim], :]
+
+    # Consider interaction order (filter out multi-indices exceeding it)
+    if interaction_order < dim:
+        multi_indices = multi_indices[np.sum(multi_indices > 0, axis=1) <= interaction_order, :]
+
+    # if interaction_order_current is smaller than interaction_order, delete those basis functions of highest order
+    if interaction_order_current < interaction_order:
+        mask_order_max = np.sum(multi_indices, axis=1) == order_max
+        mask_interaction_order = np.sum(multi_indices > 0, axis=1) > interaction_order_current
+        mask = np.logical_not(np.logical_and(mask_order_max, mask_interaction_order))
+        multi_indices = multi_indices[mask]
 
     return multi_indices.astype(int)
 
@@ -778,7 +820,7 @@ def get_coords_discontinuity(classifier, x_min, x_max, n_coords_disc=10, border_
 
     # create tensored mesh to find discontinuity
     if border_sampling == "structured":
-        n_samples = 1E4**(1./dim)
+        n_samples = int(1E4**(1./dim))
         eval_str = "np.array(np.meshgrid("
 
         for i in range(dim):
@@ -814,7 +856,7 @@ def get_coords_discontinuity(classifier, x_min, x_max, n_coords_disc=10, border_
     coords_border = (coords_border_det[idx[0], :] + coords_border_det[idx[1], :]) / 2
 
     # resample n_coords_disc equally distributed points from n_smallest points on discontinuity
-    n_reps = 10000  # number of repetitions
+    n_reps = 1000  # number of repetitions
     idx = np.zeros((n_coords_disc, n_reps))
     distance_mean = np.zeros(n_reps)
 
@@ -865,23 +907,33 @@ def increment_basis(order_current, interaction_order_current, interaction_order_
         Updated interaction order
     """
 
-    carry = [incr]
     order = order_current
 
-    while carry[-1] > 0:
-        interaction_order_current_max = np.min([order, interaction_order_max])
+    order_incr = np.floor(float((incr+interaction_order_current-1)) / interaction_order_max)
+    sub_iter_incr = (incr+interaction_order_current) % interaction_order_max
 
-        carry.append(carry[-1] - (interaction_order_current_max - interaction_order_current))
+    order += int(order_incr)
 
-        if carry[-1] > 0:
-            order += 1
-            interaction_order_current = 0
+    if order_incr > 0 and sub_iter_incr:
+        interaction_order = sub_iter_incr
+    elif order_incr > 0 and sub_iter_incr == 0:
+        interaction_order = interaction_order_max
+    else:
+        interaction_order = incr + interaction_order_current
 
-            if carry[-1] == 0:
-                interaction_order = interaction_order_current_max
-            else:
-                interaction_order = carry[-1]
-
-                print(carry[-1])
+    # carry = [incr]
+    # while carry[-1] > 0:
+    #     interaction_order_current_max = np.min([order, interaction_order_max])
+    #
+    #     carry.append(carry[-1] - (interaction_order_current_max - interaction_order_current))
+    #
+    #     if carry[-1] > 0:
+    #         order += 1
+    #         interaction_order_current = 0
+    #
+    #         if carry[-1] == 0:
+    #             interaction_order = interaction_order_current_max
+    #         else:
+    #             interaction_order = carry[-1]
 
     return order, interaction_order

@@ -12,6 +12,8 @@ from .misc import get_num_coeffs_sparse
 from .misc import ten2mat
 from .misc import mat2ten
 from .misc import get_coords_discontinuity
+from .misc import increment_basis
+from .misc import get_num_coeffs_sparse
 from .Grid import *
 from .MEGPC import *
 from .Classifier import Classifier
@@ -290,6 +292,7 @@ class Static(Algorithm):
                       order_max=self.options["order_max"],
                       order_max_norm=self.options["order_max_norm"],
                       interaction_order=self.options["interaction_order"],
+                      interaction_order_current=self.options["interaction_order"],
                       options=self.options,
                       validation=self.validation)
 
@@ -299,6 +302,7 @@ class Static(Algorithm):
                        order_max=self.options["order_max"],
                        order_max_norm=self.options["order_max_norm"],
                        interaction_order=self.options["interaction_order"],
+                       interaction_order_current=self.options["interaction_order"],
                        options=self.options,
                        validation=self.validation)
 
@@ -795,8 +799,9 @@ class StaticProjection(Algorithm):
             GPC method to apply ['Reg', 'Quad']
         options["solver"]: str
             Solver to determine the gPC coefficients
-            - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
-            - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+            - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg)
+            - 'LarsLasso' ... Least angle regression, L1 Minimization (SGPC.Reg)
+            - 'OMP' ... Orthogonal Matching Pursuit, L1 Minimization (SGPC.Reg)
             - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
         options["settings"]: dict
             Solver settings
@@ -1046,6 +1051,7 @@ class StaticProjection(Algorithm):
                              order_max=self.options["order_max"],
                              order_max_norm=self.options["order_max_norm"],
                              interaction_order=self.options["interaction_order"],
+                             interaction_order_current=self.options["interaction_order"],
                              options=self.options,
                              validation=self.validation)
 
@@ -1249,8 +1255,9 @@ class MEStaticProjection(Algorithm):
             GPC method to apply ['Reg', 'Quad']
         options["solver"]: str
             Solver to determine the gPC coefficients
-            - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
-            - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
+            - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg)
+            - 'LarsLasso' ... Least angle regression, L1 Minimization (SGPC.Reg)
+            - 'OMP' ... Orthogonal Matching Pursuit, L1 Minimization (SGPC.Reg)
             - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
         options["settings"]: dict
             Solver settings
@@ -1902,6 +1909,7 @@ class RegAdaptive(Algorithm):
                   order_max=self.options["order_start"],
                   order_max_norm=self.options["order_max_norm"],
                   interaction_order=self.options["interaction_order"],
+                  interaction_order_current=self.options["interaction_order"],
                   options=self.options,
                   validation=self.validation)
         extended_basis = True
@@ -1941,7 +1949,7 @@ class RegAdaptive(Algorithm):
             iprint("==========", tab=0, verbose=self.options["verbose"])
 
             # determine new possible set of basis functions for next main iteration
-            multi_indices_all_new = get_multi_indices_max_order(self.problem.dim, order, self.options["order_max_norm"])
+            multi_indices_all_new = get_multi_indices(self.problem.dim, order, self.options["order_max_norm"])
             multi_indices_all_current = np.array([list(map(lambda x:x.p["i"], _b)) for _b in gpc.basis.b])
 
             idx_old = np.hstack([np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
@@ -2341,12 +2349,31 @@ class MERegAdaptive(Algorithm):
             os.remove(fn_results + ".hdf5")
 
         # initialize iterators
-        first_iter = True
         grad_res_3D = None
+        grad_res_3D_all = None
+        basis_increment = 0
+
+        # determine number of coefficients in first iteration
+        n_coeffs = get_num_coeffs_sparse(order_dim_max=self.options["order_start"] * np.ones(self.problem.dim),
+                                         order_glob_max=self.options["order_start"],
+                                         order_inter_max=self.options["interaction_order"],
+                                         dim=self.problem.dim,
+                                         order_glob_max_norm=self.options["order_max_norm"])
+
+        # increase number of initial simulations if necessary
+        if not self.options["adaptive_sampling"]:
+            n_grid_init = np.ceil(n_coeffs * self.options["matrix_ratio"])
+
+            if n_grid_init != self.options["n_grid_init"]:
+                iprint("Increasing number of initial simulations from {} to {} "
+                       "to fit matrix_ratio * number of coefficients".format(self.options["n_grid_init"], n_grid_init))
+
+        else:
+            n_grid_init = self.options["n_grid_init"]
 
         # make initial random grid to determine number of output variables
         grid = RandomGrid(parameters_random=self.problem.parameters_random,
-                          options={"n_grid": self.options["n_grid_init"]})
+                          options={"n_grid": n_grid_init})
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu)
@@ -2389,6 +2416,9 @@ class MERegAdaptive(Algorithm):
         coeffs = [0 for _ in range(n_qoi)]
 
         for i_qoi, q_idx in enumerate(qoi_idx):
+
+            first_iter = True
+
             # crop results to considered qoi
             if self.options["qoi"] != "all":
                 res = copy.deepcopy(res_all)
@@ -2411,6 +2441,7 @@ class MERegAdaptive(Algorithm):
             megpc[i_qoi].grid = copy.deepcopy(grid)
 
             # determine gpc domains
+            iprint("Determining gPC domains ...", tab=0, verbose=self.options["verbose"])
             megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
                                          results=res_all[:, q_idx][:, np.newaxis],
                                          algorithm=self.options["classifier"],
@@ -2425,11 +2456,14 @@ class MERegAdaptive(Algorithm):
                                          order_max=self.options["order_start"],
                                          order_max_norm=self.options["order_max_norm"],
                                          interaction_order=self.options["interaction_order"],
+                                         interaction_order_current=self.options["interaction_order"],
                                          options=self.options,
                                          domain=d,
                                          validation=None)
-                # initialize dict containing approximation orders of sub-gPCs
-                basis_order["poly"] = np.array([self.options["order_start"], self.options["interaction_order"]])
+
+                # initialize dict containing approximation orders of sub-gPCs [order, interaction_order_current]
+                basis_order["poly_dom_{}".format(d)] = np.array([self.options["order_start"],
+                                                                 self.options["interaction_order"]])
 
                 # initialize domain specific interaction order and other settings
                 megpc[i_qoi].gpc[i_gpc].interaction_order_current = min(self.options["interaction_order"],
@@ -2448,8 +2482,7 @@ class MERegAdaptive(Algorithm):
             extended_basis = True
 
             # initialize domain specific error and order
-            eps = np.array([self.options["eps"] + 1.0 for _ in megpc[i_qoi].n_gpc])
-            order = np.array([self.options["order_start"] for _ in megpc[i_qoi].n_gpc])
+            eps = np.array([self.options["eps"] + 1.0 for _ in range(megpc[i_qoi].n_gpc)])
 
             # # Determine number of necessary simulations for first iteration
             # if self.options["gradient_enhanced"]:
@@ -2475,7 +2508,15 @@ class MERegAdaptive(Algorithm):
             #     gpc.grid.create_gradient_grid()
 
             # Main iterations (order)
-            while ((eps > self.options["eps"]).any()) and (order <= self.options["order_end"]).any():
+            while (eps > self.options["eps"]).any():
+
+                stop_by_order = [(basis_order["poly_dom_{}".format(i)]==[self.options["order_end"], self.options["interaction_order"]]).all() for i in range(megpc[i_qoi].n_gpc)]
+                stop_by_error = eps < self.options["eps"]
+
+                if np.logical_or(stop_by_order, stop_by_error).all():
+                    break
+
+                iprint("Refining domain boundary ...", tab=0, verbose=self.options["verbose"])
 
                 # determine grid points close to discontinuity
                 coords_norm_disc = get_coords_discontinuity(classifier=megpc[i_qoi].classifier,
@@ -2487,8 +2528,9 @@ class MERegAdaptive(Algorithm):
                 coords_disc = grid.get_denormalized_coordinates(coords_norm_disc)
 
                 # add grid points close to discontinuity to global grid
-                grid.extend_random_grid(coords=coords_disc, coords_norm=coords_norm_disc)
-                i_grid = grid.n_grid
+                grid.extend_random_grid(coords=coords_disc,
+                                        coords_norm=coords_norm_disc,
+                                        gradient=self.options["gradient_enhanced"])
 
                 # run simulations close to discontinuity
                 iprint("Performing {} simulations to refine discontinuity location!".format(
@@ -2514,9 +2556,25 @@ class MERegAdaptive(Algorithm):
                 # Determine gradient [n_grid x n_out x dim]
                 if self.options["gradient_enhanced"]:
                     start_time = time.time()
-                    grad_res_3D_all = self.get_gradient(grid=grid, results=res_all)
+                    grad_res_3D_all = self.get_gradient(grid=grid, results=res_all, gradient_results=grad_res_3D_all)
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
+
+                i_grid = grid.n_grid
+
+                # crop results to considered qoi
+                if self.options["qoi"] != "all":
+                    res = copy.deepcopy(res_all)
+                    grad_res_3D = copy.deepcopy(grad_res_3D_all)
+
+                else:
+                    res = res_all[:, q_idx][:, np.newaxis]
+
+                    if grad_res_3D_all is not None:
+                        grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+
+                # Write grid in gpc object
+                megpc[i_qoi].grid = copy.deepcopy(grid)
 
                 # update classifier
                 iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
@@ -2534,12 +2592,16 @@ class MERegAdaptive(Algorithm):
 
                     del megpc[i_qoi].gpc
 
+                    basis_order.append([self.options["order_start"], self.options["interaction_order"]])
+                    eps = np.hstack((eps, np.array(self.options["eps"] + 1)))
+
                     for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
                         megpc[i_qoi].add_sub_gpc(problem=megpc[i_qoi].problem,
-                                                 order=self.options["order_start"] * np.ones(self.problem.dim),
+                                                 order=basis_order["poly_dom_{}".format(d)][0] * np.ones(self.problem.dim),
                                                  order_max=self.options["order_start"],
                                                  order_max_norm=self.options["order_max_norm"],
                                                  interaction_order=self.options["interaction_order"],
+                                                 interaction_order_current=basis_order["poly_dom_{}".format(d)][1],
                                                  options=self.options,
                                                  domain=d,
                                                  validation=None)
@@ -2567,286 +2629,390 @@ class MERegAdaptive(Algorithm):
 
                 # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
                 # global error (appends error to megpc.error)
-                eps_global = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
-                                                   results=res,
-                                                   gradient_results=grad_res_3D_all,
-                                                   domain=None)
+                # eps_global = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
+                #                                    results=res,
+                #                                    gradient_results=grad_res_3D_all,
+                #                                    domain=None)
 
                 # domain specific error
                 for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
                     eps[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
                                                    results=res,
-                                                   gradient_results=grad_res_3D_all,
+                                                   gradient_results=grad_res_3D,
                                                    domain=d)
+                    megpc[i_qoi].gpc[d].error.append(eps[d])
 
                 # loop over domains and increase order if necessary
                 for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
-                    if (eps[d] > self.options["eps"]) and (order[d] <= self.options["order_end"]):
 
-                        iprint("Domain: {}: Order #{}".format(d, order[d]), tab=0, verbose=self.options["verbose"])
-                        iprint("=====================", tab=0, verbose=self.options["verbose"])
+                    skip = (basis_order["poly_dom_{}".format(d)] ==
+                            [self.options["order_end"], self.options["interaction_order"]]).all()
 
-                        # determine new possible set of basis functions for next main iteration
-                        multi_indices_all_new = get_multi_indices_max_order(dim=self.problem.dim,
-                                                                            order_max=order[d],
-                                                                            order_max_norm=self.options["order_max_norm"])
-                        multi_indices_all_current = np.array([list(map(lambda x:x.p["i"], _b))
-                                                              for _b in megpc[i_qoi].gpc[d].basis.b])
+                    if (eps[d] > self.options["eps"]) and not skip:
 
-                        idx_old = np.hstack([np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
-                                             for i in range(multi_indices_all_current.shape[0])])
+                        # increase basis by 1 interaction order
+                        order_new = increment_basis(order_current=basis_order["poly_dom_{}".format(d)][0],
+                                                    interaction_order_current=basis_order["poly_dom_{}".format(d)][1],
+                                                    interaction_order_max=self.options["interaction_order"],
+                                                    incr=basis_increment)
 
-                        multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
+                        basis_order["poly_dom_{}".format(d)][0] = order_new[0]
+                        basis_order["poly_dom_{}".format(d)][1] = order_new[1]
 
-                        interaction_order_current_max = np.min([order[d], self.options["interaction_order"]])
+                        print_str = "Domain: {}, Order: #{}, Sub-iteration: #{}".format(
+                            d,
+                            basis_order["poly_dom_{}".format(d)][0],
+                            basis_order["poly_dom_{}".format(d)][1])
 
-                        # sub-iterations (interaction orders)
-                        while (megpc[i_qoi].gpc[d].interaction_order_current <= self.options["interaction_order"] and
-                               megpc[i_qoi].gpc[d].interaction_order_current <= interaction_order_current_max) and eps > self.options["eps"]:
+                        iprint(print_str, tab=0, verbose=self.options["verbose"])
+                        iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
 
-                            iprint("Sub-iteration #{}".format(megpc[i_qoi].gpc[d].interaction_order_current),
+                        # update basis
+                        b_added = megpc[i_qoi].gpc[d].basis.set_basis_poly(order=basis_order["poly_dom_{}".format(d)][0] * np.ones(self.problem.dim),
+                                                                           order_max=basis_order["poly_dom_{}".format(d)][0],
+                                                                           order_max_norm=self.options["order_max_norm"],
+                                                                           interaction_order=self.options["interaction_order"],
+                                                                           interaction_order_current=basis_order["poly_dom_{}".format(d)][1],
+                                                                           problem=megpc[i_qoi].problem)
+
+                        # continue algorithm if no basis function was added because of max norm constraint
+                        if b_added is not None:
+                            extended_basis = True
+                        else:
+                            extended_basis = False
+                            iprint("-> Domain: {} {} {} "
+                                   "error = {}".format(d,
+                                                       self.options["error_norm"],
+                                                       self.options["error_type"],
+                                                       eps[d]), tab=0, verbose=self.options["verbose"])
+                            iprint("-> No basis functions to add in domain {} because of "
+                                   "max_norm constraint... Continuing ... ".format(d),
                                    tab=0, verbose=self.options["verbose"])
-                            iprint("================",
-                                   tab=0, verbose=self.options["verbose"])
+                            continue
 
-                            if order != self.options["order_start"]:
+                        # update gpc matrix
+                        megpc[i_qoi].gpc[d].init_gpc_matrix()
 
-                                # filter out polynomials of interaction_order = interaction_order_current
-                                interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
-                                multi_indices_added = multi_indices_all_new[
-                                                      interaction_order_list == megpc[i_qoi].gpc[d].interaction_order_current, :]
+                        # determine gpc coefficients with new basis but old samples
+                        if grad_res_3D is not None:
+                            grad_res_3D_domain = grad_res_3D[megpc[i_qoi].domains == d, :, :]
+                        else:
+                            grad_res_3D_domain = None
 
-                                # continue while loop if no basis function was added because of max norm constraint
-                                if not multi_indices_added.any():
-                                    iprint("-> No basis functions to add because of max_norm constraint ..."
-                                           "Continuing ... ",
+                        coeffs[i_qoi][d] = megpc[i_qoi].gpc[d].solve(results=res[megpc[i_qoi].domains == d, ],
+                                                                     gradient_results=grad_res_3D_domain,
+                                                                     solver=megpc[i_qoi].gpc[d].solver,
+                                                                     settings=megpc[i_qoi].gpc[d].settings,
+                                                                     verbose=True)
+
+                        # Add samples
+                        add_samples = True  # if adaptive sampling is False, the loop will be only executed once
+                        delta_eps_target = 1e-1
+                        delta_eps = delta_eps_target + 1
+                        delta_samples = 5e-2
+
+                        if self.options["adaptive_sampling"]:
+                            iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
+
+                        # only increase samples if error increased and until error converges again
+                        while add_samples and delta_eps > delta_eps_target and eps[d] > self.options["eps"]:
+
+                            if not self.options["adaptive_sampling"]:
+                                add_samples = False
+
+                            # new sample size
+                            if extended_basis and self.options["adaptive_sampling"]:
+                                # do not increase sample size immediately when basis was extended
+                                # try first with old samples
+                                n_grid_new = megpc[i_qoi].gpc[d].grid.n_grid
+                            elif self.options["adaptive_sampling"] and not first_iter:
+                                # increase sample size stepwise (adaptive sampling)
+                                n_grid_new = int(np.ceil(megpc[i_qoi].gpc[d].grid.n_grid +
+                                                         delta_samples * megpc[i_qoi].gpc[d].basis.n_basis))
+                            else:
+                                # increase sample size according to matrix ratio w.r.t. number of basis functions
+                                n_grid_new = int(np.ceil(megpc[i_qoi].gpc[d].basis.n_basis * self.options["matrix_ratio"]))
+
+                            # run model if grid points were added
+                            if megpc[i_qoi].gpc[d].grid.n_grid < n_grid_new or extended_basis:
+                                # extend grid
+                                if megpc[i_qoi].gpc[d].grid.n_grid < n_grid_new:
+                                    iprint("Extending grid in domain {} from {} to {} by {} sampling points "
+                                           "(global grid: {})".format(d, megpc[i_qoi].gpc[d].grid.n_grid, n_grid_new,
+                                                                      n_grid_new - megpc[i_qoi].gpc[d].grid.n_grid,
+                                                                      megpc[i_qoi].grid.n_grid),
                                            tab=0, verbose=self.options["verbose"])
 
-                                    # increase current interaction order
-                                    megpc[i_qoi].gpc[d].interaction_order_current += 1
+                                    # add grid points in this domain to global grid
+                                    grid.extend_random_grid(n_grid_new=grid.n_grid - megpc[i_qoi].gpc[d].grid.n_grid + n_grid_new,
+                                                            seed=None,
+                                                            classifier=megpc[i_qoi].classifier,
+                                                            domain=d,
+                                                            gradient=self.options["gradient_enhanced"])
 
-                                    continue
+                                    # update and assign grids
+                                    megpc[i_qoi].grid = copy.deepcopy(grid)
+                                    megpc[i_qoi].assign_grids()
 
-                                # construct 2D list with new BasisFunction objects
-                                b_added = [[0 for _ in range(self.problem.dim)] for _ in range(multi_indices_added.shape[0])]
+                                    # run simulations
+                                    iprint("Performing simulations {} to {}".format(
+                                        i_grid + 1, megpc[i_qoi].grid.coords.shape[0]),
+                                        tab=0, verbose=self.options["verbose"])
 
-                                for i_basis in range(multi_indices_added.shape[0]):
-                                    for i_p, p in enumerate(self.problem.parameters_random):
-                                        b_added[i_basis][i_p] = self.problem.parameters_random[p].init_basis_function(
-                                            order=multi_indices_added[i_basis, i_p])
+                                    start_time = time.time()
 
-                                # extend basis
-                                megpc[i_qoi].gpc[d].basis.extend_basis(b_added)
-                                extended_basis = True
+                                    res_new = com.run(model=self.problem.model,
+                                                      problem=self.problem,
+                                                      coords=grid.coords[int(i_grid):, :],
+                                                      coords_norm=grid.coords_norm[int(i_grid):, :],
+                                                      i_iter=basis_order["poly_dom_{}".format(d)][0],
+                                                      i_subiter=basis_order["poly_dom_{}".format(d)][1],
+                                                      fn_results=os.path.splitext(self.options["fn_results"])[0],
+                                                      print_func_time=self.options["print_func_time"])
 
-                            if self.options["adaptive_sampling"]:
-                                iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
+                                    iprint('Total parallel function evaluation {} sec'.format(
+                                        str(time.time() - start_time)),
+                                        tab=0, verbose=self.options["verbose"])
 
-                            add_samples = True  # if adaptive sampling is False, the loop will be only executed once
-                            delta_eps_target = 1e-1
-                            delta_eps = delta_eps_target + 1
-                            delta_samples = 5e-2
+                                    # append to results array containing all qoi
+                                    res_all = np.vstack([res_all, res_new])
 
-                            while add_samples and delta_eps > delta_eps_target and eps[d] > self.options["eps"]:
-
-                                if not self.options["adaptive_sampling"]:
-                                    add_samples = False
-
-                                # new sample size
-                                if extended_basis and self.options["adaptive_sampling"]:
-                                    # do not increase sample size immediately when basis was extended
-                                    # try first with old samples
-                                    n_grid_new = megpc[i_qoi].gpc[d].grid.n_grid
-                                elif self.options["adaptive_sampling"] and not first_iter:
-                                    # increase sample size stepwise (adaptive sampling)
-                                    n_grid_new = int(np.ceil(megpc[i_qoi].gpc[d].grid.n_grid +
-                                                             delta_samples * megpc[i_qoi].gpc[d].basis.n_basis))
-                                else:
-                                    # increase sample size according to matrix ratio w.r.t. bnumber of basis functions
-                                    n_grid_new = int(np.ceil(megpc[i_qoi].gpc[d].basis.n_basis * self.options["matrix_ratio"]))
-
-                                # run model if grid points were added
-                                if megpc[i_qoi].gpc[d].grid.n_grid < n_grid_new or extended_basis:
-                                    # extend grid
-                                    if megpc[i_qoi].gpc[d].grid.n_grid < n_grid_new:
-                                        iprint("Extending grid in domain {} from {} to {} by {} sampling points "
-                                               "(global grid: {})".format(d, megpc[i_qoi].gpc[d].grid.n_grid, n_grid_new,
-                                                                          n_grid_new - megpc[i_qoi].gpc[d].grid.n_grid,
-                                                                          megpc[i_qoi].grid.n_grid),
+                                    if self.options["gradient_enhanced"]:
+                                        start_time = time.time()
+                                        grad_res_3D_all = self.get_gradient(grid=grid, results=res_all,
+                                                                            gradient_results=grad_res_3D_all)
+                                        iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                                tab=0, verbose=self.options["verbose"])
 
-                                        # add grid points in this domain to global grid
-                                        grid.extend_random_grid(n_grid_new=n_grid_new,
-                                                                seed=None,
-                                                                classifier=megpc[i_qoi].classifier,
-                                                                domain=d)
+                                    # crop results to considered qoi
+                                    if self.options["qoi"] != "all":
+                                        res = copy.deepcopy(res_all)
+                                        grad_res_3D = copy.deepcopy(grad_res_3D_all)
 
-                                        # update and assign grids
-                                        megpc[i_qoi].grid = copy.deepcopy(grid)
-                                        megpc[i_qoi].assign_grids()
-
-                                        # run simulations
-                                        iprint("Performing simulations {} to {}".format(
-                                            i_grid + 1, megpc[i_qoi].grid.coords.shape[0]),
-                                            tab=0, verbose=self.options["verbose"])
-
-                                        start_time = time.time()
-
-                                        res_new = com.run(model=self.problem.model,
-                                                          problem=self.problem,
-                                                          coords=grid.coords[int(i_grid):, :],
-                                                          coords_norm=grid.coords_norm[int(i_grid):, :],
-                                                          i_iter=order[d],
-                                                          i_subiter=megpc[i_qoi].gpc[d].interaction_order_current,
-                                                          fn_results=os.path.splitext(self.options["fn_results"])[0],
-                                                          print_func_time=self.options["print_func_time"])
-
-                                        iprint('Total parallel function evaluation {} sec'.format(
-                                            str(time.time() - start_time)),
-                                            tab=0, verbose=self.options["verbose"])
-
-                                        # append to results array containing all qoi
-                                        res_all = np.vstack([res_all, res_new])
-
-                                        if self.options["gradient_enhanced"]:
-                                            start_time = time.time()
-                                            grad_res_3D_all = self.get_gradient(grid=grid, results=res_all,
-                                                                                gradient_results=grad_res_3D_all)
-                                            iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-                                                   tab=0, verbose=self.options["verbose"])
-
-                                        # crop results to considered qoi
-                                        if self.options["qoi"] != "all":
-                                            res = copy.deepcopy(res_all)
-                                            grad_res_3D = copy.deepcopy(grad_res_3D_all)
-
-                                        else:
-                                            res = res_all[:, q_idx][:, np.newaxis]
-
-                                            if grad_res_3D_all is not None:
-                                                grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
-
-                                        i_grid = grid.coords.shape[0]
-
-                                        # update gpc matrix
-                                        megpc[i_qoi].gpc[d].update_gpc_matrix()
-
-                                        # determine gpc coefficients
-                                        coeffs[i_qoi][d] = megpc[i_qoi].gpc.solve(results=res,
-                                                                                  gradient_results=grad_res_3D,
-                                                                                  solver=megpc[i_qoi].gpc[d].solver,
-                                                                                  settings=megpc[i_qoi].gpc[d].settings,
-                                                                                  verbose=True)
-
-                                    # validate gpc approximation
-                                    eps[d] = megpc[i_qoi].gpc[d].validate(coeffs=coeffs[i_qoi][d],
-                                                                          results=res,
-                                                                          gradient_results=grad_res_3D)
-                                    if extended_basis:
-                                        eps_ref = copy.deepcopy(eps[d])
                                     else:
-                                        delta_eps = np.abs((megpc[i_qoi].gpc[d].error[-1] -
-                                                            megpc[i_qoi].gpc[d].error[-2]) / eps_ref)
+                                        res = res_all[:, q_idx][:, np.newaxis]
 
-                                    iprint("-> Domain: {} {} {} "
-                                           "error = {}".format(d,
-                                                               self.options["error_norm"],
-                                                               self.options["error_type"],
-                                                               eps[d]), tab=0, verbose=self.options["verbose"])
+                                        if grad_res_3D_all is not None:
+                                            grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
 
-                                    # stop adaptive sampling and extend basis further if error
-                                    # was decreased (except in very first iteration)
-                                    if not first_iter and extended_basis and \
-                                            megpc[i_qoi].gpc[d].error[-1] < megpc[i_qoi].gpc[d].error[-2]:
-                                        break
+                                    i_grid = grid.coords.shape[0]
 
-                                    extended_basis = False
-                                    first_iter = False
+                                    # update classifier
+                                    iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
+                                    megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                                                 results=res_all[:, q_idx][:, np.newaxis],
+                                                                 algorithm=self.options["classifier"],
+                                                                 options=self.options["classifier_options"])
 
-                                    # exit adaptive sampling loop if no adaptive sampling was chosen
-                                    if not self.options["adaptive_sampling"]:
-                                        break
+                                    # assign grids to sub-gPCs (rotate sub-grids in case of projection)
+                                    megpc[i_qoi].assign_grids()
 
+                                    # update gpc matrix
+                                    megpc[i_qoi].gpc[d].init_gpc_matrix()
 
+                                    # determine gpc coefficients
+                                    if grad_res_3D is not None:
+                                        grad_res_3D_domain = grad_res_3D[megpc[i_qoi].domains == d, :, :]
+                                    else:
+                                        grad_res_3D_domain = None
 
+                                    coeffs[i_qoi][d] = megpc[i_qoi].gpc[d].solve(
+                                        results=res[megpc[i_qoi].domains == d, ],
+                                        gradient_results=grad_res_3D_domain,
+                                        solver=megpc[i_qoi].gpc[d].solver,
+                                        settings=megpc[i_qoi].gpc[d].settings,
+                                        verbose=True)
 
+                                # validate gpc approximation
+                                eps[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
+                                                               results=res,
+                                                               gradient_results=grad_res_3D,
+                                                               domain=d)
+                                megpc[i_qoi].gpc[d].error.append(eps[d])
 
-                # save gpc object and coeffs for this sub-iteration
-                if self.options["fn_results"]:
+                                if extended_basis or first_iter:
+                                    eps_ref = copy.deepcopy(eps[d])
+                                else:
+                                    delta_eps = np.abs((megpc[i_qoi].gpc[d].error[-1] -
+                                                        megpc[i_qoi].gpc[d].error[-2]) / eps_ref)
 
-                    fn_gpc_pkl = fn_results + '.pkl'
-                    write_gpc_pkl(gpc, fn_gpc_pkl)
+                                first_iter = False
+                                
+                                iprint("-> Domain: {} {} {} "
+                                       "error = {}".format(d,
+                                                           self.options["error_norm"],
+                                                           self.options["error_type"],
+                                                           eps[d]), tab=0, verbose=self.options["verbose"])
 
-                    with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
+                                # stop adaptive sampling and extend basis further if error
+                                # was decreased (except in very first iteration)
+                                if extended_basis and megpc[i_qoi].gpc[d].error[-1] < megpc[i_qoi].gpc[d].error[-2]:
+                                    break
 
-                        # overwrite coeffs
-                        if "coeffs" in f.keys():
-                            del f['coeffs']
-                        f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+                                extended_basis = False
 
-                        # Append gradient of results
-                        if grad_res_3D is not None:
-                            grad_res_2D = ten2mat(grad_res_3D)
-                            if "gradient_results" in f["model_evaluations"].keys():
-                                n_rows_old = f["model_evaluations/gradient_results"].shape[0]
-                                f["model_evaluations/gradient_results"].resize(grad_res_2D.shape[0], axis=0)
-                                f["model_evaluations/gradient_results"][n_rows_old:, :] = grad_res_2D[n_rows_old:, :]
-                            else:
+                                # exit adaptive sampling loop if no adaptive sampling was chosen
+                                if not self.options["adaptive_sampling"]:
+                                    break
+
+                    # save gpc object and coeffs for this sub-iteration
+                    if self.options["fn_results"]:
+
+                        fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
+                        write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
+
+                        with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
+
+                            # overwrite coeffs
+                            try:
+                                del f["coeffs" + hdf5_subfolder + "/dom_" + str(i_gpc)]
+                            except KeyError:
+                                pass
+
+                            f.create_dataset("coeffs" + hdf5_subfolder + "/dom_" + str(d),
+                                             data=coeffs[i_qoi][d], maxshape=None, dtype="float64")
+
+                            # overwrite domains
+                            try:
+                                del f["domains" + hdf5_subfolder]
+                            except KeyError:
+                                pass
+                            f.create_dataset("domains" + hdf5_subfolder,
+                                             data=megpc[i_qoi].domains, maxshape=None, dtype="int64")
+
+                            # save gpc matrix
+                            try:
+                                del f["gpc_matrix" + hdf5_subfolder + "/dom_" + str(d)]
+                            except KeyError:
+                                pass
+                            f.create_dataset("gpc_matrix" + hdf5_subfolder + "/dom_" + str(d),
+                                             data=megpc[i_qoi].gpc[d].gpc_matrix,
+                                             maxshape=None, dtype="float64")
+
+                            # save gradient gpc matrix
+                            if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
+                                try:
+                                    del f["gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(d)]
+                                except KeyError:
+                                    pass
+                                if self.options["gradient_enhanced"]:
+                                    f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(d),
+                                                     data=megpc[i_qoi].gpc[d].gpc_matrix_gradient,
+                                                     maxshape=None, dtype="float64")
+
+                            # save results
+                            try:
+                                del f["model_evaluations/results"]
+                            except KeyError:
+                                pass
+
+                            f.create_dataset("model_evaluations/results",
+                                             (res_all.shape[0], res_all.shape[1]),
+                                             maxshape=(None, None),
+                                             dtype="float64",
+                                             data=res_all)
+
+                            # save gradient of results
+                            if grad_res_3D is not None:
+
+                                try:
+                                    del f["model_evaluations/gradient_results"]
+                                except KeyError:
+                                    pass
+
+                                grad_res_2D_all = ten2mat(grad_res_3D_all)
                                 f.create_dataset("model_evaluations/gradient_results",
-                                                 (grad_res_2D.shape[0], grad_res_2D.shape[1]),
+                                                 (grad_res_2D_all.shape[0], grad_res_2D_all.shape[1]),
                                                  maxshape=(None, None),
                                                  dtype="float64",
-                                                 data=grad_res_2D)
+                                                 data=grad_res_2D_all)
 
-                    # save gpc matrix in .hdf5 file
-                    gpc.save_gpc_matrix_hdf5()
+                            try:
+                                del f["error" + hdf5_subfolder + "/dom_" + str(d)]
+                            except KeyError:
+                                pass
+                            f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(d),
+                                             data=eps[d],
+                                             maxshape=None, dtype="float64")
 
-                    # fn = os.path.join(os.path.splitext(self.options["fn_results"])[0] +
-                    #                   '_' + str(order).zfill(2) + "_" + str(gpc.interaction_order_current).zfill(2))
-                    #
-                    # shutil.copy2(os.path.splitext(self.options["fn_results"])[0] + '.pkl', fn + '.pkl')
+                basis_increment = 1
+                com.close()
 
-                # increase current interaction order
-                gpc.interaction_order_current = gpc.interaction_order_current + 1
+            megpc[i_qoi].assign_grids()
+            megpc[i_qoi].init_gpc_matrices()
 
-            # reset interaction order counter
-            gpc.interaction_order_current = 1
+            # determine gpc coefficients
+            coeffs[i_qoi] = megpc[i_qoi].solve(results=res,
+                                               gradient_results=grad_res_3D,
+                                               solver=megpc[i_qoi].gpc[d].solver,
+                                               settings=megpc[i_qoi].gpc[d].settings,
+                                               verbose=True)
 
-            # increase main order
-            order = order + 1
+            # save gpc object and gpc coeffs
+            if self.options["fn_results"]:
+                write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
 
-        com.close()
+                with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
-        # determine gpc coefficients
-        coeffs = gpc.solve(results=res,
-                           gradient_results=grad_res_3D,
-                           solver=gpc.solver,
-                           settings=gpc.settings,
-                           verbose=True)
+                    try:
+                        fn_gpc_pkl = f["misc/fn_gpc_pkl"]
+                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
+                        del f["misc/fn_gpc_pkl"]
+                        f.create_dataset("misc/fn_gpc_pkl", data=fn_gpc_pkl.astype("|S"))
 
-        # save gpc object and gpc coeffs
-        if self.options["fn_results"]:
-            write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
+                    except KeyError:
+                        f.create_dataset("misc/fn_gpc_pkl",
+                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
 
-            with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
-                if "coeffs" in f.keys():
-                    del f['coeffs']
-                f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+                    try:
+                        del f["grid"]
+                    except KeyError:
+                        pass
 
-                # misc
-                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_gpc_pkl)[1]]).astype("|S"))
-                f.create_dataset("misc/error_type", data=self.options["error_type"])
-                f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
-
-                if gpc.validation is not None:
-                    f.create_dataset("validation/results", data=gpc.validation.results,
+                    f.create_dataset("grid/coords", data=grid.coords,
                                      maxshape=None, dtype="float64")
-                    f.create_dataset("validation/grid/coords", data=gpc.validation.grid.coords,
-                                     maxshape=None, dtype="float64")
-                    f.create_dataset("validation/grid/coords_norm", data=gpc.validation.grid.coords_norm,
+                    f.create_dataset("grid/coords_norm", data=grid.coords_norm,
                                      maxshape=None, dtype="float64")
 
-        return gpc, coeffs, res
+                    if megpc[i_qoi].grid.coords_gradient is not None:
+                        f.create_dataset("grid/coords_gradient",
+                                         data=grid.coords_gradient,
+                                         maxshape=None, dtype="float64")
+                        f.create_dataset("grid/coords_gradient_norm",
+                                         data=grid.coords_gradient_norm,
+                                         maxshape=None, dtype="float64")
+
+                    try:
+                        del f["model_evaluations"]
+                    except KeyError:
+                        pass
+                    f.create_dataset("model_evaluations/results", data=res_all,
+                                     maxshape=None, dtype="float64")
+                    if grad_res_3D is not None:
+                        f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D),
+                                         maxshape=None, dtype="float64")
+
+                    f.create_dataset("misc/error_type", data=self.options["error_type"])
+
+                    if megpc[0].validation is not None:
+                        f.create_dataset("validation/results", data=megpc[0].validation.results,
+                                         maxshape=None, dtype="float64")
+                        f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
+                                         maxshape=None, dtype="float64")
+                        f.create_dataset("validation/grid/coords_norm", data=megpc[0].validation.grid.coords_norm,
+                                         maxshape=None, dtype="float64")
+
+                    try:
+                        del f["coeffs"]
+                    except KeyError:
+                        pass
+
+                    for i_gpc in range(megpc[i_qoi].n_gpc):
+                        f.create_dataset("coeffs" + hdf5_subfolder + "/dom_" + str(i_gpc),
+                                         data=coeffs[i_qoi][i_gpc],
+                                         maxshape=None, dtype="float64")
+
+        return megpc, coeffs, res_all
 
 
 class RegAdaptiveProjection(Algorithm):
@@ -3133,6 +3299,7 @@ class RegAdaptiveProjection(Algorithm):
                              order_max=self.options["order_start"],
                              order_max_norm=self.options["order_max_norm"],
                              interaction_order=self.options["interaction_order"],
+                             interaction_order_current=self.options["interaction_order"],
                              options=self.options,
                              validation=self.validation)
 
@@ -3173,9 +3340,9 @@ class RegAdaptiveProjection(Algorithm):
                 iprint("==========", tab=0, verbose=self.options["verbose"])
 
                 # determine new possible set of basis functions for next main iteration
-                multi_indices_all_new = get_multi_indices_max_order(self.problem_reduced[i_qoi].dim,
-                                                                    order,
-                                                                    self.options["order_max_norm"])
+                multi_indices_all_new = get_multi_indices(self.problem_reduced[i_qoi].dim,
+                                                          order,
+                                                          self.options["order_max_norm"])
 
                 multi_indices_all_current = np.array([list(map(lambda x:x.p["i"], _b)) for _b in gpc[i_qoi].basis.b])
                 idx_old = np.hstack(
@@ -3340,6 +3507,7 @@ class RegAdaptiveProjection(Algorithm):
                                                      order_max=order - 1,
                                                      order_max_norm=self.options["order_max_norm"],
                                                      interaction_order=self.options["interaction_order"],
+                                                     interaction_order_current=self.options["interaction_order"],
                                                      options=self.options,
                                                      validation=self.validation)
 
@@ -3349,9 +3517,9 @@ class RegAdaptiveProjection(Algorithm):
 
                                     # add basis functions of this subiteration to be complete again
                                     # determine new possible set of basis functions
-                                    multi_indices_all_new = get_multi_indices_max_order(self.problem_reduced[i_qoi].dim,
-                                                                                        order,
-                                                                                        self.options["order_max_norm"])
+                                    multi_indices_all_new = get_multi_indices(self.problem_reduced[i_qoi].dim,
+                                                                              order,
+                                                                              self.options["order_max_norm"])
                                     multi_indices_all_current = np.array(
                                         [list(map(lambda x: x.p["i"], _b)) for _b in gpc[i_qoi].basis.b])
 

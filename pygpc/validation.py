@@ -41,6 +41,11 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
     <file> : .pdf file
         Plot showing the pdfs of the original and the gpc approximation
     """
+    if type(gpc) is list:
+        gpc = gpc[output_idx]
+        coeffs = coeffs[output_idx]
+        output_idx_gpc = 0
+
     if isinstance(gpc, MEGPC):
         problem = gpc.problem
     else:
@@ -95,7 +100,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
         # pdf_x_orig = np.linspace(y_orig.min(), y_orig.max(), 100)
         # pdf_y_orig = kde_orig(pdf_x_orig)
 
-        pdf_y_gpc, tmp = np.histogram(y_gpc[:, output_idx].flatten(), bins=100, density=True)
+        pdf_y_gpc, tmp = np.histogram(y_gpc[:, output_idx_gpc].flatten(), bins=100, density=True)
         pdf_x_gpc = (tmp[1:] + tmp[0:-1]) / 2.
 
         pdf_y_orig, tmp = np.histogram(y_orig[:, output_idx].flatten(), bins=100, density=True)

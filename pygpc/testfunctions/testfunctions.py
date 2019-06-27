@@ -852,7 +852,7 @@ class GenzOscillatory(AbstractModel):
 
         y_out = y[:, np.newaxis]
 
-        y_out = np.hstack((y_out, 2*y_out))
+        # y_out = np.hstack((y_out, 2*y_out))
 
         return y_out
 

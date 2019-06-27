@@ -79,8 +79,7 @@
           <div class="body" id="spc-section-body">
             
   <h1>Source code for pygpc.misc</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Functions and classes that provide data and methods with general usage in the pygpc package</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -90,6 +89,7 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">.Visualization</span> <span class="k">import</span> <span class="n">plot_beta_pdf_fit</span>
 
 
@@ -142,8 +142,11 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">more_text</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="n">fill_width</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; from &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_i</span><span class="p">))</span>
     <span class="c1"># this prints [50-spaces], i% * =</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; [</span><span class="si">%-40s</span><span class="s2">] </span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-        <span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="nb">int</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="mf">2.5</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="c1"># sys.stdout.write(&quot; [%-40s] %d%%&quot; % (</span>
+    <span class="c1">#     &#39;=&#39; * int((float(i) + 0) / n_i * 100 / 2.5), float(i) / n_i * 100.))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; [</span><span class="si">{}{}</span><span class="s2">] </span><span class="si">{:.2}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">40</span><span class="p">),</span>
+                                             <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">40</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)),</span>
+                                             <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_i</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
     <span class="c1"># if int(i) == n_i:</span>
     <span class="c1">#     print(&quot;&quot;)</span>
@@ -521,9 +524,9 @@
 
     <span class="c1"># generate multi-index list up to maximum order</span>
     <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order_dim_max</span><span class="p">,</span> <span class="n">order_dim_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">get_multi_indices_max_order</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_glob_max_norm</span><span class="p">)</span>
+        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">get_multi_indices</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_glob_max_norm</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i_dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
         <span class="c1"># add multi-indexes to list when not yet included</span>
@@ -597,31 +600,45 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="get_multi_indices_max_order"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_multi_indices_max_order">[docs]</a><span class="k">def</span> <span class="nf">get_multi_indices_max_order</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">order_max</span><span class="p">,</span> <span class="n">order_max_norm</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+<div class="viewcode-block" id="get_multi_indices"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_multi_indices">[docs]</a><span class="k">def</span> <span class="nf">get_multi_indices</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">order_max</span><span class="p">,</span> <span class="n">interaction_order</span><span class="p">,</span> <span class="n">order_max_norm</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">interaction_order_current</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes all multi-indices with a maximum overall order of max_order.</span>
+<span class="sd">    Computes all multi-indices with a maximum overall order of max_order considering a certain maximum order norm.</span>
 
-<span class="sd">    multi_indices = get_multi_indices_max_order(length, max_order)</span>
+<span class="sd">    multi_indices = get_multi_indices(length, max_order)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    dim : int</span>
-<span class="sd">        Number of random parameters (length of multi-index tuples)</span>
-<span class="sd">    order_max: int</span>
+<span class="sd">    order : list of int [dim]</span>
+<span class="sd">        Maximum individual expansion order</span>
+<span class="sd">        Generates individual polynomials also if maximum expansion order in order_max is exceeded</span>
+<span class="sd">    order_max : int</span>
 <span class="sd">        Maximum global expansion order.</span>
 <span class="sd">        The maximum expansion order considers the sum of the orders of combined polynomials together with the</span>
 <span class="sd">        chosen norm &quot;order_max_norm&quot;. Typically this norm is 1 such that the maximum order is the sum of all</span>
 <span class="sd">        monomial orders.</span>
-<span class="sd">    order_max_norm: float</span>
+<span class="sd">    order_max_norm : float</span>
 <span class="sd">        Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number</span>
 <span class="sd">        of polynomials in the expansion such that interaction terms are penalized more.</span>
 <span class="sd">        sum(a_i^q)^1/q &lt;= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).</span>
+<span class="sd">    interaction_order : int</span>
+<span class="sd">        Number of random variables, which can interact with each other</span>
+<span class="sd">    interaction_order_current : int, optional, default: interaction_order</span>
+<span class="sd">        Number of random variables currently interacting with respect to the highest order.</span>
+<span class="sd">        (interaction_order_current &lt;= interaction_order)</span>
+<span class="sd">        The parameters for lower orders are all interacting with interaction_order.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    multi_indices: np.ndarray [n_basis x dim]</span>
+<span class="sd">    multi_indices: ndarray [n_basis x dim]</span>
 <span class="sd">        Multi-indices for a maximum order gPC assuming a certain order norm.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">interaction_order_current</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">interaction_order_current</span> <span class="o">&gt;</span> <span class="n">interaction_order</span><span class="p">:</span>
+        <span class="n">interaction_order_current</span> <span class="o">=</span> <span class="n">interaction_order</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">interaction_order_current</span> <span class="o">=</span> <span class="n">interaction_order_current</span>
 
     <span class="n">multi_indices</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i_order_max</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
@@ -643,6 +660,32 @@
     <span class="c1"># remove polynomials exceeding order_max considering max_order_norm</span>
     <span class="k">if</span> <span class="n">order_max_norm</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">multi_indices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="n">order_max_norm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">order_max</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">),</span> <span class="p">:]</span>
+
+    <span class="c1"># add or delete monomials specified in order</span>
+    <span class="k">for</span> <span class="n">i_dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+        <span class="c1"># add multi-indexes to list when not yet included</span>
+        <span class="k">if</span> <span class="n">order</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">order_max</span><span class="p">:</span>
+            <span class="n">multi_indices_add_dim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">order_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                                                <span class="n">order</span><span class="p">[</span><span class="n">i_dim</span><span class="p">],</span>
+                                                <span class="n">order</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">order_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">multi_indices_add_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">multi_indices_add_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="p">])</span>
+            <span class="n">multi_indices_add_all</span><span class="p">[:,</span> <span class="n">i_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">multi_indices_add_dim</span>
+            <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">multi_indices</span><span class="p">,</span> <span class="n">multi_indices_add_all</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)])</span>
+
+        <span class="c1"># delete multi-indexes from list when they exceed individual max order of parameter</span>
+        <span class="k">elif</span> <span class="n">order</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">order_max</span><span class="p">:</span>
+            <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">multi_indices</span><span class="p">[</span><span class="n">multi_indices</span><span class="p">[:,</span> <span class="n">i_dim</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">order</span><span class="p">[</span><span class="n">i_dim</span><span class="p">],</span> <span class="p">:]</span>
+
+    <span class="c1"># Consider interaction order (filter out multi-indices exceeding it)</span>
+    <span class="k">if</span> <span class="n">interaction_order</span> <span class="o">&lt;</span> <span class="n">dim</span><span class="p">:</span>
+        <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">multi_indices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">multi_indices</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">interaction_order</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># if interaction_order_current is smaller than interaction_order, delete those basis functions of highest order</span>
+    <span class="k">if</span> <span class="n">interaction_order_current</span> <span class="o">&lt;</span> <span class="n">interaction_order</span><span class="p">:</span>
+        <span class="n">mask_order_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">order_max</span>
+        <span class="n">mask_interaction_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">multi_indices</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">interaction_order_current</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">mask_order_max</span><span class="p">,</span> <span class="n">mask_interaction_order</span><span class="p">))</span>
+        <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">multi_indices</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">multi_indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div>
 
@@ -804,6 +847,177 @@
     <span class="n">p_matrix</span> <span class="o">=</span> <span class="n">v_filt</span>
 
     <span class="k">return</span> <span class="n">p_matrix</span></div>
+
+
+<div class="viewcode-block" id="get_indices_of_k_smallest"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_indices_of_k_smallest">[docs]</a><span class="k">def</span> <span class="nf">get_indices_of_k_smallest</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find indices of k smallest elements in ndarray</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : ndarray of float</span>
+<span class="sd">        Array</span>
+<span class="sd">    k : int</span>
+<span class="sd">        Number of smallest values to extract</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    idx : tuple of ndarray [k]</span>
+<span class="sd">        Indices of k smallest elements in array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">))[:,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">))])</span>
+
+    <span class="k">return</span> <span class="n">idx</span></div>
+
+
+<div class="viewcode-block" id="get_coords_discontinuity"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_coords_discontinuity">[docs]</a><span class="k">def</span> <span class="nf">get_coords_discontinuity</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">n_coords_disc</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">border_sampling</span><span class="o">=</span><span class="s2">&quot;structured&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine n_coords_disc grid points close to discontinuity</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    classifier : Classifier object</span>
+<span class="sd">        Classifier object to predict classes from coordinates (needs to contain a classifier.predict() method)</span>
+<span class="sd">    x_min : ndarray of float [n_dim]</span>
+<span class="sd">        Minimal values in parameter space to search discontinuity</span>
+<span class="sd">    x_max : ndarray of float [n_dim]</span>
+<span class="sd">        Maximal values in parameter space to search discontinuity</span>
+<span class="sd">    n_coords_disc : int, optional, default: 10</span>
+<span class="sd">        Number of grid points to determine close to discontinuity</span>
+<span class="sd">    border_sampling : str, optional, default: &quot;structured&quot;</span>
+<span class="sd">        Sampling method to determine location of discontinuity</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    coords_disc : ndarray of float [n_coords_disc]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if border_sampling == &quot;random&quot;:</span>
+    <span class="c1">#     coords_border_det = grid_learn_cluster.coords</span>
+    <span class="c1">#     domains = model_kmeans.labels_</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_min</span><span class="p">)</span>
+
+    <span class="c1"># create tensored mesh to find discontinuity</span>
+    <span class="k">if</span> <span class="n">border_sampling</span> <span class="o">==</span> <span class="s2">&quot;structured&quot;</span><span class="p">:</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1E4</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">dim</span><span class="p">))</span>
+        <span class="n">eval_str</span> <span class="o">=</span> <span class="s2">&quot;np.array(np.meshgrid(&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+            <span class="n">eval_str</span> <span class="o">+=</span> <span class="s2">&quot;np.linspace(x_min[</span><span class="si">{}</span><span class="s2">], x_max[</span><span class="si">{}</span><span class="s2">], </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">dim</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">eval_str</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span>
+
+        <span class="n">eval_str</span> <span class="o">+=</span> <span class="s2">&quot;)).T.reshape(-1, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+
+        <span class="n">coords_border_det</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">)</span>
+
+        <span class="n">domains</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">coords_border_det</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Please use valid border sampling method (&quot;&quot;structured&quot;&quot;)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># determine mask of not equaling domain points</span>
+    <span class="c1"># dom_mat = np.tile(domains[:, np.newaxis], (1, domains.shape[0]))</span>
+    <span class="n">dom_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">domains</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">domains</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">domains</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">dom_mat</span> <span class="o">!=</span> <span class="n">dom_mat</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">*</span> <span class="kc">False</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+
+    <span class="c1"># determine distances between grid points in different domains</span>
+    <span class="n">distance_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">for</span> <span class="n">i_c</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coords_border_det</span><span class="p">):</span>
+        <span class="n">distance_matrix</span><span class="p">[</span><span class="n">i_c</span><span class="p">,</span> <span class="n">mask</span><span class="p">[</span><span class="n">i_c</span><span class="p">,</span> <span class="p">:]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coords_border_det</span><span class="p">[</span><span class="n">mask</span><span class="p">[</span><span class="n">i_c</span><span class="p">,</span> <span class="p">:],</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">c</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">distance_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+    <span class="c1"># find n_smallest distances and determine midpoints between those points</span>
+    <span class="n">n_smallest</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">get_indices_of_k_smallest</span><span class="p">(</span><span class="n">distance_matrix</span><span class="p">,</span> <span class="n">n_smallest</span><span class="p">)</span>
+    <span class="n">coords_border</span> <span class="o">=</span> <span class="p">(</span><span class="n">coords_border_det</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">coords_border_det</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># resample n_coords_disc equally distributed points from n_smallest points on discontinuity</span>
+    <span class="n">n_reps</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># number of repetitions</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_coords_disc</span><span class="p">,</span> <span class="n">n_reps</span><span class="p">))</span>
+    <span class="n">distance_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_reps</span><span class="p">)</span>
+
+    <span class="c1"># select n_coords_disc points randomly and determine average minimal distance between points</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_reps</span><span class="p">):</span>
+        <span class="c1"># sample n_resample points from coords_border</span>
+        <span class="n">idx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">coords_border</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">n_coords_disc</span><span class="p">)</span>
+
+        <span class="c1"># determine all to all distances</span>
+        <span class="n">distance_matrix_resample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_coords_disc</span><span class="p">,</span> <span class="n">n_coords_disc</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">for</span> <span class="n">i_c</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coords_border</span><span class="p">[</span><span class="n">idx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="p">:]):</span>
+            <span class="n">distance_matrix_resample</span><span class="p">[</span><span class="n">i_c</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coords_border</span><span class="p">[</span><span class="n">idx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">c</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">distance_matrix_resample</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="n">distance_mean</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">distance_matrix_resample</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">coords_disc</span> <span class="o">=</span> <span class="n">coords_border</span><span class="p">[</span><span class="n">idx</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">distance_mean</span><span class="p">)]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">coords_disc</span></div>
+
+
+<div class="viewcode-block" id="increment_basis"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.increment_basis">[docs]</a><span class="k">def</span> <span class="nf">increment_basis</span><span class="p">(</span><span class="n">order_current</span><span class="p">,</span> <span class="n">interaction_order_current</span><span class="p">,</span> <span class="n">interaction_order_max</span><span class="p">,</span> <span class="n">incr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Increments basis</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    order_current: int</span>
+<span class="sd">        Maximum global expansion order.</span>
+<span class="sd">        The maximum expansion order considers the sum of the orders of combined polynomials together with the</span>
+<span class="sd">        chosen norm &quot;order_max_norm&quot;. Typically this norm is 1 such that the maximum order is the sum of all</span>
+<span class="sd">        monomial orders.</span>
+<span class="sd">    interaction_order_current : int</span>
+<span class="sd">        Current number of random variables, which can interact with each other</span>
+<span class="sd">        All polynomials are ignored, which have an interaction order greater than specified</span>
+<span class="sd">    interaction_order_max : int</span>
+<span class="sd">        Maximum number of random variables, which can interact with each other</span>
+<span class="sd">        All polynomials are ignored, which have an interaction order greater than specified</span>
+<span class="sd">    incr : int</span>
+<span class="sd">        Number of sub-iteration increments</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    order : int</span>
+<span class="sd">        Updated order</span>
+<span class="sd">    interaction_order : int</span>
+<span class="sd">        Updated interaction order</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">order</span> <span class="o">=</span> <span class="n">order_current</span>
+
+    <span class="n">order_incr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">float</span><span class="p">((</span><span class="n">incr</span><span class="o">+</span><span class="n">interaction_order_current</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">interaction_order_max</span><span class="p">)</span>
+    <span class="n">sub_iter_incr</span> <span class="o">=</span> <span class="p">(</span><span class="n">incr</span><span class="o">+</span><span class="n">interaction_order_current</span><span class="p">)</span> <span class="o">%</span> <span class="n">interaction_order_max</span>
+
+    <span class="n">order</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">order_incr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">order_incr</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sub_iter_incr</span><span class="p">:</span>
+        <span class="n">interaction_order</span> <span class="o">=</span> <span class="n">sub_iter_incr</span>
+    <span class="k">elif</span> <span class="n">order_incr</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sub_iter_incr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">interaction_order</span> <span class="o">=</span> <span class="n">interaction_order_max</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">interaction_order</span> <span class="o">=</span> <span class="n">incr</span> <span class="o">+</span> <span class="n">interaction_order_current</span>
+
+    <span class="c1"># carry = [incr]</span>
+    <span class="c1"># while carry[-1] &gt; 0:</span>
+    <span class="c1">#     interaction_order_current_max = np.min([order, interaction_order_max])</span>
+    <span class="c1">#</span>
+    <span class="c1">#     carry.append(carry[-1] - (interaction_order_current_max - interaction_order_current))</span>
+    <span class="c1">#</span>
+    <span class="c1">#     if carry[-1] &gt; 0:</span>
+    <span class="c1">#         order += 1</span>
+    <span class="c1">#         interaction_order_current = 0</span>
+    <span class="c1">#</span>
+    <span class="c1">#         if carry[-1] == 0:</span>
+    <span class="c1">#             interaction_order = interaction_order_current_max</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             interaction_order = carry[-1]</span>
+
+    <span class="k">return</span> <span class="n">order</span><span class="p">,</span> <span class="n">interaction_order</span></div>
 </pre></div>
 
           </div>

@@ -35,9 +35,9 @@ class SGPC(GPC):
         Number of random variables, which can interact with each other.
         All polynomials are ignored, which have an interaction order greater than the specified
     interaction_order_current: int
-        Number of random variables, which can interact with each other.
-        All polynomials are ignored, which have an interaction order greater than the specified
-        Current interaction order counter (only used in case of adaptive algorithms)
+        Number of random variables currently interacting with respect to the highest order.
+        (interaction_order_current <= interaction_order)
+        The parameters for lower orders are all interacting with "interaction order".
     options : dict
         Options of gPC
     validation: ValidationSet object (optional)
@@ -47,7 +47,8 @@ class SGPC(GPC):
         - results: ndarray [n_grid x n_out] results
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options, validation=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options,
+                 interaction_order_current=None, validation=None):
         """
         Constructor; Initializes the SGPC class
 
@@ -71,6 +72,10 @@ class SGPC(GPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
+        interaction_order_current: int, optional, default: interaction_order
+            Number of random variables currently interacting with respect to the highest order.
+            (interaction_order_current <= interaction_order)
+            The parameters for lower orders are all interacting with "interaction order".
         options : dict
             Options of gPC
         validation: ValidationSet object (optional)
@@ -90,14 +95,19 @@ class SGPC(GPC):
         self.order_max = order_max
         self.order_max_norm = order_max_norm
         self.interaction_order = interaction_order
-        self.interaction_order_current = interaction_order
+
+        if interaction_order_current is None:
+            self.interaction_order_current = interaction_order
+        else:
+            self.interaction_order_current = interaction_order_current
 
         self.basis = Basis()
         self.basis.init_basis_sgpc(problem=problem,
                                    order=order,
                                    order_max=order_max,
                                    order_max_norm=order_max_norm,
-                                   interaction_order=interaction_order)
+                                   interaction_order=interaction_order,
+                                   interaction_order_current=interaction_order_current)
 
     @staticmethod
     def get_mean(coeffs=None, samples=None):
@@ -589,7 +599,8 @@ class Reg(SGPC):
         - 'NumInt' ... None
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options, validation=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options,
+                 interaction_order_current=None, validation=None):
         """
         Constructor; Initializes Regression SGPC class
 
@@ -613,6 +624,10 @@ class Reg(SGPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
+        interaction_order_current: int, optional, default: interaction_order
+            Number of random variables currently interacting with respect to the highest order.
+            (interaction_order_current <= interaction_order)
+            The parameters for lower orders are all interacting with "interaction order".
         options : dict
             Options of gPC
         validation: ValidationSet object (optional)
@@ -634,10 +649,24 @@ class Reg(SGPC):
         >>>                 order_max=5,
         >>>                 order_max_norm=1,
         >>>                 interaction_order=2,
+        >>>                 interaction_order_current=1
         >>>                 fn_results="/tmp/my_results")
         """
 
-        super(Reg, self).__init__(problem, order, order_max, order_max_norm, interaction_order, options, validation)
+        if interaction_order_current is None:
+            self.interaction_order_current = interaction_order
+        else:
+            self.interaction_order_current = interaction_order_current
+
+        super(Reg, self).__init__(problem=problem,
+                                  order=order,
+                                  order_max=order_max,
+                                  order_max_norm=order_max_norm,
+                                  interaction_order=interaction_order,
+                                  interaction_order_current=interaction_order_current,
+                                  options=options,
+                                  validation=validation)
+
         self.solver = 'Moore-Penrose'   # Default solver
         self.settings = None            # Default Solver settings
 
@@ -647,7 +676,8 @@ class Quad(SGPC):
     Quadrature SGPC sub-class
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options, validation=None):
+    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options,
+                 interaction_order_current=None, validation=None):
         """
         Constructor; Initializes Quadrature SGPC sub-class
 
@@ -673,6 +703,10 @@ class Quad(SGPC):
         interaction_order: int
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
+        interaction_order_current: int, optional, default: interaction_order
+            Number of random variables currently interacting with respect to the highest order.
+            (interaction_order_current <= interaction_order)
+            The parameters for lower orders are all interacting with "interaction order".
         options : dict
             Options of gPC
         validation: ValidationSet object (optional)
@@ -690,12 +724,27 @@ class Quad(SGPC):
         --------
         >>> import pygpc
         >>> gpc = pygpc.Quad(problem=problem,
-        >>>                 order=[7, 6],
-        >>>                 order_max=5,
-        >>>                 order_max_norm=1,
-        >>>                 interaction_order=2,
-        >>>                 fn_results="/tmp/my_results")
+        >>>                  order=[7, 6],
+        >>>                  order_max=5,
+        >>>                  order_max_norm=1,
+        >>>                  interaction_order=2,
+        >>>                  interaction_order_current=1,
+        >>>                  fn_results="/tmp/my_results")
         """
-        super(Quad, self).__init__(problem, order, order_max, order_max_norm, interaction_order, options, validation)
+
+        if interaction_order_current is None:
+            self.interaction_order_current = interaction_order
+        else:
+            self.interaction_order_current = interaction_order_current
+
+        super(Quad, self).__init__(problem=problem,
+                                   order=order,
+                                   order_max=order_max,
+                                   order_max_norm=order_max_norm,
+                                   interaction_order=interaction_order,
+                                   interaction_order_current=interaction_order_current,
+                                   options=options,
+                                   validation=validation)
+
         self.solver = 'NumInt'  # Default solver
         self.settings = None    # Default solver settings

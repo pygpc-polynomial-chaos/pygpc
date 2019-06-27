@@ -240,6 +240,32 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 </dd></dl>
 
 <dl class="class">
+<dt id="pygpc.Algorithm.MERegAdaptive">
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">MERegAdaptive</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MERegAdaptive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MERegAdaptive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
+<p>Adaptive regression approach based on leave one out cross validation error estimation</p>
+<dl class="method">
+<dt id="pygpc.Algorithm.MERegAdaptive.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MERegAdaptive.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MERegAdaptive.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs Multi-Element adaptive gPC algorithm to solve problem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>megpc</strong> (<em>Multi-element GPC object instance</em>) – MEGPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances</li>
+<li><strong>coeffs</strong> (<em>list of ndarray of float [n_gpc][n_basis x n_out]</em>) – GPC coefficients</li>
+<li><strong>res</strong> (<em>ndarray of float [n_grid x n_out]</em>) – Simulation results at n_grid points of the n_out output variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pygpc.Algorithm.MEStatic">
 <em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">MEStatic</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MEStatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MEStatic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
@@ -273,7 +299,7 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 <dl class="method">
 <dt id="pygpc.Algorithm.MEStaticProjection.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MEStaticProjection.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MEStaticProjection.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs static multi-element gPC algorithm using Projection to solve problem.</p>
+<dd><p>Runs static multi-element gPC algorithm with projection.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -294,7 +320,7 @@ and sub-gPCs</li>
 
 <dl class="class">
 <dt id="pygpc.Algorithm.RegAdaptive">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptive</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptive" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptive</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
 <p>Adaptive regression approach based on leave one out cross validation error estimation</p>
 <dl class="method">
@@ -320,7 +346,7 @@ and sub-gPCs</li>
 
 <dl class="class">
 <dt id="pygpc.Algorithm.RegAdaptiveProjection">
-<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptiveProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptiveProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptiveProjection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">RegAdaptiveProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#RegAdaptiveProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.RegAdaptiveProjection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
 <p>Adaptive regression approach using projection and leave one out cross validation error estimation</p>
 <dl class="method">
@@ -497,7 +523,7 @@ Multiplying all elements in a row at location xi = (x1, x2, …, x_dim) yields t
 <dl class="method">
 <dt id="pygpc.Basis.Basis.extend_basis">
 <code class="descname">extend_basis</code><span class="sig-paren">(</span><em>b_added</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.extend_basis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.extend_basis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extend set of basis functions and update gpc matrix (append columns).</p>
+<dd><p>Extend set of basis functions. Skips basis functions, which are already present in self.b.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -517,7 +543,7 @@ to normalize basis functions &lt;psi^2&gt; = int(psi^2*p)dx</p>
 
 <dl class="method">
 <dt id="pygpc.Basis.Basis.init_basis_sgpc">
-<code class="descname">init_basis_sgpc</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.init_basis_sgpc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.init_basis_sgpc" title="Permalink to this definition">¶</a></dt>
+<code class="descname">init_basis_sgpc</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>interaction_order_current=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.init_basis_sgpc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.init_basis_sgpc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes basis functions for standard gPC.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -525,7 +551,7 @@ to normalize basis functions &lt;psi^2&gt; = int(psi^2*p)dx</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>problem</strong> (<em>Problem object</em>) – GPC Problem to analyze</li>
-<li><strong>order</strong> (<em>[</em><em>dim</em><em>] </em><em>list of int</em>) – Maximum individual expansion order
+<li><strong>order</strong> (<em>list of int</em><em> [</em><em>dim</em><em>]</em>) – Maximum individual expansion order
 Generates individual polynomials also if maximum expansion order in order_max is exceeded</li>
 <li><strong>order_max</strong> (<em>int</em>) – Maximum global expansion order.
 The maximum expansion order considers the sum of the orders of combined polynomials together with the
@@ -535,8 +561,10 @@ monomial orders.</li>
 of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
 is also referred to “hyperbolic polynomial chaos expansion” such that sum(a_i^q)^1/q &lt;= p,
 where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).</li>
-<li><strong>interaction_order</strong> (<em>int</em>) – Number of random variables, which can interact with each other
-All polynomials are ignored, which have an interaction order greater than specified</li>
+<li><strong>interaction_order</strong> (<em>int</em>) – Number of random variables, which can interact with each other</li>
+<li><strong>interaction_order_current</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: interaction_order</em>) – Number of random variables currently interacting with respect to the highest order.
+(interaction_order_current &lt;= interaction_order)
+The parameters for lower orders are all interacting with “interaction order”.</li>
 </ul>
 </td>
 </tr>
@@ -565,6 +593,45 @@ regression. Journal of Computational Physics, 230(6), 2345-2367.</td></tr>
 <dd>Parameter wise basis function objects used in gPC.
 Multiplying all elements in a row at location xi = (x1, x2, …, x_dim) yields the global basis function.</dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygpc.Basis.Basis.init_polynomial_basis_gpu">
+<code class="descname">init_polynomial_basis_gpu</code><span class="sig-paren">(</span><em>problem</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.init_polynomial_basis_gpu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.init_polynomial_basis_gpu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize polynomial basis coefficients for GPU. Converts list of lists of self.b
+into np.ndarray that can be processed on a GPU.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygpc.Basis.Basis.set_basis_poly">
+<code class="descname">set_basis_poly</code><span class="sig-paren">(</span><em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>interaction_order_current</em>, <em>problem</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.set_basis_poly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.set_basis_poly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up polynomial basis self.b for given order, order_max_norm and interaction order. Adds only the basis
+functions, which are not yet included.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>order</strong> (<em>list of int</em>) – Maximum individual expansion order
+Generates individual polynomials also if maximum expansion order in order_max is exceeded</li>
+<li><strong>order_max</strong> (<em>int</em>) – Maximum global expansion order.
+The maximum expansion order considers the sum of the orders of combined polynomials together with the
+chosen norm “order_max_norm”. Typically this norm is 1 such that the maximum order is the sum of all
+monomial orders.</li>
+<li><strong>order_max_norm</strong> (<em>float</em>) – Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number
+of polynomials in the expansion such that interaction terms are penalized more.
+sum(a_i^q)^1/q &lt;= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).</li>
+<li><strong>interaction_order</strong> – Number of random variables, which can interact with each other
+All polynomials are ignored, which have an interaction order greater than specified</li>
+<li><strong>interaction_order_current</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: interaction_order</em>) – Number of random variables currently interacting with respect to the highest order.
+(interaction_order_current &lt;= interaction_order)
+The parameters for lower orders are all interacting with interaction_order.</li>
+<li><strong>problem</strong> – GPC Problem to analyze</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -1229,21 +1296,13 @@ The coordinates will be transformed in case of projected gPC.</li>
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.init_gpc_matrix">
-<code class="descname">init_gpc_matrix</code><span class="sig-paren">(</span><em>gradient=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.init_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.init_gpc_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets self.gpc_matrix with given self.basis and self.grid</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>gradient</strong> (<em>boolean</em><em>, </em><em>optional</em><em>, </em><em>default: False</em>) – Initialize standard gPC matrix or gradient gPC matrix</td>
-</tr>
-</tbody>
-</table>
+<code class="descname">init_gpc_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.init_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.init_gpc_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets self.gpc_matrix and self.gpc_matrix_gradient with given self.basis and self.grid</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.loocv">
-<code class="descname">loocv</code><span class="sig-paren">(</span><em>coeffs</em>, <em>sim_results</em>, <em>error_norm='relative'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.loocv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.loocv" title="Permalink to this definition">¶</a></dt>
+<code class="descname">loocv</code><span class="sig-paren">(</span><em>coeffs</em>, <em>results</em>, <em>gradient_results=None</em>, <em>error_norm='relative'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.loocv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.loocv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
 The loocv error is calculated analytically after eq. (35) in [1] but omitting the “1 - ” term, i.e. it
 corresponds to 1 - Q^2.</p>
@@ -1260,8 +1319,9 @@ corresponds to 1 - Q^2.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_basis x n_out</em><em>]</em>) – GPC coefficients</li>
-<li><strong>sim_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results from n_grid simulations with n_out output quantities</li>
+<li><strong>results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results from n_grid simulations with n_out output quantities</li>
 <li><strong>error_norm</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default=&quot;relative&quot;</em>) – Decide if error is determined “relative” or “absolute”</li>
+<li><strong>gradient_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out x dim</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – Gradient of results in original parameter space (tensor)</li>
 </ul>
 </td>
 </tr>
@@ -1325,7 +1385,7 @@ rows and columns.</p>
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.solve">
-<code class="descname">solve</code><span class="sig-paren">(</span><em>results</em>, <em>solver=None</em>, <em>settings=None</em>, <em>matrix=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.solve" title="Permalink to this definition">¶</a></dt>
+<code class="descname">solve</code><span class="sig-paren">(</span><em>results</em>, <em>gradient_results=None</em>, <em>solver=None</em>, <em>settings=None</em>, <em>matrix=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.solve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines gPC coefficients</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1333,6 +1393,7 @@ rows and columns.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>results</strong> (<em>[</em><em>n_grid x n_out</em><em>] </em><em>np.ndarray of float</em>) – Results from simulations with N_out output quantities</li>
+<li><strong>gradient_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out x dim</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – Gradient of results in original parameter space (tensor)</li>
 <li><strong>solver</strong> (<em>str</em>) – Solver to determine the gPC coefficients
 - ‘Moore-Penrose’ … Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
 - ‘OMP’ … Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
@@ -1361,7 +1422,7 @@ their derivatives.</li>
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.update_gpc_matrix">
-<code class="descname">update_gpc_matrix</code><span class="sig-paren">(</span><em>gradient=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.update_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.update_gpc_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update_gpc_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.update_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.update_gpc_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update gPC matrix according to existing self.grid and self.basis.</p>
 <p>Call this method when self.gpc_matrix does not fit to self.grid and self.basis objects anymore
 The old gPC matrix with their self.gpc_matrix_b_id and self.gpc_matrix_coords_id is compared
@@ -1370,7 +1431,7 @@ to self.basis.b_id and self.grid.coords_id. New rows and columns are computed wh
 
 <dl class="method">
 <dt id="pygpc.GPC.GPC.validate">
-<code class="descname">validate</code><span class="sig-paren">(</span><em>coeffs</em>, <em>sim_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.validate" title="Permalink to this definition">¶</a></dt>
+<code class="descname">validate</code><span class="sig-paren">(</span><em>coeffs</em>, <em>results=None</em>, <em>gradient_results=None</em>, <em>qoi_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate gPC approximation using the ValidationSet object contained in the Problem object.
 Determines the normalized root mean square deviation between the gpc approximation and the
 original model. Skips this step if no validation set is present</p>
@@ -1380,7 +1441,9 @@ original model. Skips this step if no validation set is present</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_coeffs x n_out</em><em>]</em>) – GPC coefficients</li>
-<li><strong>sim_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results from n_grid simulations with n_out output quantities</li>
+<li><strong>results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out</em><em>]</em>) – Results from n_grid simulations with n_out output quantities</li>
+<li><strong>gradient_results</strong> (<em>ndarray of float</em><em> [</em><em>n_grid x n_out x dim</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – Gradient of results in original parameter space (tensor)</li>
+<li><strong>qoi_idx</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – Index of QOI to validate (if None, all QOI are considered)</li>
 </ul>
 </td>
 </tr>
@@ -1819,10 +1882,10 @@ BIT Numerical Mathematics, 46(1), 195-202.</td></tr>
 
 <dl class="method">
 <dt id="pygpc.Grid.RandomGrid.extend_random_grid">
-<code class="descname">extend_random_grid</code><span class="sig-paren">(</span><em>n_grid_new=None</em>, <em>coords=None</em>, <em>coords_norm=None</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#RandomGrid.extend_random_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.RandomGrid.extend_random_grid" title="Permalink to this definition">¶</a></dt>
+<code class="descname">extend_random_grid</code><span class="sig-paren">(</span><em>n_grid_new=None</em>, <em>coords=None</em>, <em>coords_norm=None</em>, <em>seed=None</em>, <em>classifier=None</em>, <em>domain=None</em>, <em>gradient=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#RandomGrid.extend_random_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.RandomGrid.extend_random_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add sample points according to input pdfs to grid (old points are kept). Define either the new total number of
 grid points with “n_grid_new” or add grid-points manually by providing “coords” and “coords_norm”.</p>
-<p>extend_random_grid(n_grid_new, seed=None):</p>
+<p>extend_random_grid(n_grid_new, coords=None, coords_norm=None, seed=None, classifier=None, domain=None):</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1833,6 +1896,9 @@ grid points with “n_grid_new” or add grid-points manually by providing “co
 <li><strong>coords</strong> (<em>ndarray of float</em><em> [</em><em>n_grid_add x dim</em><em>]</em>) – Grid points to add (model space)</li>
 <li><strong>coords_norm</strong> (<em>ndarray of float</em><em> [</em><em>n_grid_add x dim</em><em>]</em>) – Grid points to add (normalized space [-1, 1])</li>
 <li><strong>seed</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Random seeding point</li>
+<li><strong>classifier</strong> (<em>Classifier object</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – Classifier</li>
+<li><strong>domain</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – Adds grid points only in specified domain (needs Classifier object including a predict() method)</li>
+<li><strong>gradient</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default: False</em>) – Add corresponding gradient grid points</li>
 </ul>
 </td>
 </tr>
@@ -2374,14 +2440,14 @@ of the random parameters or the constants in model.validate.</p>
 <span id="pygpc-sgpc-module"></span><h2>pygpc.SGPC module<a class="headerlink" href="#module-pygpc.SGPC" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.SGPC.Quad">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Quad</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Quad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Quad" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Quad</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>interaction_order_current=None</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Quad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Quad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.SGPC.SGPC" title="pygpc.SGPC.SGPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.SGPC.SGPC</span></code></a></p>
 <p>Quadrature SGPC sub-class</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pygpc.SGPC.Reg">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Reg</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">Reg</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>interaction_order_current=None</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#Reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.Reg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.SGPC.SGPC" title="pygpc.SGPC.SGPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.SGPC.SGPC</span></code></a></p>
 <p>Regression gPC subclass</p>
 <p>Reg(problem, order, order_max, interaction_order, fn_results=None)</p>
@@ -2423,7 +2489,7 @@ of the random parameters or the constants in model.validate.</p>
 
 <dl class="class">
 <dt id="pygpc.SGPC.SGPC">
-<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">SGPC</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.SGPC.</code><code class="descname">SGPC</code><span class="sig-paren">(</span><em>problem</em>, <em>order</em>, <em>order_max</em>, <em>order_max_norm</em>, <em>interaction_order</em>, <em>options</em>, <em>interaction_order_current=None</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/SGPC.html#SGPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.SGPC.SGPC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.GPC.GPC" title="pygpc.GPC.GPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.GPC.GPC</span></code></a></p>
 <p>Sub-class for standard gPC (SGPC)</p>
 <dl class="attribute">
@@ -2493,9 +2559,9 @@ All polynomials are ignored, which have an interaction order greater than the sp
 <dl class="attribute">
 <dt id="pygpc.SGPC.SGPC.interaction_order_current">
 <code class="descname">interaction_order_current</code><a class="headerlink" href="#pygpc.SGPC.SGPC.interaction_order_current" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of random variables, which can interact with each other.
-All polynomials are ignored, which have an interaction order greater than the specified
-Current interaction order counter (only used in case of adaptive algorithms)</p>
+<dd><p>Number of random variables currently interacting with respect to the highest order.
+(interaction_order_current &lt;= interaction_order)
+The parameters for lower orders are all interacting with “interaction order”.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3810,6 +3876,57 @@ from observed data, e.g. 0.2 (+-20% tolerance on observed max and min value)</li
 </dd></dl>
 
 <dl class="function">
+<dt id="pygpc.misc.get_coords_discontinuity">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_coords_discontinuity</code><span class="sig-paren">(</span><em>classifier</em>, <em>x_min</em>, <em>x_max</em>, <em>n_coords_disc=10</em>, <em>border_sampling='structured'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_coords_discontinuity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_coords_discontinuity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine n_coords_disc grid points close to discontinuity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>classifier</strong> (<em>Classifier object</em>) – Classifier object to predict classes from coordinates (needs to contain a classifier.predict() method)</li>
+<li><strong>x_min</strong> (<em>ndarray of float</em><em> [</em><em>n_dim</em><em>]</em>) – Minimal values in parameter space to search discontinuity</li>
+<li><strong>x_max</strong> (<em>ndarray of float</em><em> [</em><em>n_dim</em><em>]</em>) – Maximal values in parameter space to search discontinuity</li>
+<li><strong>n_coords_disc</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: 10</em>) – Number of grid points to determine close to discontinuity</li>
+<li><strong>border_sampling</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: &quot;structured&quot;</em>) – Sampling method to determine location of discontinuity</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>coords_disc</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray of float [n_coords_disc]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.get_indices_of_k_smallest">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_indices_of_k_smallest</code><span class="sig-paren">(</span><em>arr</em>, <em>k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_indices_of_k_smallest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_indices_of_k_smallest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find indices of k smallest elements in ndarray</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arr</strong> (<em>ndarray of float</em>) – Array</li>
+<li><strong>k</strong> (<em>int</em>) – Number of smallest values to extract</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>idx</strong> – Indices of k smallest elements in array</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple of ndarray [k]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="pygpc.misc.get_list_multi_delete">
 <code class="descclassname">pygpc.misc.</code><code class="descname">get_list_multi_delete</code><span class="sig-paren">(</span><em>input_list</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_list_multi_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_list_multi_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete multiple entries from list.</p>
@@ -3835,16 +3952,17 @@ from observed data, e.g. 0.2 (+-20% tolerance on observed max and min value)</li
 </dd></dl>
 
 <dl class="function">
-<dt id="pygpc.misc.get_multi_indices_max_order">
-<code class="descclassname">pygpc.misc.</code><code class="descname">get_multi_indices_max_order</code><span class="sig-paren">(</span><em>dim</em>, <em>order_max</em>, <em>order_max_norm=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_multi_indices_max_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_multi_indices_max_order" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes all multi-indices with a maximum overall order of max_order.</p>
-<p>multi_indices = get_multi_indices_max_order(length, max_order)</p>
+<dt id="pygpc.misc.get_multi_indices">
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_multi_indices</code><span class="sig-paren">(</span><em>order</em>, <em>order_max</em>, <em>interaction_order</em>, <em>order_max_norm=1.0</em>, <em>interaction_order_current=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_multi_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_multi_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes all multi-indices with a maximum overall order of max_order considering a certain maximum order norm.</p>
+<p>multi_indices = get_multi_indices(length, max_order)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dim</strong> (<em>int</em>) – Number of random parameters (length of multi-index tuples)</li>
+<li><strong>order</strong> (<em>list of int</em><em> [</em><em>dim</em><em>]</em>) – Maximum individual expansion order
+Generates individual polynomials also if maximum expansion order in order_max is exceeded</li>
 <li><strong>order_max</strong> (<em>int</em>) – Maximum global expansion order.
 The maximum expansion order considers the sum of the orders of combined polynomials together with the
 chosen norm “order_max_norm”. Typically this norm is 1 such that the maximum order is the sum of all
@@ -3852,13 +3970,17 @@ monomial orders.</li>
 <li><strong>order_max_norm</strong> (<em>float</em>) – Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number
 of polynomials in the expansion such that interaction terms are penalized more.
 sum(a_i^q)^1/q &lt;= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).</li>
+<li><strong>interaction_order</strong> (<em>int</em>) – Number of random variables, which can interact with each other</li>
+<li><strong>interaction_order_current</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default: interaction_order</em>) – Number of random variables currently interacting with respect to the highest order.
+(interaction_order_current &lt;= interaction_order)
+The parameters for lower orders are all interacting with interaction_order.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>multi_indices</strong> – Multi-indices for a maximum order gPC assuming a certain order norm.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray [n_basis x dim]</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray [n_basis x dim]</p>
 </td>
 </tr>
 </tbody>
@@ -3967,6 +4089,38 @@ Values smaller than one restrict higher orders and shrink the basis.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>rotation_matrix</strong> – Rotation matrix computed from euler angles</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray of float [3, 3]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygpc.misc.increment_basis">
+<code class="descclassname">pygpc.misc.</code><code class="descname">increment_basis</code><span class="sig-paren">(</span><em>order_current</em>, <em>interaction_order_current</em>, <em>interaction_order_max</em>, <em>incr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#increment_basis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.increment_basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increments basis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>order_current</strong> (<em>int</em>) – Maximum global expansion order.
+The maximum expansion order considers the sum of the orders of combined polynomials together with the
+chosen norm “order_max_norm”. Typically this norm is 1 such that the maximum order is the sum of all
+monomial orders.</li>
+<li><strong>interaction_order_current</strong> (<em>int</em>) – Current number of random variables, which can interact with each other
+All polynomials are ignored, which have an interaction order greater than specified</li>
+<li><strong>interaction_order_max</strong> (<em>int</em>) – Maximum number of random variables, which can interact with each other
+All polynomials are ignored, which have an interaction order greater than specified</li>
+<li><strong>incr</strong> (<em>int</em>) – Number of sub-iteration increments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>order</strong> (<em>int</em>) – Updated order</li>
+<li><strong>interaction_order</strong> (<em>int</em>) – Updated interaction order</li>
+</ul>
+</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -4241,7 +4395,7 @@ calculate the difference between two solutions at the output quantity with outpu
 <li><strong>n_grid</strong> (<em>int</em><em> or </em><em>list of int</em><em> [</em><em>2</em><em>]</em><em>, </em><em>optional</em>) – Number of samples in each dimension to compare the gPC approximation with the original model function.
 A cartesian grid is generated based on the limits of the specified random_vars</li>
 <li><strong>coords</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_dim</em><em>]</em>) – Parameter combinations for the random_vars the comparison is conducted with</li>
-<li><strong>output_idx</strong> (<em>int</em><em> or </em><em>list of int</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Indices of output quantity to consider</li>
+<li><strong>output_idx</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Indices of output quantity to consider</li>
 <li><strong>data_original</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_out</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – If available, data of original model function at grid</li>
 <li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id15"><span class="problematic" id="id16">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
 <li><strong>n_cpu</strong> (<em>int</em><em>, </em><em>default=1</em>) – Number of CPU cores to use to calculate results of original model on grid.</li>

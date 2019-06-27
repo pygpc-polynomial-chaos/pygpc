@@ -9,7 +9,7 @@ import numpy as np
 from scipy.fftpack import ifft
 from sklearn.utils.extmath import cartesian
 from .io import iprint
-from .misc import get_multi_indices_max_order
+from .misc import get_multi_indices
 
 
 class Grid(object):
@@ -47,8 +47,6 @@ class Grid(object):
         parameters_random : OrderedDict of RandomParameter instances
             OrderedDict containing the RandomParameter instances the grids are generated for
         """
-        self.n_grid = 0                               # Total number of grid points
-        self.n_grid_gradient = 0                      # Total number of grid points for gradient calculation
         self._coords = coords                         # Coordinates of gpc model calculation in the system space
         self._coords_norm = coords_norm               # Coordinates of gpc model calculation in the gpc space [-1,1]
         self.coords_id = coords_id                    # Unique IDs of grid points
@@ -57,7 +55,13 @@ class Grid(object):
         self.parameters_random = parameters_random    # OrderedDict of RandomParameter instances
         self.dim = len(self.parameters_random)        # Number of random variables
         self._coords_gradient = coords_gradient       # Shifted coordinates for gradient calculation in the system space
-        self._coords_gradient_norm = coords_gradient_norm  # Shifted (normalized) coordinates for gradient calculation [-1,1]
+        self._coords_gradient_norm = coords_gradient_norm  # Normalized coordinates for gradient calculation [-1,1]
+
+        if coords is not None:
+            self.n_grid = self.coords.shape[0]                    # Total number of grid points
+
+        if coords_gradient is not None:
+            self.n_grid_gradient = self.coords_gradient.shape[0]  # Total number of grid points for gradient calculation
 
         if coords_id is None and coords is not None:
             self.coords_id = self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
@@ -890,13 +894,13 @@ class SparseGrid(Grid):
             if self.dim == 1:
                 l_level = np.array([np.linspace(1, self.level_max, self.level_max)]).transpose()
             else:
-                l_level = get_multi_indices_max_order(self.dim, self.level_max - self.dim)
+                l_level = get_multi_indices(self.dim, self.level_max - self.dim)
                 l_level = l_level + 1
         else:
             if self.dim == 1:
                 l_level = np.array([np.linspace(0, self.level_max, self.level_max + 1)]).transpose()
             else:
-                l_level = get_multi_indices_max_order(self.dim, self.level_max)
+                l_level = get_multi_indices(self.dim, self.level_max)
 
         # filter out rows exceeding the individual level cap
         for i_p in range(self.dim):
@@ -1152,7 +1156,7 @@ class RandomGrid(Grid):
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
     def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, seed=None,
-                           classifier=None, domain=None):
+                           classifier=None, domain=None, gradient=False):
         """
         Add sample points according to input pdfs to grid (old points are kept). Define either the new total number of
         grid points with "n_grid_new" or add grid-points manually by providing "coords" and "coords_norm".
@@ -1173,7 +1177,9 @@ class RandomGrid(Grid):
         classifier : Classifier object, optional, default: None
             Classifier
         domain : int, optional, default: None
-            Adds grid points only in specified domain (needs Classifier object indlucing a predict() method)
+            Adds grid points only in specified domain (needs Classifier object including a predict() method)
+        gradient : bool, optional, default: False
+            Add corresponding gradient grid points
         """
 
         if n_grid_new is not None:
@@ -1202,10 +1208,14 @@ class RandomGrid(Grid):
                             new_grid = RandomGrid(parameters_random=self.parameters_random,
                                                   options={"n_grid": 1, "seed": seed})
 
-                            if classifier.predict(new_grid.coords_norm) == domain:
+                            if classifier.predict(new_grid.coords_norm)[0] == domain:
                                 coords[i, :] = new_grid.coords
                                 coords_norm[i, :] = new_grid.coords_norm
                                 resample = False
+
+                    # append points to existing grid
+                    self.coords = np.vstack([self.coords, coords])
+                    self.coords_norm = np.vstack([self.coords_norm, coords_norm])
 
         elif coords is not None and coords_norm is not None:
             # Number of new grid points
@@ -1227,3 +1237,6 @@ class RandomGrid(Grid):
         self.coords_id = self.coords_id + [uuid.uuid4() for _ in range(n_grid_add)]
 
         self.n_grid = self.coords.shape[0]
+
+        if gradient:
+            self.create_gradient_grid()
