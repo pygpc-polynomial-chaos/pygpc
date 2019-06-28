@@ -408,7 +408,7 @@ def get_num_coeffs(order, dim):
     return scipy.special.factorial(order + dim) / (scipy.special.factorial(order) * scipy.special.factorial(dim))
 
 
-def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, order_glob_max_norm=1):
+def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, order_inter_current=None, order_glob_max_norm=1):
     """
     Calculate the number of gPC coefficients for a specific maximum order in each dimension "order_dim_max",
     global maximum order "order_glob_max" and the interaction order "order_inter_max".
@@ -425,6 +425,8 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, o
         Interaction order
     dim: int
         Number of random variables
+    order_inter_current : int
+
     order_glob_max_norm: float
         Norm, which defines how the orders are accumulated to derive the total order (default: 1-norm).
         Values smaller than one restrict higher orders and shrink the basis.
@@ -434,6 +436,9 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, o
     num_coeffs_sparse: int
         Number of gPC coefficients and polynomials
     """
+
+    if order_inter_current is None:
+        order_inter_current = order_inter_max
 
     if type(order_dim_max) is list:
         order_dim_max = np.array(order_dim_max)
@@ -445,7 +450,11 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, o
     if dim == 1:
         poly_idx = np.array([np.linspace(0, order_dim_max[0], order_dim_max[0] + 1)]).astype(int).transpose()
     else:
-        poly_idx = get_multi_indices(int(dim), order_glob_max, order_glob_max_norm)
+        poly_idx = get_multi_indices(order=order_dim_max,
+                                     order_max=order_glob_max,
+                                     interaction_order=order_inter_max,
+                                     order_max_norm=order_glob_max_norm,
+                                     interaction_order_current=order_inter_current)
 
     for i_dim in range(dim):
         # add multi-indexes to list when not yet included
