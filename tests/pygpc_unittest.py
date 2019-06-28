@@ -2970,9 +2970,9 @@ class TestpygpcMethods(unittest.TestCase):
         # gPC options
         options = dict()
         options["method"] = "reg"
-        options["solver"] = "LarsLasso"
+        options["solver"] = "Moore-Penrose"
         options["settings"] = None
-        options["order_start"] = 2
+        options["order_start"] = 4
         options["order_end"] = 15
         options["interaction_order"] = 2
         options["matrix_ratio"] = 2
@@ -2988,7 +2988,7 @@ class TestpygpcMethods(unittest.TestCase):
                                          "classifier": "MLPClassifier",
                                          "classifier_solver": "lbfgs"}
         options["n_samples_discontinuity"] = 3
-        options["adaptive_sampling"] = True
+        options["adaptive_sampling"] = False
         options["eps"] = 0.01
         options["n_grid_init"] = 20
         options["GPU"] = False

@@ -2362,7 +2362,7 @@ class MERegAdaptive(Algorithm):
 
         # increase number of initial simulations if necessary
         if not self.options["adaptive_sampling"]:
-            n_grid_init = np.ceil(n_coeffs * self.options["matrix_ratio"])
+            n_grid_init = int(np.ceil(n_coeffs * self.options["matrix_ratio"]))
 
             if n_grid_init != self.options["n_grid_init"]:
                 iprint("Increasing number of initial simulations from {} to {} "

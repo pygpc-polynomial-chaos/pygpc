@@ -120,7 +120,7 @@ class Basis:
         self.init_b_norm()
 
         # initialize gpu coefficient array
-        self.init_polynomial_basis_gpu(problem)
+        self.init_polynomial_basis_gpu()
 
     def init_b_norm(self):
         """
@@ -219,22 +219,25 @@ class Basis:
         # update normalization factors
         self.init_b_norm()
 
+        # initialize gpu coefficient array
+        self.init_polynomial_basis_gpu()
+
     # TODO: @Lucas (GPU) adapt this to function objects
-    def init_polynomial_basis_gpu(self, problem):
+    def init_polynomial_basis_gpu(self):
         """
         Initialize polynomial basis coefficients for GPU. Converts list of lists of self.b
         into np.ndarray that can be processed on a GPU.
         """
         for i_basis in range(len(self.b)):
-            for i_dim in range(problem.dim):
+            for i_dim in range(self.dim):
                 polynomial_order = self.b[i_basis][i_dim].fun.order
                 self.b_gpu = np.append(self.b_gpu, polynomial_order)
                 self.b_gpu = np.append(self.b_gpu, np.flip(self.b[i_basis][i_dim].fun.c))
 
-        for i_dim_gradient in range(problem.dim):
+        for i_dim_gradient in range(self.dim):
             _b_gpu_grad = np.array(())
             for i_basis in range(len(self.b)):
-                for i_dim in range(problem.dim):
+                for i_dim in range(self.dim):
                     if i_dim == i_dim_gradient:
                         polynomial = self.b[i_basis][i_dim].fun.deriv()
                         polynomial_order = polynomial.order
