@@ -597,7 +597,7 @@ Multiplying all elements in a row at location xi = (x1, x2, …, x_dim) yields t
 
 <dl class="method">
 <dt id="pygpc.Basis.Basis.init_polynomial_basis_gpu">
-<code class="descname">init_polynomial_basis_gpu</code><span class="sig-paren">(</span><em>problem</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.init_polynomial_basis_gpu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.init_polynomial_basis_gpu" title="Permalink to this definition">¶</a></dt>
+<code class="descname">init_polynomial_basis_gpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Basis.html#Basis.init_polynomial_basis_gpu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Basis.Basis.init_polynomial_basis_gpu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize polynomial basis coefficients for GPU. Converts list of lists of self.b
 into np.ndarray that can be processed on a GPU.</p>
 </dd></dl>
@@ -1169,7 +1169,7 @@ the normalized space between [-1, 1], the transformed coordinates need to be sca
 <dt id="pygpc.GPC.GPC.calc_gpc_matrix">
 <code class="descname">calc_gpc_matrix</code><span class="sig-paren">(</span><em>b</em>, <em>x</em>, <em>gradient=False</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/GPC.html#GPC.calc_gpc_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.GPC.GPC.calc_gpc_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct the gPC matrix or its derivative.</p>
-<p>gpc_matrix = calc_gpc_matrix(b, x, gradient=False)</p>
+<p>gpc_matrix = calc_gpc_matrix_cpu(b, x, gradient=False)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -4015,7 +4015,7 @@ The parameters for lower orders are all interacting with interaction_order.</li>
 
 <dl class="function">
 <dt id="pygpc.misc.get_num_coeffs_sparse">
-<code class="descclassname">pygpc.misc.</code><code class="descname">get_num_coeffs_sparse</code><span class="sig-paren">(</span><em>order_dim_max</em>, <em>order_glob_max</em>, <em>order_inter_max</em>, <em>dim</em>, <em>order_glob_max_norm=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_num_coeffs_sparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_num_coeffs_sparse" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pygpc.misc.</code><code class="descname">get_num_coeffs_sparse</code><span class="sig-paren">(</span><em>order_dim_max</em>, <em>order_glob_max</em>, <em>order_inter_max</em>, <em>dim</em>, <em>order_inter_current=None</em>, <em>order_glob_max_norm=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/misc.html#get_num_coeffs_sparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.misc.get_num_coeffs_sparse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the number of gPC coefficients for a specific maximum order in each dimension “order_dim_max”,
 global maximum order “order_glob_max” and the interaction order “order_inter_max”.</p>
 <p>num_coeffs_sparse = get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim)</p>
@@ -4028,6 +4028,7 @@ global maximum order “order_glob_max” and the interaction order “order_int
 <li><strong>order_glob_max</strong> (<em>int</em>) – Maximum global order of interacting polynomials</li>
 <li><strong>order_inter_max</strong> (<em>int</em>) – Interaction order</li>
 <li><strong>dim</strong> (<em>int</em>) – Number of random variables</li>
+<li><strong>order_inter_current</strong> (<em>int</em>) – </li>
 <li><strong>order_glob_max_norm</strong> (<em>float</em>) – Norm, which defines how the orders are accumulated to derive the total order (default: 1-norm).
 Values smaller than one restrict higher orders and shrink the basis.</li>
 </ul>

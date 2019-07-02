@@ -63,9 +63,9 @@ def display_fancy_bar(text, i, n_i, more_text=None):
     # this prints [50-spaces], i% * =
     # sys.stdout.write(" [%-40s] %d%%" % (
     #     '=' * int((float(i) + 0) / n_i * 100 / 2.5), float(i) / n_i * 100.))
-    sys.stdout.write(" [{}{}] {:.2}%".format('=' * int(int(i) / n_i * 40),
-                                             " " * (40 - int(int(i) / n_i * 40)),
-                                             int(i) / n_i * 100))
+    sys.stdout.write(" [{}{}] {:.1f}%".format('=' * int(int(i) / n_i * 40),
+                                              " " * (40 - int(int(i) / n_i * 40)),
+                                              float(int(i) / n_i * 100)))
     sys.stdout.flush()
     # if int(i) == n_i:
     #     print("")
@@ -242,11 +242,11 @@ def nrmsd(array, array_ref, error_norm="relative", x_axis=False):
 
     # determine "absolute" or "relative" error
     if error_norm == "relative":
-        max_min_idx = np.isclose(np.max(data_ref, axis=0), np.min(data_ref, axis=0))
+        # max_min_idx = np.isclose(np.max(data_ref, axis=0), np.min(data_ref, axis=0))
         delta = np.max(data_ref, axis=0) - np.min(data_ref, axis=0)
 
-        if max_min_idx.any():
-            delta[max_min_idx] = max(data_ref[max_min_idx])
+        # if max_min_idx.any():
+        #     delta[max_min_idx] = max(data_ref[max_min_idx])
     else:
         delta = 1
 
@@ -765,6 +765,7 @@ def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=0.95):
     s_sum_part = 0
     s_sum = np.sum(s)
     i_s = 0
+
     while s_sum_part <= lambda_eps*s_sum:
         s_sum_part += s[i_s]
         s_mask[i_s] = True

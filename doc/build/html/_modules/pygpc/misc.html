@@ -489,7 +489,7 @@
     <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="n">dim</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="get_num_coeffs_sparse"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_num_coeffs_sparse">[docs]</a><span class="k">def</span> <span class="nf">get_num_coeffs_sparse</span><span class="p">(</span><span class="n">order_dim_max</span><span class="p">,</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_inter_max</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">order_glob_max_norm</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="get_num_coeffs_sparse"><a class="viewcode-back" href="../../pygpc.html#pygpc.misc.get_num_coeffs_sparse">[docs]</a><span class="k">def</span> <span class="nf">get_num_coeffs_sparse</span><span class="p">(</span><span class="n">order_dim_max</span><span class="p">,</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_inter_max</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">order_inter_current</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order_glob_max_norm</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the number of gPC coefficients for a specific maximum order in each dimension &quot;order_dim_max&quot;,</span>
 <span class="sd">    global maximum order &quot;order_glob_max&quot; and the interaction order &quot;order_inter_max&quot;.</span>
@@ -506,6 +506,8 @@
 <span class="sd">        Interaction order</span>
 <span class="sd">    dim: int</span>
 <span class="sd">        Number of random variables</span>
+<span class="sd">    order_inter_current : int</span>
+
 <span class="sd">    order_glob_max_norm: float</span>
 <span class="sd">        Norm, which defines how the orders are accumulated to derive the total order (default: 1-norm).</span>
 <span class="sd">        Values smaller than one restrict higher orders and shrink the basis.</span>
@@ -515,6 +517,9 @@
 <span class="sd">    num_coeffs_sparse: int</span>
 <span class="sd">        Number of gPC coefficients and polynomials</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">order_inter_current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">order_inter_current</span> <span class="o">=</span> <span class="n">order_inter_max</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">order_dim_max</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
         <span class="n">order_dim_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">order_dim_max</span><span class="p">)</span>
@@ -526,7 +531,11 @@
     <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">order_dim_max</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">get_multi_indices</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">order_glob_max</span><span class="p">,</span> <span class="n">order_glob_max_norm</span><span class="p">)</span>
+        <span class="n">poly_idx</span> <span class="o">=</span> <span class="n">get_multi_indices</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order_dim_max</span><span class="p">,</span>
+                                     <span class="n">order_max</span><span class="o">=</span><span class="n">order_glob_max</span><span class="p">,</span>
+                                     <span class="n">interaction_order</span><span class="o">=</span><span class="n">order_inter_max</span><span class="p">,</span>
+                                     <span class="n">order_max_norm</span><span class="o">=</span><span class="n">order_glob_max_norm</span><span class="p">,</span>
+                                     <span class="n">interaction_order_current</span><span class="o">=</span><span class="n">order_inter_current</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i_dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
         <span class="c1"># add multi-indexes to list when not yet included</span>

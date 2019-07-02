@@ -21,16 +21,21 @@ def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=
         Dictionary containing the 1D coordinates as ndarrays, where the testfunction is evaluated (will be tensorized)
     constants : OrderedDict (optional)
         Dictionary containing the (remaining) parameters treated as constants
-    output_idx : int
-        index of output quantity to plot
+    output_idx : int or list of int
+        Indices of output quantity to plot
 
     Returns
     -------
     <plot> : matplotlib figure
         Plot showing the QoI of the testfunction in 1D or 2D
     """
+    if type(output_idx) is not list:
+        output_idx = [output_idx]
+
+    n_qoi = len(output_idx)
+
     # setup parameters
-    p_names = parameters.keys()
+    p_names = list(parameters.keys())
     p = OrderedDict()
 
     if len(p_names) == 2:
@@ -47,33 +52,38 @@ def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=
         for c_name in c_names:
             p[c_name] = np.tile(constants[c_name], (len(p[p_names[0]]), 1))
 
-    model = []
-    exec ("model = {}(p)".format(testfunction_name))
+    #model = []
+    model = eval("{}(p)".format(testfunction_name))
 
     y = model.simulate()
 
-    # omit "additional_data" if present
-    if type(y) is tuple:
-        y = y[0]
+    fig, ax = plt.subplots(n_qoi, figsize=(6, ((n_qoi-1)*0.85+1) * 5), sharex=False, sharey=False)
 
-    fig, ax = plt.subplots(figsize=(6, 5))
+    if type(ax) is not np.ndarray:
+        ax = np.array([ax])
 
-    if len(p_names) == 2:
-        im = plt.pcolor(x1,
-                        x2,
-                        np.reshape(y[:, output_idx],
-                                   (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
-                                   order='c'),
-                        cmap="jet")
-        ax.set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
-        fig.colorbar(im, ax=ax, orientation='vertical')
+    for o in output_idx:
+        # omit "additional_data" if present
+        if type(y[o]) is tuple:
+            y[o] = y[o][0]
 
-    else:
-        plt.plot(parameters[p_names[0]], y)
-        ax.set_ylabel(r"$y({})$".format(p_names[0]), fontsize=12)
+        if len(p_names) == 2:
+            im = ax[o].pcolor(x1,
+                              x2,
+                              np.reshape(y[:, o],
+                                         (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
+                                         order='c'),
+                              cmap="jet")
+            ax[o].set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
+            fig.colorbar(im, ax=ax[o], orientation='vertical')
 
-    plt.title("{} function".format(model.__class__.__name__))
-    ax.set_xlabel(r"${}$".format(p_names[0]), fontsize=12)
+        else:
+            ax[o].plot(parameters[p_names[0]], y)
+            ax[o].set_ylabel(r"$y({})$".format(p_names[0]), fontsize=12)
+
+        ax[o].set_xlabel(r"${}$".format(p_names[0]), fontsize=12)
+
+    ax[0].set_title("{} function".format(model.__class__.__name__))
     plt.tight_layout()
     plt.show()
 
@@ -152,6 +162,58 @@ class Peaks(AbstractModel):
             y_out = np.array([y, 2 * y])
 
         return y_out, additional_data
+
+
+class DiscontinuousRidgeManufactureDecayGenzDiscontinuous(AbstractModel):
+    """
+    N-dimensional discontinuous test function. The first QOI corresponds to the
+    DiscontinuousRidgeManufactureDecay function and the second QOI to GenzDiscontinuous.
+
+    y = DiscontinuousRidgeManufactureDecayGenzDiscontinuous(x)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        Parameter 1 [0, 1]
+    p["x2"]: float or ndarray of float [n_grid]
+        Parameter 2 [0, 1]
+    p["x3"]: float or ndarray of float [n_grid]
+        Parameter 3 [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x n_out]
+        Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("DiscontinuousRidgeManufactureDecayGenzDiscontinuous", parameters, output_idx=[0, 1])
+    """
+
+    def __init__(self, p, context=None):
+        super(DiscontinuousRidgeManufactureDecayGenzDiscontinuous, self).__init__(p, context)
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None):
+
+        y_1 = DiscontinuousRidgeManufactureDecay(self.p).simulate()
+        y_2 = BinaryDiscontinuousSphere(self.p).simulate()
+
+        y = np.hstack((y_1, y_2))
+
+        return y
 
 
 class HyperbolicTangent(AbstractModel):
@@ -701,11 +763,11 @@ class GenzDiscontinuous(AbstractModel):
         mask = np.zeros((len(self.p[list(self.p.keys())[0]]), n))
 
         for i, key in enumerate(self.p.keys()):
-            mask[:, i] = self.p[key] > u[i]
+            mask[:, i] = (self.p[key] > u[i]).squeeze()
         mask = mask.any(axis=1)
 
         # determine sum
-        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        s = np.zeros((np.array(self.p[list(self.p.keys())[0]]).size, 1))
 
         for i, key in enumerate(self.p.keys()):
             s += a[i] * self.p[key]
@@ -714,9 +776,7 @@ class GenzDiscontinuous(AbstractModel):
         y = np.exp(s)
         y[mask] = 0.
 
-        y_out = y[:, np.newaxis]
-
-        return y_out
+        return y
 
 
 class GenzGaussianPeak(AbstractModel):
@@ -1314,7 +1374,7 @@ class BinaryDiscontinuousSphere(AbstractModel):
 
     def simulate(self, process_id=None):
 
-        x = np.vstack([self.p[key] for key in self.p.keys()])
+        x = np.vstack([self.p[key].squeeze() for key in self.p.keys()])
 
         y = np.ones(x.shape[1])
         y[np.linalg.norm(x-0.5, axis=0) <= 0.25] = 2.
@@ -1478,8 +1538,6 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
         y[np.logical_not(mask)] = y_2.flatten()
 
         y_out = y[:, np.newaxis]
-
-        y_out = np.hstack((y_out, 2.*y_out))
 
         return y_out
 

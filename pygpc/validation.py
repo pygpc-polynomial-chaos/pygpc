@@ -147,7 +147,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     ----------
     gpc : GPC object instance
         GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
-    coeffs : ndarray of float [n_coeffs x n_out]
+    coeffs : ndarray of float [n_coeffs x n_out] or list of ndarray of float [n_qoi][n_coeffs x n_out]
         GPC coefficients
     random_vars: str or list of str [2]
         Names of the random variables, the analysis is performed for one or max. two random variables
@@ -159,9 +159,10 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     output_idx : int, optional, default=0
         Indices of output quantity to consider
     data_original: ndarray of float [n_coords x n_out], optional, default: None
-        If available, data of original model function at grid
-    fn_out : str
+        If available, data of original model function at grid, containing all QOIs
+    fn_out : str, optional, default: None
         Filename of plot comparing original vs gPC model (*_QOI_idx_<output_idx>.png is added)
+        Filename of .hdf5 file containing the grid and the data from the original model and the gPC
     n_cpu : int, default=1
         Number of CPU cores to use to calculate results of original model on grid.
 
@@ -237,16 +238,19 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     # Evaluate original model function on grid
     if data_original is None:
         com = Computation(n_cpu=n_cpu)
-        y_orig = com.run(model=gpc.problem.model,
-                         problem=problem,
-                         coords=grid,
-                         coords_norm=grid_norm,
-                         i_iter=None,
-                         i_subiter=None,
-                         fn_results=None,
-                         print_func_time=False)[:, output_idx]
+        y_orig_all = com.run(model=gpc.problem.model,
+                             problem=problem,
+                             coords=grid,
+                             coords_norm=grid_norm,
+                             i_iter=None,
+                             i_subiter=None,
+                             fn_results=None,
+                             print_func_time=False)
+        y_orig = y_orig_all[:, output_idx]
     else:
-        y_orig = data_original
+
+        y_orig_all = data_original
+        y_orig = data_original[:, output_idx]
 
     # add axes if necessary
     if y_gpc.ndim == 1:
@@ -259,12 +263,14 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     y_dif = y_orig - y_gpc
 
     # save results in .hdf5 file
-    with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
-        f.create_dataset('results/original', data=y_orig)
-        f.create_dataset('results/gpc', data=y_gpc)
-        f.create_dataset('results/difference', data=y_dif)
-        f.create_dataset('grid/coords', data=grid)
-        f.create_dataset('grid/coords_norm', data=grid_norm)
+    if fn_out is not None:
+        with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
+            f.create_dataset('model_evaluations/original', data=y_orig)
+            f.create_dataset('model_evaluations/original_all_qoi', data=y_orig_all)
+            f.create_dataset('model_evaluations/gpc', data=y_gpc)
+            f.create_dataset('model_evaluations/difference', data=y_dif)
+            f.create_dataset('grid/coords', data=grid)
+            f.create_dataset('grid/coords_norm', data=grid_norm)
 
     # Plot results
     matplotlib.rc('text', usetex=True)
@@ -334,6 +340,148 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         fig.colorbar(im1, ax=ax1, orientation='vertical')
         fig.colorbar(im2, ax=ax2, orientation='vertical')
         fig.colorbar(im3, ax=ax3, orientation='vertical')
+
+        plt.tight_layout()
+
+    if fn_out is not None:
+        plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.png', dpi=600)
+        plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.pdf')
+
+
+def plot_gpc(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, fn_out=None):
+    """
+    Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
+    calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
+    *_QOI_idx_<output_idx>.png/pdf. Also generates one .hdf5 results file with the evaluation results.
+
+    Parameters
+    ----------
+    gpc : GPC object instance
+        GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
+    coeffs : ndarray of float [n_coeffs x n_out]
+        GPC coefficients
+    random_vars: str or list of str [2]
+        Names of the random variables, the analysis is performed for one or max. two random variables
+    n_grid : int or list of int [2], optional
+        Number of samples in each dimension to compare the gPC approximation with the original model function.
+        A cartesian grid is generated based on the limits of the specified random_vars
+    coords : ndarray of float [n_coords x n_dim]
+        Parameter combinations for the random_vars the comparison is conducted with
+    output_idx : int, optional, default=0
+        Indices of output quantity to consider
+    fn_out : str
+        Filename of plot comparing original vs gPC model (*_QOI_idx_<output_idx>.png is added)
+
+    Returns
+    -------
+    <file> : .hdf5 file
+        Data file containing the grid points and the results of the original and the gpc approximation
+    <file> : .png and .pdf file
+        Plot comparing original vs gPC model
+    """
+    output_idx_gpc = output_idx
+
+    if type(gpc) is list:
+        gpc = gpc[output_idx]
+        coeffs = coeffs[output_idx]
+        output_idx_gpc = 0
+
+    if isinstance(gpc, MEGPC):
+        problem = gpc.problem
+    else:
+        if gpc.p_matrix is not None:
+            problem = gpc.problem_original
+        else:
+            problem = gpc.problem
+
+    if type(random_vars) is not list:
+        random_vars = random_vars.tolist()
+
+    if n_grid and type(n_grid) is not list:
+        n_grid = n_grid.tolist()
+
+    # Create grid such that it includes the mean values of other random variables
+    if coords is None:
+        grid = np.zeros((np.prod(n_grid), len(problem.parameters_random)))
+    else:
+        grid = np.zeros((coords.shape[0], len(problem.parameters_random)))
+
+    idx = []
+
+    # sort random_vars according to gpc.parameters
+    for i_p, p in enumerate(problem.parameters_random.keys()):
+        if p not in random_vars:
+            grid[:, i_p] = problem.parameters_random[p].mean
+
+        else:
+            idx.append(random_vars.index(p))
+
+    random_vars = [random_vars[i] for i in idx]
+    x = []
+
+    if coords is None:
+        n_grid = [n_grid[i] for i in idx]
+
+        for i_p, p in enumerate(random_vars):
+            x.append(np.linspace(problem.parameters_random[p].pdf_limits[0],
+                                 problem.parameters_random[p].pdf_limits[1],
+                                 n_grid[i_p]))
+
+        coords = get_cartesian_product(x)
+
+    else:
+        for i_p, p in enumerate(random_vars):
+            x.append(np.unique(coords[:, i_p]))
+
+    grid[:, (grid == 0).all(axis=0)] = coords
+
+    # Normalize grid
+    grid_norm = Grid(parameters_random=problem.parameters_random).get_normalized_coordinates(grid)
+
+    # Evaluate gPC expansion on grid
+    y_gpc = gpc.get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx_gpc)
+
+    # add axes if necessary
+    if y_gpc.ndim == 1:
+        y_gpc = y_gpc[:, np.newaxis]
+
+    # Plot results
+    matplotlib.rc('text', usetex=True)
+    matplotlib.rc('xtick', labelsize=13)
+    matplotlib.rc('ytick', labelsize=13)
+    fs = 14
+
+    # One random variable
+    if len(random_vars) == 1:
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, squeeze=True, figsize=(12, 5))
+
+        ax1.plot(coords, y_gpc)
+        ax1.legend([r"gPC"], fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$y(%s)$" % random_vars[0], fontsize=fs)
+        ax1.grid()
+
+    # Two random variables
+    elif len(random_vars) == 2:
+        fig, (ax1) = matplotlib.pyplot.subplots(nrows=1, ncols=1,
+                                                sharex='all', sharey='all',
+                                                squeeze=True, figsize=(4, 5))
+
+        x1_2d, x2_2d = np.meshgrid(x[0], x[1])
+
+        min_all = np.min(y_gpc)
+        max_all = np.max(y_gpc)
+
+        # gPC approximation
+        im1 = ax1.pcolor(x1_2d, x2_2d, np.reshape(y_gpc, (x[1].size, x[0].size), order='f'),
+                         cmap="jet",
+                         vmin=min_all,
+                         vmax=max_all)
+        ax1.set_title(r'gPC approximation', fontsize=fs)
+        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
+
+        fig.colorbar(im1, ax=ax1, orientation='vertical')
 
         plt.tight_layout()
 

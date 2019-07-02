@@ -214,7 +214,7 @@ class MEGPC(object):
                                     coords_id=coords_id,
                                     coords_gradient_id=coords_gradient_id)
 
-    def loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
+    def loocv(self, results, error_norm="relative", domain=None):
         """
         Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
         The loocv error is calculated analytically after eq. (35) in [1] but omitting the "1 - " term, i.e. it
@@ -233,18 +233,20 @@ class MEGPC(object):
 
         Parameters
         ----------
-        coeffs: ndarray of float [n_basis x n_out]
+        coeffs : ndarray of float [n_basis x n_out]
             GPC coefficients
-        results: ndarray of float [n_grid x n_out]
+        results : ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
         gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
             Gradient of results in original parameter space (tensor)
-        error_norm: str, optional, default="relative"
+        error_norm : str, optional, default="relative"
             Decide if error is determined "relative" or "absolute"
+        domain : int, optional, default: None
+            Determine error in specified domain only. Default: None (all domains)
 
         Returns
         -------
-        relative_error_loocv: float
+        relative_error_loocv : float
             Relative mean error of leave one out cross validation
 
         Notes
@@ -255,45 +257,52 @@ class MEGPC(object):
 
         n_loocv = 25
 
-        # define number of performed cross validations (max 100)
-        n_loocv_points = np.min((results.shape[0], n_loocv))
+        if domain is not None:
+            results_domain = copy.deepcopy(results[self.domains == domain, :])
+            domain_idx = copy.deepcopy(domain)
+        else:
+            results_domain = copy.deepcopy(results)
 
-        # make list of indices, which are randomly sampled (this index is w.r.t. to all points)
-        loocv_point_idx = random.sample(list(range(results.shape[0])), n_loocv_points)
+        # define number of performed cross validations (max 25)
+        n_loocv_points = np.min((results_domain.shape[0], n_loocv))
+
+        # make list of indices, which are randomly sampled (this index is w.r.t. to all points if domain is None)
+        loocv_point_idx = random.sample(list(range(results_domain.shape[0])), n_loocv_points)
 
         start = time.time()
         relative_error = np.zeros(n_loocv_points)
 
         for i in range(n_loocv_points):
 
-            # determine domain of loocv point
-            domain = int(self.classifier.predict(self.grid.coords_norm[loocv_point_idx[i]][np.newaxis, :]))
+            if domain is None:
+                # determine domain of loocv point
+                domain_idx = int(self.classifier.predict(self.grid.coords_norm[loocv_point_idx[i]][np.newaxis, :]))
+                results_domain = results[self.domains == domain_idx, ]
 
-            # select right gPC matrix
-            matrix = self.gpc[domain].gpc_matrix
-
-            # select right results
-            results_domain = results[self.domains == domain, :]
+            # determine row in sub-gPC matrix of loocv point
+            loocv_point_idx_domain = np.sum(np.array(self.domains == domain_idx)[0:loocv_point_idx[i]])
 
             # get mask of eliminated row
-            mask = np.arange(matrix.shape[0]) != loocv_point_idx[i]
+            mask = np.arange(results_domain.shape[0]) != loocv_point_idx_domain
+
+            # select right gpc matrix
+            matrix = self.gpc[domain_idx].gpc_matrix
 
             # determine gpc coefficients (this takes a lot of time for large problems)
-            coeffs_loo = self.gpc[domain].solve(results=results_domain[mask, :],
-                                                solver=self.options["solver"],
-                                                matrix=matrix[mask, :],
-                                                settings=self.options["settings"],
-                                                verbose=False)
+            coeffs_loo = self.gpc[domain_idx].solve(results=results_domain[mask, :],
+                                                    solver=self.options["solver"],
+                                                    matrix=matrix[mask, :],
+                                                    settings=self.options["settings"],
+                                                    verbose=False)
 
-            sim_results_temp = results[loocv_point_idx[i], :]
+            sim_results_temp = results_domain[loocv_point_idx_domain, :]
 
             if error_norm == "relative":
                 norm = scipy.linalg.norm(sim_results_temp)
             else:
                 norm = 1.
 
-            # determine row in sub-gPC matrix of loocv point
-            loocv_point_idx_domain = np.sum(np.array(self.domains == domain)[0:loocv_point_idx[i]])
+            # determine error
             relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx_domain, :],
                                                                             coeffs_loo)) \
                                 / norm
@@ -305,7 +314,7 @@ class MEGPC(object):
 
         return relative_error_loocv
 
-    def validate(self, coeffs, results=None, gradient_results=None, domain=None):
+    def validate(self, coeffs, results=None, gradient_results=None, domain=None, output_idx=None):
         """
         Validate gPC approximation using the ValidationSet object contained in the Problem object.
         Determines the normalized root mean square deviation between the gpc approximation and the
@@ -321,12 +330,22 @@ class MEGPC(object):
             Gradient of results in original parameter space (tensor)
         domain : int, optional, default: None
             Determine error in specified domain only. Default: None (all domains)
+        output_idx : int or list of int
+            Index of the QOI the provided coeffs and results are referring to. The correct QOI will be
+            selected from the validation set in case of nrmsd error.
 
         Returns
         -------
         error: float
             Estimated difference between gPC approximation and original model
         """
+        if output_idx is None:
+            output_idx = np.arange(results.shape[1])
+        if type(output_idx) is list:
+            output_idx = np.array(output_idx)
+        if type(output_idx) is not np.ndarray:
+            output_idx = np.array([output_idx])
+
         if domain is None:
             domain_idx = np.arange(len(coeffs))
         else:
@@ -358,8 +377,13 @@ class MEGPC(object):
             if gpc_results.ndim == 1:
                 gpc_results = gpc_results[:, np.newaxis]
 
+            if len(output_idx) == 1:
+                validation_results_passed = self.validation.results[mask_domain, output_idx][:, np.newaxis]
+            else:
+                validation_results_passed = self.validation.results[mask_domain, output_idx]
+
             error_nrmsd = float(np.mean(nrmsd(gpc_results,
-                                              self.validation.results[mask_domain, ],
+                                              validation_results_passed,
                                               error_norm=self.options["error_norm"],
                                               x_axis=False)))
 
@@ -371,10 +395,9 @@ class MEGPC(object):
                 self.error.append(self.relative_error_nrmsd[-1])
 
         elif self.options["error_type"] == "loocv":
-            error_loocv = self.loocv(coeffs=coeffs[domain_idx],
-                                     results=results,
-                                     gradient_results=gradient_results,
-                                     error_norm=self.options["error_norm"])
+            error_loocv = self.loocv(results=results,
+                                     error_norm=self.options["error_norm"],
+                                     domain=domain)
 
             if domain is None:
                 self.relative_error_loocv.append(error_loocv)
@@ -619,7 +642,7 @@ class MEGPC(object):
     #
     #     return data[mask.flatten(), :]
 
-    def create_validation_set(self, n_samples, n_cpu=1):
+    def create_validation_set(self, n_samples, n_cpu=1, gradient=False):
         """
         Creates a ValidationSet instance (calls the model)
 
@@ -630,6 +653,8 @@ class MEGPC(object):
         n_cpu : int
             Number of parallel function evaluations to evaluate validation set (n_cpu=0 assumes that the
             model is capable to evaluate all grid points in parallel)
+        gradient : bool, optional, default: False
+            Determine gradient of results in each grid points
         """
         # create set of validation points
         n_samples = n_samples
@@ -644,7 +669,13 @@ class MEGPC(object):
         if results.ndim == 1:
             results = results[:, np.newaxis]
 
-        self.validation = ValidationSet(grid=grid, results=results)
+        # Determine gradient of results at grid points
+        if gradient:
+            gradient_results = self.get_gradient(grid=grid, results=results)
+        else:
+            gradient_results = None
+
+        self.validation = ValidationSet(grid=grid, results=results, gradient_results=gradient_results)
 
     @staticmethod
     def get_mean(samples):

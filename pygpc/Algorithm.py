@@ -197,7 +197,7 @@ class Static(Algorithm):
         >>> # run algorithm
         >>> gpc, coeffs, results = algorithm.run()
         """
-        super(Static, self).__init__(problem, options, validation)
+        super(Static, self).__init__(problem=problem, options=options, validation=validation)
         self.grid = grid
 
         # check contents of settings dict and set defaults
@@ -495,7 +495,7 @@ class MEStatic(Algorithm):
         >>> # run algorithm
         >>> gpc, coeffs, results = algorithm.run()
         """
-        super(MEStatic, self).__init__(problem, options, validation)
+        super(MEStatic, self).__init__(problem=problem, options=options, validation=validation)
         self.grid = grid
 
         # check contents of settings dict and set defaults
@@ -870,7 +870,7 @@ class StaticProjection(Algorithm):
         >>> # run algorithm
         >>> gpc, coeffs, results = algorithm.run
         """
-        super(StaticProjection, self).__init__(problem, options, validation)
+        super(StaticProjection, self).__init__(problem=problem, options=options, validation=validation)
 
         # check contents of settings dict and set defaults
         if "method" not in self.options.keys():
@@ -1331,7 +1331,7 @@ class MEStaticProjection(Algorithm):
         >>> # run algorithm
         >>> gpc, coeffs, results = algorithm.run
         """
-        super(MEStaticProjection, self).__init__(problem, options, validation)
+        super(MEStaticProjection, self).__init__(problem=problem, options=options, validation=validation)
 
         # check contents of settings dict and set defaults
         if "method" not in self.options.keys():
@@ -1535,6 +1535,7 @@ class MEStaticProjection(Algorithm):
                                          order_max=self.options["order_max"],
                                          order_max_norm=self.options["order_max_norm"],
                                          interaction_order=self.options["interaction_order"],
+                                         interaction_order_current=self.options["interaction_order"],
                                          options=self.options,
                                          domain=d,
                                          validation=None)
@@ -1550,6 +1551,7 @@ class MEStaticProjection(Algorithm):
                 n_coeffs = get_num_coeffs_sparse(order_dim_max=[self.options["order"][0] for _ in range(dim_reduced[d])],
                                                  order_glob_max=self.options["order_max"],
                                                  order_inter_max=self.options["interaction_order"],
+                                                 order_inter_current=self.options["interaction_order"],
                                                  dim=dim_reduced[d])
 
                 n_grid_new[d] = n_coeffs * self.options["matrix_ratio"]
@@ -1801,7 +1803,7 @@ class RegAdaptive(Algorithm):
         >>> # run algorithm
         >>> gpc, coeffs, results = algorithm.run()
         """
-        super(RegAdaptive, self).__init__(problem, options, validation)
+        super(RegAdaptive, self).__init__(problem=problem, options=options, validation=validation)
 
         # check contents of settings dict and set defaults
         if "order_start" not in self.options.keys():
@@ -2250,7 +2252,7 @@ class MERegAdaptive(Algorithm):
         >>> # run algorithm
         >>> gpc, coeffs, results = algorithm.run()
         """
-        super(MERegAdaptive, self).__init__(problem, options, validation)
+        super(MERegAdaptive, self).__init__(problem=problem, options=options, validation=validation)
 
         # check contents of settings dict and set defaults
         if "order_start" not in self.options.keys():
@@ -2364,7 +2366,7 @@ class MERegAdaptive(Algorithm):
         if not self.options["adaptive_sampling"]:
             n_grid_init = int(np.ceil(n_coeffs * self.options["matrix_ratio"]))
 
-            if n_grid_init != self.options["n_grid_init"]:
+            if n_grid_init > self.options["n_grid_init"]:
                 iprint("Increasing number of initial simulations from {} to {} "
                        "to fit matrix_ratio * number of coefficients".format(self.options["n_grid_init"], n_grid_init))
 
@@ -2379,7 +2381,7 @@ class MERegAdaptive(Algorithm):
         com = Computation(n_cpu=self.n_cpu)
 
         # Run initial simulations to determine initial projection matrix
-        iprint("Performing {} simulations!".format(grid.coords.shape[0]),
+        iprint("Performing {} initial simulations!".format(grid.coords.shape[0]),
                tab=0, verbose=self.options["verbose"])
 
         start_time = time.time()
@@ -2416,6 +2418,9 @@ class MERegAdaptive(Algorithm):
         coeffs = [0 for _ in range(n_qoi)]
 
         for i_qoi, q_idx in enumerate(qoi_idx):
+            print_str = "Determining gPC approximation for QOI #{}:".format(i_qoi)
+            iprint(print_str, tab=0, verbose=self.options["verbose"])
+            iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
 
             first_iter = True
 
@@ -2474,8 +2479,17 @@ class MERegAdaptive(Algorithm):
 
             # create validation set if necessary
             if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
+                iprint("Determining validation set of size {} "
+                       "for NRMSD error calculation ...".format(int(self.options["n_samples_validation"])),
+                       tab=0, verbose=self.options["verbose"])
                 megpc[0].create_validation_set(n_samples=self.options["n_samples_validation"],
-                                               n_cpu=self.options["n_cpu"])
+                                               n_cpu=self.options["n_cpu"],
+                                               gradient=self.options["gradient_enhanced"])
+
+                iprint("Saving validation set to {} ".format(self.options["fn_results"] + "_validation_set.hdf5"),
+                       tab=0, verbose=self.options["verbose"])
+                megpc[0].validation.write(fname=self.options["fn_results"] + "_validation.hdf5")
+
             elif self.options["error_type"] == "nrmsd" and megpc[0].validation is not None:
                 megpc[i_qoi].validation = copy.deepcopy(megpc[0].validation)
 
@@ -2483,29 +2497,6 @@ class MERegAdaptive(Algorithm):
 
             # initialize domain specific error and order
             eps = np.array([self.options["eps"] + 1.0 for _ in range(megpc[i_qoi].n_gpc)])
-
-            # # Determine number of necessary simulations for first iteration
-            # if self.options["gradient_enhanced"]:
-            #     n_grid_init = np.max((np.ceil(self.options["matrix_ratio"] * megpc[i_qoi].gpc[0].basis.n_basis),
-            #                          self.options["n_grid_gradient"]))
-            # else:
-            #     n_grid_init = np.ceil(self.options["matrix_ratio"] * megpc[i_qoi].gpc[0].basis.n_basis)
-            #
-            # megpc[i_qoi].grid.extend_random_grid(n_grid_new=n_grid_init)
-            #
-            # # assign grids to sub-gPCs (rotate sub-grids in case of projection)
-            # megpc[i_qoi].assign_grids()
-            #
-            # # Initialize gpc matrices
-            # megpc[i_qoi].init_gpc_matrices()
-            #
-            # # Initialize gpc matrix
-            # gpc.init_gpc_matrix()
-            # gpc.n_grid.pop(0)
-            # gpc.n_basis.pop(0)
-            #
-            # if gpc.options["gradient_enhanced"]:
-            #     gpc.grid.create_gradient_grid()
 
             # Main iterations (order)
             while (eps > self.options["eps"]).any():
@@ -2639,7 +2630,8 @@ class MERegAdaptive(Algorithm):
                     eps[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
                                                    results=res,
                                                    gradient_results=grad_res_3D,
-                                                   domain=d)
+                                                   domain=d,
+                                                   output_idx=i_qoi)
                     megpc[i_qoi].gpc[d].error.append(eps[d])
 
                 # loop over domains and increase order if necessary
@@ -3096,7 +3088,7 @@ class RegAdaptiveProjection(Algorithm):
         >>> # run algorithm
         >>> gpc, coeffs, results = algorithm.run()
         """
-        super(RegAdaptiveProjection, self).__init__(problem, options, validation)
+        super(RegAdaptiveProjection, self).__init__(problem=problem, options=options, validation=validation)
 
         # check contents of settings dict and set defaults
         if "order_start" not in self.options.keys():

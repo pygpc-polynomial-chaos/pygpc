@@ -8,7 +8,7 @@ import numpy as np
 from numba import njit
 
 
-class MyModel(AbstractModel):
+class PyRates_CNS_Model(AbstractModel):
     """
     MyModel evaluates something. The parameters of the model (constants and random parameters) are stored in the
     dictionary p. Their type is defined during the problem definition.
@@ -32,7 +32,7 @@ class MyModel(AbstractModel):
     """
 
     def __init__(self, p, context):
-        super(MyModel, self).__init__(p, context)
+        super(PyRates_CNS_Model, self).__init__(p, context)
         from pyrates.frontend import OperatorTemplate
         from pyrates.frontend import NodeTemplate, CircuitTemplate
 
