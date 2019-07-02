@@ -2618,13 +2618,6 @@ class MERegAdaptive(Algorithm):
                                                    settings=self.options["settings"],
                                                    verbose=True)
 
-                # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-                # global error (appends error to megpc.error)
-                # eps_global = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
-                #                                    results=res,
-                #                                    gradient_results=grad_res_3D_all,
-                #                                    domain=None)
-
                 # domain specific error
                 for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
                     eps[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
