@@ -19,5 +19,8 @@ pygpc.egg-info
 # ignore pycache
 **/__pycache__
 
-# ignore *.pyc
+# ignore pycache
 *.pyc
+
+# ignore shared objects (cython extensions)
+*.so
