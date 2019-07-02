@@ -2966,6 +2966,7 @@ class TestpygpcMethods(unittest.TestCase):
         parameters = OrderedDict()
         parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
         parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
         problem = pygpc.Problem(model, parameters)
 
         # gPC options
@@ -2977,10 +2978,11 @@ class TestpygpcMethods(unittest.TestCase):
         options["order_end"] = 15
         options["interaction_order"] = 2
         options["matrix_ratio"] = 2
+        options["projection"] = True
         options["n_cpu"] = 0
         options["gradient_enhanced"] = False
         options["gradient_calculation"] = "standard_forward"
-        options["error_type"] = "loocv"
+        options["error_type"] = "nrmsd"
         options["n_samples_validation"] = 1e4
         options["qoi"] = "all"
         options["classifier"] = "learning"
@@ -2990,13 +2992,13 @@ class TestpygpcMethods(unittest.TestCase):
                                          "classifier_solver": "lbfgs"}
         options["n_samples_discontinuity"] = 5
         options["adaptive_sampling"] = False
-        options["eps"] = 0.0001
+        options["eps"] = 0.01
         options["n_grid_init"] = 20
-        options["GPU"] = False
+        options["GPU"] = True
         options["fn_results"] = os.path.join(folder, test_name)
 
         # define algorithm
-        algorithm = pygpc.MERegAdaptive(problem=problem, options=options)
+        algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
 
         # run gPC algorithm
         gpc, coeffs, results = algorithm.run()

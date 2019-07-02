@@ -603,13 +603,18 @@ class Grid(object):
 
         return coords_norm
 
-    def create_gradient_grid(self):
+    def create_gradient_grid(self, delta=1e-3):
         """
         Creates new grid points to determine gradient of model function.
         Adds or updates self.coords_gradient, self.coords_gradient_norm and self.coords_gradient_id.
+
+        Parameters
+        ----------
+        delta : float, optional, default: 1e-3
+            Shift of grid-points along axes in normalized parameter space [-1, 1]
         """
         # shift of gradient grid in normalized space [-1, 1]
-        delta = 1e-3 * np.eye(self.dim)
+        delta = delta * np.eye(self.dim)
 
         # Create or update the gradient grid [n_grid x dim x dim]
         if self.coords_gradient is not None:

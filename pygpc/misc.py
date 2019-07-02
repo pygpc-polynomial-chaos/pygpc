@@ -408,7 +408,8 @@ def get_num_coeffs(order, dim):
     return scipy.special.factorial(order + dim) / (scipy.special.factorial(order) * scipy.special.factorial(dim))
 
 
-def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, order_inter_current=None, order_glob_max_norm=1):
+def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, order_inter_current=None,
+                          order_glob_max_norm=1):
     """
     Calculate the number of gPC coefficients for a specific maximum order in each dimension "order_dim_max",
     global maximum order "order_glob_max" and the interaction order "order_inter_max".
@@ -448,7 +449,7 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, o
 
     # generate multi-index list up to maximum order
     if dim == 1:
-        poly_idx = np.array([np.linspace(0, order_dim_max[0], order_dim_max[0] + 1)]).astype(int).transpose()
+        poly_idx = np.array([np.linspace(0, order_dim_max[0], int(order_dim_max[0] + 1))]).astype(int).transpose()
     else:
         poly_idx = get_multi_indices(order=order_dim_max,
                                      order_max=order_glob_max,

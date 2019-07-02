@@ -21,12 +21,13 @@ options["order_start"] = 2
 options["order_end"] = 15
 # options["order"] = [5, 5]
 # options["n_grid_gradient"] = 20
-options["order_max"] = 5
+# options["order_max"] = 5
+options["projection"] = True
 options["order_max_norm"] = 1.
 options["interaction_order"] = 2
 options["matrix_ratio"] = 2
 options["n_cpu"] = 0
-options["gradient_enhanced"] = True
+options["gradient_enhanced"] = False
 options["gradient_calculation"] = "standard_forward"
 options["error_type"] = "nrmsd"
 options["n_samples_validation"] = 1e2
@@ -39,7 +40,7 @@ options["classifier_options"] = {"clusterer": "KMeans",
 options["n_samples_discontinuity"] = 5
 options["adaptive_sampling"] = False
 options["eps"] = 0.05
-options["n_grid_init"] = 20
+options["n_grid_init"] = 50
 options["GPU"] = False
 options["fn_results"] = fn_results
 
@@ -49,7 +50,7 @@ validation = pygpc.ValidationSet().read(fname="/NOBACKUP2/tmp/PyRates_CNS_GPC/Py
 
 # define algorithm
 # algorithm = pygpc.MEStaticProjection(problem=problem, options=options, validation=validation)
-algorithm = pygpc.MERegAdaptive(problem=problem, options=options, validation=validation)
+algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options, validation=validation)
 
 # run gPC algorithm
 gpc, coeffs, results = algorithm.run()
