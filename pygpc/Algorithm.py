@@ -3380,14 +3380,6 @@ class MERegAdaptiveProjection(Algorithm):
 
                 megpc[i_qoi].grid = copy.deepcopy(grid)
 
-                # iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
-                # megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
-                #                              results=res_all[:, q_idx][:, np.newaxis],
-                #                              algorithm=self.options["classifier"],
-                #                              options=self.options["classifier_options"])
-                #
-                # megpc[i_qoi].assign_grids()
-
             # create validation set if necessary
             if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
                 iprint("Determining validation set of size {} "
