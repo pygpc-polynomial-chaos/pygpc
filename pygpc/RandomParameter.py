@@ -2,6 +2,7 @@ import scipy.special
 import scipy.stats
 import numpy as np
 from .BasisFunction import *
+import matplotlib.pyplot as plt
 
 
 class RandomParameter(object):
@@ -35,6 +36,38 @@ class RandomParameter(object):
         self.mean = None
         self.std = None
         self.var = None
+
+    def pdf(self):
+        pass
+
+    def plot_pdf(self, legend_str=None):
+        """
+        Plots probability density function
+
+        Parameters
+        ----------
+        legend_str : str, optional, default: None
+            Legend string
+        """
+
+        delta = self.pdf_limits[1] - self.pdf_limits[0]
+        x = np.linspace(self.pdf_limits[0] - 0.1*delta,
+                        self.pdf_limits[1] + 0.1*delta, 200)
+
+        y = self.pdf(x)
+        plt.plot(x, y)
+        plt.xlabel("x")
+        plt.ylabel("p(x)")
+        plt.grid(True)
+
+        if legend_str is not None:
+
+            if type(legend_str) is not list:
+                legend_str = [legend_str]
+
+            plt.legend(legend_str)
+
+        return plt
 
 
 class Beta(RandomParameter):

@@ -266,6 +266,32 @@ stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x
 </dd></dl>
 
 <dl class="class">
+<dt id="pygpc.Algorithm.MERegAdaptiveProjection">
+<em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">MERegAdaptiveProjection</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MERegAdaptiveProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MERegAdaptiveProjection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
+<p>Adaptive regression approach based on leave one out cross validation error estimation</p>
+<dl class="method">
+<dt id="pygpc.Algorithm.MERegAdaptiveProjection.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MERegAdaptiveProjection.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MERegAdaptiveProjection.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs Multi-Element adaptive gPC algorithm to solve problem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>megpc</strong> (<em>Multi-element GPC object instance</em>) – MEGPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances</li>
+<li><strong>coeffs</strong> (<em>list of ndarray of float [n_gpc][n_basis x n_out]</em>) – GPC coefficients</li>
+<li><strong>res</strong> (<em>ndarray of float [n_grid x n_out]</em>) – Simulation results at n_grid points of the n_out output variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pygpc.Algorithm.MEStatic">
 <em class="property">class </em><code class="descclassname">pygpc.Algorithm.</code><code class="descname">MEStatic</code><span class="sig-paren">(</span><em>problem</em>, <em>options</em>, <em>grid</em>, <em>validation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Algorithm.html#MEStatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Algorithm.MEStatic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygpc.Algorithm.Algorithm" title="pygpc.Algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygpc.Algorithm.Algorithm</span></code></a></p>
@@ -1616,9 +1642,17 @@ original model. Skips this step if no validation set is present</p>
 
 <dl class="method">
 <dt id="pygpc.Grid.Grid.create_gradient_grid">
-<code class="descname">create_gradient_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#Grid.create_gradient_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.Grid.create_gradient_grid" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_gradient_grid</code><span class="sig-paren">(</span><em>delta=0.001</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/Grid.html#Grid.create_gradient_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.Grid.Grid.create_gradient_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates new grid points to determine gradient of model function.
 Adds or updates self.coords_gradient, self.coords_gradient_norm and self.coords_gradient_id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>delta</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default: 1e-3</em>) – Shift of grid-points along axes in normalized parameter space [-1, 1]</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -3052,9 +3086,55 @@ doi:10.1016/j.cpc.2009.09.018.</td></tr>
 <span id="pygpc-validationset-module"></span><h2>pygpc.ValidationSet module<a class="headerlink" href="#module-pygpc.ValidationSet" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pygpc.ValidationSet.ValidationSet">
-<em class="property">class </em><code class="descclassname">pygpc.ValidationSet.</code><code class="descname">ValidationSet</code><span class="sig-paren">(</span><em>grid=None</em>, <em>results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/ValidationSet.html#ValidationSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.ValidationSet.ValidationSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygpc.ValidationSet.</code><code class="descname">ValidationSet</code><span class="sig-paren">(</span><em>grid=None</em>, <em>results=None</em>, <em>gradient_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/ValidationSet.html#ValidationSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.ValidationSet.ValidationSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>ValidationSet object</p>
+<dl class="method">
+<dt id="pygpc.ValidationSet.ValidationSet.read">
+<code class="descname">read</code><span class="sig-paren">(</span><em>fname</em>, <em>coords_key=None</em>, <em>coords_norm_key=None</em>, <em>results_key=None</em>, <em>gradient_results_key=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/ValidationSet.html#ValidationSet.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.ValidationSet.ValidationSet.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load Validation set from .hdf5 format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) – Filename of ValidationSet containing the grid points and the results data</li>
+<li><strong>coords_key</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: &quot;grid/coords&quot;</em>) – Path of coords in .hdf5 file</li>
+<li><strong>coords_norm_key</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: &quot;grid/coords_norm&quot;</em>) – Path of coords_norm in .hdf5 file</li>
+<li><strong>results_key</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: &quot;model_evaluations/results&quot;</em>) – Path of results in .hdf5 file</li>
+<li><strong>gradient_results_key</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: &quot;model_evaluations/gradient_results&quot;</em>) – Path of gradient_results in .hdf5 file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>val</strong> – ValidationSet object containing the grid points and the results data</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ValidationSet Object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygpc.ValidationSet.ValidationSet.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/ValidationSet.html#ValidationSet.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.ValidationSet.ValidationSet.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save Validation set in .hdf5 format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – Filename of ValidationSet containing the grid points and the results data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>&lt;file&gt;</strong> – File containing the grid points in grid/coords and grid/coords_norm
+and the corresponding results in model_evaluations/results</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">hdf5 file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -4348,6 +4428,39 @@ I—/pdf_y              [100 x n_qoi]           y-axis values of output PDFs</dd
 <div class="section" id="module-pygpc.validation">
 <span id="pygpc-validation-module"></span><h2>pygpc.validation module<a class="headerlink" href="#module-pygpc.validation" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="pygpc.validation.plot_gpc">
+<code class="descclassname">pygpc.validation.</code><code class="descname">plot_gpc</code><span class="sig-paren">(</span><em>gpc</em>, <em>coeffs</em>, <em>random_vars</em>, <em>n_grid=None</em>, <em>coords=None</em>, <em>output_idx=0</em>, <em>fn_out=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/validation.html#plot_gpc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.validation.plot_gpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
+calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
+<a href="#id13"><span class="problematic" id="id14">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>gpc</strong> (<em>GPC object instance</em>) – GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances</li>
+<li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_coeffs x n_out</em><em>]</em>) – GPC coefficients</li>
+<li><strong>random_vars</strong> (<em>str</em><em> or </em><em>list of str</em><em> [</em><em>2</em><em>]</em>) – Names of the random variables, the analysis is performed for one or max. two random variables</li>
+<li><strong>n_grid</strong> (<em>int</em><em> or </em><em>list of int</em><em> [</em><em>2</em><em>]</em><em>, </em><em>optional</em>) – Number of samples in each dimension to compare the gPC approximation with the original model function.
+A cartesian grid is generated based on the limits of the specified random_vars</li>
+<li><strong>coords</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_dim</em><em>]</em>) – Parameter combinations for the random_vars the comparison is conducted with</li>
+<li><strong>output_idx</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Indices of output quantity to consider</li>
+<li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id15"><span class="problematic" id="id16">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>&lt;file&gt;</strong> (<em>.hdf5 file</em>) – Data file containing the grid points and the results of the original and the gpc approximation</li>
+<li><strong>&lt;file&gt;</strong> (<em>.png and .pdf file</em>) – Plot comparing original vs gPC model</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="pygpc.validation.validate_gpc_mc">
 <code class="descclassname">pygpc.validation.</code><code class="descname">validate_gpc_mc</code><span class="sig-paren">(</span><em>gpc</em>, <em>coeffs</em>, <em>n_samples=10000.0</em>, <em>output_idx=0</em>, <em>n_cpu=1</em>, <em>fn_out=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/validation.html#validate_gpc_mc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.validation.validate_gpc_mc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares gPC approximation with original model function. Evaluates both at “n_samples” sampling points and
@@ -4384,21 +4497,22 @@ and saves the plot as fn_pdf.png and fn_pdf.pdf.</p>
 <code class="descclassname">pygpc.validation.</code><code class="descname">validate_gpc_plot</code><span class="sig-paren">(</span><em>gpc</em>, <em>coeffs</em>, <em>random_vars</em>, <em>n_grid=None</em>, <em>coords=None</em>, <em>output_idx=0</em>, <em>data_original=None</em>, <em>fn_out=None</em>, <em>n_cpu=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygpc/validation.html#validate_gpc_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygpc.validation.validate_gpc_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
 calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
-<a href="#id13"><span class="problematic" id="id14">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
+<a href="#id17"><span class="problematic" id="id18">*</span></a>_QOI_idx_&lt;output_idx&gt;.png/pdf. Also generates one .hdf5 results file with the evaluation results.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>gpc</strong> (<em>GPC object instance</em>) – GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances</li>
-<li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_coeffs x n_out</em><em>]</em>) – GPC coefficients</li>
+<li><strong>coeffs</strong> (<em>ndarray of float</em><em> [</em><em>n_coeffs x n_out</em><em>] or </em><em>list of ndarray of float</em><em> [</em><em>n_qoi</em><em>]</em><em>[</em><em>n_coeffs x n_out</em><em>]</em>) – GPC coefficients</li>
 <li><strong>random_vars</strong> (<em>str</em><em> or </em><em>list of str</em><em> [</em><em>2</em><em>]</em>) – Names of the random variables, the analysis is performed for one or max. two random variables</li>
 <li><strong>n_grid</strong> (<em>int</em><em> or </em><em>list of int</em><em> [</em><em>2</em><em>]</em><em>, </em><em>optional</em>) – Number of samples in each dimension to compare the gPC approximation with the original model function.
 A cartesian grid is generated based on the limits of the specified random_vars</li>
 <li><strong>coords</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_dim</em><em>]</em>) – Parameter combinations for the random_vars the comparison is conducted with</li>
 <li><strong>output_idx</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Indices of output quantity to consider</li>
-<li><strong>data_original</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_out</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – If available, data of original model function at grid</li>
-<li><strong>fn_out</strong> (<em>str</em>) – Filename of plot comparing original vs gPC model (<a href="#id15"><span class="problematic" id="id16">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)</li>
+<li><strong>data_original</strong> (<em>ndarray of float</em><em> [</em><em>n_coords x n_out</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – If available, data of original model function at grid, containing all QOIs</li>
+<li><strong>fn_out</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) – Filename of plot comparing original vs gPC model (<a href="#id19"><span class="problematic" id="id20">*</span></a>_QOI_idx_&lt;output_idx&gt;.png is added)
+Filename of .hdf5 file containing the grid and the data from the original model and the gPC</li>
 <li><strong>n_cpu</strong> (<em>int</em><em>, </em><em>default=1</em>) – Number of CPU cores to use to calculate results of original model on grid.</li>
 </ul>
 </td>
