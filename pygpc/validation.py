@@ -45,6 +45,8 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
         gpc = gpc[output_idx]
         coeffs = coeffs[output_idx]
         output_idx_gpc = 0
+    else:
+        output_idx_gpc = output_idx
 
     if isinstance(gpc, MEGPC):
         problem = gpc.problem

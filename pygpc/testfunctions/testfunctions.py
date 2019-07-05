@@ -1184,6 +1184,13 @@ class Ishigami(AbstractModel):
         pass
 
     def simulate(self, process_id=None):
+
+        if self.p["a"] is not np.ndarray:
+            self.p["a"] = np.array(self.p["a"])
+
+        if self.p["b"] is not np.ndarray:
+            self.p["b"] = np.array(self.p["b"])
+
         y = (np.sin(self.p["x1"].flatten()) + self.p["a"].flatten() * np.sin(self.p["x2"].flatten()) ** 2
              + self.p["b"].flatten() * self.p["x3"].flatten() ** 4 * np.sin(self.p["x1"].flatten()))
 
