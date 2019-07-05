@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Build import cythonize
+import numpy as np
 
 
 # pygpc software framework for uncertainty and sensitivity
@@ -28,7 +29,8 @@ from Cython.Build import cythonize
 ext_modules = [
     Extension(
         name="calc_gpc_matrix_cpu",
-        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx']
+        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
+        include_dirs=[np.get_include()]
     )
 ]
 
