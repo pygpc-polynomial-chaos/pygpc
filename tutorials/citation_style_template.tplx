@@ -1,0 +1,15 @@
+((*- extends 'article.tplx' -*))
+
+((* block author *))
+\author{Konstantin Weise}
+((* endblock author *))
+
+((*block title *))
+\title{Tutorial_pygpc_pyrates}
+((* endblock title *))
+
+((* block bibliography *))
+\bibliographystyle{unsrt}
+\bibliography{references}
+((* endblock bibliography *))
+

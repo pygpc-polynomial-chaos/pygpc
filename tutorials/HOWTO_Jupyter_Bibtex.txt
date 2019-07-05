@@ -1,0 +1,4 @@
+ipython nbconvert --to latex --template citation_style_template.tplx Tutorial
+pdflatex Tutorial.tex
+bibtex Tutorial
+pdflatex Tutorial.tex
