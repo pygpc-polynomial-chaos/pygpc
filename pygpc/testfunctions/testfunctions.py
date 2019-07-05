@@ -1185,6 +1185,15 @@ class Ishigami(AbstractModel):
 
     def simulate(self, process_id=None):
 
+        if self.p["x1"] is not np.ndarray:
+            self.p["x1"] = np.array(self.p["x1"])
+
+        if self.p["x2"] is not np.ndarray:
+            self.p["x2"] = np.array(self.p["x2"])
+
+        if self.p["x3"] is not np.ndarray:
+            self.p["x3"] = np.array(self.p["x3"])
+
         if self.p["a"] is not np.ndarray:
             self.p["a"] = np.array(self.p["a"])
 
