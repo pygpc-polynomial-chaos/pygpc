@@ -2,6 +2,8 @@ from .BasisFunction import *
 from .misc import get_multi_indices
 import uuid
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 
 
 class Basis:
@@ -250,63 +252,77 @@ class Basis:
 
             self.b_gpu_grad.append(_b_gpu_grad)
 
-# # TODO: implement this into "init_basis" -> MAYBE NOT NEEDED HERE -> SHOULD BE IN BASIS
-   #  def init_polynomial_coeffs(self, order_begin, order_end):
-   #      """
-   #      Calculate polynomial basis functions of a given order range and add it to the polynomial lookup tables.
-   #      The size, including the polynomials that won't be used, is [max_individual_order x dim].
-   #
-   #      .. math::
-   #         \\begin{tabular}{l*{4}{c}}
-   #          Polynomial          & Dimension 1 & Dimension 2 & ... & Dimension M \\\\
-   #         \\hline
-   #          Polynomial 1        & [Coefficients] & [Coefficients] & \\vdots & [Coefficients] \\\\
-   #          Polynomial 2        & 0 & [Coefficients] & \\vdots & [Coefficients] \\\\
-   #         \\vdots              & \\vdots & \\vdots & \\vdots & \\vdots \\\\
-   #          Polynomial N        & [Coefficients] & [Coefficients] & 0 & [Coefficients] \\\\
-   #         \\end{tabular}
-   #
-   #
-   #      init_polynomial_coeffs(poly_idx_added)
-   #
-   #      Parameters
-   #      ----------
-   #      order_begin: int
-   #          order of polynomials to begin with
-   #      order_end: int
-   #          order of polynomials to end with
-   #      """
-   #
-   #      self.poly_norm = np.zeros([order_end-order_begin, self.dim])
-   #
-   #      for i_dim in range(self.dim):
-   #
-   #          for i_order in range(order_begin, order_end):
-   #
-   #              if self.pdf_type[i_dim] == "beta":
-   #                  p = self.pdf_shape[0][i_dim]  # beta-distr: alpha=p /// jacobi-poly: alpha=q-1  !!!
-   #                  q = self.pdf_shape[1][i_dim]  # beta-distr: beta=q  /// jacobi-poly: beta=p-1   !!!
-   #
-   #                  # determine polynomial normalization factor
-   #                  beta_norm = (scipy.special.gamma(q) * scipy.special.gamma(p) / scipy.special.gamma(p + q) * (
-   #                      2.0) ** (p + q - 1)) ** (-1)
-   #
-   #                  jacobi_norm = 2 ** (p + q - 1) / (2.0 * i_order + p + q - 1) * scipy.special.gamma(i_order + p) * \
-   #                                scipy.special.gamma(i_order + q) / (scipy.special.gamma(i_order + p + q - 1) *
-   #                                                                    scipy.special.factorial(i_order))
-   #                  # initialize norm
-   #                  self.poly_norm[i_order, i_dim] = (jacobi_norm * beta_norm)
-   #
-   #                  # add entry to polynomial lookup table
-   #                  self.poly[i_order][i_dim] = scipy.special.jacobi(i_order, q - 1, p - 1, monic=0) / np.sqrt(
-   #                      self.poly_norm[i_order, i_dim])
-   #
-   #              if self.pdf_type[i_dim] == "normal" or self.pdf_type[i_dim] == "norm":
-   #                  # determine polynomial normalization factor
-   #                  hermite_norm = scipy.special.factorial(i_order)
-   #                  self.poly_norm[i_order, i_dim] = hermite_norm
-   #
-   #                  # add entry to polynomial lookup table
-   #                  self.poly[i_order][i_dim] = scipy.special.hermitenorm(i_order, monic=0) / np.sqrt(
-   #                      self.poly_norm[i_order, i_dim])
+    def plot_basis(self, dims, fn_plot=None):
+        """
+        Generate 2D or 3D cube-plot of basis functions.
 
+        Parameters
+        ----------
+        dims : list of int of length [2] or [3]
+            Indices of parameters in gPC expansion to plot
+        fn_plot : str, optional, default: None
+            Filename of plot to save (without extension, it will be saved in .png and .pdf format)
+
+        Returns
+        -------
+        <File> : *.png and *.pdf file
+            Plot of basis functions
+        """
+
+        plt.rc('text', usetex=True)
+        plt.rc('font', family='serif', size=14)
+
+        multi_indices = np.array([list(map(lambda x: x.p["i"], _b)) for _b in self.b])
+
+        fig = plt.figure(figsize=[6, 6])
+
+        if len(dims) == 2:
+            ax = fig.add_subplot(111)
+        else:
+            ax = fig.add_subplot(111, projection='3d')
+
+        for i_poly in range(multi_indices.shape[0]):
+
+            if len(dims) == 2:
+                ax.scatter(multi_indices[i_poly, dims[0]],  # lower corner coordinates
+                           multi_indices[i_poly, dims[1]],
+                           c=np.array([[51, 153, 255]]) / 255.0,  # bar colour
+                           marker="s",
+                           s=450)  # transparency of the bars
+
+                ax.set_xlabel("$x_1$", fontsize=18)
+                ax.set_ylabel("$x_2$", fontsize=18)
+
+                ax.set_xlim([-1, np.max(multi_indices) + 1])
+                ax.set_ylim([-1, np.max(multi_indices) + 1])
+
+                ax.set_xticklabels(range(np.max(multi_indices) + 1))
+                ax.set_xticks(range(np.max(multi_indices) + 1))
+                ax.set_yticklabels(range(np.max(multi_indices) + 1))
+                ax.set_yticks(range(np.max(multi_indices) + 1))
+
+                ax.set_aspect('equal', 'box')
+
+            else:
+                ax.bar3d(multi_indices[i_poly, dims[0]] - 0.4, # lower corner coordinates
+                         multi_indices[i_poly, dims[1]] - 0.4,
+                         multi_indices[i_poly, dims[2]] - 0.4,
+                         0.8, 0.8, 0.8,  # width, depth and height
+                         color=np.array([51, 153, 255]) / 255.0,  # bar colour
+                         alpha=1)  # transparency of the bars
+                ax.view_init(elev=30, azim=45)
+
+                ax.set_xlabel("$x_1$", fontsize=18)
+                ax.set_ylabel("$x_2$", fontsize=18)
+                ax.set_zlabel("$x_3$", fontsize=18)
+
+                ax.set_xlim([0, np.max(multi_indices) + 1])
+                ax.set_ylim([0, np.max(multi_indices) + 1])
+                ax.set_zlim([0, np.max(multi_indices) + 1])
+
+                ax.set_xticklabels(range(np.max(multi_indices) + 1))
+                ax.set_xticks(range(np.max(multi_indices) + 1))
+                ax.set_yticklabels(range(np.max(multi_indices) + 1))
+                ax.set_yticks(range(np.max(multi_indices) + 1))
+                ax.set_zticklabels(range(np.max(multi_indices) + 1))
+                ax.set_zticks(range(np.max(multi_indices) + 1))

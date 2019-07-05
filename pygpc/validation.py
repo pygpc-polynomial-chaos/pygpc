@@ -3,6 +3,7 @@ from .Grid import *
 from .misc import nrmsd
 from .misc import get_cartesian_product
 from .Visualization import *
+from scipy.signal import savgol_filter
 import matplotlib.pyplot as plt
 import os
 import scipy.stats
@@ -45,6 +46,8 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
         gpc = gpc[output_idx]
         coeffs = coeffs[output_idx]
         output_idx_gpc = 0
+    else:
+        output_idx_gpc = output_idx
 
     if isinstance(gpc, MEGPC):
         problem = gpc.problem
@@ -105,6 +108,9 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
 
         pdf_y_orig, tmp = np.histogram(y_orig[:, output_idx].flatten(), bins=100, density=True)
         pdf_x_orig = (tmp[1:] + tmp[0:-1]) / 2.
+
+        pdf_y_gpc = savgol_filter(pdf_y_gpc, 51, 5)
+        pdf_y_orig = savgol_filter(pdf_y_orig, 51, 5)
 
         # save results in .hdf5 file
         with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
