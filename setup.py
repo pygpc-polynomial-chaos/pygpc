@@ -48,9 +48,7 @@ setup(name='pygpc',
                         'sklearn',
                         'h5py',
                         'matplotlib',
-                        # 'dispy', needed?
-                        'pytest',
-                        'numpy',
-                        'hdbscan'],
+                        'dispy',
+                        ],
       zip_safe=False,
       ext_modules=cythonize(ext_modules))
