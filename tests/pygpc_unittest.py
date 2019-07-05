@@ -120,7 +120,8 @@ class TestpygpcMethods(unittest.TestCase):
                                 random_vars=["x3", "x1"],
                                 n_grid=[25, 25],
                                 output_idx=[0],
-                                fn_out=os.path.join(folder, test_name + '_validation_2d'))
+                                fn_out=os.path.join(folder, test_name + '_validation_2d'),
+                                n_cpu=options["n_cpu"])
 
         # Validate gPC vs original model function (1D-slice)
         pygpc.validate_gpc_plot(gpc=gpc,
