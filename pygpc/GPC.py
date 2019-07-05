@@ -177,13 +177,13 @@ class GPC(object):
 
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
-                calc_gpc_matrix_cpu(self.basis.b_gpu, x, gpc_matrix, int(len(b)))
-
+                calc_gpc_matrix_cpu(b, x, gpc_matrix, gradient=-1)
             else:
                 gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
+                new_gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
                 for i_dim_gradient in range(self.problem.dim):
                     _gpc_matrix = np.ones((x.shape[0], len(b)))
-                    calc_gpc_matrix_cpu(self.basis.b_gpu_grad[i_dim_gradient], x, _gpc_matrix, int(len(b)))
+                    calc_gpc_matrix_cpu(b, x, _gpc_matrix, gradient=i_dim_gradient)
                     gpc_matrix[:, :, i_dim_gradient] = _gpc_matrix
 
         else:

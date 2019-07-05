@@ -28,10 +28,7 @@ from Cython.Build import cythonize
 ext_modules = [
     Extension(
         name="calc_gpc_matrix_cpu",
-        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
-        libraries=['gpc'],
-        library_dirs=['./pckg/extensions/calc_gpc_matrix_cpu'],
-        include_dirs=['./pckg/extensions/calc_gpc_matrix_cpu']
+        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx']
     )
 ]
 
