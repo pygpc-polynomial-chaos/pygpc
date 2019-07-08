@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Unittest class of pygpc
-@author: Konstantin Weise
-"""
 import unittest
 import pygpc
 from collections import OrderedDict
@@ -89,7 +85,7 @@ class TestPygpcMethods(unittest.TestCase):
         grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
                                 options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
 
-        pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
+        # pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
 
         # define algorithm
         algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
