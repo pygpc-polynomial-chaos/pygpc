@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Functions and classes that provide data and methods for the generation and processing of numerical grids
-"""
-
 import uuid
 import copy
 import numpy as np

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Functions and classes that provide visualisation functionalities
-"""
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import h5py
 import os
 from .misc import ten2mat

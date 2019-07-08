@@ -9,13 +9,14 @@ from collections import OrderedDict
 import numpy as np
 import sys
 import os
+import shutil
 
 # temporary folder
 os.mkdir('./tmp')
 folder = './tmp'
 
 
-class TestpygpcMethods(unittest.TestCase):
+class TestPygpcMethods(unittest.TestCase):
 
     # setup method called before every test-case
     def setUp(self):
@@ -24,7 +25,7 @@ class TestpygpcMethods(unittest.TestCase):
     def run(self, result=None):
         self._result = result
         self._num_expectations = 0
-        super(TestpygpcMethods, self).run(result)
+        super(TestPygpcMethods, self).run(result)
 
     def _fail(self, failure):
         try:
@@ -135,7 +136,7 @@ class TestpygpcMethods(unittest.TestCase):
         print("done!\n")
 
         # remove temporary directory
-        os.rmdir('./tmp')
+        shutil.rmtree('./tmp')
 
 
 if __name__ == '__main__':

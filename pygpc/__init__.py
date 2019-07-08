@@ -1,7 +1,4 @@
-"""
-A package that provides submodules to perform polynomial chaos uncertainty analysis on complex dynamic systems.
-"""
-
+# -*- coding: utf-8 -*-
 import pygpc.GPC
 import pygpc.SGPC
 import pygpc.testfunctions

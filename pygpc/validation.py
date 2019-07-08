@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from pygpc.Computation import *
 from .Grid import *
 from .misc import nrmsd

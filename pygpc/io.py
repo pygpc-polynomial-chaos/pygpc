@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Functions that provide input and output functionality
-"""
-
 # from .Grid import *
 import numpy as np
 import os

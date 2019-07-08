@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from sklearn.cluster import KMeans
 from sklearn.neural_network import MLPClassifier
 
