@@ -23,7 +23,7 @@ install:
   - pip3 install .
 
 # command to run tests
-script: python -m unittest discover
+script: python3 -m unittest discover
 
 branches:
   only:
