@@ -4,6 +4,7 @@ import uuid
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from IPython import display
 
 
 class Basis:
@@ -252,7 +253,7 @@ class Basis:
 
             self.b_gpu_grad.append(_b_gpu_grad)
 
-    def plot_basis(self, dims, fn_plot=None):
+    def plot_basis(self, dims, fn_plot=None, dynamic_plot_update=False):
         """
         Generate 2D or 3D cube-plot of basis functions.
 
@@ -326,3 +327,6 @@ class Basis:
                 ax.set_yticks(range(np.max(multi_indices) + 1))
                 ax.set_zticklabels(range(np.max(multi_indices) + 1))
                 ax.set_zticks(range(np.max(multi_indices) + 1))
+
+        if dynamic_plot_update:
+            return ax
