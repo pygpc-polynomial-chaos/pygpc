@@ -917,20 +917,31 @@ def increment_basis(order_current, interaction_order_current, interaction_order_
     interaction_order : int
         Updated interaction order
     """
+    while incr > 0:
+        if interaction_order_current + 1 <= min(order_current, interaction_order_max):
+            interaction_order_current += 1
+        else:
+            order_current += 1
+            interaction_order_current = 1
 
-    order = order_current
+        incr -= 1
 
-    order_incr = np.floor(float((incr+interaction_order_current-1)) / interaction_order_max)
-    sub_iter_incr = (incr+interaction_order_current) % interaction_order_max
+    return order_current, interaction_order_current
 
-    order += int(order_incr)
 
-    if order_incr > 0 and sub_iter_incr:
-        interaction_order = sub_iter_incr
-    elif order_incr > 0 and sub_iter_incr == 0:
-        interaction_order = interaction_order_max
-    else:
-        interaction_order = incr + interaction_order_current
+    # order = order_current
+    #
+    # order_incr = np.floor(float((incr+interaction_order_current-1)) / interaction_order_max)
+    # sub_iter_incr = (incr+interaction_order_current) % interaction_order_max
+    #
+    # order += int(order_incr)
+    #
+    # if order_incr > 0 and sub_iter_incr:
+    #     interaction_order = sub_iter_incr
+    # elif order_incr > 0 and sub_iter_incr == 0:
+    #     interaction_order = interaction_order_max
+    # else:
+    #     interaction_order = incr + interaction_order_current
 
     # carry = [incr]
     # while carry[-1] > 0:
