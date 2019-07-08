@@ -21,13 +21,13 @@ Installation
 ------------
 pygpc can be installed via the `pip` command with Python >= 3.6 and then simply run the following line from a terminal:
 ```
-pip install pyrates
+pip install pygpc
 ```
-Alternatively, it is possible to clone this repository and run the setup manually. This requires Cython. You can get Cython by running the following command:
+Alternatively, it is possible to clone this repository and run the setup manually. This requires Cython to compile the C-extensions. You can get Cython by running the following command:
 ```
 pip install cython
 ```
-pygpc can then be installed by running the following line from the directory in which the repository was cloned:
+Afterwards, pygpc can be installed by running the following line from the directory in which the repository was cloned:
 ```
 python setup.py install
 ```
