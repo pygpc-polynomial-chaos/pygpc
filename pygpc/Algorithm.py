@@ -3218,9 +3218,11 @@ class MERegAdaptiveProjection(Algorithm):
         if self.options["qoi"] == "all":
             qoi_idx = np.arange(res_all.shape[1])
             n_qoi = len(qoi_idx)
+            error = [None for _ in range(n_qoi)]
         else:
             qoi_idx = [self.options["qoi"]]
             n_qoi = 1
+            error = [0]
 
         # Determine gradient [n_grid x n_out x dim]
         if self.options["gradient_enhanced"] or self.options["projection"]:
@@ -3233,7 +3235,7 @@ class MERegAdaptiveProjection(Algorithm):
         coeffs = [0 for _ in range(n_qoi)]
 
         for i_qoi, q_idx in enumerate(qoi_idx):
-            print_str = "Determining gPC approximation for QOI #{}:".format(i_qoi)
+            print_str = "Determining gPC approximation for QOI #{}:".format(q_idx)
             iprint(print_str, tab=0, verbose=self.options["verbose"])
             iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
 
@@ -3244,10 +3246,14 @@ class MERegAdaptiveProjection(Algorithm):
                 res = copy.deepcopy(res_all)
                 grad_res_3D = copy.deepcopy(grad_res_3D_all)
                 hdf5_subfolder = ""
+                output_idx_passed_validation = None
+                # the gPC is constructed for all QOI but only using info for projection etc of desired QOI
+                # validation is done for all qoi
 
             else:
                 res = res_all[:, q_idx][:, np.newaxis]
                 hdf5_subfolder = "/qoi_" + str(q_idx)
+                output_idx_passed_validation = q_idx
 
                 if grad_res_3D_all is not None:
                     grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
@@ -3267,6 +3273,7 @@ class MERegAdaptiveProjection(Algorithm):
                                          algorithm=self.options["classifier"],
                                          options=self.options["classifier_options"])
 
+            error[i_qoi] = [[] for _ in range(len(np.unique(megpc[i_qoi].classifier.domains)))]
             p_matrix = [0 for _ in range(megpc[i_qoi].n_gpc)]
             p_matrix_norm = [0 for _ in range(megpc[i_qoi].n_gpc)]
             dim = [0 for _ in range(megpc[i_qoi].n_gpc)]
@@ -3578,10 +3585,9 @@ class MERegAdaptiveProjection(Algorithm):
                 for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
                     eps[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
                                                    results=res,
-                                                   gradient_results=grad_res_3D_passed,
                                                    domain=d,
-                                                   output_idx=i_qoi)
-                    megpc[i_qoi].gpc[d].error.append(eps[d])
+                                                   output_idx=output_idx_passed_validation)
+                    error[i_qoi][d].append(eps[d])
 
                 # loop over domains and increase order if necessary
                 for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
@@ -3738,7 +3744,7 @@ class MERegAdaptiveProjection(Algorithm):
 
                                     # update classifier
                                     iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
-                                    megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                    megpc[i_qoi].init_classifier(coords=grid.coords_norm,
                                                                  results=res_all[:, q_idx][:, np.newaxis],
                                                                  algorithm=self.options["classifier"],
                                                                  options=self.options["classifier_options"])
@@ -3813,15 +3819,15 @@ class MERegAdaptiveProjection(Algorithm):
                                 # validate gpc approximation
                                 eps[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
                                                                results=res,
-                                                               gradient_results=grad_res_3D_passed,
-                                                               domain=d)
-                                megpc[i_qoi].gpc[d].error.append(eps[d])
+                                                               domain=d,
+                                                               output_idx=output_idx_passed_validation)
+                                error[i_qoi][d].append(eps[d])
 
                                 if extended_basis or first_iter:
                                     eps_ref = copy.deepcopy(eps[d])
                                 else:
-                                    delta_eps = np.abs((megpc[i_qoi].gpc[d].error[-1] -
-                                                        megpc[i_qoi].gpc[d].error[-2]) / eps_ref)
+                                    delta_eps = np.abs((error[i_qoi][d][-1] -
+                                                        error[i_qoi][d][-2]) / eps_ref)
 
                                 first_iter = False
 
@@ -3833,7 +3839,7 @@ class MERegAdaptiveProjection(Algorithm):
 
                                 # stop adaptive sampling and extend basis further if error
                                 # was decreased (except in very first iteration)
-                                if extended_basis and megpc[i_qoi].gpc[d].error[-1] < megpc[i_qoi].gpc[d].error[-2]:
+                                if extended_basis and error[i_qoi][d][-1] < error[i_qoi][d][-2]:
                                     break
 
                                 extended_basis = False

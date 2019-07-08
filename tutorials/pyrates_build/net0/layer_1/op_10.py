@@ -1,5 +1,5 @@
 import numpy as np
 from pyrates.backend.funcs import *
-def assign_add_164(I_exc_67,c_929,r_exc_67,I_exc_old_103,c_928):
-    I_exc_67[:] += np.multiply(c_929,np.subtract(r_exc_67,np.divide(I_exc_old_103,c_928)))
-    return I_exc_67
+def assign_add_80(I_exc_31,c_455,r_exc_31,I_exc_old_49,c_454):
+    I_exc_31[:] += np.multiply(c_455,np.subtract(r_exc_31,np.divide(I_exc_old_49,c_454)))
+    return I_exc_31

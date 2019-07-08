@@ -108,7 +108,7 @@ class PyRates_CNS_Model(AbstractModel):
                               backend="numpy",  # "tensorflow"
                               decorator=njit)
 
-        y = np.zeros((len(self.p['w_ein_pc']), 2))
+        y = np.zeros((len(self.p['w_ein_pc']), 1))
 
         # extract QOI
         for idx, (we, wi) in enumerate(zip(self.p['w_ein_pc'], self.p['w_iin_pc'])):
@@ -117,12 +117,8 @@ class PyRates_CNS_Model(AbstractModel):
             f = plt.gca().get_lines()[-1].get_xdata()
             max_idx = np.argmax(p)
             y[idx, 0] = f[max_idx]
-            y[idx, 1] = p[max_idx]
+            # y[idx, 1] = p[max_idx]
             plt.close(plt.gcf())
-
-        # additional_data = [{"additional_data/info_1": [1, 2, 3],
-        #                     "additional_data/info_2": ["some additional information"]}]
-        # additional_data = y.shape[0] * additional_data
 
         return y
 

@@ -233,12 +233,8 @@ class MEGPC(object):
 
         Parameters
         ----------
-        coeffs : ndarray of float [n_basis x n_out]
-            GPC coefficients
         results : ndarray of float [n_grid x n_out]
             Results from n_grid simulations with n_out output quantities
-        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
-            Gradient of results in original parameter space (tensor)
         error_norm : str, optional, default="relative"
             Decide if error is determined "relative" or "absolute"
         domain : int, optional, default: None
@@ -378,9 +374,9 @@ class MEGPC(object):
                 gpc_results = gpc_results[:, np.newaxis]
 
             if len(output_idx) == 1:
-                validation_results_passed = self.validation.results[mask_domain, output_idx][:, np.newaxis]
+                validation_results_passed = self.validation.results[np.argwhere(mask_domain), output_idx][:, np.newaxis]
             else:
-                validation_results_passed = self.validation.results[mask_domain, output_idx]
+                validation_results_passed = self.validation.results[np.argwhere(mask_domain), output_idx]
 
             error_nrmsd = float(np.mean(nrmsd(gpc_results,
                                               validation_results_passed,

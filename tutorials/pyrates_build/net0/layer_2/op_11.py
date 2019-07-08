@@ -1,5 +1,5 @@
 import numpy as np
 from pyrates.backend.funcs import *
-def assign_209(I_inh_old_106,I_inh_70):
-    I_inh_old_106[:] = I_inh_70
-    return I_inh_old_106
+def assign_101(I_inh_old_52,I_inh_34):
+    I_inh_old_52[:] = I_inh_34
+    return I_inh_old_52
