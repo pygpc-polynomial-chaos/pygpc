@@ -327,6 +327,3 @@ class Basis:
                 ax.set_yticks(range(np.max(multi_indices) + 1))
                 ax.set_zticklabels(range(np.max(multi_indices) + 1))
                 ax.set_zticks(range(np.max(multi_indices) + 1))
-
-        if dynamic_plot_update:
-            return ax
