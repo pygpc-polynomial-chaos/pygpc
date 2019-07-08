@@ -3701,7 +3701,7 @@ class MERegAdaptiveProjection(Algorithm):
 
                                     # run simulations
                                     iprint("Performing simulations {} to {}".format(
-                                        i_grid + 1, megpc[i_qoi].grid.coords.shape[0]),
+                                        i_grid + 1, grid.coords.shape[0]),
                                         tab=0, verbose=self.options["verbose"])
 
                                     start_time = time.time()
@@ -3858,7 +3858,7 @@ class MERegAdaptiveProjection(Algorithm):
 
                             # overwrite coeffs
                             try:
-                                del f["coeffs" + hdf5_subfolder + "/dom_" + str(i_gpc)]
+                                del f["coeffs" + hdf5_subfolder + "/dom_" + str(d)]
                             except KeyError:
                                 pass
 

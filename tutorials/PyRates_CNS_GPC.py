@@ -2,8 +2,13 @@ import h5py
 import pygpc
 from collections import OrderedDict
 from tutorials.PyRates_CNS_Model import PyRates_CNS_Model
+import warnings
+warnings.filterwarnings("ignore",category=RuntimeWarning)
+warnings.filterwarnings("ignore",category=FutureWarning)
 
-fn_results = f'/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC'
+# fn_results = f'/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC'
+fn_results = f'/home/kporzig/tmp/PyRates_CNS_GPC'
+
 model = PyRates_CNS_Model
 
 # define problem (the parameter names have to be the same as in the model)
@@ -17,17 +22,17 @@ options = dict()
 options["method"] = "reg"
 options["solver"] = "LarsLasso"
 options["settings"] = None
-options["order_start"] = 2
+options["order_start"] = 4
 options["order_end"] = 15
 # options["order"] = [5, 5]
 # options["n_grid_gradient"] = 20
 # options["order_max"] = 5
-options["projection"] = True
+options["projection"] = False
 options["order_max_norm"] = 1.
 options["interaction_order"] = 2
 options["matrix_ratio"] = 2
 options["n_cpu"] = 0
-options["gradient_enhanced"] = True
+options["gradient_enhanced"] = False
 options["gradient_calculation"] = "standard_forward"
 options["error_type"] = "loocv"
 options["n_samples_validation"] = 1e2
@@ -37,16 +42,17 @@ options["classifier_options"] = {"clusterer": "KMeans",
                                  "n_clusters": 2,
                                  "classifier": "MLPClassifier",
                                  "classifier_solver": "lbfgs"}
-options["n_samples_discontinuity"] = 5
-options["adaptive_sampling"] = True
+options["n_samples_discontinuity"] = 15
+options["adaptive_sampling"] = False
 options["eps"] = 0.05
-options["n_grid_init"] = 20
+options["n_grid_init"] = 200
 options["GPU"] = False
 options["fn_results"] = fn_results
 
 # load validation set
-validation = pygpc.ValidationSet().read(fname="/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_validation_plot.hdf5",
-                                        results_key="model_evaluations/original_all_qoi")
+#validation = pygpc.ValidationSet().read(fname="/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_validation_plot.hdf5",
+#                                        results_key="model_evaluations/original_all_qoi")
+validation = None
 
 # define algorithm
 # algorithm = pygpc.MEStaticProjection(problem=problem, options=options, validation=validation)

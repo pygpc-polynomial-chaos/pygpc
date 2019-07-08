@@ -11,12 +11,18 @@ A Sensitivity and uncertainty analysis toolbox for Python based on the generaliz
 
 Basic features:
 ---------------
-- ...
-- ...
-- ...
-- ...
-- ...
-
+- Highly efficient **uncertainty analysis of N-dimensional systems** with arbitrary number of quantities of interest
+- Sensitivity analysis using **Sobol indices** and **Global derivative based sensitivity indices**
+- Easy **coupling** to user defined models (also outside of Python) 
+- Included **parallelization** concept allows to run model evaluations in parallel
+- Highly efficient **adaptive algorithms** allow for analysis of complex systems
+- Supports **GPUs (CUDA)** to significantly accelerate algorithmic and post-processing routines for high-dimensional and complex problems
+- Includes **state-of-the-art techniques** such as:
+    - **Projection:** determination of optimal reduced basis
+    - **l1-minimization:** reduction of necessary model evaluations by making use of concepts from compressed sensing  
+    - **Gradient enhanced gPC:** use of gradient information of the model function to increase accuracy
+    - **Multi-element gPC:** analyzing systems with discontinuities and sharp transitions
+    
 Installation
 ------------
 pygpc can be installed via the `pip` command with Python >= 3.6 and then simply run the following line from a terminal:
@@ -40,6 +46,7 @@ For examplary simulations and model configurations, please have a look at the ju
 Reference
 ---------
 If you use this framework, please cite:
+
 Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., & Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834.
 
 Contact

@@ -133,19 +133,19 @@ class MEGPC(object):
         else:
             self.mask_res_domains = self.domains
 
-    # def init_sub_problems(self, sub_problems=None):
-    #     """
-    #     Initialize sub-problems
-    #
-    #     Parameters
-    #     ----------
-    #     sub_problems : list of Problem class instances [n_gpc], optional, default: self.problem * n_gpc
-    #         GPC sub-problems under investigation (might be dimensional reduced)
-    #     """
-    #     if sub_problems is None:
-    #         self.sub_problems = [self.problem for _ in range(self.n_gpc)]
-    #     else:
-    #         self.sub_problems = sub_problems
+    def update_classifier(self, coords, results):
+        """
+        Updates self.classifier and keeps the existing class labels
+
+        Parameters
+        ----------
+        coords : ndarray of float [n_grid, n_dim]
+            Set of n_grid parameter combinations
+        results : ndarray [n_grid x n_out]
+            Results of the model evaluation
+        """
+        # TODO: implement classifier update function
+        pass
 
     def add_sub_gpc(self, problem, order, order_max, order_max_norm, interaction_order,
                     interaction_order_current, options, domain, validation=None):

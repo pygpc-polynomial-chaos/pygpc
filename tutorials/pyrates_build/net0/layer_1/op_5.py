@@ -1,5 +1,5 @@
 import numpy as np
 from pyrates.backend.funcs import *
-def assign_add_75(v_30,c_432,v_old_47,c_429,c_430,I_ext_20,I_exc_old_46,I_inh_old_46,c_428,c_425,r_old_63,c_426,c_427,c_431):
-    v_30[:] += np.multiply(c_432,np.divide(np.subtract(np.add(np.add(np.add(np.power(v_old_47,c_429),c_430),I_ext_20),np.multiply(np.subtract(I_exc_old_46,I_inh_old_46),c_428)),np.power(np.multiply(np.multiply(c_425,r_old_63),c_426),c_427)),c_431))
-    return v_30
+def assign_add_19(v_6,c_116,v_old_11,c_113,c_114,I_ext_4,I_exc_old_10,I_inh_old_10,c_112,c_109,r_old_15,c_110,c_111,c_115):
+    v_6[:] += np.multiply(c_116,np.divide(np.subtract(np.add(np.add(np.add(np.power(v_old_11,c_113),c_114),I_ext_4),np.multiply(np.subtract(I_exc_old_10,I_inh_old_10),c_112)),np.power(np.multiply(np.multiply(c_109,r_old_15),c_110),c_111)),c_115))
+    return v_6

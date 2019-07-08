@@ -1,5 +1,5 @@
 import numpy as np
 from pyrates.backend.funcs import *
-def assign_94(r_old_69,r_58):
-    r_old_69[:] = r_58
-    return r_old_69
+def assign_22(r_old_21,r_14):
+    r_old_21[:] = r_14
+    return r_old_21

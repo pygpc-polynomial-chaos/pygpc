@@ -492,5 +492,6 @@ def plot_gpc(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, f
 
         plt.tight_layout()
 
-    plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.png', dpi=600)
-    plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.pdf')
+    if fn_out:
+        plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.png', dpi=600)
+        plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.pdf')
