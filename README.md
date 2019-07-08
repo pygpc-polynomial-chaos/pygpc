@@ -34,7 +34,7 @@ python setup.py install
 
 Documentation
 -------------
-For a full API of pygpc, see https://pyrates.readthedocs.io/en/latest/.
+For a full API of pygpc, see https://github.com/pygpc-polynomial-chaos/pygpc/blob/master/doc/build/html/index.html.
 For examplary simulations and model configurations, please have a look at the jupyter notebooks provided in the /tutorial folder and the templates in the /example folder.
 
 Reference
