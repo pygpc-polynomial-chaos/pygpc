@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scipy.special
 import scipy.stats
 import numpy as np

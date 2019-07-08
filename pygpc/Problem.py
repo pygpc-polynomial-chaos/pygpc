@@ -1,6 +1,4 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 from collections import OrderedDict
 from .RandomParameter import *
 from .ValidationSet import *

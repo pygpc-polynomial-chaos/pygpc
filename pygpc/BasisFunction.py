@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scipy.special
 import numpy as np
 from .Grid import Grid

@@ -1,7 +1,4 @@
-"""
-Functions and classes that provide data and methods with general usage in the pygpc package
-"""
-
+# -*- coding: utf-8 -*-
 import numpy as np
 import scipy.special
 import scipy.stats
