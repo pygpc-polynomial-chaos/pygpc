@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Unittest class of pygpc
-@author: Konstantin Weise
-"""
 import unittest
 import pygpc
 from collections import OrderedDict
