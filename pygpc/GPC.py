@@ -185,59 +185,8 @@ class GPC(object):
                     _gpc_matrix = np.ones((x.shape[0], len(b)))
                     calc_gpc_matrix_cpu(b, x, _gpc_matrix, gradient=i_dim_gradient)
                     gpc_matrix[:, :, i_dim_gradient] = _gpc_matrix
-
         else:
-            if not gradient:
-                gpc_matrix = np.ones([x.shape[0], len(b)])
-
-                # handle pointer
-                polynomial_coeffs_pointer = self.basis.b_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-                xi_pointer = x.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-                polynomial_matrix_pointer = gpc_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-                number_of_psi_size_t = ctypes.c_size_t(int(len(b)))
-                number_of_variables_size_t = ctypes.c_size_t(int(self.problem.dim))
-                number_of_polynomial_coeffs_size_t = ctypes.c_size_t(int(self.basis.b_gpu.size))
-                number_of_xi_size_t = ctypes.c_size_t(x.shape[0])
-
-                # handle shared object
-                dll = ctypes.CDLL(os.path.join(os.path.dirname(__file__), '..', 'pckg', 'lib', 'cuda', 'gpc.so'),
-                                  mode=ctypes.RTLD_GLOBAL)
-                cuda_pce = dll.polynomial_chaos_matrix
-                cuda_pce.argtypes = [ctypes.POINTER(ctypes.c_double)] * 3 + [ctypes.c_size_t] * 4
-
-                # evaluate CUDA implementation
-                cuda_pce(polynomial_coeffs_pointer, xi_pointer, polynomial_matrix_pointer,
-                         number_of_psi_size_t, number_of_variables_size_t, number_of_xi_size_t,
-                         number_of_polynomial_coeffs_size_t)
-
-            else:
-                gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
-
-                for i_dim_gradient in range(self.problem.dim):
-                    _gpc_matrix = np.ones([x.shape[0], len(b)])
-
-                    # handle pointer
-                    polynomial_coeffs_pointer = self.basis.b_gpu_grad[i_dim_gradient].ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-                    xi_pointer = x.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-                    polynomial_matrix_pointer = _gpc_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-                    number_of_psi_size_t = ctypes.c_size_t(int(len(b)))
-                    number_of_variables_size_t = ctypes.c_size_t(int(self.problem.dim))
-                    number_of_polynomial_coeffs_size_t = ctypes.c_size_t(int(self.basis.b_gpu_grad[i_dim_gradient].size))
-                    number_of_xi_size_t = ctypes.c_size_t(x.shape[0])
-
-                    # handle shared object
-                    dll = ctypes.CDLL(os.path.join(os.path.dirname(__file__), '..', 'pckg', 'lib', 'cuda', 'gpc.so'),
-                                      mode=ctypes.RTLD_GLOBAL)
-                    cuda_pce = dll.polynomial_chaos_matrix
-                    cuda_pce.argtypes = [ctypes.POINTER(ctypes.c_double)] * 3 + [ctypes.c_size_t] * 4
-
-                    # evaluate CUDA implementation
-                    cuda_pce(polynomial_coeffs_pointer, xi_pointer, polynomial_matrix_pointer,
-                             number_of_psi_size_t, number_of_variables_size_t, number_of_xi_size_t,
-                             number_of_polynomial_coeffs_size_t)
-
-                    # write into gradient matrix
-                    gpc_matrix[:, :, i_dim_gradient] = _gpc_matrix
+            raise NotImplementedError
 
         return gpc_matrix
 
@@ -569,29 +518,7 @@ class GPC(object):
             pce = np.matmul(gpc_matrix, coeffs)
 
         else:
-            pce = np.ones([x.shape[0], coeffs.shape[1]])
-
-            # handle pointer
-            polynomial_coeffs_pointer = self.basis.b_gpu.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            xi_pointer = x.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            pce_result_matrix_pointer = pce.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            pce_coeffs_pointer = coeffs.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            number_of_psi_size_t = ctypes.c_size_t(int(len(self.basis.b)))
-            number_of_variables_size_t = ctypes.c_size_t(int(self.problem.dim))
-            number_of_polynomial_coeffs_size_t = ctypes.c_size_t(int(self.basis.b_gpu.size))
-            number_of_xi_size_t = ctypes.c_size_t(x.shape[0])
-            number_of_result_vectors_size_t = ctypes.c_size_t(coeffs.shape[1])
-
-            # handle shared object
-            dll = ctypes.CDLL(os.path.join(os.path.dirname(__file__), '..', 'pckg', 'lib', 'cuda', 'pce.so'),
-                              mode=ctypes.RTLD_GLOBAL)
-            cuda_pce = dll.polynomial_chaos_expansion
-            cuda_pce.argtypes = [ctypes.POINTER(ctypes.c_double)] * 4 + [ctypes.c_size_t] * 5
-
-            # evaluate CUDA implementation
-            cuda_pce(polynomial_coeffs_pointer, xi_pointer, pce_result_matrix_pointer, pce_coeffs_pointer,
-                     number_of_psi_size_t, number_of_result_vectors_size_t, number_of_variables_size_t,
-                     number_of_xi_size_t, number_of_polynomial_coeffs_size_t)
+            raise NotImplementedError
 
         return pce
 
@@ -742,6 +669,8 @@ class GPC(object):
                 self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
                 self.n_grid.append(self.gpc_matrix.shape[0])
                 self.n_basis.append(self.gpc_matrix.shape[1])
+        else:
+            raise NotImplementedError
 
     def save_gpc_matrix_hdf5(self, hdf5_path_gpc_matrix=None, hdf5_path_gpc_matrix_gradient=None):
         """
