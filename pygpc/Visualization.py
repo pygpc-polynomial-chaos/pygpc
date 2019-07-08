@@ -45,6 +45,7 @@ class Visualization:
         Visualization.figure_number += 1
         # add some horizontal spacing to avoid overlap with labels
         plt.subplots_adjust(hspace=Visualization.horizontal_padding)
+        mpl.rcParams['text.usetex'] = True
 
     def create_new_chart(self, layout_id=None):
         """
