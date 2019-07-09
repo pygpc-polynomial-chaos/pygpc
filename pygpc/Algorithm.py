@@ -3481,10 +3481,8 @@ class MERegAdaptiveProjection(Algorithm):
 
                 # update classifier
                 iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
-                megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
-                                             results=res_all[:, q_idx][:, np.newaxis],
-                                             algorithm=self.options["classifier"],
-                                             options=self.options["classifier_options"])
+                megpc[i_qoi].update_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                               results=res_all[:, q_idx][:, np.newaxis])
 
                 # update sub-gPCs if number of domains changed
                 if len(np.unique(megpc[i_qoi].domains)) > len(megpc[i_qoi].gpc):
@@ -3589,6 +3587,12 @@ class MERegAdaptiveProjection(Algorithm):
                                                    output_idx=output_idx_passed_validation)
                     error[i_qoi][d].append(eps[d])
 
+                    iprint("-> Domain: {} {} {} "
+                           "error = {}".format(d,
+                                               self.options["error_norm"],
+                                               self.options["error_type"],
+                                               eps[d]), tab=0, verbose=self.options["verbose"])
+
                 # loop over domains and increase order if necessary
                 for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
 
@@ -3628,13 +3632,13 @@ class MERegAdaptiveProjection(Algorithm):
                             extended_basis = True
                         else:
                             extended_basis = False
-                            iprint("-> Domain: {} {} {} "
-                                   "error = {}".format(d,
-                                                       self.options["error_norm"],
-                                                       self.options["error_type"],
-                                                       eps[d]), tab=0, verbose=self.options["verbose"])
-                            iprint("-> No basis functions to add in domain {} ... Continuing ... ".format(d),
-                                   tab=0, verbose=self.options["verbose"])
+                            # iprint("-> Domain: {} {} {} "
+                            #        "error = {}".format(d,
+                            #                            self.options["error_norm"],
+                            #                            self.options["error_type"],
+                            #                            eps[d]), tab=0, verbose=self.options["verbose"])
+                            # iprint("-> No basis functions to add in domain {} ... Continuing ... ".format(d),
+                            #        tab=0, verbose=self.options["verbose"])
                             continue
 
                         # update gpc matrix
@@ -3656,7 +3660,7 @@ class MERegAdaptiveProjection(Algorithm):
                         add_samples = True  # if adaptive sampling is False, the loop will be only executed once
                         delta_eps_target = 1e-1
                         delta_eps = delta_eps_target + 1
-                        delta_samples = 5e-2
+                        delta_samples = 4*5e-2
 
                         if self.options["adaptive_sampling"]:
                             iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
@@ -3744,10 +3748,8 @@ class MERegAdaptiveProjection(Algorithm):
 
                                     # update classifier
                                     iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
-                                    megpc[i_qoi].init_classifier(coords=grid.coords_norm,
-                                                                 results=res_all[:, q_idx][:, np.newaxis],
-                                                                 algorithm=self.options["classifier"],
-                                                                 options=self.options["classifier_options"])
+                                    megpc[i_qoi].update_classifier(coords=grid.coords_norm,
+                                                                   results=res_all[:, q_idx][:, np.newaxis])
 
                                     # TODO: the number of sub-gpcs could change here :/
                                     # update projection matrices

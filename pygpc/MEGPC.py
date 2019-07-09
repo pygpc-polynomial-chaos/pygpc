@@ -144,8 +144,17 @@ class MEGPC(object):
         results : ndarray [n_grid x n_out]
             Results of the model evaluation
         """
-        # TODO: implement classifier update function
-        pass
+        self.classifier.update(coords=coords, results=results)
+        self.domains = self.classifier.domains
+        self.n_gpc = len(np.unique(self.domains))
+
+        if self.gradient:
+            self.mask_res_domains = np.hstack((self.domains,
+                                               self.domains.repeat(self.problem.dim)))
+            self.mask_grad_res_domains = np.hstack((np.array([np.nan]).repeat(len(self.domains)),
+                                                    self.domains.repeat(self.problem.dim)))
+        else:
+            self.mask_res_domains = self.domains
 
     def add_sub_gpc(self, problem, order, order_max, order_max_norm, interaction_order,
                     interaction_order_current, options, domain, validation=None):
