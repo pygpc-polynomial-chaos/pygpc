@@ -37,10 +37,10 @@ ext_modules = [
 
 
 setup(name='pygpc',
-      version='0.3',
+      version='0.01',
       description='A Sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
-      author_email='konstantin.weise@tu-ilmenau.de',
+      author_email='kweise@cbs.mpg.de',
       license='GPL3',
       packages=find_packages(),
       install_requires=['scipy',
