@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy as np
+import os
 
 
 # pygpc software framework for uncertainty and sensitivity
@@ -25,9 +26,10 @@ import numpy as np
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+
 ext_modules = [
     Extension(
-        name="calc_gpc_matrix_cpu",
+        name="pygpc.calc_gpc_matrix_cpu",
         sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
         include_dirs=[np.get_include()]
     )
@@ -35,7 +37,7 @@ ext_modules = [
 
 
 setup(name='pygpc',
-      version='0.1',
+      version='0.3',
       description='A Sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='konstantin.weise@tu-ilmenau.de',
@@ -43,7 +45,7 @@ setup(name='pygpc',
       packages=find_packages(),
       install_requires=['scipy',
                         'fastmat',
-                        'sklearn',
+                        'scikit-learn',
                         'h5py',
                         'matplotlib',
                         'dispy',
