@@ -1,0 +1,57 @@
+branches:
+  only:
+    - master
+
+environment:
+  matrix:
+    - PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6"
+      PYTHON_ARCH: "32"
+      CONDA_PY: "36"
+      CIBW_SKIP: 'cp[!3]?-* cp3[!6]-*'
+
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6"
+      PYTHON_ARCH: "64"
+      CONDA_PY: "36"
+      CIBW_SKIP: 'cp[!3]?-* cp3[!6]-*'
+
+    - PYTHON: "C:\\Python37"
+      PYTHON_VERSION: "3.7"
+      PYTHON_ARCH: "32"
+      CONDA_PY: "37"
+      CIBW_SKIP: 'cp[!3]?-* cp3[!7]-*'
+
+    - PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7"
+      PYTHON_ARCH: "64"
+      CONDA_PY: "37"
+      CIBW_SKIP: 'cp[!3]?-* cp3[!7]-*'
+
+install:
+  # Prepend chosen Python to the PATH of this build
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
+  - "ECHO %CIBW_SKIP%"
+  - "ECHO %CIBW_ENVIRONMENT%"
+  - "ECHO %PATH%"
+  # Check that we have the expected version and architecture for Python
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+  - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
+  - "ECHO \"%APPVEYOR_SCHEDULED_BUILD%\""
+  - >-
+     %CMD_IN_ENV%
+     python -c "import sys,platform,struct;
+     print(sys.platform, platform.machine(), struct.calcsize('P') * 8, )"
+build_script:
+  - python -m pip install cibuildwheel twine cython numpy
+  - python setup.py build_ext --inplace
+  - python -m pip install .
+
+test_script:
+  - cibuildwheel --output-dir wheelhouse
+
+artifacts:
+  - path: "wheelhouse\\*.whl"
+    name: Wheels
