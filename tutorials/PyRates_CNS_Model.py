@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 import numpy as np
 from numba import njit
+import sys
+import io
 
 
 class PyRates_CNS_Model(AbstractModel):
@@ -93,6 +95,8 @@ class PyRates_CNS_Model(AbstractModel):
         dts = 1e-2
         ext_input = np.random.uniform(3., 5., (int(T / dt), 1))
 
+        sys.stdout = io.StringIO()
+
         # run PyRates with parameter combinations
         results = grid_search(deepcopy(self.jrc_template),
                               param_grid={'w_ep': self.p['w_ein_pc'], 'w_ip': self.p['w_iin_pc']},
@@ -119,6 +123,8 @@ class PyRates_CNS_Model(AbstractModel):
             y[idx, 0] = f[max_idx]
             # y[idx, 1] = p[max_idx]
             plt.close(plt.gcf())
+
+        sys.stdout = sys.__stdout__
 
         return y
 
