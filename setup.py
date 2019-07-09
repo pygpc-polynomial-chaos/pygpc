@@ -26,19 +26,18 @@ import os
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 ext_modules = [
     Extension(
-        name="calc_gpc_matrix_cpu",
-        sources=[ROOT_DIR + '/pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
+        name="pygpc.calc_gpc_matrix_cpu",
+        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
         include_dirs=[np.get_include()]
     )
 ]
 
 
 setup(name='pygpc',
-      version='0.1',
+      version='0.3',
       description='A Sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='konstantin.weise@tu-ilmenau.de',

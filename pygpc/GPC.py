@@ -16,7 +16,7 @@ import fastmat as fm
 import scipy.stats
 import ctypes
 from sklearn import linear_model
-from calc_gpc_matrix_cpu import calc_gpc_matrix_cpu
+from pygpc.calc_gpc_matrix_cpu import calc_gpc_matrix_cpu
 
 
 class GPC(object):
