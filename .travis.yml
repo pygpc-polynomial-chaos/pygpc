@@ -7,26 +7,9 @@ matrix:
           sudo: yes
           python: 3.5
           env: TOXENV=py35
-        - os: linux
-          dist: xenial
-          sudo: yes
-          python: 3.6
-          env: TOXENV=py36
-        - os: linux
-          dist: xenial
-          sudo: yes
-          python: 3.7
-          env: TOXENV=py37
         - os: osx
-          language: generic
+          python: 3.5
           env: TOXENV=py35
-        - os: osx
-          language: generic
-          env: TOXENV=py36
-        - os: osx
-          language: generic
-          env: TOXENV=py37
-
 install:   
 # all three OSes agree about 'pip3'
 # 'python' points to Python 2.7 on macOS but points to Python 3.7 on Linux and Windows
