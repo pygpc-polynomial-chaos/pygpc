@@ -1,5 +1,5 @@
 import numpy as np
 from pyrates.backend.funcs import *
-def assign_32(idx_12,r_exc_10,r_18,idx_11,c_154):
-    r_exc_10[idx_12] = np.multiply(r_18[idx_11],c_154)
-    return r_exc_10
+def assign_68(idx_28,r_exc_22,r_40,idx_27,c_312):
+    r_exc_22[idx_28] = np.multiply(r_40[idx_27],c_312)
+    return r_exc_22

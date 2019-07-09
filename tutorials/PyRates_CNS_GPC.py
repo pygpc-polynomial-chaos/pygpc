@@ -3,11 +3,11 @@ import pygpc
 from collections import OrderedDict
 from tutorials.PyRates_CNS_Model import PyRates_CNS_Model
 import warnings
-warnings.filterwarnings("ignore",category=RuntimeWarning)
-warnings.filterwarnings("ignore",category=FutureWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
 
-# fn_results = f'/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC'
-fn_results = f'/home/kporzig/tmp/PyRates_CNS_GPC'
+fn_results = f'/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_2'
+# fn_results = f'/home/kporzig/tmp/PyRates_CNS_GPC'
 
 model = PyRates_CNS_Model
 
@@ -22,7 +22,7 @@ options = dict()
 options["method"] = "reg"
 options["solver"] = "LarsLasso"
 options["settings"] = None
-options["order_start"] = 4
+options["order_start"] = 2
 options["order_end"] = 15
 # options["order"] = [5, 5]
 # options["n_grid_gradient"] = 20
@@ -35,6 +35,7 @@ options["n_cpu"] = 0
 options["gradient_enhanced"] = False
 options["gradient_calculation"] = "standard_forward"
 options["error_type"] = "loocv"
+options["error_norm"] = "absolute"
 options["n_samples_validation"] = 1e2
 options["qoi"] = 0
 options["classifier"] = "learning"
@@ -42,16 +43,16 @@ options["classifier_options"] = {"clusterer": "KMeans",
                                  "n_clusters": 2,
                                  "classifier": "MLPClassifier",
                                  "classifier_solver": "lbfgs"}
-options["n_samples_discontinuity"] = 15
-options["adaptive_sampling"] = False
-options["eps"] = 0.05
-options["n_grid_init"] = 200
+options["n_samples_discontinuity"] = 5
+options["adaptive_sampling"] = True
+options["eps"] = 0.02
+options["n_grid_init"] = 20
 options["GPU"] = False
 options["fn_results"] = fn_results
 
 # load validation set
-#validation = pygpc.ValidationSet().read(fname="/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_validation_plot.hdf5",
-#                                        results_key="model_evaluations/original_all_qoi")
+# validation = pygpc.ValidationSet().read(fname="/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_validation_plot.hdf5",
+#                                         results_key="model_evaluations/original_all_qoi")
 validation = None
 
 # define algorithm
@@ -70,29 +71,38 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              output_idx=None,
                              calc_sobol=True,
                              calc_global_sens=True,
-                             calc_pdf=True)
+                             calc_pdf=True,
+                             algorithm="sampling",
+                             n_samples=1e4)
+
+# gpc = pygpc.read_gpc_pkl("/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_2_qoi_0.pkl")
+#
+# coeffs = [None, None]
+# with h5py.File("/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_2.hdf5", "r") as f:
+#     coeffs[0] = f["coeffs/dom_0"][:]
+#     coeffs[1] = f["coeffs/dom_1"][:]
 
 # Validate gPC vs original model function (Monte Carlo)
-nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                              coeffs=coeffs,
-                              n_samples=int(1e4),
-                              output_idx=0,
-                              fn_out=options["fn_results"] + '_validation_mc')
+# nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+#                               coeffs=coeffs,
+#                               n_samples=int(1e3),
+#                               output_idx=0,
+#                               fn_out=options["fn_results"] + '_validation_mc')
 
-with h5py.File("/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_validation_plot.hdf5") as f:
-    val_coords_norm = f["grid/coords_norm"][:]
-    val_coords = f["grid/coords"][:]
-    val_results = f["model_evaluations/original_all_qoi"][:]
+# with h5py.File("/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_2_validation_2d.hdf5") as f:
+#     val_coords_norm = f["grid/coords_norm"][:]
+#     val_coords = f["grid/coords"][:]
+#     val_results = f["model_evaluations/original_all_qoi"][:]
 
-# Validate gPC vs original model function (2D-slice)
-pygpc.validate_gpc_plot(gpc=gpc,
-                        coeffs=coeffs,
-                        random_vars=["w_ein_pc", "w_iin_pc"],
-                        coords=val_coords,
-                        data_original=val_results,
-                        output_idx=1,
-                        fn_out=options["fn_results"] + '_validation_plot',
-                        n_cpu=0)
+# # Validate gPC vs original model function (2D-slice)
+# pygpc.validate_gpc_plot(gpc=gpc,
+#                         coeffs=coeffs,
+#                         random_vars=["w_ein_pc", "w_iin_pc"],
+#                         coords=val_coords,
+#                         data_original=val_results,
+#                         output_idx=0,
+#                         fn_out=options["fn_results"] + '_validation_plot',
+#                         n_cpu=0)
 
 # Validate gPC vs original model function (2D-slice)
 pygpc.validate_gpc_plot(gpc=gpc,
@@ -103,6 +113,6 @@ pygpc.validate_gpc_plot(gpc=gpc,
                         fn_out=options["fn_results"] + '_validation_2d',
                         n_cpu=0)
 
-print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+# print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
 print("done!\n")
