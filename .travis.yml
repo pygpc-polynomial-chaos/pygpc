@@ -51,10 +51,6 @@ before_install: |
     source venv/bin/activate
     # A manual check that the correct version of Python is running.
     python --version
-  elif [ "$TRAVIS_OS_NAME" == "linux" ]; then
-    sudo apt-get update
-    sudo apt-get install libfreetype6
-    export CPATH=$CPATH:/usr/include/freetype2
   fi
 
 install:
@@ -63,10 +59,10 @@ install:
   - pip install .
 
 script:
-  - cibuildwheel --output-dir wheelhouse
-  - twine upload wheelhouse/*.whl
-  - |
-    if [[ ""$TRAVIS_PYTHON_VERSION == "3.7" ]] ; then
-        python setup.py sdist
-        twine upload dist/*
-    fi
+  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    cibuildwheel --output-dir wheelhouse
+    twine upload wheelhouse/*.whl
+  else
+    python setup.py sdist
+    twine upload dist/*
+  fi
