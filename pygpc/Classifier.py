@@ -175,13 +175,13 @@ class ClassifierLearning(object):
         domains = self.clf.predict(coords)
 
         # re-label domains if the domains were swapped
-        if (self.swap_idx != np.arange(len(np.unique(self.domains)))).all():
+        if not (self.swap_idx == np.arange(len(np.unique(self.domains)))).all():
 
             domains_temp = np.zeros(domains.shape)
 
             for d in np.unique(domains):
                 domains_temp[domains == d] = self.swap_idx[d]
 
-            domains = domains_temp
+            domains = domains_temp.astype(int)
 
         return domains

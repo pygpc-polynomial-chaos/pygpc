@@ -1,5 +1,5 @@
 import numpy as np
 from pyrates.backend.funcs import *
-def assign_34(out_var_idx_1,out_col_0_0,r_20):
-    out_col_0_0[out_var_idx_1] = np.asarray((r_20,))
-    return out_col_0_0
+def assign_16(out_var_idx,out_col_0,r_9):
+    out_col_0[out_var_idx] = np.asarray((r_9,))
+    return out_col_0
