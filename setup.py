@@ -2,7 +2,6 @@ from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy as np
-import os
 
 
 # pygpc software framework for uncertainty and sensitivity
@@ -37,8 +36,8 @@ ext_modules = [
 
 
 setup(name='pygpc',
-      version='0.1.post2',
-      description='A Sensitivity and uncertainty analysis toolbox for Python',
+      version='0.1.post3',
+      description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
       license='GPL3',
