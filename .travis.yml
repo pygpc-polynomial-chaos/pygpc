@@ -53,13 +53,17 @@ before_install: |
     python --version
   elif [ "$TRAVIS_OS_NAME" == "linux" ]; then
     sudo apt-get update
-    sudo apt-get install libpng-dev libfreetype6-dev pkg-config
+    sudo apt-get install libpng-dev libfreetype6-dev pkg-config freetype
     sudo ln -s /usr/include/freetype2/ft2build.h /usr/include/
     export CFLAGS='-I/usr/include/freetype2/ft2build.h'
     export LDFLAGS='-L/usr/lib/x86_64-linux-gnu/libfreetype.so'
   fi
 
 install:
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      sudo ln -s /usr/include/freetype2/ft2build.h /usr/include/
+    fi
   - pip install cython numpy pytest twine cibuildwheel
   - python setup.py build_ext --inplace
   - pip install .
