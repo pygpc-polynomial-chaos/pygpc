@@ -58,7 +58,7 @@ install:
   - python setup.py build_ext --inplace
   - pip install .
 
-script:
+script: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     cibuildwheel --output-dir wheelhouse
     twine upload wheelhouse/*.whl
