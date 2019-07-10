@@ -29,14 +29,14 @@ import numpy as np
 ext_modules = [
     Extension(
         name="pygpc.calc_gpc_matrix_cpu",
-        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
+        sources=['pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
         include_dirs=[np.get_include()]
     )
 ]
 
 
 setup(name='pygpc',
-      version='0.1.post5',
+      version='0.1.post6',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
