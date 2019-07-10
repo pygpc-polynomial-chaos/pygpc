@@ -481,8 +481,6 @@ class Franke(AbstractModel):
 
     .. [2] Hampton, J., Doostan, A., (2018), Basis adaptive sample efficient polynomial chaos (BASE-PC),
        Journal of Computational Physics, 371, 20-49.
-
-
     """
 
     def __init__(self, p, context=None):
