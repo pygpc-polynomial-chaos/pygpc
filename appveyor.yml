@@ -48,7 +48,7 @@ install:
      python -c "import sys,platform,struct;
      print(sys.platform, platform.machine(), struct.calcsize('P') * 8, )"
 
-  build_script:
+build_script:
   - python -m pip install cibuildwheel twine cython numpy pytest
   - python setup.py build_ext --inplace
   - python -m pip install .
