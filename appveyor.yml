@@ -4,8 +4,6 @@ branches:
 
 environment:
   
-  TWINE_USERNAME: pygpc
-  
   matrix:
     - PYTHON: "C:\\Python36"
       PYTHON_VERSION: "3.6"
@@ -54,8 +52,10 @@ build_script:
   - python -m pip install .
 
 test_script:
+  - pytest
   - python -m cibuildwheel --output-dir wheelhouse
   - python -m twine upload "wheelhouse\\*.whl" & exit 0
+
 
 artifacts:
   - path: "wheelhouse\\*.whl"
