@@ -84,7 +84,7 @@ class Algorithm(object):
             #########################################
             if self.options["gradient_calculation"] == "standard_forward":
                 # add new grid points for gradient calculation in grid.coords_gradient and grid.coords_gradient_norm
-                grid.create_gradient_grid(delta=5e-2)
+                grid.create_gradient_grid(delta=1e-3)
 
                 # Initialize parallel Computation class
                 com = Computation(n_cpu=self.n_cpu)
@@ -1843,10 +1843,11 @@ class RegAdaptive(Algorithm):
             raise AssertionError("Please specify correct solver settings for OMP in 'settings'")
 
         if self.options["solver"] == "LarsLasso":
-            if self.options["settings"] is dict():
-                if "alpha" not in self.options["settings"].keys():
-                    self.options["settings"]["alpha"] = 1e-5
-            else:
+            if "settings" not in self.options.keys():
+                self.options["settings"] = {"alpha": 1e-5}
+            elif type(self.options["settings"]) is not dict():
+                self.options["settings"] = {"alpha": 1e-5}
+            elif "alpha" not in self.options["settings"]:
                 self.options["settings"] = {"alpha": 1e-5}
 
         if "print_func_time" not in self.options.keys():
@@ -1901,6 +1902,8 @@ class RegAdaptive(Algorithm):
         order = self.options["order_start"]
         first_iter = True
         grad_res_3D = None
+        basis_order = np.array([self.options["order_start"],
+                                min(self.options["interaction_order"], self.options["order_start"])])
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu)
@@ -1922,16 +1925,14 @@ class RegAdaptive(Algorithm):
                                       n_cpu=self.options["n_cpu"])
 
         # Initialize Grid object
-        if self.options["gradient_enhanced"]:
-            n_grid_init = np.max((np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis),
-                                 self.options["n_grid_gradient"]))
-        else:
+        if self.options["solver"] == "Moore-Penrose":
             n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
+        else:
+            n_grid_init = gpc.basis.n_basis
 
         gpc.grid = RandomGrid(parameters_random=self.problem.parameters_random,
                               options={"n_grid": n_grid_init, "seed": self.options["seed"]})
 
-        gpc.interaction_order_current = min(self.options["interaction_order"], self.options["order_start"])
         gpc.solver = self.options["solver"]
         gpc.settings = self.options["settings"]
         gpc.options = copy.deepcopy(self.options)
@@ -1945,205 +1946,168 @@ class RegAdaptive(Algorithm):
             gpc.grid.create_gradient_grid()
 
         # Main iterations (order)
-        while (eps > self.options["eps"]) and order <= self.options["order_end"]:
+        while eps > self.options["eps"]:
 
-            iprint("Order #{}".format(order), tab=0, verbose=self.options["verbose"])
-            iprint("==========", tab=0, verbose=self.options["verbose"])
+            if first_iter:
+                basis_increment = 0
+            else:
+                basis_increment = 1
 
-            # determine new possible set of basis functions for next main iteration
-            multi_indices_all_new = get_multi_indices(self.problem.dim, order, self.options["order_max_norm"])
-            multi_indices_all_current = np.array([list(map(lambda x:x.p["i"], _b)) for _b in gpc.basis.b])
+            # increase basis
+            basis_order[0], basis_order[1] = increment_basis(order_current=basis_order[0],
+                                                             interaction_order_current=basis_order[1],
+                                                             interaction_order_max=self.options["interaction_order"],
+                                                             incr=basis_increment)
 
-            idx_old = np.hstack([np.where((multi_indices_all_current[i, :] == multi_indices_all_new).all(axis=1))
-                                 for i in range(multi_indices_all_current.shape[0])])
+            if basis_order[0] > self.options["order_end"]:
+                break
 
-            multi_indices_all_new = np.delete(multi_indices_all_new, idx_old, axis=0)
+            # update basis
+            b_added = gpc.basis.set_basis_poly(order=basis_order[0] * np.ones(self.problem.dim),
+                                               order_max=basis_order[0],
+                                               order_max_norm=self.options["order_max_norm"],
+                                               interaction_order=self.options["interaction_order"],
+                                               interaction_order_current=basis_order[1],
+                                               problem=gpc.problem)
 
-            interaction_order_current_max = np.min([order, self.options["interaction_order"]])
+            print_str = "Order/Interaction order: {}/{}".format(basis_order[0], basis_order[1])
+            iprint(print_str, tab=0, verbose=self.options["verbose"])
+            iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
 
-            # sub-iterations (interaction orders)
-            while (gpc.interaction_order_current <= self.options["interaction_order"] and
-                   gpc.interaction_order_current <= interaction_order_current_max) and eps > self.options["eps"]:
+            if b_added is not None:
+                extended_basis = True
 
-                iprint("Sub-iteration #{}".format(gpc.interaction_order_current),
-                       tab=0, verbose=self.options["verbose"])
-                iprint("================",
-                       tab=0, verbose=self.options["verbose"])
+            if self.options["adaptive_sampling"]:
+                iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
 
-                if order != self.options["order_start"]:
+            add_samples = True   # if adaptive sampling is False, the while loop will be only executed once
+            delta_eps_target = 1e-1
+            delta_eps = delta_eps_target + 1
+            delta_samples = 5e-2
 
-                    # filter out polynomials of interaction_order = interaction_order_current
-                    interaction_order_list = np.sum(multi_indices_all_new > 0, axis=1)
-                    multi_indices_added = multi_indices_all_new[
-                                          interaction_order_list == gpc.interaction_order_current, :]
+            while add_samples and delta_eps > delta_eps_target and eps > self.options["eps"]:
 
-                    # continue while loop if no basis function was added because of max norm constraint
-                    if not multi_indices_added.any():
-                        iprint("-> No basis functions to add because of max_norm constraint ... Continuing ... ",
+                if not self.options["adaptive_sampling"]:
+                    add_samples = False
+
+                # new sample size
+                if extended_basis and self.options["adaptive_sampling"]:
+                    # do not increase sample size immediately when basis was extended, try first with old samples
+                    n_grid_new = gpc.grid.n_grid
+                elif self.options["adaptive_sampling"] and not first_iter:
+                    # increase sample size stepwise (adaptive sampling)
+                    n_grid_new = int(np.ceil(gpc.grid.n_grid + delta_samples * gpc.basis.n_basis))
+                else:
+                    # increase sample size according to matrix ratio w.r.t. bnumber of basis functions
+                    n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
+
+                # run model if grid points were added
+                if i_grid < n_grid_new or extended_basis:
+                    # extend grid
+                    if i_grid < n_grid_new:
+                        iprint("Extending grid from {} to {} by {} sampling points".format(
+                            gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
+                            tab=0, verbose=self.options["verbose"])
+
+                        gpc.grid.extend_random_grid(n_grid_new=n_grid_new, seed=None)
+
+                        # run simulations
+                        iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
                                tab=0, verbose=self.options["verbose"])
 
-                        # increase current interaction order
-                        gpc.interaction_order_current = gpc.interaction_order_current + 1
+                        start_time = time.time()
 
-                        continue
+                        res_new = com.run(model=gpc.problem.model,
+                                          problem=gpc.problem,
+                                          coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
+                                          coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
+                                          i_iter=order,
+                                          i_subiter=gpc.interaction_order_current,
+                                          fn_results=gpc.fn_results,
+                                          print_func_time=self.options["print_func_time"])
 
-                    # construct 2D list with new BasisFunction objects
-                    b_added = [[0 for _ in range(self.problem.dim)] for _ in range(multi_indices_added.shape[0])]
+                        iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+                               tab=0, verbose=self.options["verbose"])
 
-                    for i_basis in range(multi_indices_added.shape[0]):
-                        for i_p, p in enumerate(self.problem.parameters_random):  # Ordered Dict of RandomParameter
-                            b_added[i_basis][i_p] = self.problem.parameters_random[p].init_basis_function(
-                                order=multi_indices_added[i_basis, i_p])
-
-                    # extend basis
-                    gpc.basis.extend_basis(b_added)
-                    extended_basis = True
-
-                if self.options["adaptive_sampling"]:
-                    iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
-
-                add_samples = True   # if adaptive sampling is False, the while loop will be only executed once
-                delta_eps_target = 1e-1
-                delta_eps = delta_eps_target + 1
-                delta_samples = 5e-2
-
-                while add_samples and delta_eps > delta_eps_target and eps > self.options["eps"]:
-
-                    if not self.options["adaptive_sampling"]:
-                        add_samples = False
-
-                    # new sample size
-                    if extended_basis and self.options["adaptive_sampling"]:
-                        # do not increase sample size immediately when basis was extended, try first with old samples
-                        n_grid_new = gpc.grid.n_grid
-                    elif self.options["adaptive_sampling"] and not first_iter:
-                        # increase sample size stepwise (adaptive sampling)
-                        n_grid_new = int(np.ceil(gpc.grid.n_grid + delta_samples * gpc.basis.n_basis))
-                    else:
-                        # increase sample size according to matrix ratio w.r.t. bnumber of basis functions
-                        n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
-
-                    # run model if grid points were added
-                    if i_grid < n_grid_new or extended_basis:
-                        # extend grid
-                        if i_grid < n_grid_new:
-                            iprint("Extending grid from {} to {} by {} sampling points".format(
-                                gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
-                                tab=0, verbose=self.options["verbose"])
-
-                            gpc.grid.extend_random_grid(n_grid_new=n_grid_new, seed=None)
-
-                            # run simulations
-                            iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
-                                   tab=0, verbose=self.options["verbose"])
-
-                            start_time = time.time()
-
-                            res_new = com.run(model=gpc.problem.model,
-                                              problem=gpc.problem,
-                                              coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
-                                              coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
-                                              i_iter=order,
-                                              i_subiter=gpc.interaction_order_current,
-                                              fn_results=gpc.fn_results,
-                                              print_func_time=self.options["print_func_time"])
-
-                            iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-                                   tab=0, verbose=self.options["verbose"])
-
-                            # Append result to solution matrix (RHS)
-                            if i_grid == 0:
-                                res = res_new
-                            else:
-                                res = np.vstack([res, res_new])
-
-                            if self.options["gradient_enhanced"]:
-                                start_time = time.time()
-                                grad_res_3D = self.get_gradient(grid=gpc.grid, results=res,
-                                                                gradient_results=grad_res_3D)
-                                iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-                                       tab=0, verbose=self.options["verbose"])
-
-                            i_grid = gpc.grid.coords.shape[0]
-
-                        # update gpc matrix
-                        gpc.update_gpc_matrix()
-
-                        # determine gpc coefficients
-                        coeffs = gpc.solve(results=res,
-                                           gradient_results=grad_res_3D,
-                                           solver=gpc.solver,
-                                           settings=gpc.settings,
-                                           verbose=True)
-
-                        # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-                        eps = gpc.validate(coeffs=coeffs,
-                                           results=res,
-                                           gradient_results=grad_res_3D)
-
-                        if extended_basis:
-                            eps_ref = copy.deepcopy(eps)
+                        # Append result to solution matrix (RHS)
+                        if i_grid == 0:
+                            res = res_new
                         else:
-                            delta_eps = np.abs((gpc.error[-1] - gpc.error[-2]) / eps_ref)
+                            res = np.vstack([res, res_new])
 
-                        iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                                            self.options["error_type"],
-                                                            eps), tab=0, verbose=self.options["verbose"])
+                        if self.options["gradient_enhanced"]:
+                            start_time = time.time()
+                            grad_res_3D = self.get_gradient(grid=gpc.grid, results=res,
+                                                            gradient_results=grad_res_3D)
+                            iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                                   tab=0, verbose=self.options["verbose"])
 
-                        # extend basis further if error was decreased (except in very first iteration)
-                        if not first_iter and extended_basis and gpc.error[-1] < gpc.error[-2]:
-                            break
+                        i_grid = gpc.grid.coords.shape[0]
 
-                        extended_basis = False
-                        first_iter = False
+                    # update gpc matrix
+                    gpc.init_gpc_matrix()
 
-                        # exit adaptive sampling loop if no adaptive sampling was chosen
-                        if not self.options["adaptive_sampling"]:
-                            break
+                    # determine gpc coefficients
+                    coeffs = gpc.solve(results=res,
+                                       gradient_results=grad_res_3D,
+                                       solver=gpc.solver,
+                                       settings=gpc.settings,
+                                       verbose=True)
 
-                # save gpc object and coeffs for this sub-iteration
-                if self.options["fn_results"]:
+                    # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+                    eps = gpc.validate(coeffs=coeffs,
+                                       results=res,
+                                       gradient_results=grad_res_3D)
 
-                    fn_gpc_pkl = fn_results + '.pkl'
-                    write_gpc_pkl(gpc, fn_gpc_pkl)
+                    if extended_basis:
+                        eps_ref = copy.deepcopy(eps)
+                    else:
+                        delta_eps = np.abs((gpc.error[-1] - gpc.error[-2]) / eps_ref)
 
-                    with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
+                    iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                        self.options["error_type"],
+                                                        eps), tab=0, verbose=self.options["verbose"])
 
-                        # overwrite coeffs
-                        if "coeffs" in f.keys():
-                            del f['coeffs']
-                        f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+                    # extend basis further if error was decreased (except in very first iteration)
+                    if not first_iter and extended_basis and gpc.error[-1] < gpc.error[-2]:
+                        break
 
-                        # Append gradient of results
-                        if grad_res_3D is not None:
-                            grad_res_2D = ten2mat(grad_res_3D)
-                            if "gradient_results" in f["model_evaluations"].keys():
-                                n_rows_old = f["model_evaluations/gradient_results"].shape[0]
-                                f["model_evaluations/gradient_results"].resize(grad_res_2D.shape[0], axis=0)
-                                f["model_evaluations/gradient_results"][n_rows_old:, :] = grad_res_2D[n_rows_old:, :]
-                            else:
-                                f.create_dataset("model_evaluations/gradient_results",
-                                                 (grad_res_2D.shape[0], grad_res_2D.shape[1]),
-                                                 maxshape=(None, None),
-                                                 dtype="float64",
-                                                 data=grad_res_2D)
+                    extended_basis = False
+                    first_iter = False
 
-                    # save gpc matrix in .hdf5 file
-                    gpc.save_gpc_matrix_hdf5()
+                    # exit adaptive sampling loop if no adaptive sampling was chosen
+                    if not self.options["adaptive_sampling"]:
+                        break
 
-                    # fn = os.path.join(os.path.splitext(self.options["fn_results"])[0] +
-                    #                   '_' + str(order).zfill(2) + "_" + str(gpc.interaction_order_current).zfill(2))
-                    #
-                    # shutil.copy2(os.path.splitext(self.options["fn_results"])[0] + '.pkl', fn + '.pkl')
+            # save gpc object and coeffs for this sub-iteration
+            if self.options["fn_results"]:
 
-                # increase current interaction order
-                gpc.interaction_order_current = gpc.interaction_order_current + 1
+                fn_gpc_pkl = fn_results + '.pkl'
+                write_gpc_pkl(gpc, fn_gpc_pkl)
 
-            # reset interaction order counter
-            gpc.interaction_order_current = 1
+                with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
-            # increase main order
-            order = order + 1
+                    # overwrite coeffs
+                    if "coeffs" in f.keys():
+                        del f['coeffs']
+                    f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+
+                    # Append gradient of results
+                    if grad_res_3D is not None:
+                        grad_res_2D = ten2mat(grad_res_3D)
+                        if "gradient_results" in f["model_evaluations"].keys():
+                            n_rows_old = f["model_evaluations/gradient_results"].shape[0]
+                            f["model_evaluations/gradient_results"].resize(grad_res_2D.shape[0], axis=0)
+                            f["model_evaluations/gradient_results"][n_rows_old:, :] = grad_res_2D[n_rows_old:, :]
+                        else:
+                            f.create_dataset("model_evaluations/gradient_results",
+                                             (grad_res_2D.shape[0], grad_res_2D.shape[1]),
+                                             maxshape=(None, None),
+                                             dtype="float64",
+                                             data=grad_res_2D)
+
+                # save gpc matrix in .hdf5 file
+                gpc.save_gpc_matrix_hdf5()
 
         com.close()
 

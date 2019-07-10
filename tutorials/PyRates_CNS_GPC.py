@@ -6,7 +6,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-fn_results = f'/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_2'
+fn_results = f'/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_4'
 # fn_results = f'/home/kporzig/tmp/PyRates_CNS_GPC'
 
 model = PyRates_CNS_Model
@@ -45,7 +45,7 @@ options["classifier_options"] = {"clusterer": "KMeans",
                                  "classifier_solver": "lbfgs"}
 options["n_samples_discontinuity"] = 5
 options["adaptive_sampling"] = True
-options["eps"] = 0.02
+options["eps"] = 0.015
 options["n_grid_init"] = 20
 options["GPU"] = False
 options["fn_results"] = fn_results
@@ -93,7 +93,7 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
 #     val_coords_norm = f["grid/coords_norm"][:]
 #     val_coords = f["grid/coords"][:]
 #     val_results = f["model_evaluations/original_all_qoi"][:]
-
+#
 # # Validate gPC vs original model function (2D-slice)
 # pygpc.validate_gpc_plot(gpc=gpc,
 #                         coeffs=coeffs,
@@ -110,7 +110,7 @@ pygpc.validate_gpc_plot(gpc=gpc,
                         random_vars=["w_ein_pc", "w_iin_pc"],
                         n_grid=[51, 51],
                         output_idx=0,
-                        fn_out=options["fn_results"] + '_validation_2d',
+                        fn_out=options["fn_results"] + '_validation_plot',
                         n_cpu=0)
 
 # print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))

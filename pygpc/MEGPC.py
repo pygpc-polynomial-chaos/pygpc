@@ -709,7 +709,7 @@ class MEGPC(object):
         """
         Calculate the standard deviation.
 
-        std = MEGPC.get_standard_deviation(samples)
+        std = MEGPC.get_std(samples)
 
         Parameters
         ----------

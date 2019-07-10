@@ -124,7 +124,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
             f.create_dataset('pdf/gpc', data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
 
         # plot pdfs
-        matplotlib.rc('text', usetex=True)
+        matplotlib.rc('text', usetex=False)
         matplotlib.rc('xtick', labelsize=12)
         matplotlib.rc('ytick', labelsize=12)
 
@@ -280,7 +280,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
             f.create_dataset('grid/coords_norm', data=grid_norm)
 
     # Plot results
-    matplotlib.rc('text', usetex=True)
+    matplotlib.rc('text', usetex=False)
     matplotlib.rc('xtick', labelsize=13)
     matplotlib.rc('ytick', labelsize=13)
     fs = 14
@@ -453,7 +453,7 @@ def plot_gpc(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, f
         y_gpc = y_gpc[:, np.newaxis]
 
     # Plot results
-    matplotlib.rc('text', usetex=True)
+    matplotlib.rc('text', usetex=False)
     matplotlib.rc('xtick', labelsize=13)
     matplotlib.rc('ytick', labelsize=13)
     fs = 14

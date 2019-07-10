@@ -98,13 +98,9 @@ class ClassifierLearning(object):
         else:
             raise AttributeError("Please specify correct clusterer: {""KMeans"", ""spectral_clustering""...}")
 
-        # sort results for clustering (makes it reproducible)
-        sort_idx = np.argsort(results, axis=0).flatten()
-        self.clusterer.fit(results[sort_idx, ])
-
-        # resort domain labels to original results order
-        self.domains = np.zeros(self.clusterer.labels_.shape).astype(int)
-        self.domains[sort_idx] = self.clusterer.labels_
+        self.clusterer.fit(results)
+        self.domains = self.clusterer.labels_
+        self.swap_idx = np.arange(len(np.unique(self.domains)))
 
         # setup classifier for prediction (supervised learning)
         if options["classifier"] == "MLPClassifier":
@@ -132,19 +128,14 @@ class ClassifierLearning(object):
         domains_old = copy.deepcopy(self.domains)
 
         # rerun clusterer
-        # sort results for clustering (makes it a bit more reproducible)
-        sort_idx = np.argsort(results, axis=0).flatten()
-        self.clusterer.fit(results[sort_idx, ])
-
-        # resort domain labels to original results order
-        self.domains = np.zeros(self.clusterer.labels_.shape).astype(int)
-        self.domains[sort_idx] = self.clusterer.labels_
+        self.clusterer.fit(results)
+        self.domains = self.clusterer.labels_
 
         # check if domain labels are swapped and change it back to initial order
         domains_new = self.domains[:len(domains_old)]
         domains_unique = np.unique(domains_old)
 
-        swap_idx = np.arange(len(domains_unique))
+        self.swap_idx = np.arange(len(domains_unique))
         for d in domains_unique:
             if np.mean(domains_old[domains_old == d] == domains_new[domains_old == d]) < 0.5:
                 count = np.zeros(len(domains_unique))
@@ -152,14 +143,14 @@ class ClassifierLearning(object):
                     count[di] = np.sum(domains_new[domains_old == d] == di)
 
                 if np.max(count) > 0:
-                    swap_idx[d] = np.argmax(count)
+                    self.swap_idx[d] = np.argmax(count)
                 else:
-                    swap_idx[d] = d
+                    self.swap_idx[d] = d
 
         domains_temp = np.zeros(self.domains.shape)
 
         for d in domains_unique:
-            domains_temp[self.domains == d] = swap_idx[d]
+            domains_temp[self.domains == d] = self.swap_idx[d]
 
         self.domains = domains_temp.astype(int)
 
@@ -182,5 +173,15 @@ class ClassifierLearning(object):
         """
 
         domains = self.clf.predict(coords)
+
+        # re-label domains if the domains were swapped
+        if (self.swap_idx != np.arange(len(np.unique(self.domains)))).all():
+
+            domains_temp = np.zeros(domains.shape)
+
+            for d in np.unique(domains):
+                domains_temp[domains == d] = self.swap_idx[d]
+
+            domains = domains_temp
 
         return domains

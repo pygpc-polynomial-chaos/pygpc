@@ -85,8 +85,6 @@ class TestPygpcMethods(unittest.TestCase):
         grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
                                 options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
 
-        # pygpc.plot_2d_grid(coords=grid.coords, fn_plot=os.path.join(folder, test_name + '_grid'))
-
         # define algorithm
         algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
 
@@ -106,26 +104,9 @@ class TestPygpcMethods(unittest.TestCase):
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
-                                      fn_out=os.path.join(folder, test_name + '_validation_mc'))
+                                      fn_out=None)
 
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
-
-        # Validate gPC vs original model function (2D-slice)
-        pygpc.validate_gpc_plot(gpc=gpc,
-                                coeffs=coeffs,
-                                random_vars=["x3", "x1"],
-                                n_grid=[25, 25],
-                                output_idx=[0],
-                                fn_out=os.path.join(folder, test_name + '_validation_2d'),
-                                n_cpu=options["n_cpu"])
-
-        # Validate gPC vs original model function (1D-slice)
-        pygpc.validate_gpc_plot(gpc=gpc,
-                                coeffs=coeffs,
-                                random_vars=["x3"],
-                                n_grid=[125],
-                                output_idx=[0],
-                                fn_out=os.path.join(folder, test_name + '_validation_1d'))
 
         self.expect_true(np.max(nrmsd) < 1.0, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)))
 

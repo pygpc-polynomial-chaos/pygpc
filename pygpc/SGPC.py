@@ -143,11 +143,11 @@ class SGPC(GPC):
         return mean
 
     @staticmethod
-    def get_standard_deviation(coeffs=None, samples=None):
+    def get_std(coeffs=None, samples=None):
         """
         Calculate the standard deviation. Provide either gPC coeffs or a certain number of samples.
 
-        std = SGPC.get_standard_deviation(coeffs)
+        std = SGPC.get_std(coeffs)
 
         Parameters
         ----------
@@ -273,7 +273,7 @@ class SGPC(GPC):
             for i_sobol in range(sobol_idx_bool.shape[0]):
                 sobol_idx[i_sobol] = np.array([i for i, x in enumerate(sobol_idx_bool[i_sobol, :]) if x])
 
-            var = self.get_standard_deviation(coeffs=coeffs)**2
+            var = self.get_std(coeffs=coeffs) ** 2
 
             sobol = sobol / var
 

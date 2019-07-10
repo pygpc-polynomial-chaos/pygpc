@@ -11,6 +11,7 @@ from .misc import mat2ten
 from .misc import ten2mat
 from .ValidationSet import *
 from .Computation import *
+from scipy.signal import savgol_filter
 import numpy as np
 import fastmat as fm
 import scipy.stats
@@ -229,21 +230,21 @@ class GPC(object):
         .. [1] Blatman, G., & Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions
            for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(2), 183-197.
         """
-        if self.options["gradient_enhanced"]:
-            matrix = np.vstack((self.gpc_matrix, self.gpc_matrix_gradient))
+        # if self.options["gradient_enhanced"]:
+        #     matrix = np.vstack((self.gpc_matrix, self.gpc_matrix_gradient))
+        #
+        #     # transform gradient of results in case of projection
+        #     if self.p_matrix is not None:
+        #         gradient_results = np.dot(gradient_results,
+        #                                   self.p_matrix.transpose() * self.p_matrix_norm[np.newaxis, :])
+        #
+        #     results_complete = np.vstack((results, ten2mat(gradient_results)))
+        # else:
+        #     matrix = self.gpc_matrix
+        #     results_complete = results
 
-            # transform gradient of results in case of projection
-            if self.p_matrix is not None:
-                gradient_results = np.dot(gradient_results,
-                                          self.p_matrix.transpose() * self.p_matrix_norm[np.newaxis, :])
-
-            results_complete = np.vstack((results, ten2mat(gradient_results)))
-        else:
-            matrix = self.gpc_matrix
-            results_complete = results
-
-        # matrix = self.gpc_matrix
-        # results_complete = results
+        matrix = self.gpc_matrix
+        results_complete = results
 
         # Analytical error estimation in case of overdetermined systems
         if matrix.shape[0] > 2*matrix.shape[1]:
@@ -419,6 +420,8 @@ class GPC(object):
             pdf_y[:, i_out], tmp = np.histogram(samples_out[:, i_out], bins=100, density=True)
             pdf_x[:, i_out] = (tmp[1:] + tmp[0:-1]) / 2.
 
+            pdf_y[:, i_out] = savgol_filter(pdf_y[:, i_out], 51, 5)
+
             # kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
             # pdf_y[:, i_out] = kde(pdf_x[:, i_out])
             # pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
@@ -497,7 +500,7 @@ class GPC(object):
 
         if output_idx is not None:
             # convert to 1d array
-            output_idx = np.asarray(output_idx).flatten()
+            output_idx = np.asarray(output_idx).flatten().astype(int)
 
             # crop coeffs array if output index is specified
             coeffs = coeffs[:, output_idx]

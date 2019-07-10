@@ -163,7 +163,7 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             mean = gpc.get_mean(coeffs=coeffs)
 
             # determine standard deviation
-            std = gpc.get_standard_deviation(coeffs=coeffs)
+            std = gpc.get_std(coeffs=coeffs)
 
         elif algorithm == "sampling":
             # run model evaluations
@@ -173,7 +173,7 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             mean = gpc.get_mean(samples=res)
 
             # determine standard deviation
-            std = gpc.get_standard_deviation(samples=res)
+            std = gpc.get_std(samples=res)
 
         # determine Sobol indices
         if calc_sobol:
@@ -251,7 +251,7 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
         mean = gpc.get_mean(samples=res)
 
         # determine standard deviation
-        std = gpc.get_standard_deviation(samples=res)
+        std = gpc.get_std(samples=res)
 
     elif not qoi_specific and multi_element_gpc:
 
@@ -291,7 +291,7 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             mean = gpc.get_mean(samples=res)
 
             # determine standard deviation
-            std = gpc.get_standard_deviation(samples=res)
+            std = gpc.get_std(samples=res)
 
         else:
             raise AssertionError("Please use ""sampling"" algorithm in case of multi-element gPC!")
@@ -355,7 +355,7 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             mean = gpc.get_mean(samples=res)
 
             # determine standard deviation
-            std = gpc.get_standard_deviation(samples=res)
+            std = gpc.get_std(samples=res)
 
         else:
             raise AssertionError("Please use ""sampling"" algorithm in case of multi-element gPC!")
