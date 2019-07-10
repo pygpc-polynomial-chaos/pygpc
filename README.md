@@ -1,11 +1,9 @@
 # 
 
+[![](https://img.shields.io/appveyor/ci/lpossner/pygpc.svg)](https://ci.appveyor.com/project/lpossner/pygpc)
 
-[![](https://img.shields.io/github/license/pyrates-neuroscience/PyRates.svg)](https://github.com/pyrates-neuroscience/PyRates) 
-[![Build Status](https://travis-ci.com/pyrates-neuroscience/PyRates.svg?branch=master)](https://travis-ci.com/pyrates-neuroscience/PyRates)
 <img src="https://avatars3.githubusercontent.com/u/52486646?s=200&v=4" width="20%" heigth="20%" align="right">
-[![PyPI version](https://badge.fury.io/py/pyrates.svg)](https://badge.fury.io/py/pyrates)
- 
+
 # pygpc
 A Sensitivity and uncertainty analysis toolbox for Python based on the generalized polynomial chaos method
 
