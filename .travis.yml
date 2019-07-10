@@ -65,10 +65,10 @@ install:
   - pip install .
 
 script:
-  - sudo cibuildwheel --output-dir wheelhouse
-  - twine upload wheelhouse/*.whl 
+  - sudo python -m cibuildwheel --output-dir wheelhouse
+  - python -m twine upload wheelhouse/*.whl 
   - |
     if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then
       python setup.py sdist
-      twine upload dist/*
+      python -m twine upload dist/*
     fi
