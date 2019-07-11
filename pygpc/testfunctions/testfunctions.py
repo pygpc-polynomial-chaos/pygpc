@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
 import os
-import numpy as np
 import warnings
+import numpy as np
 import scipy.special
-import matplotlib.pyplot as plt
 from scipy.integrate import odeint
-from pygpc.AbstractModel import AbstractModel
 from collections import OrderedDict
+from pygpc.AbstractModel import AbstractModel
+
+try:
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    warnings.warn("If you want to use plot functionality from pygpc, "
+                  "please install matplotlib (pip install matplotlib).")
+    pass
 
 
 def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=0):

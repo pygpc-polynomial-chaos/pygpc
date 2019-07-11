@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 import numpy as np
 import os
 import sys
 import scipy.stats
+import warnings
+
+try:
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    warnings.warn("If you want to use plot functionality from pygpc, "
+                  "please install matplotlib (pip install matplotlib).")
+    pass
 
 
 class Visualization:

@@ -1,3 +1,4 @@
+import os
 import h5py
 import pygpc
 from collections import OrderedDict
@@ -6,15 +7,14 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-fn_results = f'/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_4'
-# fn_results = f'/home/kporzig/tmp/PyRates_CNS_GPC'
+fn_results = os.path.join(os.path.split(pygpc.__path__[0])[0], "tutorials", "datasets", "PyRates_CNS_GPC")
 
 model = PyRates_CNS_Model
 
 # define problem (the parameter names have to be the same as in the model)
 parameters = OrderedDict()
-parameters["w_ein_pc"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0.5*0.8*13.5, 2.*0.8*13.5])
-parameters["w_iin_pc"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0.5*1.75*13.5, 2.*1.75*13.5])
+parameters["w_ein_pc"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[5.4, 21.6])
+parameters["w_iin_pc"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[11.8125, 47.25])
 problem = pygpc.Problem(model, parameters)
 
 # gPC options
@@ -22,11 +22,9 @@ options = dict()
 options["method"] = "reg"
 options["solver"] = "LarsLasso"
 options["settings"] = None
-options["order_start"] = 2
+options["order_start"] = 3
 options["order_end"] = 15
-# options["order"] = [5, 5]
-# options["n_grid_gradient"] = 20
-# options["order_max"] = 5
+options["seed"] = 1
 options["projection"] = False
 options["order_max_norm"] = 1.
 options["interaction_order"] = 2
@@ -39,32 +37,22 @@ options["error_norm"] = "absolute"
 options["n_samples_validation"] = 1e2
 options["qoi"] = 0
 options["classifier"] = "learning"
+options["n_samples_discontinuity"] = 10
+options["adaptive_sampling"] = True
+options["eps"] = 0.02
+options["n_grid_init"] = 100
+options["GPU"] = False
+options["fn_results"] = fn_results
 options["classifier_options"] = {"clusterer": "KMeans",
                                  "n_clusters": 2,
                                  "classifier": "MLPClassifier",
                                  "classifier_solver": "lbfgs"}
-options["n_samples_discontinuity"] = 5
-options["adaptive_sampling"] = True
-options["eps"] = 0.015
-options["n_grid_init"] = 20
-options["GPU"] = False
-options["fn_results"] = fn_results
-
-# load validation set
-# validation = pygpc.ValidationSet().read(fname="/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_validation_plot.hdf5",
-#                                         results_key="model_evaluations/original_all_qoi")
-validation = None
 
 # define algorithm
-# algorithm = pygpc.MEStaticProjection(problem=problem, options=options, validation=validation)
-algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options, validation=validation)
+algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
 
 # run gPC algorithm
 gpc, coeffs, results = algorithm.run()
-
-# # plot 2D grid (only feasible for 2D problems)
-# pygpc.plot_2d_grid(coords=gpc.grid.coords,
-#                    fn_plot=fn_results + '_grid')
 
 # Post-process gPC
 pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
@@ -75,44 +63,25 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              algorithm="sampling",
                              n_samples=1e4)
 
-# gpc = pygpc.read_gpc_pkl("/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_2_qoi_0.pkl")
-#
-# coeffs = [None, None]
-# with h5py.File("/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_2.hdf5", "r") as f:
-#     coeffs[0] = f["coeffs/dom_0"][:]
-#     coeffs[1] = f["coeffs/dom_1"][:]
-
-# Validate gPC vs original model function (Monte Carlo)
-# nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-#                               coeffs=coeffs,
-#                               n_samples=int(1e3),
-#                               output_idx=0,
-#                               fn_out=options["fn_results"] + '_validation_mc')
-
-# with h5py.File("/NOBACKUP2/tmp/PyRates_CNS_GPC/PyRates_CNS_GPC_2_validation_2d.hdf5") as f:
-#     val_coords_norm = f["grid/coords_norm"][:]
-#     val_coords = f["grid/coords"][:]
-#     val_results = f["model_evaluations/original_all_qoi"][:]
-#
-# # Validate gPC vs original model function (2D-slice)
-# pygpc.validate_gpc_plot(gpc=gpc,
-#                         coeffs=coeffs,
-#                         random_vars=["w_ein_pc", "w_iin_pc"],
-#                         coords=val_coords,
-#                         data_original=val_results,
-#                         output_idx=0,
-#                         fn_out=options["fn_results"] + '_validation_plot',
-#                         n_cpu=0)
+with h5py.File(fn_results + "_validation.hdf5") as f:
+    val_coords_norm = f["grid/coords_norm"][:]
+    val_coords = f["grid/coords"][:]
+    val_results = f["model_evaluations/original_all_qoi"][:]
 
 # Validate gPC vs original model function (2D-slice)
 pygpc.validate_gpc_plot(gpc=gpc,
                         coeffs=coeffs,
                         random_vars=["w_ein_pc", "w_iin_pc"],
-                        n_grid=[51, 51],
+                        coords=val_coords,
+                        data_original=val_results,
                         output_idx=0,
-                        fn_out=options["fn_results"] + '_validation_plot',
+                        fn_out=options["fn_results"] + '_validation',
                         n_cpu=0)
 
-# print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
 
-print("done!\n")
+# Validate gPC vs original model function (Monte Carlo)
+nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+                              coeffs=coeffs,
+                              n_samples=int(1e3),
+                              output_idx=0,
+                              fn_out=options["fn_results"] + '_validation_mc')

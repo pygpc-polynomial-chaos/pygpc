@@ -10,6 +10,7 @@ import sys
 import io
 
 
+# auxiliary function to determine QOI
 def get_psd(data, tmin=0.):
     # Compute spectrum
     try:

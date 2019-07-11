@@ -1,19 +1,26 @@
 # -*- coding: utf-8 -*-
 from pygpc.Computation import *
+from .MEGPC import *
 from .Grid import *
 from .misc import nrmsd
 from .misc import get_cartesian_product
 from .Visualization import *
 from scipy.signal import savgol_filter
-import matplotlib.pyplot as plt
 import os
 import scipy.stats
-import matplotlib
 import h5py
-from .MEGPC import *
+import warnings
+
+try:
+    import matplotlib
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    warnings.warn("If you want to use plot functionality from pygpc, "
+                  "please install matplotlib (pip install matplotlib).")
+    pass
 
 
-def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=None):
+def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pdf=True, fn_out=None, plot=True):
     """
     Compares gPC approximation with original model function. Evaluates both at "n_samples" sampling points and
     evaluates the root mean square deviation. It also computes the pdf at the output quantity with output_idx
@@ -31,8 +38,12 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
         Index of output quantities to consider (if output_idx=None, all output quantities are considered)
     n_cpu : int, optional, default=1
         Number of CPU cores to use (parallel function evaluations) to evaluate original model function
-    fn_out : str
+    smooth_pdf : bool, optional, default: True
+        Smooth probability density functions using a Savgol filter
+    fn_out : str or None
         Filename of validation results and pdf plot comparing original vs gPC model
+    plot : boolean, optional, default: True
+        Plots the pdfs of the original model function and the gPC approximation
 
     Returns
     -------
@@ -76,18 +87,18 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
                          i_iter=None,
                          i_subiter=None,
                          fn_results=None,
-                         print_func_time=False)
-
-        if y_orig.ndim == 1:
-            y_orig = y_orig[:, np.newaxis]
+                         print_func_time=False)[:, output_idx]
 
     else:
-        y_orig = gpc.validation.results
+        y_orig = gpc.validation.results[:, output_idx]
         coords_norm = gpc.validation.grid.coords_norm
         coords = gpc.validation.grid.coords
 
+    if y_orig.ndim == 1:
+        y_orig = y_orig[:, np.newaxis]
+
     # Evaluate gPC approximation at grid points
-    y_gpc = gpc.get_approximation(coeffs=coeffs, x=coords_norm, output_idx=None)
+    y_gpc = gpc.get_approximation(coeffs=coeffs, x=coords_norm, output_idx=None)[:, output_idx_gpc]
 
     if y_gpc.ndim == 1:
         y_gpc = y_gpc[:, np.newaxis]
@@ -95,35 +106,18 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
     # Calculate normalized root mean square deviation
     relative_error_nrmsd = nrmsd(y_gpc, y_orig)
 
-    if fn_out:
-        # Calculating output PDFs
-        # kde_gpc = scipy.stats.gaussian_kde(y_gpc[:, output_idx].flatten(), bw_method=0.15 / y_gpc.std(ddof=1))
-        # pdf_x_gpc = np.linspace(y_gpc.min(), y_gpc.max(), 100)
-        # pdf_y_gpc = kde_gpc(pdf_x_gpc)
-        # kde_orig = scipy.stats.gaussian_kde(y_orig[:, output_idx].flatten(), bw_method=0.15 / y_orig.std(ddof=1))
-        # pdf_x_orig = np.linspace(y_orig.min(), y_orig.max(), 100)
-        # pdf_y_orig = kde_orig(pdf_x_orig)
+    pdf_y_gpc, tmp = np.histogram(y_gpc[:, output_idx_gpc].flatten(), bins=100, density=True)
+    pdf_x_gpc = (tmp[1:] + tmp[0:-1]) / 2.
 
-        pdf_y_gpc, tmp = np.histogram(y_gpc[:, output_idx_gpc].flatten(), bins=100, density=True)
-        pdf_x_gpc = (tmp[1:] + tmp[0:-1]) / 2.
+    pdf_y_orig, tmp = np.histogram(y_orig.flatten(), bins=100, density=True)
+    pdf_x_orig = (tmp[1:] + tmp[0:-1]) / 2.
 
-        pdf_y_orig, tmp = np.histogram(y_orig[:, output_idx].flatten(), bins=100, density=True)
-        pdf_x_orig = (tmp[1:] + tmp[0:-1]) / 2.
-
+    if smooth_pdf:
         pdf_y_gpc = savgol_filter(pdf_y_gpc, 51, 5)
         pdf_y_orig = savgol_filter(pdf_y_orig, 51, 5)
 
-        # save results in .hdf5 file
-        with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
-            f.create_dataset('results/original', data=y_orig)
-            f.create_dataset('results/gpc', data=y_gpc)
-            f.create_dataset('grid/coords', data=coords)
-            f.create_dataset('grid/coords_norm', data=coords_norm)
-            f.create_dataset('error/nrmsd', data=relative_error_nrmsd)
-            f.create_dataset('pdf/original', data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
-            f.create_dataset('pdf/gpc', data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
-
-        # plot pdfs
+    # plot pdfs
+    if plot:
         matplotlib.rc('text', usetex=False)
         matplotlib.rc('xtick', labelsize=12)
         matplotlib.rc('ytick', labelsize=12)
@@ -138,7 +132,19 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, fn_out=No
         ax1.text(0.05, 0.95, r'$error=%.2f$' % (relative_error_nrmsd[0],) + "%",
                  transform=ax1.transAxes, fontsize=12, verticalalignment='top',
                  bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+    if fn_out:
         plt.savefig(os.path.splitext(fn_out)[0] + '.pdf', facecolor='#ffffff')
+
+        # save results in .hdf5 file
+        with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
+            f.create_dataset('results/original', data=y_orig)
+            f.create_dataset('results/gpc', data=y_gpc)
+            f.create_dataset('grid/coords', data=coords)
+            f.create_dataset('grid/coords_norm', data=coords_norm)
+            f.create_dataset('error/nrmsd', data=relative_error_nrmsd)
+            f.create_dataset('pdf/original', data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
+            f.create_dataset('pdf/gpc', data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
 
     return relative_error_nrmsd
 
@@ -254,8 +260,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
                              fn_results=None,
                              print_func_time=False)
         y_orig = y_orig_all[:, output_idx]
-    else:
 
+    else:
         y_orig_all = data_original
         y_orig = data_original[:, output_idx]
 
@@ -292,13 +298,13 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         ax1.plot(coords, y_orig)
         ax1.plot(coords, y_gpc)
         ax1.legend([r"original", r"gPC"], fontsize=fs)
-        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-        ax1.set_ylabel(r"$y(%s)$" % random_vars[0], fontsize=fs)
+        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"y(%s)" % random_vars[0], fontsize=fs)
         ax1.grid()
 
         ax2.plot(coords, y_dif, '--k')
         ax2.legend([r"difference"], fontsize=fs)
-        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
+        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
         ax2.grid()
 
     # Two random variables
@@ -318,8 +324,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
                          vmin=min_all,
                          vmax=max_all)
         ax1.set_title(r'Original model', fontsize=fs)
-        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
+        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
 
         # gPC approximation
         # Original model function
@@ -328,8 +334,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
                          vmin=min_all,
                          vmax=max_all)
         ax2.set_title(r'gPC approximation', fontsize=fs)
-        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
+        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
 
         # Difference
         min_dif = np.min(y_dif)
@@ -341,8 +347,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
                          vmin=min_dif,
                          vmax=max_dif)
         ax3.set_title(r'Difference (Original vs gPC)', fontsize=fs)
-        ax1.set_xlabel(r"$%s$" % random_vars[0], fontsize=fs)
-        ax1.set_ylabel(r"$%s$" % random_vars[1], fontsize=fs)
+        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+        ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
 
         fig.colorbar(im1, ax=ax1, orientation='vertical')
         fig.colorbar(im2, ax=ax2, orientation='vertical')

@@ -705,7 +705,7 @@ class MEGPC(object):
         return mean
 
     @staticmethod
-    def get_standard_deviation(samples=None):
+    def get_std(samples=None):
         """
         Calculate the standard deviation.
 

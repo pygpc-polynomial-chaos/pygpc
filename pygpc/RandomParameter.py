@@ -3,7 +3,14 @@ import scipy.special
 import scipy.stats
 import numpy as np
 from .BasisFunction import *
-import matplotlib.pyplot as plt
+import warnings
+
+try:
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    warnings.warn("If you want to use plot functionality from pygpc, "
+                  "please install matplotlib (pip install matplotlib).")
+    pass
 
 
 class RandomParameter(object):

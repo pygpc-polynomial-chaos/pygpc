@@ -4,7 +4,14 @@ from .misc import get_multi_indices
 import uuid
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
+import warnings
+
+try:
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    warnings.warn("If you want to use plot functionality from pygpc, "
+                  "please install matplotlib (pip install matplotlib).")
+    pass
 
 
 class Basis:

@@ -561,6 +561,9 @@ def get_multi_indices(order, order_max, interaction_order, order_max_norm=1., in
 
     dim = len(order)
 
+    order_max = int(order_max)
+    order = [int(o) for o in order]
+
     if interaction_order_current is None or interaction_order_current > interaction_order:
         interaction_order_current = interaction_order
     else:
