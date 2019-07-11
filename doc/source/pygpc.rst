@@ -43,18 +43,18 @@ pygpc.BasisFunction module
     :undoc-members:
     :show-inheritance:
 
-pygpc.Computation module
-------------------------
+pygpc.Classifier module
+-----------------------
 
-.. automodule:: pygpc.Computation
+.. automodule:: pygpc.Classifier
     :members:
     :undoc-members:
     :show-inheritance:
 
-pygpc.EGPC module
------------------
+pygpc.Computation module
+------------------------
 
-.. automodule:: pygpc.EGPC
+.. automodule:: pygpc.Computation
     :members:
     :undoc-members:
     :show-inheritance:
@@ -71,6 +71,14 @@ pygpc.Grid module
 -----------------
 
 .. automodule:: pygpc.Grid
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.MEGPC module
+------------------
+
+.. automodule:: pygpc.MEGPC
     :members:
     :undoc-members:
     :show-inheritance:
@@ -159,6 +167,14 @@ pygpc.postprocessing module
 ---------------------------
 
 .. automodule:: pygpc.postprocessing
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygpc.sobol\_saltelli module
+----------------------------
+
+.. automodule:: pygpc.sobol_saltelli
     :members:
     :undoc-members:
     :show-inheritance:

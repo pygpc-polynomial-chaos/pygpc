@@ -8,7 +8,7 @@ Documentation of the pygpc library
 ==================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    pygpc
