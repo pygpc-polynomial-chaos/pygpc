@@ -48,7 +48,6 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
     'sphinx.ext.imgmath',
-    'matplotlib.sphinxext.only_directives',
     'matplotlib.sphinxext.plot_directive',
 ]
 
