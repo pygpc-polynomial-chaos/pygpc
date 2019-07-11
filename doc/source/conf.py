@@ -14,8 +14,14 @@
 
 import os
 import sys
+import subprocess
 sys.path.insert(0, os.path.abspath('../../'))
 sys.path.append(os.path.abspath('sphinxext'))
+
+setup_path = os.path.abspath('../../') + '/' + 'setup.py'
+command = [sys.executable, setup_path, 'build_ext']
+
+subprocess.run(command)
 
 # -- Project information -----------------------------------------------------
 
