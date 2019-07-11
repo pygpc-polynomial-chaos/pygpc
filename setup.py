@@ -27,23 +27,23 @@ from distutils.extension import Extension
 
 
 # try to import build dependencies, if not installed, pip them
-try:
-    import numpy as np
-except (ImportError, ModuleNotFoundError):
-    command = [sys.executable, '-m', 'pip', 'install', 'numpy']
-    if 'user' in str(sys.argv):
-        command = command + '--user'
-    subprocess.run(command)
-    import numpy as np
-
-try:
-    from Cython.Build import cythonize
-except (ImportError, ModuleNotFoundError):
-    command = [sys.executable, '-m', 'pip', 'install', 'cython']
-    if 'user' in str(sys.argv):
-        command = command + '--user'
-    subprocess.run(command)
-    from Cython.Build import cythonize
+# try:
+#     import numpy as np
+# except (ImportError, ModuleNotFoundError):
+#     command = [sys.executable, '-m', 'pip', 'install', 'numpy']
+#     if 'user' in str(sys.argv):
+#         command = command + '--user'
+#     subprocess.run(command)
+#     import numpy as np
+#
+# try:
+#     from Cython.Build import cythonize
+# except (ImportError, ModuleNotFoundError):
+#     command = [sys.executable, '-m', 'pip', 'install', 'cython']
+#     if 'user' in str(sys.argv):
+#         command = command + '--user'
+#     subprocess.run(command)
+#     from Cython.Build import cythonize
 
 
 ext_modules = [
