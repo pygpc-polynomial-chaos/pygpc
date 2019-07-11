@@ -73,10 +73,10 @@ install:
 script:
   - python3 -m pip install matplotlib
   - python3 -m pytest
-#  - cibuildwheel --output-dir wheelhouse
-#  - twine upload wheelhouse/*.whl 
-#  - |
-#    if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then
-#      python setup.py sdist
-#      python -m twine upload dist/*
-#    fi
+  - cibuildwheel --output-dir wheelhouse
+  - twine upload wheelhouse/*.whl 
+  - |
+    if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then
+      python setup.py sdist
+      python -m twine upload dist/*
+    fi
