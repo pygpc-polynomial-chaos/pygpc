@@ -1,4 +1,4 @@
-[![](https://img.shields.io/pypi/dm/pygpc.svg)]()
+[![](https://img.shields.io/pypi/dm/pygpc.svg)](https://pypi.org/project/pygpc/)
 [![](https://img.shields.io/pypi/wheel/pygpc.svg)](https://pypi.org/project/pygpc/)
 [![](https://img.shields.io/appveyor/ci/pygpc/pygpc.svg)](https://ci.appveyor.com/project/pygpc/pygpc)
 [![](https://img.shields.io/travis/pygpc-polynomial-chaos/pygpc.svg)](https://travis-ci.com/pygpc-polynomial-chaos/pygpc)
