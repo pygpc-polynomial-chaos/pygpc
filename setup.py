@@ -1,7 +1,10 @@
-import sys
-import subprocess
+# import sys
+# import subprocess
 from setuptools import setup, find_packages
 from distutils.extension import Extension
+from Cython.Build import cythonize
+import numpy as np
+
 
 
 # pygpc software framework for uncertainty and sensitivity
