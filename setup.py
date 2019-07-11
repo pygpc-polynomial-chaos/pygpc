@@ -1,10 +1,9 @@
-# import sys
-# import subprocess
+import sys
+import subprocess
 from setuptools import setup, find_packages
 from distutils.extension import Extension
-from Cython.Build import cythonize
-import numpy as np
-
+# from Cython.Build import cythonize
+# import numpy as np
 
 
 # pygpc software framework for uncertainty and sensitivity
@@ -30,23 +29,23 @@ import numpy as np
 
 
 # try to import build dependencies, if not installed, pip them
-# try:
-#     import numpy as np
-# except (ImportError, ModuleNotFoundError):
-#     command = [sys.executable, '-m', 'pip', 'install', 'numpy']
-#     if 'user' in str(sys.argv):
-#         command = command + '--user'
-#     subprocess.run(command)
-#     import numpy as np
-#
-# try:
-#     from Cython.Build import cythonize
-# except (ImportError, ModuleNotFoundError):
-#     command = [sys.executable, '-m', 'pip', 'install', 'cython']
-#     if 'user' in str(sys.argv):
-#         command = command + '--user'
-#     subprocess.run(command)
-#     from Cython.Build import cythonize
+try:
+    import numpy as np
+except (ImportError, ModuleNotFoundError):
+    command = [sys.executable, '-m', 'pip', 'install', 'numpy']
+    if 'user' in str(sys.argv):
+        command = command + '--user'
+    subprocess.run(command)
+    import numpy as np
+
+try:
+    from Cython.Build import cythonize
+except (ImportError, ModuleNotFoundError):
+    command = [sys.executable, '-m', 'pip', 'install', 'cython']
+    if 'user' in str(sys.argv):
+        command = command + '--user'
+    subprocess.run(command)
+    from Cython.Build import cythonize
 
 
 ext_modules = [

@@ -1,5 +1,6 @@
 include pygpc/*.txt
 include pygpc/*.hdf5
+recursive-include pckg/extensions/calc_gpc_matrix_cpu *.pyx
 exclude templates/*
 exclude tests/*
 exclude tutorials/*
