@@ -18,15 +18,17 @@ matrix:
       env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
     - python: '3.6'
       env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+    - python: '3.5'
+      env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
     - os: osx
       language: generic
       env:
-        - PYTHON=3.7
+        - PYTHON=3.7.4
         - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
     - os: osx
       language: generic
       env:
-        - PYTHON=3.6
+        - PYTHON=3.6.9
         - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
 
 before_install: |
@@ -35,6 +37,7 @@ before_install: |
     brew update
     # Per the `pyenv homebrew recommendations <https://github.com/yyuu/pyenv/wiki#suggested-build-environment>`_.
     brew install openssl readline
+    brew upgrade numpy
     # See https://docs.travis-ci.com/user/osx-ci-environment/#A-note-on-upgrading-packages.
     # I didn't do this above because it works and I'm lazy.
     brew outdated pyenv || brew upgrade pyenv
@@ -54,18 +57,21 @@ before_install: |
   fi
 
 install:
-  - pip install -r requirements.txt
-  - pip install pytest twine cibuildwheel
-  - python setup.py build_ext --inplace
-  - pip install .
+  - python3 -m pip install pytest twine cibuildwheel cython numpy
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      python3 -m pip install numpy==1.16.4
+    fi
+  - python3 setup.py build_ext --inplace
+  - python3 -m pip install .
 
 script:
-  - pip install matplotlib
-  - pytest
-#  - cibuildwheel --output-dir wheelhouse
-#  - twine upload wheelhouse/*.whl 
-#  - |
-#    if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then
-#      python setup.py sdist
-#      python -m twine upload dist/*
-#    fi
+  - python3 -m pip install matplotlib
+  - python3 -m pytest
+  - python3 -m cibuildwheel --output-dir wheelhouse
+  - python3 -m twine upload wheelhouse/*.whl 
+  - |
+    if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then
+      python setup.py sdist
+      python -m twine upload dist/*
+    fi
