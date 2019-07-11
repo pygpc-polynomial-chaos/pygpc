@@ -32,18 +32,18 @@ from distutils.extension import Extension
 try:
     import numpy as np
 except (ImportError, ModuleNotFoundError):
-    command = [sys.executable, '-m', 'pip', 'install', 'numpy']
+    command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
     if 'user' in str(sys.argv):
-        command = command + '--user'
+        raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
     subprocess.run(command)
     import numpy as np
 
 try:
     from Cython.Build import cythonize
 except (ImportError, ModuleNotFoundError):
-    command = [sys.executable, '-m', 'pip', 'install', 'cython']
+    command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
     if 'user' in str(sys.argv):
-        command = command + '--user'
+        raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
     subprocess.run(command)
     from Cython.Build import cythonize
 
