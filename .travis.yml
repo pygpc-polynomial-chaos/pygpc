@@ -18,6 +18,8 @@ matrix:
       env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
     - python: '3.6'
       env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+    - python: '3.5'
+      env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
     - os: osx
       language: generic
       env:
@@ -28,6 +30,11 @@ matrix:
       env:
         - PYTHON=3.6
         - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+    - os: osx
+      language: generic
+      env:
+        - PYTHON=3.5
+        - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
 
 before_install: |
   # macOSX CI environment configuration: https://pythonhosted.org/CodeChat/.travis.yml.html
@@ -54,7 +61,7 @@ before_install: |
   fi
 
 install:
-  - pip install -r requirements.txt
+  - pip install -r requirements.txt --user
   - pip install pytest twine cibuildwheel
   - python setup.py build_ext --inplace
   - pip install .

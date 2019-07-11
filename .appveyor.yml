@@ -5,6 +5,18 @@ branches:
 environment:
   
   matrix:
+    - PYTHON: "C:\\Python35"
+      PYTHON_VERSION: "3.5"
+      PYTHON_ARCH: "32"
+      CONDA_PY: "35"
+      CIBW_SKIP: 'cp[!3]?-* cp3[!5]-*'
+
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6"
+      PYTHON_ARCH: "64"
+      CONDA_PY: "35"
+      CIBW_SKIP: 'cp[!3]?-* cp3[!5]-*'
+
     - PYTHON: "C:\\Python36"
       PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "32"
