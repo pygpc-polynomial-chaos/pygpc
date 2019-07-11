@@ -49,8 +49,7 @@ def sobol_sampling(n, dim):
     result = np.zeros([n, dim])
 
     # load directions
-    fn = os.path.join(os.path.split(os.path.dirname(__file__))[0],
-                      "pckg", "data", "saltelli", "directions.hdf5")
+    fn = os.path.join(os.path.dirname(__file__), "sobol_saltelli_directions.hdf5")
 
     with h5py.File(fn, "r") as f:
         directions_raw = []
