@@ -1,0 +1,5 @@
+include pygpc/*.txt
+include pygpc/*.hdf5
+exclude templates/*
+exclude tests/*
+exclude tutorials/*
