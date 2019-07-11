@@ -70,7 +70,7 @@ setup(name='pygpc',
                         'scikit-learn>=0.19.1',
                         'h5py>=2.9.0',
                         'matplotlib>=2.2.2',
-                        'dispy>=4.11.0',
+                        'dispy>=4.9.0',
                         ],
       zip_safe=False,
       ext_modules=cythonize(ext_modules))
