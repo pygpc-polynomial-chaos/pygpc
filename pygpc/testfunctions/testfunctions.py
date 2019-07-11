@@ -59,7 +59,6 @@ def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=
         for c_name in c_names:
             p[c_name] = np.tile(constants[c_name], (len(p[p_names[0]]), 1))
 
-    #model = []
     model = eval("{}(p)".format(testfunction_name))
 
     y = model.simulate()
@@ -71,8 +70,8 @@ def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=
 
     for o in output_idx:
         # omit "additional_data" if present
-        if type(y[o]) is tuple:
-            y[o] = y[o][0]
+        if type(y) is tuple:
+            y = y[0]
 
         if len(p_names) == 2:
             im = ax[o].pcolor(x1,
@@ -775,6 +774,8 @@ class GenzDiscontinuous(AbstractModel):
         s = np.zeros((np.array(self.p[list(self.p.keys())[0]]).size, 1))
 
         for i, key in enumerate(self.p.keys()):
+            if self.p[key].ndim == 1:
+                self.p[key] = self.p[key][:, np.newaxis]
             s += a[i] * self.p[key]
 
         # determine output
