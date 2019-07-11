@@ -52,6 +52,7 @@ build_script:
   - python -m pip install .
 
 test_script:
+  - pytest
   - python -m cibuildwheel --output-dir wheelhouse
   - python -m twine upload "wheelhouse\\*.whl" & exit 0
 
