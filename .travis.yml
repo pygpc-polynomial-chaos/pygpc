@@ -54,7 +54,8 @@ before_install: |
   fi
 
 install:
-  - pip install cython numpy pytest twine cibuildwheel
+  - pip install -r requirements.txt
+  - pip install pytest twine cibuildwheel
   - python setup.py build_ext --inplace
   - pip install .
 
