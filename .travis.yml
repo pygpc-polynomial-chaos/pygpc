@@ -65,7 +65,7 @@ install:
   - python3 -m pip install pytest twine cibuildwheel cython numpy
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      python3 -m pip install numpy>=1.16.4
+      python3 -m pip install numpy==1.16.4
     fi
   - python3 setup.py build_ext --inplace
   - python3 -m pip install .
@@ -73,8 +73,8 @@ install:
 script:
   - python3 -m pip install matplotlib
   - python3 -m pytest
-  - cibuildwheel --output-dir wheelhouse
-  - twine upload wheelhouse/*.whl 
+  - python3 -m cibuildwheel --output-dir wheelhouse
+  - python3 -m twine upload wheelhouse/*.whl 
   - |
     if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then
       python setup.py sdist
