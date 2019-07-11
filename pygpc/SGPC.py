@@ -288,11 +288,7 @@ class SGPC(GPC):
             coords_norm = 2 * saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True) - 1
 
             # run model evaluations
-            import time
-            start = time.time()
             res = self.get_approximation(coeffs=coeffs, x=coords_norm)
-            stop = time.time()
-            print(stop-start)
 
             # determine sobol indices
             sobol, sobol_idx, sobol_idx_bool = get_sobol_indices_saltelli(y=res,

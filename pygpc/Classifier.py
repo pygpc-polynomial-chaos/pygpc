@@ -107,8 +107,7 @@ class ClassifierLearning(object):
             self.clf = MLPClassifier(alpha=0.01,
                                      max_iter=1000,
                                      activation="relu",
-                                     solver=options["classifier_solver"],
-                                     warm_start=True)
+                                     solver=options["classifier_solver"])
         else:
             raise AttributeError("Please specify correct classifier: {""MLPClassifier"", ...}")
 
@@ -173,15 +172,5 @@ class ClassifierLearning(object):
         """
 
         domains = self.clf.predict(coords)
-
-        # re-label domains if the domains were swapped
-        if not (self.swap_idx == np.arange(len(np.unique(self.domains)))).all():
-
-            domains_temp = np.zeros(domains.shape)
-
-            for d in np.unique(domains):
-                domains_temp[domains == d] = self.swap_idx[d]
-
-            domains = domains_temp.astype(int)
 
         return domains

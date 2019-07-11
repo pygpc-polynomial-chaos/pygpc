@@ -3,7 +3,7 @@ import numpy as np
 from collections import OrderedDict
 from examples.MyModel import MyModel
 
-fn_results = "/nobackup/spanien1/salomon/PyGPC/temp/MyAnalysis"
+fn_results = "/foo/gpc"
 
 # define model
 model = MyModel
