@@ -41,7 +41,7 @@ before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     brew update
     # Per the `pyenv homebrew recommendations <https://github.com/yyuu/pyenv/wiki#suggested-build-environment>`_.
-    brew install openssl readline
+    brew install openssl readline numpy
     # See https://docs.travis-ci.com/user/osx-ci-environment/#A-note-on-upgrading-packages.
     # I didn't do this above because it works and I'm lazy.
     brew outdated pyenv || brew upgrade pyenv
@@ -61,8 +61,7 @@ before_install: |
   fi
 
 install:
-  - pip install -r requirements.txt --user
-  - pip install pytest twine cibuildwheel
+  - pip install pytest twine cibuildwheel cython numpy
   - python setup.py build_ext --inplace
   - pip install .
 
