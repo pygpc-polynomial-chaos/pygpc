@@ -1,7 +1,8 @@
 [![](https://img.shields.io/pypi/dm/pygpc.svg)]()
 [![](https://img.shields.io/pypi/wheel/pygpc.svg)](https://pypi.org/project/pygpc/)
-[![](https://img.shields.io/appveyor/ci/pygpc/pygpc.svg)](https://ci.appveyor.com/project/lpossner/pygpc)
+[![](https://img.shields.io/appveyor/ci/pygpc/pygpc.svg)](https://ci.appveyor.com/project/pygpc/pygpc)
 [![](https://img.shields.io/travis/pygpc-polynomial-chaos/pygpc.svg)](https://travis-ci.com/pygpc-polynomial-chaos/pygpc)
+[![](https://img.shields.io/readthedocs/pygpc.svg)](https://pygpc.readthedocs.io/en/latest/)
 <img src="https://avatars3.githubusercontent.com/u/52486646?s=200&v=4" width="20%" heigth="20%" align="right">
 
 # pygpc
@@ -27,9 +28,13 @@ pygpc can be installed via the `pip` command with Python >= 3.6 and then simply 
 ```
 pip install pygpc
 ```
-Alternatively, it is possible to clone this repository and run the setup manually. This requires Cython to compile the C-extensions. You can get Cython by running the following command:
+Alternatively, it is possible to clone this repository and run the setup manually. This requires Cython to compile the C-extensions and Numpy for some headers. You can get Cython and Numpy by running the following command:
 ```
-pip install cython
+pip install cython numpy
+```
+Alternatively you can install the build dependencies with the following command:
+```
+pip install -r requirements.txt
 ```
 Afterwards, pygpc can be installed by running the following line from the directory in which the repository was cloned:
 ```
@@ -38,7 +43,7 @@ python setup.py install
 
 Documentation
 -------------
-For a full API of pygpc, see https://github.com/pygpc-polynomial-chaos/pygpc/blob/master/doc/build/html/index.html.
+For a full API of pygpc, see https://pygpc.readthedocs.io/en/latest/.
 For examplary simulations and model configurations, please have a look at the jupyter notebooks provided in the /tutorial folder and the templates in the /example folder.
 
 Reference
