@@ -25,8 +25,8 @@ Basic features:
 Areas of application:
 ---------------------
 pygpc can be used to analyze a variety of different of problems. It is used for example in the frameworks of:
-- Non destructive testing ([Weise, K., Carlstedt, M., Ziolkowski, M., & Brauer, H. (2015). Uncertainty analysis in Lorentz force eddy current testing. IEEE Transactions on Magnetics, 52(3), 1-4.](https://ieeexplore.ieee.org/abstract/document/7272103))
-- Non-invasive brain stimulation ([Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., & Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834.](https://www.sciencedirect.com/science/article/pii/S1053811918322031))
+- Nondestructive testing ([Weise, K., Carlstedt, M., Ziolkowski, M., & Brauer, H. (2015). Uncertainty analysis in Lorentz force eddy current testing. IEEE Transactions on Magnetics, 52(3), 1-4.](https://ieeexplore.ieee.org/abstract/document/7272103))
+- Noninvasive brain stimulation ([Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., & Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834.](https://www.sciencedirect.com/science/article/pii/S1053811918322031))
     - Transcranial magnetic stimulation ([Weise, K., Di Rienzo, L., Brauer, H., Haueisen, J., & Toepfer, H. (2015). Uncertainty analysis in transcranial magnetic stimulation using nonintrusive polynomial chaos expansion. IEEE Transactions on Magnetics, 51(7), 1-8.](https://ieeexplore.ieee.org/abstract/document/7006714))
     - Transcranial direct current stimulation ([Kalloch, B., Weise, K., Bazin, P.-L., Lampea, L., Villringera, A., Hlawitschk, M., & Sehm, B. (2019). The influence of white matter lesions on the electrical fieldduring transcranial electric stimulation - Preliminary results of a computational sensitivity analysis, SfN Annual Meeting 2019, Chicago, Illinois, USA, October 19th-23rd 2019](https://www.fens.org/News-Activities/Calendar/Meetings/2019/10/SfN-Annual-Meeting-2019/))
 
