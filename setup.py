@@ -58,7 +58,7 @@ ext_modules = [
 
 
 setup(name='pygpc',
-      version='0.2.1.post4',
+      version='0.2.2',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
