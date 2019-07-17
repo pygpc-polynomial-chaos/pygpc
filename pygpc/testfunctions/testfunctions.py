@@ -59,7 +59,7 @@ def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=
         for c_name in c_names:
             p[c_name] = np.tile(constants[c_name], (len(p[p_names[0]]), 1))
 
-    model = eval("{}(p)".format(testfunction_name))
+    model = eval("{}().set_parameters(p)".format(testfunction_name))
 
     y = model.simulate()
 
@@ -133,13 +133,14 @@ class Peaks(AbstractModel):
        plot("Peaks", parameters, constants)
     """
 
-    def __init__(self, p, context=None):
-        super(Peaks, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
+
         if type(self.p["x1"]) is np.ndarray:
             self.p["x1"] = self.p["x1"].flatten()
         if type(self.p["x2"]) is np.ndarray:
@@ -206,13 +207,13 @@ class DiscontinuousRidgeManufactureDecayGenzDiscontinuous(AbstractModel):
        plot("DiscontinuousRidgeManufactureDecayGenzDiscontinuous", parameters, output_idx=[0, 1])
     """
 
-    def __init__(self, p, context=None):
-        super(DiscontinuousRidgeManufactureDecayGenzDiscontinuous, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         y_1 = DiscontinuousRidgeManufactureDecay(self.p).simulate()
         y_2 = BinaryDiscontinuousSphere(self.p).simulate()
@@ -260,13 +261,13 @@ class HyperbolicTangent(AbstractModel):
        Journal of Turbomachinery, 104, 041004.
     """
 
-    def __init__(self, p, context=None):
-        super(HyperbolicTangent, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         y = np.array(np.tanh(10. * self.p["x1"]) + 0.2 * np.sin(10. * self.p["x1"]) + 0.3 * self.p["x2"] +
                      0.1 * np.sin(5. * self.p["x1"]))
 
@@ -332,13 +333,13 @@ class MovingParticleFrictionForce(AbstractModel):
        Journal of Computational Physics, 197, 28-57.
     """
 
-    def __init__(self, p, context=None):
-        super(MovingParticleFrictionForce, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         # System of 1st order DEQ
         def deq(x, t, f):
             return x[1], -35. / 2. * x[0] ** 3. + 15. / 2. * x[0] - f * x[1]
@@ -413,13 +414,13 @@ class SurfaceCoverageSpecies(AbstractModel):
        Journal of Computational Physics, 197, 502-531.
     """
 
-    def __init__(self, p, context=None):
-        super(SurfaceCoverageSpecies, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         # System of 1st order DEQ
         def deq(rho, t, alpha, beta, gamma):
             return alpha * (1. - rho) - gamma * rho - beta * (rho - 1) ** 2 * rho
@@ -489,13 +490,13 @@ class Franke(AbstractModel):
        Journal of Computational Physics, 371, 20-49.
     """
 
-    def __init__(self, p, context=None):
-        super(Franke, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         y = 3. / 4. * np.exp(-((9 * self.p["x1"] - 2) ** 2) / 4. - ((9 * self.p["x2"] - 2) ** 2) / 4.) + \
             3. / 4. * np.exp(-((9 * self.p["x1"] + 1) ** 2) / 49. - (9 * self.p["x2"] + 1) / 10.) + \
             1. / 2. * np.exp(-((9 * self.p["x1"] - 7) ** 2) / 4. - ((9 * self.p["x2"] - 3) ** 2) / 4.) - \
@@ -548,13 +549,13 @@ class ManufactureDecay(AbstractModel):
        Journal of Computational Physics, 371, 20-49.
     """
 
-    def __init__(self, p, context=None):
-        super(ManufactureDecay, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         # determine sum in exponent
         s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
@@ -610,13 +611,13 @@ class GenzContinuous(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/cont.html
     """
 
-    def __init__(self, p, context=None):
-        super(GenzContinuous, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         n = len(self.p.keys())
 
         # set constants
@@ -683,13 +684,13 @@ class GenzCornerPeak(AbstractModel):
        Journal of Computational Physics, 289, 18-34.
     """
 
-    def __init__(self, p, context=None):
-        super(GenzCornerPeak, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         n = len(self.p.keys())
 
         # set constants
@@ -750,13 +751,13 @@ class GenzDiscontinuous(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/disc.html
     """
 
-    def __init__(self, p, context=None):
-        super(GenzDiscontinuous, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         n = len(self.p.keys())
 
@@ -826,13 +827,13 @@ class GenzGaussianPeak(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/gaussian.html
     """
 
-    def __init__(self, p, context=None):
-        super(GenzGaussianPeak, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         n = len(self.p.keys())
 
         # set constants
@@ -894,13 +895,13 @@ class GenzOscillatory(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/oscil.html
     """
 
-    def __init__(self, p, context=None):
-        super(GenzOscillatory, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         n = len(self.p.keys())
 
         # set constants
@@ -964,13 +965,13 @@ class GenzProductPeak(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/prpeak.html
     """
 
-    def __init__(self, p, context=None):
-        super(GenzProductPeak, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         n = len(self.p.keys())
 
         # set constants
@@ -1029,13 +1030,13 @@ class Ridge(AbstractModel):
        Journal of Computational Physics, 380, 29-47.
     """
 
-    def __init__(self, p, context=None):
-        super(Ridge, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         n = len(self.p.keys())
 
         # determine sum
@@ -1095,13 +1096,13 @@ class Lim2002(AbstractModel):
        over the input space. Canadian Journal of Statistics, 30(1), 109-126.
     """
 
-    def __init__(self, p, context=None):
-        super(Lim2002, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         y = 9 + 2.5 * self.p["x1"] - 17.5 * self.p["x2"] + 2.5 * self.p["x1"] * self.p["x2"] + 19 * self.p["x2"] ** 2 - 7.5 * self.p["x1"] ** 3 - 2.5 * self.p["x1"] * self.p["x2"] ** 2 - 5.5 * self.p["x2"] ** 4 + (self.p["x1"] ** 3) * (self.p["x2"] ** 2)
 
         # y = (9 + 5.0 / 2 * self.p["x1"] - 35.0 / 2 * self.p["x2"] + 5.0 / 2 * self.p["x1"] * self.p["x2"] +
@@ -1183,13 +1184,13 @@ class Ishigami(AbstractModel):
        Reliability Engineering & System Safety, 94(3), 742-751.
     """
 
-    def __init__(self, p, context=None):
-        super(Ishigami, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         if self.p["x1"] is not np.ndarray:
             self.p["x1"] = np.array(self.p["x1"])
@@ -1252,13 +1253,13 @@ class SphereFun(AbstractModel):
        plot("SphereFun", parameters)
     """
 
-    def __init__(self, p, context=None):
-        super(SphereFun, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         # determine output
         y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
 
@@ -1329,13 +1330,13 @@ class GFunction(AbstractModel):
        Retrieved from SAMO 2007 website: http://samo2007.chem.elte.hu/lectures/Crestaux.pdf.
     """
 
-    def __init__(self, p, context=None):
-        super(GFunction, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         # determine output
         y = np.ones(np.array(self.p[list(self.p.keys())[0]]).size)
 
@@ -1388,13 +1389,13 @@ class BinaryDiscontinuousSphere(AbstractModel):
        plot("BinaryDiscontinuousSphere", parameters)
     """
 
-    def __init__(self, p, context=None):
-        super(BinaryDiscontinuousSphere, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         x = np.vstack([self.p[key].squeeze() for key in self.p.keys()])
 
@@ -1447,13 +1448,13 @@ class ContinuousDiscontinuousSphere(AbstractModel):
        plot("ContinuousDiscontinuousSphere", parameters)
     """
 
-    def __init__(self, p, context=None):
-        super(ContinuousDiscontinuousSphere, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         for key in self.p.keys():
             if self.p[key].ndim == 1:
@@ -1471,8 +1472,8 @@ class ContinuousDiscontinuousSphere(AbstractModel):
             p_1[key] = x[mask, i]
             p_2[key] = x[np.logical_not(mask), i]
 
-        model_1 = ManufactureDecay(p_1)
-        model_2 = GenzOscillatory(p_2)
+        model_1 = ManufactureDecay().set_parameters(p_1)
+        model_2 = GenzOscillatory().set_parameters(p_2)
 
         y_1 = model_1.simulate() - 2
         y_2 = model_2.simulate() * 2
@@ -1526,13 +1527,13 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
        plot("DiscontinuousRidgeManufactureDecay", parameters)
     """
 
-    def __init__(self, p, context=None):
-        super(DiscontinuousRidgeManufactureDecay, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         for key in self.p.keys():
             if self.p[key].ndim == 1:
@@ -1550,8 +1551,8 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
             p_1[key] = x[mask, i]
             p_2[key] = x[np.logical_not(mask), i]
 
-        model_1 = ManufactureDecay(p_1)
-        model_2 = Ridge(p_2)
+        model_1 = ManufactureDecay().set_parameters(p_1)
+        model_2 = Ridge().set_parameters(p_2)
 
         y_1 = model_1.simulate()
         y_2 = model_2.simulate()
@@ -1596,13 +1597,13 @@ class OakleyOhagan2004(AbstractModel):
        Society: Series B (Statistical Methodology), 66(3), 751-769.
     """
 
-    def __init__(self, p, context=None):
-        super(OakleyOhagan2004, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         # load coefficients
         folder = os.path.join(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0],
                               "pckg", "data", "oakley_ohagan_2004")
@@ -1656,13 +1657,13 @@ class Welch1992(AbstractModel):
        Screening, predicting, and computer experiments. Technometrics, 34(1), 15-25.
     """
 
-    def __init__(self, p, context=None):
-        super(Welch1992, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         y = (5.0 * self.p["x12"] / (1 + self.p["x1"]) + 5 * (self.p["x4"] - self.p["x20"]) ** 2
              + self.p["x5"] + 40 * self.p["x19"] ** 3 + 5 * self.p["x19"] + 0.05 * self.p["x2"]
              + 0.08 * self.p["x3"] - 0.03 * self.p["x6"] + 0.03 * self.p["x7"]
@@ -1717,13 +1718,13 @@ class WingWeight(AbstractModel):
        Engineering design via surrogate modelling: a practical guide. John Wiley & Sons.
     """
 
-    def __init__(self, p, context=None):
-        super(WingWeight, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         y = 0.036 * self.p["x1"] ** 0.758 * self.p["x2"] ** 0.0035 * \
              (self.p["x3"] / np.cos(self.p["x4"]) ** 2) ** 0.6 * \
              self.p["x5"] ** 0.006 * self.p["x6"] ** 0.04 * \
@@ -1767,17 +1768,14 @@ class SphereModel(AbstractModel):
     .. [1] Rush, S., & Driscoll, D. A. (1969). EEG electrode sensitivity-an application of reciprocity.
        IEEE transactions on biomedical engineering, (1), 15-22.
     """
-
-    def __init__(self, p, context=None):
-        super(SphereModel, self).__init__(p, context)
-
-        # number of of legendre polynomials to use
+    def __init__(self):
         self.nbr_polynomials = 50
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
+
         assert len(self.p["R"]) == 3
         assert self.p["R"][0] < self.p["R"][1] < self.p["R"][2]
         assert len(self.p["anode_pos"]) == 3
@@ -1914,13 +1912,13 @@ class PotentialHomogeneousDipole(AbstractModel):
        IEEE Transactions on Biomedical Engineering, 47(7), 964-966.
     """
 
-    def __init__(self, p, context=None):
-        super(PotentialHomogeneousDipole, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         self.p["detector_positions"] = np.atleast_2d(self.p["detector_positions"])
         assert self.p["detector_positions"].shape[1] == 3
@@ -1987,13 +1985,13 @@ class BfieldOutsideSphere(AbstractModel):
        Physics in Medicine & Biology, 32(1), 11.
     """
 
-    def __init__(self, p, context=None):
-        super(BfieldOutsideSphere, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         pos = np.array(self.p["dipole_pos"], dtype=float) * 1e-3
         moment = np.array(self.p["dipole_moment"], dtype=float)
         detector = np.array(self.p["detector_positions"], dtype=float) * 1e-3
@@ -2055,13 +2053,13 @@ class TMSEfieldSphere(AbstractModel):
        theoretical aspects. Biophysical Journal, 63(1), 129-138.
     """
 
-    def __init__(self, p, context=None):
-        super(TMSEfieldSphere, self).__init__(p, context)
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         if self.p["dipole_pos"].shape != self.p["dipole_moment"].shape:
             raise ValueError('List of dipole position and moments should have the same'
@@ -2124,16 +2122,13 @@ class PotentialDipole3Layers(AbstractModel):
        eq. 2 and 2a
     """
 
-    def __init__(self, p, context=None):
-        super(PotentialDipole3Layers, self).__init__(p, context)
-
-        # Number of of legendre polynomials to use (default = 100)
-        self.nbr_polynomials = 100
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         assert len(self.p["radii"]) == 3
         assert self.p["radii"][0] < self.p["radii"][1] < self.p["radii"][2]

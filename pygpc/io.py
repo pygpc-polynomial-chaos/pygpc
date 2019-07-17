@@ -4,6 +4,7 @@ import numpy as np
 import os
 import pickle
 import h5py
+import copy
 import logging
 
 
@@ -26,8 +27,9 @@ def write_gpc_pkl(obj, fname):
         File containing the GPC object
     """
 
-    with open(fname, 'wb') as output:
-        pickle.dump(obj, output, -1)
+    # write .gpc object
+    with open(fname, 'wb') as f:
+        pickle.dump(obj, f, -1)
 
 
 def read_gpc_pkl(fname):
@@ -48,7 +50,9 @@ def read_gpc_pkl(fname):
     """
 
     with open(fname, 'rb') as f:
-        return pickle.load(f)
+        obj = pickle.load(f)
+
+    return obj
 
 
 def write_data_txt(data, fname):

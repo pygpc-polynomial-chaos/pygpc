@@ -78,7 +78,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pd
         coords = grid_mc.coords
 
         # Evaluate original model at grid points
-        com = Computation(n_cpu=n_cpu)
+        com = Computation(n_cpu=n_cpu, matlab_model=gpc.matlab_model)
 
         y_orig = com.run(model=gpc.problem.model,
                          problem=problem,
@@ -250,7 +250,7 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
 
     # Evaluate original model function on grid
     if data_original is None:
-        com = Computation(n_cpu=n_cpu)
+        com = Computation(n_cpu=n_cpu, matlab_model=gpc.options["matlab_model"])
         y_orig_all = com.run(model=gpc.problem.model,
                              problem=problem,
                              coords=grid,

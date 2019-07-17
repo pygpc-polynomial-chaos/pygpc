@@ -2,6 +2,7 @@
 import numpy as np
 import os
 import h5py
+import copy
 
 from abc import ABCMeta, abstractmethod
 from .misc import display_fancy_bar
@@ -15,9 +16,18 @@ class AbstractModel:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, p, context=None):
+    def __init__(self):
         """
-        Constructor; initialized the SimulationWrapper class with the provided context
+        Constructor; initialized the SimulationWrapper class
+        The model is initialized once. The parameters are set with the set_parameters class.
+        Depending on the model, the user may call here some functions to initialize the model like
+        starting a matlab engine etc...
+        """
+        pass
+
+    def set_parameters(self, p, context=None):
+        """
+        Set model parameters and context of simulations.
 
         Parameters
         ----------
@@ -44,6 +54,9 @@ class AbstractModel:
         if context is not None:
             for key in context.keys():
                 setattr(self, key, context[key])
+
+        return copy.deepcopy(self)
+
 
     def read_previous_results(self, coords):
         """
@@ -236,7 +249,7 @@ class AbstractModel:
         return self.seq_number
 
     @abstractmethod
-    def simulate(self, process_id=None):
+    def simulate(self, process_id=None, matlab_engine=None):
         """
         This abstract method must be implemented by the subclass.
         It should perform the simulation task depending on the input_values provided to the object on instantiation.
@@ -245,6 +258,8 @@ class AbstractModel:
         ----------
         process_id : int
             A unique identifier; no two processes of the pool will run concurrently with the same identifier
+        matlab_engine : Matlab engine object
+            Matlab engine to run Matlab models
         """
         pass
 

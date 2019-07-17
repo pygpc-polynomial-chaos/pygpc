@@ -1,12 +1,14 @@
 import pygpc
+import os
 import numpy as np
 from collections import OrderedDict
-from templates.MyModel import MyModel
+import matlab.engine
+from templates.MyModel_matlab import MyModel_matlab
 
-fn_results = "/foo/gpc"
+fn_results = "/home/kporzig/tmp"
 
 # define model
-model = MyModel()
+model = MyModel_matlab()
 
 # define problem (the parameter names have to be the same as in the model)
 parameters = OrderedDict()
@@ -28,8 +30,9 @@ options["order_max_norm"] = 0.7
 options["n_cpu"] = 0
 options["adaptive_sampling"] = True
 options["gradient_enhanced"] = True
-options["fn_results"] = "/home/kporzig/tmp/Ishigami_gpc"
+options["fn_results"] = os.path.join(fn_results, "MyGPC_matlab")
 options["eps"] = 0.0075
+options["matlab_model"] = True
 
 # define algorithm
 algorithm = pygpc.RegAdaptive(problem=problem, options=options)

@@ -4,15 +4,17 @@ import multiprocessing.pool
 import subprocess
 from pygpc import Worker
 import time
+import copy
 import numpy as np
 import dispy
 import os
 import re
 from collections import OrderedDict
 from .RandomParameter import *
+from .io import iprint
 
 
-def Computation(n_cpu):
+def Computation(n_cpu, matlab_model=False):
     """
     Helper function to initialize the Computation class.
     n_cpu = 0 : use this if the model is capable of to evaluate several parameterizations in parallel
@@ -23,6 +25,8 @@ def Computation(n_cpu):
     ----------
     n_cpu : int
         Number of CPU cores to use
+    matlab_model : boolean, optional, default: False
+        Use a Matlab model
 
     Returns
     -------
@@ -30,9 +34,9 @@ def Computation(n_cpu):
         Object instance of Computation class
     """
     if n_cpu == 0:
-        return ComputationFuncPar(n_cpu)
+        return ComputationFuncPar(n_cpu, matlab_model=matlab_model)
     else:
-        return ComputationPoolMap(n_cpu)
+        return ComputationPoolMap(n_cpu, matlab_model=matlab_model)
 
 
 class ComputationPoolMap:
@@ -40,7 +44,7 @@ class ComputationPoolMap:
     Computation sub-class to run the model using a processing pool for parallelization
     """
 
-    def __init__(self, n_cpu):
+    def __init__(self, n_cpu, matlab_model=False):
         """
         Constructor; Initializes ComputationPoolMap class
         """
@@ -63,6 +67,14 @@ class ComputationPoolMap:
 
         # Necessary to synchronize read/write access to serialized results
         self.global_lock = self.process_manager.RLock()
+
+        self.matlab_engine = None
+
+        # start matlab engine
+        if matlab_model:
+            import matlab.engine
+            iprint("Starting Matlab engine ...", tab=0, verbose=False)
+            self.matlab_engine = matlab.engine.start_matlab()
 
     def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
             print_func_time=False):
@@ -150,7 +162,7 @@ class ComputationPoolMap:
                 parameters[list(problem.parameters_random.keys())[i]] = random_var_instances[i]
 
             # append new worker which will evaluate the model with particular parameters from grid
-            worker_objs.append(model(parameters, context))
+            worker_objs.append(model.set_parameters(p=parameters, context=context))
 
             self.i_grid += 1
             seq_num += 1
@@ -160,11 +172,11 @@ class ComputationPoolMap:
             res_new_list = []
 
             for i in range(len(worker_objs)):
-                res_new_list.append(Worker.run(worker_objs[i]))
+                res_new_list.append(Worker.run(obj=worker_objs[i], matlab_engine=self.matlab_engine))
 
         else:
             # The map-function deals with chunking the data
-            res_new_list = self.process_pool.map(Worker.run, worker_objs)
+            res_new_list = self.process_pool.map(Worker.run, worker_objs, self.matlab_engine)
 
         # Initialize the result array with the correct size and set the elements according to their order
         # (the first element in 'res' might not necessarily be the result of the first Process/i_grid)
@@ -187,7 +199,7 @@ class ComputationFuncPar:
     Computation sub-class to run the model using a the models internal parallelization
     """
 
-    def __init__(self, n_cpu):
+    def __init__(self, n_cpu, matlab_model):
         """
         Constructor; Initializes ComputationPoolMap class
         """
@@ -199,6 +211,14 @@ class ComputationFuncPar:
 
         # Global counter used by all threads to keep track of the progress
         self.global_task_counter = 0
+
+        self.matlab_engine = None
+
+        # start matlab engine
+        if matlab_model:
+            import matlab.engine
+            iprint("Starting Matlab engine ...", tab=0, verbose=True)
+            self.matlab_engine = matlab.engine.start_matlab()
 
     def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
             print_func_time=False):
@@ -283,13 +303,16 @@ class ComputationFuncPar:
                 if type(problem.parameters[key]) == float or problem.parameters[key].size == 1:
                     parameters[key] = problem.parameters[key] * np.ones(n_grid)
                 else:
-                    parameters[key] = np.tile(problem.parameters[key], (n_grid, 1))
+                    if str(type(problem.parameters[key])) == "<class 'matlab.engine.matlabengine.MatlabEngine'>":
+                        parameters[key] = problem.parameters[key]
+                    else:
+                        parameters[key] = np.tile(problem.parameters[key], (n_grid, 1))
 
         # generate worker, which will evaluate the model (here only one for all grid points in coords)
-        worker_objs = model(parameters, context)
+        worker_objs = model.set_parameters(p=parameters, context=context)
 
         # start model evaluations
-        res = Worker.run(worker_objs)
+        res = Worker.run(obj=worker_objs, matlab_engine=self.matlab_engine)
 
         res = np.array(res[1])
 

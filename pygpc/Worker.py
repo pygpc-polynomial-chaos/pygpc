@@ -22,7 +22,7 @@ def init(queue):
     process_id = queue.get()
 
 
-def run(obj):
+def run(obj, matlab_engine=None):
     """
     This is the main worker function of the process.
     Methods of the provided object will be called here.
@@ -35,6 +35,8 @@ def run(obj):
                 b) reading previous results
                 c) writing the calculated result fields
                 d) printing global process
+    matlab_engine : Matlab engine object, optional, default: None
+        Matlab engine object to run Matlab functions
     """
     global process_id
 
@@ -53,7 +55,7 @@ def run(obj):
     # skip if there was no data row for that i_grid or if it was prematurely inserted (= all zero)
     if res is None or not np.any(res):
         start_time = time.time()
-        out = obj.simulate(process_id)
+        out = obj.simulate(process_id, matlab_engine)
 
         # dictionary containing the results, the coords and (optionally) the additional data
         data_dict = dict()

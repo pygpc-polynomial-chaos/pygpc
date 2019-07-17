@@ -93,10 +93,10 @@ class Problem:
         """
 
         # initialize temporal model object
-        m = self.model(p=self.parameters, context=None)
+        m = self.model.set_parameters(p=self.parameters, context=None)
 
         # call model/problem validation
-        parameters_corrected = self.model.validate(m)
+        parameters_corrected = m.validate()
 
         # update parameters and parameters_random in self
         if parameters_corrected is not None:

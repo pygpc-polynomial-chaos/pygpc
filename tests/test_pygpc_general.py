@@ -57,7 +57,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.Peaks
+        model = pygpc.testfunctions.Peaks()
 
         # define problem
         parameters = OrderedDict()
@@ -113,8 +113,13 @@ class TestPygpcMethods(unittest.TestCase):
                                       fn_out=None,
                                       plot=plot)
 
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
+
         print("done!\n")
 
     def test_2_MEStatic_gpc(self):
@@ -129,7 +134,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.SurfaceCoverageSpecies
+        model = pygpc.testfunctions.SurfaceCoverageSpecies()
 
         # define problem
         parameters = OrderedDict()
@@ -200,8 +205,12 @@ class TestPygpcMethods(unittest.TestCase):
                                       fn_out=None,
                                       plot=plot)
 
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
     def test_3_StaticProjection_gpc(self):
@@ -216,7 +225,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.GenzOscillatory
+        model = pygpc.testfunctions.GenzOscillatory()
 
         # define problem
         parameters = OrderedDict()
@@ -276,8 +285,12 @@ class TestPygpcMethods(unittest.TestCase):
                                       fn_out=None,
                                       plot=plot)
 
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
     def test_4_MEStaticProjection_gpc(self):
@@ -292,7 +305,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay
+        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
 
         # define problem
         parameters = OrderedDict()
@@ -358,8 +371,12 @@ class TestPygpcMethods(unittest.TestCase):
                                       fn_out=None,
                                       plot=plot)
 
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
     def test_5_RegAdaptive_gpc(self):
@@ -374,7 +391,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # Model
-        model = pygpc.testfunctions.Ishigami
+        model = pygpc.testfunctions.Ishigami()
 
         # Problem
         parameters = OrderedDict()
@@ -434,8 +451,12 @@ class TestPygpcMethods(unittest.TestCase):
                                       fn_out=None,
                                       plot=plot)
 
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
     def test_6_RegAdaptiveProjection_gpc(self):
@@ -450,7 +471,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.GenzOscillatory
+        model = pygpc.testfunctions.GenzOscillatory()
 
         # define problem
         parameters = OrderedDict()
@@ -513,8 +534,12 @@ class TestPygpcMethods(unittest.TestCase):
                                       fn_out=None,
                                       plot=plot)
 
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
     def test_7_MERegAdaptiveProjection_gpc(self):
@@ -529,7 +554,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define model
-        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay
+        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
 
         # define problem
         parameters = OrderedDict()
@@ -600,8 +625,12 @@ class TestPygpcMethods(unittest.TestCase):
                                       fn_out=None,
                                       plot=plot)
 
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
         print("\t > Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
 

@@ -3,11 +3,11 @@ from .BasisFunction import *
 from .misc import get_multi_indices
 import uuid
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 import warnings
 
 try:
     import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
 except ModuleNotFoundError:
     warnings.warn("If you want to use plot functionality from pygpc, "
                   "please install matplotlib (pip install matplotlib).")

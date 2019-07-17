@@ -129,6 +129,7 @@ class GPC(object):
             options["fn_results"] = None
         self.fn_results = options["fn_results"]
         self.options = options
+        self.matlab_model = options["matlab_model"]
 
     def init_gpc_matrix(self):
         """
@@ -949,7 +950,7 @@ class GPC(object):
                           options={"n_grid": n_samples, "seed": None})
 
         # Evaluate original model at grid points
-        com = Computation(n_cpu=n_cpu)
+        com = Computation(n_cpu=n_cpu, matlab_model=self.matlab_model)
         results = com.run(model=problem.model, problem=problem, coords=grid.coords)
 
         if results.ndim == 1:
