@@ -32,7 +32,7 @@ class Peaks(Test):
         super(Peaks, self).__init__(dim=2)
 
         # define model
-        self.model = testfunctions.Peaks
+        self.model = testfunctions.Peaks()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -55,7 +55,7 @@ class Franke(Test):
         super(Franke, self).__init__(dim=2)
 
         # define model
-        self.model = testfunctions.Franke
+        self.model = testfunctions.Franke()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -77,7 +77,7 @@ class Lim2002(Test):
         super(Lim2002, self).__init__(dim=2)
 
         # define model
-        self.model = testfunctions.Lim2002
+        self.model = testfunctions.Lim2002()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -99,7 +99,7 @@ class Ishigami(Test):
         super(Ishigami, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.Ishigami
+        self.model = testfunctions.Ishigami()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -133,7 +133,7 @@ class ManufactureDecay(Test):
         super(ManufactureDecay, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.ManufactureDecay
+        self.model = testfunctions.ManufactureDecay()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -156,7 +156,7 @@ class GenzContinuous(Test):
         super(GenzContinuous, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.GenzContinuous
+        self.model = testfunctions.GenzContinuous()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -179,7 +179,7 @@ class GenzCornerPeak(Test):
         super(GenzCornerPeak, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.GenzContinuous
+        self.model = testfunctions.GenzContinuous()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -202,7 +202,7 @@ class GenzGaussianPeak(Test):
         super(GenzGaussianPeak, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.GenzGaussianPeak
+        self.model = testfunctions.GenzGaussianPeak()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -225,7 +225,7 @@ class GenzOscillatory(Test):
         super(GenzOscillatory, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.GenzOscillatory
+        self.model = testfunctions.GenzOscillatory()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -248,7 +248,7 @@ class GenzProductPeak(Test):
         super(GenzProductPeak, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.GenzProductPeak
+        self.model = testfunctions.GenzProductPeak()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -271,7 +271,7 @@ class Ridge(Test):
         super(Ridge, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.Ridge
+        self.model = testfunctions.Ridge()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -294,7 +294,7 @@ class SphereFun(Test):
         super(SphereFun, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.SphereFun
+        self.model = testfunctions.SphereFun()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -317,7 +317,7 @@ class GFunction(Test):
         super(GFunction, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.GFunction
+        self.model = testfunctions.GFunction()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -342,7 +342,7 @@ class OakleyOhagan2004(Test):
         super(OakleyOhagan2004, self).__init__(dim=15)
 
         # define model
-        self.model = testfunctions.OakleyOhagan2004
+        self.model = testfunctions.OakleyOhagan2004()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -365,7 +365,7 @@ class Welch1992(Test):
         super(Welch1992, self).__init__(dim=20)
 
         # define model
-        self.model = testfunctions.Welch1992
+        self.model = testfunctions.Welch1992()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -388,7 +388,7 @@ class WingWeight(Test):
         super(WingWeight, self).__init__(dim=10)
 
         # define model
-        self.model = testfunctions.WingWeight
+        self.model = testfunctions.WingWeight()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -422,7 +422,7 @@ class HyperbolicTangent(Test):
         super(HyperbolicTangent, self).__init__(dim=2)
 
         # define model
-        self.model = testfunctions.HyperbolicTangent
+        self.model = testfunctions.HyperbolicTangent()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -444,7 +444,7 @@ class MovingParticleFrictionForce(Test):
         super(MovingParticleFrictionForce, self).__init__(dim=1)
 
         # define model
-        self.model = testfunctions.MovingParticleFrictionForce
+        self.model = testfunctions.MovingParticleFrictionForce()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -458,14 +458,14 @@ class SurfaceCoverageSpecies(Test):
     """
     SurfaceCoverageSpecies test function
     """
-    def __init__(self, dim):
+    def __init__(self, dim=2):
         """
         Initializes SurfaceCoverageSpecies test function
         """
         super(SurfaceCoverageSpecies, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.SurfaceCoverageSpecies
+        self.model = testfunctions.SurfaceCoverageSpecies()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -495,7 +495,7 @@ class GenzDiscontinuous(Test):
         super(GenzDiscontinuous, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.GenzDiscontinuous
+        self.model = testfunctions.GenzDiscontinuous()
 
         # define parameters
         self.parameters = OrderedDict()
