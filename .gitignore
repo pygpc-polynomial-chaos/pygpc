@@ -23,4 +23,4 @@ pygpc.egg-info
 *.pyc
 
 # ignore shared objects (cython extensions)
-*.so
+pygpc/*.so
