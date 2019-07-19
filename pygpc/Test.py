@@ -38,7 +38,7 @@ class Peaks(Test):
         self.parameters = OrderedDict()
         self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
         self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        self.parameters["x3"] = 0.
+        self.parameters["x3"] = np.array([0.])
 
         # define problem
         self.problem = Problem(self.model, self.parameters)
@@ -109,10 +109,10 @@ class Ishigami(Test):
         if dim > 2:
             self.parameters["x3"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-np.pi, np.pi])
         else:
-            self.parameters["x3"] = 0.
+            self.parameters["x3"] = np.array([0.])
 
-        self.parameters["a"] = 7.
-        self.parameters["b"] = 0.1
+        self.parameters["a"] = np.array([7.])
+        self.parameters["b"] = np.array([0.1])
 
         # define problem
         self.problem = Problem(self.model, self.parameters)
@@ -475,7 +475,7 @@ class SurfaceCoverageSpecies(Test):
         if dim > 2:
             self.parameters["alpha"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0.1, 2.])
         else:
-            self.parameters["alpha"] = 1.
+            self.parameters["alpha"] = np.array([1.])
 
             # define problem
         self.problem = Problem(self.model, self.parameters)

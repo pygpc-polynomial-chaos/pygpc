@@ -55,7 +55,8 @@ class AbstractModel:
             for key in context.keys():
                 setattr(self, key, context[key])
 
-        return copy.deepcopy(self)
+        # return copy.deepcopy(self)
+        return self
 
 
     def read_previous_results(self, coords):

@@ -803,6 +803,8 @@ class GPC(object):
         ge_str = ""
 
         if matrix is None:
+            matrix = self.gpc_matrix
+
             if self.options["gradient_enhanced"] is False:
                 matrix = self.gpc_matrix
                 ge_str = ""
@@ -825,7 +827,7 @@ class GPC(object):
                tab=0, verbose=verbose)
 
         # construct results array
-        if gradient_results is not None:
+        if not solver == 'NumInt' and gradient_results is not None:
             # transform gradient of results according to projection
             if self.p_matrix is not None:
                 gradient_results = np.dot(gradient_results,
@@ -886,6 +888,7 @@ class GPC(object):
             else:
                 coeffs = coeffs.transpose()
 
+        # TODO: @Lucas: Please add GPU support
         #########################
         # Numerical Integration #
         #########################

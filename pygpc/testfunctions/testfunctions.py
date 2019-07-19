@@ -1605,8 +1605,7 @@ class OakleyOhagan2004(AbstractModel):
 
     def simulate(self, process_id=None, matlab_engine=None):
         # load coefficients
-        folder = os.path.join(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0],
-                              "pckg", "data", "oakley_ohagan_2004")
+        folder = os.path.split(os.path.dirname(__file__))[0]
         m = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_M.txt"))
         a1 = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_a1.txt"))
         a2 = np.loadtxt(os.path.join(folder, "oakley_ohagan_2004_a2.txt"))

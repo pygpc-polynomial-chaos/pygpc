@@ -3,9 +3,9 @@ import uuid
 import copy
 import numpy as np
 from scipy.fftpack import ifft
-from sklearn.utils.extmath import cartesian
 from .io import iprint
 from .misc import get_multi_indices
+from .misc import get_cartesian_product
 
 
 class Grid(object):
@@ -42,6 +42,22 @@ class Grid(object):
         ----------
         parameters_random : OrderedDict of RandomParameter instances
             OrderedDict containing the RandomParameter instances the grids are generated for
+        _weights: ndarray of float [n_grid x dim]
+            Weights of the grid (all)
+        _coords: ndarray of float [n_grid x dim]
+            Denormalized coordinates xi
+        _coords_norm: ndarray of float [n_grid x dim]
+            Normalized [-1, 1] coordinates xi
+        _domains: ndarray of float [n_grid]
+            Domain IDs of grid points for multi-element gPC
+        _coords_gradient: ndarray of float [n_grid x dim x dim]
+            Denormalized coordinates xi
+        _coords_gradient_norm: ndarray of float [n_grid x dim x dim]
+            Normalized [-1, 1] coordinates xi
+        coords_id: list of UUID objects (version 4) [n_grid]
+            Unique IDs of grid points
+        n_grid: int
+            Total number of nodes in grid.
         """
         self._coords = coords                         # Coordinates of gpc model calculation in the system space
         self._coords_norm = coords_norm               # Coordinates of gpc model calculation in the gpc space [-1,1]
@@ -201,6 +217,7 @@ class Grid(object):
 
         return knots, weights
 
+    # TODO: review this
     @staticmethod
     def get_quadrature_clenshaw_curtis_1d(n):
         """
@@ -697,7 +714,7 @@ class TensorGrid(Grid):
                 knots, weights = self.get_quadrature_hermite_1d(self.n_dim[i_p])
 
             # Clenshaw Curtis
-            elif self.grid_type[i_p] == 'clenshaw_curtis':
+            elif self.grid_type[i_p] in ['clenshaw_curtis' or 'cc']:
                 knots, weights = self.get_quadrature_clenshaw_curtis_1d(self.n_dim[i_p])
 
             # Fejer type 2 (Clenshaw Curtis without boundary nodes)
@@ -717,7 +734,8 @@ class TensorGrid(Grid):
             self.weights_dim_list.append(weights)
 
         # combine coordinates to full tensor grid (all combinations)
-        self.coords_norm = cartesian(self.knots_dim_list)
+        # self.coords_norm = cartesian(self.knots_dim_list)
+        self.coords_norm = get_cartesian_product(self.knots_dim_list)
 
         # rescale normalized coordinates in case of normal distributions and "fejer2" or "cc" grids
         # +- 0.675 * sigma -> 50%
@@ -731,7 +749,7 @@ class TensorGrid(Grid):
                 self.coords_norm[:, i_p] = self.coords_norm[:, i_p] * 1.960
 
         # determine combined weights of Gauss quadrature
-        self.weights = np.prod(cartesian(self.weights_dim_list), axis=1) / (2.0 ** self.dim)
+        self.weights = np.prod(get_cartesian_product(self.weights_dim_list), axis=1) / (2.0 ** self.dim)
 
         # denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -901,7 +919,11 @@ class SparseGrid(Grid):
             if self.dim == 1:
                 l_level = np.array([np.linspace(0, self.level_max, self.level_max + 1)]).transpose()
             else:
-                l_level = get_multi_indices(self.dim, self.level_max)
+                l_level = get_multi_indices(order=[self.level_max] * self.dim,
+                                            order_max=self.level_max,
+                                            interaction_order=self.dim,
+                                            order_max_norm=1.,
+                                            interaction_order_current=None)
 
         # filter out rows exceeding the individual level cap
         for i_p in range(self.dim):
@@ -1018,10 +1040,10 @@ class SparseGrid(Grid):
                 weights.append(np.asarray(dl_w[np.int(l_level[i_l_level, i_p])][i_p], dtype=float))
 
             # tensor product of knots
-            dll_k.append(cartesian(knots))
+            dll_k.append(get_cartesian_product(knots))
 
             # tensor product of weights
-            dll_w.append(np.prod(cartesian(weights), axis=1))
+            dll_w.append(np.prod(get_cartesian_product(weights), axis=1))
 
         dll_w = np.hstack(dll_w)
         dll_k = np.vstack(dll_k)

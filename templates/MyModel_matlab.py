@@ -27,13 +27,16 @@ class MyModel_matlab(AbstractModel):
         If multiple grid-points are evaluated in one function call, return a dict for every grid-point in a list
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, fun_path):
+        self.fun_path = fun_path
 
     def validate(self):
         pass
 
     def simulate(self, process_id, matlab_engine):
+
+        # add path of Matlab function
+        matlab_engine.addpath(self.fun_path, nargout=0)
 
         # convert input parameters to matlab format (only lists can be converted)
         x1 = matlab.double(np.array(self.p["x1"]).tolist())

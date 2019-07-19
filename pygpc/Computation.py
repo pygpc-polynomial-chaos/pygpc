@@ -162,7 +162,8 @@ class ComputationPoolMap:
                 parameters[list(problem.parameters_random.keys())[i]] = random_var_instances[i]
 
             # append new worker which will evaluate the model with particular parameters from grid
-            worker_objs.append(model.set_parameters(p=parameters, context=context))
+            model_ = copy.deepcopy(model)
+            worker_objs.append(model_.set_parameters(p=parameters, context=context))
 
             self.i_grid += 1
             seq_num += 1

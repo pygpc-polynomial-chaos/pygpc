@@ -8,7 +8,7 @@ from templates.MyModel_matlab import MyModel_matlab
 fn_results = "/home/kporzig/tmp"
 
 # define model
-model = MyModel_matlab()
+model = MyModel_matlab(fun_path=os.path.join(pygpc.__path__[0], "testfunctions"))
 
 # define problem (the parameter names have to be the same as in the model)
 parameters = OrderedDict()
