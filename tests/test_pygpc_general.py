@@ -14,7 +14,7 @@ except FileExistsError:
     pass
 
 # test options
-folder = './tmp '    # output folder
+folder = 'tmp'    # output folder
 plot = False         # plot and save output
 gpu = False          # test GPU functionality
 matlab = False       # test Matlab functionality
