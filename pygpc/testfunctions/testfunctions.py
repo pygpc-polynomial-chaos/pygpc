@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import copy
 import warnings
 import numpy as np
 import scipy.special
@@ -92,6 +93,107 @@ def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=
     ax[0].set_title("{} function".format(model.__class__.__name__))
     plt.tight_layout()
     plt.show()
+
+
+class Ackley(AbstractModel):
+    """
+    N-dimensional Ackley function [1][2][3][4].
+    The Ackley function is widely used for testing optimization algorithms.
+    In its two-dimensional form, as shown in the plot above, it is characterized
+    by a nearly flat outer region, and a large hole at the centre.
+    The function poses a risk for optimization algorithms, particularly
+    hillclimbing algorithms, to be trapped in one of its many local minima.
+
+    Recommended variable values are: a = 20, b = 0.2 and c = 0.5*pi.
+
+    .. math::
+       y = -a\\exp{\\left(-b\\sqrt{\\frac{1}{d}\\sum_{i=1}^{N} x_i^2}\\right)} -
+       \\exp{\\left(\\frac{1}{d}\\sum_{i=1}^{N} \\cos{(cx_i)}\\right)} + a + \\exp{(1)}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-32.768, 32.768]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [-32.768, 32.768]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [-32.768, 32.768]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-32.768, 32.768, 100)
+       parameters["x2"] = np.linspace(-32.768, 32.768, 100)
+
+       constants = OrderedDict()
+       constants["a"] = 20.
+       constants["b"] = 0.2
+       constants["c"] = 0.5*np.pi
+
+       plot("Ackley", parameters, constants)
+
+    .. [1] Adorio, E. P., & Diliman, U. P. MVF - Multivariate Test Functions Library in C
+    for Unconstrained Global Optimization (2005). Retrieved June 2013,
+    from http://http://www.geocities.ws/eadorio/mvf.pdf
+
+    .. [2] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
+    Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
+
+    .. [3] Back, T. (1996). Evolutionary algorithms in theory and practice: evolution strategies,
+    evolutionary programming, genetic algorithms. Oxford University Press on Demand
+
+    .. [4] https://www.sfu.ca/~ssurjano/ackley.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+                self.p[key] = self.p[key].flatten()
+
+        # set constants
+        p = copy.deepcopy(self.p)
+        a = self.p["a"]
+        b = self.p["b"]
+        c = self.p["c"]
+        del p["a"], p["b"], p["c"]
+
+        n = len(p.keys())
+
+        # determine sum in exponent
+        s1 = np.zeros(np.array(p[list(p.keys())[0]]).size)
+        s2 = np.zeros(np.array(p[list(p.keys())[0]]).size)
+
+        for i, key in enumerate(p.keys()):
+            s1 += p[key]**2
+            s2 += np.cos(c*p[key])
+
+        s1 = -a * np.exp(-b * np.sqrt(1/n * s1))
+        s2 = np.exp(1/n * s2)
+
+        # determine output
+        y = s1 - s2 + a + np.exp(1)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
 
 
 class Peaks(AbstractModel):
