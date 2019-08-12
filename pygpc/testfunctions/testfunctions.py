@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     pass
 
 
-def plot_testfunction(testfunction_name, parameters, constants=None, output_idx=0):
+def plot_testfunction(testfunction_name: object, parameters: object, constants: object = None, output_idx: object = 0) -> object:
     """
     Plot 1D or 2D testfunctions for documentation.
 
@@ -190,6 +190,345 @@ class Ackley(AbstractModel):
 
         # determine output
         y = s1 - s2 + a + np.exp(1)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class BukinFunctionNumber6(AbstractModel):
+    """
+    2-dimensional Bukin Function N. 6 [1][2].
+    The sixth Bukin Function has many local minima, all of which lie in a ridge.
+
+    .. math::
+       y = 100\\sqrt\\abs(x_2 - 0.01 * x_1^2)\\+ 0.01 * \\abs(x_1 + 10)
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-15, -5]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-3, 3]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-15, -5, 100)
+       parameters["x2"] = np.linspace(-3, 3, 100)
+
+       plot("Bukin Function N. 6", parameters)
+
+    .. [1] Global Optimization Test Functions Index. Retrieved June 2013, from
+    http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
+
+    .. [2] https://www.sfu.ca/~ssurjano/bukin6.html
+
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = 100 * np.sqrt(abs(self.p["x2"] - 0.01 * self.p["x1"] ** 2)) + 0.01 * abs(self.p["x1"] + 10)
+
+        # for x1, key in enumerate(self.p.keys()):
+        #     if type(self.p[key]) is np.ndarray:
+        #         self.p[key] = self.p[key].flatten()
+        # for x2, key in enumerate(self.p.keys()):
+        #     if type(self.p[key]) is np.ndarray:
+        #         self.p[key] = self.p[key]
+
+        # determine sum in exponent
+        # s1 = np.zeros(np.array(p[list(p.keys())[0]]).size)
+        # s2 = np.zeros(np.array(p[list(p.keys())[0]]).size)
+        # x1, x2 = np.meshgrid(self.p["x1"], self.p["x2"])
+        # x1 = np.squeeze(x1)
+        # x2 = np.squeeze(x2)
+
+        # y = np.zeros(len(self.p["x1"]) * len(self.p["x2"]))
+        # for m, (x1_, x2_) in enumerate(zip(x1, x2)):
+        #     y[m] = 100 * np.sqrt(abs(x2_ - 0.01 * x1_ ** 2)) + 0.01 * abs(x1_ + 10)
+        # for n, x2 in enumerate(self.p["x2"]):
+        #     print(f'iteration{n + len(self.p["x2"]) * m}')
+        #     y[n + len(self.p["x2"]) * m] = 100 * np.sqrt(abs(x2 - 0.01 * x1**2)) + 0.01 * abs(x1 + 10)
+
+      # for x1, key in enumerate(p.keys()):
+
+        # s1 += p[key]
+        # s2 += p[key] *0,1
+        #
+        # s1 = 100\\ * frac{1}{2}\\-0.01 * s2**2
+        # s2 = 0.01 * 10
+        #
+        # # determine output
+        # y = s1 + s2
+        #
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class CrossinTrayFunction(AbstractModel):
+    """
+    2-dimensional Cross-in-Tray Function [1][2].
+    The Cross-in-Tray function has multiple global minima.
+    It is shown here with a smaller domain in the second plot,
+    so that its characteristic "cross" will be visible.
+
+    .. math::
+    y = -0.0001 * (abs(sin(x_1) * sin(x_2) * exp * (abs(100-frac {sqrt(x1 **2 + x2 **2)}{pi})) + 1) **0.1
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-10, 10]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-10, 10]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [-10, 10]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-10, 10, 100)
+       parameters["x2"] = np.linspace(-10, 10, 100)
+
+       plot("Cross-in-Tray Function", parameters)
+
+    .. [1]Test functions for optimization. In Wikipedia. Retrieved June 2013, from
+    https://en.wikipedia.org/wiki/Test_functions_for_optimization.
+    .. [2] https://www.sfu.ca/~ssurjano/crossit.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = -0.0001 * (np.abs(np.sin(self.p["x1"]) * np.sin(self.p["x2"]) * np.exp(np.abs(100 - (np.sqrt(self.p["x1"]**2 + self.p["x2"]**2)) / np.pi))) + 1) **0.1
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class BohachevskyFunctions(AbstractModel):
+    """
+    2-dimensional Bohachevsky functions [1][2].
+    The Bohachevsky functions all have the same similar bowl shape. The one shown above is the first function.
+
+    .. math::
+      y = x_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-100, 100]
+    p["xi"]: float or ndarray of float [n_grid]
+        second parameter defined in [-100, 100]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [-100, 100]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-100, 100 , 100)
+       parameters["x2"] = np.linspace(-100, 100 , 100)
+
+       plot("Bohachevsky functions", parameters)
+
+    .. [1] Global Optimization x_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7Test Problems. Retrieved June 2013, from
+    http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+
+    .. [2] https://www.sfu.ca/~ssurjano/perm0db.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = (self.p["x1"] **2) + (self.p["x2"] **2) - 0.3 * np.cos(3 * np.pi * self.p["x1"]) - 0.4 * np.cos(4 * np.pi * self.p["x2"]) + 0.7
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+# class PermFunction0dβ(AbstractModel):
+#     """
+#     d-dimensional Perm function 0, d, β [1][2].
+#
+#     .. math::
+#        y = sum_{i=1} **{d} * (sum_{j=1} **{d} * (j + β) * (x_j **i -frac{1}{j **i})) **2
+#
+#     Parameters
+#     ----------
+#     p["x1"]: float or ndarray of float [n_grid]
+#         First parameter defined in [-d, d]
+#     p["xi"]: float or ndarray of float [n_grid]
+#         i-th parameter defined in [-d, d]
+#     p["xd"]: float or ndarray of float [n_grid]
+#         d-th parameter defined in [-d, d]
+#x_1 **2 + 2x_2 **2 - 0.3 * cosx_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7
+#     Returns
+#     -------
+#     y: ndarray of float [n_grid x 1]
+#         Output
+#
+#     Notes
+#     -----
+#     .. plot::
+#
+#        import numpy as np
+#        from pygpc.testfunctions import plot_testfunction as plot
+#        from collections import OrderedDict
+#
+#        parameters = OrderedDict()
+#        parameters["x1"] = np.linspace(-d, d, 100)
+#        parameters["x2"] = np.linspace(-d, d, 100)
+#
+#        constants = OrderedDict()
+#        constants["j"] = j.
+#        constants["β"] = β
+#        constants["i"] = i
+#        plot("Perm function 0, d, β", parameters, constants)
+#
+#     .. [1] Global Optimization Test Problems. Retrieved June 2013, from
+#     http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+#
+#     .. [2] https://www.sfu.ca/~ssurjano/ackley.html
+#     """
+#
+#     def __init__(self):
+#         pass
+#
+#     def validate(self):
+#         pass
+#
+#     def simulate(self, process_id=None, matlab_engine=None):
+#
+#         # set constants
+#         p = copy.deepcopy(self.p)
+#         j = self.p["j"]
+#         β = self.p["β"]
+#         i = self.p["i"]
+#         del p["j"], p["β"], p["i"]
+#
+#         y = np.sum{i = 1} **{d} * ((np.sum{j = 1} **{d}) * (j + β) * ((self.p["xj"] **i) - {1}/{j **i})) **2
+#
+#         y_out = y[:, np.newaxis]
+#
+#
+#         x1 = np.linspace(-2,2,100)
+#         x2 = np.linspace(-2,2,100)
+#         for i in [1,2]:
+#             for j in [1,2]:
+#                 (j + beta)*()
+#
+#
+#                 pass
+#
+#
+#         return y_out
+
+
+class SixHumpCamelFunction(AbstractModel):
+    """
+    2-dimensional Six - Hump Camel function [1][2].
+    The plot on the left shows the six-hump Camel function on its recommended input domain,
+    and the plot on the right shows only a portion of this domain,
+    to allow for easier viewing of the function's key characteristics.
+    The function has six local minima, two of which are global.
+
+    .. math::
+      y = (4 - 2.1 * x1 **2 + frac{x1 **2}{3}) * x1 **2 + x1 * x2 + (-4 + 4x2 **2) *x2 **2
+
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-3, 3]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-2, 2]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-3, 3 , 100)
+       parameters["x2"] = np.linspace(-2, 2 , 100)
+
+       plot("Six - Hump Camel function", parameters)
+
+    .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005). Retrieved June 2013, from
+    http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
+
+    .. [2] https://www.sfu.ca/~ssurjano/camel6.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = (4 - 2.1*(self.p["x1"] **2) + (self.p["x1"] **4)/3) * (self.p["x1"] **2) + self.p["x1"] * self.p["x2"] + (-4 + 4 * (self.p["x2"] **2)) * (self.p["x2"] **2)
 
         y_out = y[:, np.newaxis]
 
