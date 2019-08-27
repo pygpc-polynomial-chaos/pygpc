@@ -19,6 +19,7 @@ plot = False         # plot and save output
 gpu = False          # test GPU functionality
 matlab = False       # test Matlab functionality
 
+
 class TestPygpcMethods(unittest.TestCase):
 
     # setup method called before every test-case
