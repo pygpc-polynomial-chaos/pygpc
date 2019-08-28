@@ -67,8 +67,8 @@ build_script:
 test_script:
   - python -m pip install matplotlib
   - pytest
-  - python -m cibuildwheel --output-dir wheelhouse
-  - python -m twine upload "wheelhouse\\*.whl" & exit 0
+  # - python -m cibuildwheel --output-dir wheelhouse
+  # - python -m twine upload "wheelhouse\\*.whl" & exit 0
 
 
 artifacts:
