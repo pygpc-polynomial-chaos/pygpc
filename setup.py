@@ -29,36 +29,27 @@ from distutils.extension import Extension
 
 
 # try to import build dependencies, if not installed, pip them
-try:
-    import numpy as np
-except (ImportError, ModuleNotFoundError):
-    command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
-    if 'user' in str(sys.argv):
-        raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
-    subprocess.run(command)
-    import numpy as np
-
-try:
-    from Cython.Build import cythonize
-except (ImportError, ModuleNotFoundError):
-    command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
-    if 'user' in str(sys.argv):
-        raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
-    subprocess.run(command)
-    from Cython.Build import cythonize
-
-
-ext_modules = [
-    Extension(
-        name="pygpc.calc_gpc_matrix_cpu",
-        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
-        include_dirs=[np.get_include()]
-    )
-]
+# try:
+#     import numpy as np
+# except (ImportError, ModuleNotFoundError):
+#     command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
+#     if 'user' in str(sys.argv):
+#         raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
+#     subprocess.run(command)
+#     import numpy as np
+#
+# try:
+#     from Cython.Build import cythonize
+# except (ImportError, ModuleNotFoundError):
+#     command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
+#     if 'user' in str(sys.argv):
+#         raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
+#     subprocess.run(command)
+#     from Cython.Build import cythonize
 
 
 setup(name='pygpc',
-      version='0.2.4.post1',
+      version='0.2.5',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
@@ -71,5 +62,4 @@ setup(name='pygpc',
                         'dispy>=4.9.0',
                         ],
       zip_safe=False,
-      include_package_data=True,
-      ext_modules=cythonize(ext_modules))
+      include_package_data=True)

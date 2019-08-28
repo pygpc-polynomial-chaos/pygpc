@@ -17,7 +17,6 @@ import fastmat as fm
 import scipy.stats
 import ctypes
 from sklearn import linear_model
-from pygpc.calc_gpc_matrix_cpu import calc_gpc_matrix_cpu
 
 
 class GPC(object):
@@ -179,14 +178,21 @@ class GPC(object):
 
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
-                calc_gpc_matrix_cpu(b, x, gpc_matrix, gradient=-1)
+                for i_basis in range(len(b)):
+                    for i_dim in range(self.problem.dim):
+                        gpc_matrix[:, i_basis] *= b[i_basis][i_dim](x[:, i_dim])
+
             else:
                 gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
-                new_gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
                 for i_dim_gradient in range(self.problem.dim):
-                    _gpc_matrix = np.ones((x.shape[0], len(b)))
-                    calc_gpc_matrix_cpu(b, x, _gpc_matrix, gradient=i_dim_gradient)
-                    gpc_matrix[:, :, i_dim_gradient] = _gpc_matrix
+                    for i_basis in range(len(b)):
+                        for i_dim in range(self.problem.dim):
+                            if i_dim == i_dim_gradient:
+                                derivative = True
+                            else:
+                                derivative = False
+                            gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[:, i_dim],
+                                                                                        derivative=derivative)
         else:
             raise NotImplementedError
 
