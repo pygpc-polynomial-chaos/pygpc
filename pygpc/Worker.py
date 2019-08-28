@@ -79,7 +79,7 @@ def run(obj, matlab_engine=None):
                     # make entries of additional data to list of list [n_grid][n_data[o]]
 
                     # make single entries to list
-                    if type(additional_data[o]) is not list:
+                    if type(additional_data[o]) is not list and type(additional_data[o]) is not np.ndarray:
                         additional_data[o] = [[additional_data[o]]]
 
                     if n_sim == 1:

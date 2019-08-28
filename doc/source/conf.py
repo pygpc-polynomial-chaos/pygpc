@@ -106,7 +106,7 @@ html_static_path = ['_static']
 html_theme_options = {
     "edit_link": "true",
     "sidebar": "right",
-    "scipy_org_logo": "true",
+    "pygpc_logo": "true",
     "rootlinks": [],
     "body_max_width": "1000"
 }

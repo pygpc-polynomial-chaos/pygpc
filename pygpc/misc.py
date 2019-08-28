@@ -958,4 +958,42 @@ def increment_basis(order_current, interaction_order_current, interaction_order_
     #         else:
     #             interaction_order = carry[-1]
 
-    return order, interaction_order
+
+def compute_chunks(seq, num):
+    """
+    Splits up a sequence _seq_ into _num_ chunks of similar size.
+    If len(seq) < num, (num-len(seq)) empty chunks are returned so that len(out) == num
+
+    Parameters
+    ----------
+    seq : list of something [N_ele]
+        List containing data or indices, which is divided into chunks
+    num : int
+        Number of chunks to generate
+
+    Returns
+    -------
+    out : list of num sublists
+        num sub-lists of seq with each of a similar number of elements (or empty).
+    """
+    assert len(seq) > 0
+    assert num > 0
+
+    avg = len(seq) / float(num)
+    n_empty = 0  # if len(seg) < num, how many empty lists to append to return?
+
+    if avg < 1:
+        # raise ValueError("seq/num ration too small: " + str(avg))
+        avg = 1
+        n_empty = num - len(seq)
+
+    out = []
+    last = 0.0
+    while last < len(seq):
+        out.append(seq[int(last):int(last + avg)])
+        last += avg
+
+    # append empty lists if len(seq) < num
+    out += [[]] * n_empty
+
+    return out
