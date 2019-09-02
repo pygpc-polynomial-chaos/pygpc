@@ -175,6 +175,9 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             # determine standard deviation
             std = gpc.get_std(samples=res)
 
+        else:
+            raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
+
         # determine Sobol indices
         if calc_sobol:
             sobol, sobol_idx, sobol_idx_bool = gpc.get_sobol_indices(coeffs=coeffs,
@@ -190,9 +193,6 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
         # determine pdfs
         if calc_pdf:
             pdf_x, pdf_y = gpc.get_pdf(coeffs, n_samples=n_samples, output_idx=output_idx)
-
-        else:
-            raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
 
     elif qoi_specific and not multi_element_gpc:
 
