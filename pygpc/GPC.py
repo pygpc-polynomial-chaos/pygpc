@@ -269,67 +269,67 @@ class GPC(object):
         #     matrix = self.gpc_matrix
         #     results_complete = results
 
+        # matrix = self.gpc_matrix
+        # results_complete = results
+
+        # Analytical error estimation in case of overdetermined systems
+        # if matrix.shape[0] > 2*matrix.shape[1]:
+            # determine Psi (Psi^T Psi)^-1 Psi^T
+            # h = np.dot(np.dot(matrix, np.linalg.inv(np.dot(matrix.transpose(), matrix))), matrix.transpose())
+            #
+            # # determine loocv error
+            # err = np.mean(((results_complete - np.dot(matrix, coeffs)) /
+            #                (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
+            #
+            # if error_norm == "relative":
+            #     norm = np.var(results_complete, axis=0, ddof=1)
+            # else:
+            #     norm = 1.
+            #
+            # # normalize
+            # relative_error_loocv = np.mean(err / norm)
+
+        # else:
+        # perform manual loocv without gradient
         matrix = self.gpc_matrix
         results_complete = results
 
-        # Analytical error estimation in case of overdetermined systems
-        if matrix.shape[0] > 2*matrix.shape[1]:
-            # determine Psi (Psi^T Psi)^-1 Psi^T
-            h = np.dot(np.dot(matrix, np.linalg.inv(np.dot(matrix.transpose(), matrix))), matrix.transpose())
+        n_loocv = 25
 
-            # determine loocv error
-            err = np.mean(((results_complete - np.dot(matrix, coeffs)) /
-                           (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
+        # define number of performed cross validations (max 100)
+        n_loocv_points = np.min((results_complete.shape[0], n_loocv))
+
+        # make list of indices, which are randomly sampled
+        loocv_point_idx = random.sample(list(range(results_complete.shape[0])), n_loocv_points)
+
+        start = time.time()
+        relative_error = np.zeros(n_loocv_points)
+        for i in range(n_loocv_points):
+            # get mask of eliminated row
+            mask = np.arange(results_complete.shape[0]) != loocv_point_idx[i]
+
+            # determine gpc coefficients (this takes a lot of time for large problems)
+            coeffs_loo = self.solve(results=results_complete[mask, :],
+                                    solver=self.options["solver"],
+                                    matrix=matrix[mask, :],
+                                    settings=self.options["settings"],
+                                    verbose=False)
+
+            sim_results_temp = results_complete[loocv_point_idx[i], :]
 
             if error_norm == "relative":
-                norm = np.var(results_complete, axis=0, ddof=1)
+                norm = scipy.linalg.norm(sim_results_temp)
             else:
                 norm = 1.
 
-            # normalize
-            relative_error_loocv = np.mean(err / norm)
+            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx[i], :],
+                                                                            coeffs_loo))\
+                                / norm
+            display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
 
-        else:
-            # perform manual loocv without gradient
-            matrix = self.gpc_matrix
-            results_complete = results
-
-            n_loocv = 25
-
-            # define number of performed cross validations (max 100)
-            n_loocv_points = np.min((results_complete.shape[0], n_loocv))
-
-            # make list of indices, which are randomly sampled
-            loocv_point_idx = random.sample(list(range(results_complete.shape[0])), n_loocv_points)
-
-            start = time.time()
-            relative_error = np.zeros(n_loocv_points)
-            for i in range(n_loocv_points):
-                # get mask of eliminated row
-                mask = np.arange(results_complete.shape[0]) != loocv_point_idx[i]
-
-                # determine gpc coefficients (this takes a lot of time for large problems)
-                coeffs_loo = self.solve(results=results_complete[mask, :],
-                                        solver=self.options["solver"],
-                                        matrix=matrix[mask, :],
-                                        settings=self.options["settings"],
-                                        verbose=False)
-
-                sim_results_temp = results_complete[loocv_point_idx[i], :]
-
-                if error_norm == "relative":
-                    norm = scipy.linalg.norm(sim_results_temp)
-                else:
-                    norm = 1.
-
-                relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx[i], :],
-                                                                                coeffs_loo))\
-                                    / norm
-                display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
-
-            # store result in relative_error_loocv
-            relative_error_loocv = np.mean(relative_error)
-            iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
+        # store result in relative_error_loocv
+        relative_error_loocv = np.mean(relative_error)
+        iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
 
         return relative_error_loocv
 

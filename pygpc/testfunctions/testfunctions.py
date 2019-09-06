@@ -882,7 +882,7 @@ class SurfaceCoverageSpecies(AbstractModel):
                        args=(self.p["alpha"].flatten()[i], self.p["beta"].flatten()[i], gamma,))
             y_out[i, 0] = np.array([y[-1]])
 
-        y_out = np.hstack((y_out, 2.*y_out))
+        # y_out = np.hstack((y_out, 2.*y_out))
 
         return y_out
 
@@ -1984,6 +1984,7 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
 
         y = np.zeros(x.shape[0])
         mask = (np.sum(x, axis=1) <= 1.).flatten()
+        mask = np.logical_and(mask, np.linalg.norm(x-0.85, axis=1) > .8)
 
         p_1 = OrderedDict()
         p_2 = OrderedDict()

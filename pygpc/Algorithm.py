@@ -1622,6 +1622,7 @@ class RegAdaptive(Algorithm):
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
 
         # Initialize Reg gPC object
+        print("Initializing gPC object...")
         gpc = Reg(problem=self.problem,
                   order=self.options["order_start"] * np.ones(self.problem.dim),
                   order_max=self.options["order_start"],
@@ -1651,6 +1652,7 @@ class RegAdaptive(Algorithm):
         gpc.options = copy.deepcopy(self.options)
 
         # Initialize gpc matrix
+        print("Initializing gPC matrix...")
         gpc.init_gpc_matrix()
         gpc.n_grid.pop(0)
         gpc.n_basis.pop(0)
