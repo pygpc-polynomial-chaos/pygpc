@@ -20,7 +20,7 @@ except ModuleNotFoundError:
     pass
 
 
-def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pdf=True, fn_out=None, plot=True):
+def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pdf=[51, 5], fn_out=None, plot=True):
     """
     Compares gPC approximation with original model function. Evaluates both at "n_samples" sampling points and
     evaluates the root mean square deviation. It also computes the pdf at the output quantity with output_idx
@@ -112,9 +112,10 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pd
     pdf_y_orig, tmp = np.histogram(y_orig.flatten(), bins=100, density=True)
     pdf_x_orig = (tmp[1:] + tmp[0:-1]) / 2.
 
-    if smooth_pdf:
-        pdf_y_gpc = savgol_filter(pdf_y_gpc, 51, 5)
-        pdf_y_orig = savgol_filter(pdf_y_orig, 51, 5)
+    if smooth_pdf is not None:
+        if smooth_pdf is not False:
+            pdf_y_gpc = savgol_filter(pdf_y_gpc, smooth_pdf[0], smooth_pdf[1])
+            pdf_y_orig = savgol_filter(pdf_y_orig, smooth_pdf[0], smooth_pdf[1])
 
     # plot pdfs
     if plot:
