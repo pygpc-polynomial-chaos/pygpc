@@ -231,7 +231,8 @@ class Algorithm(object):
                                                i_iter=None,
                                                i_subiter=None,
                                                fn_results=None,
-                                               print_func_time=self.options["print_func_time"])
+                                               print_func_time=self.options["print_func_time"],
+                                               increment_grid=False)
 
                 delta = np.repeat(np.linalg.norm(
                     ten2mat(grid.coords_gradient_norm[n_gradient_results:, :, :]) - \
@@ -319,7 +320,6 @@ class Static(Algorithm):
 
         if "interaction_order" not in self.options.keys():
             self.options["interaction_order"] = self.problem.dim
-
 
     def run(self):
         """
@@ -462,6 +462,9 @@ class Static(Algorithm):
                                      maxshape=None, dtype="float64")
                     f.create_dataset("validation/grid/coords_norm", data=gpc.validation.grid.coords_norm,
                                      maxshape=None, dtype="float64")
+
+            # save gpc matrix in .hdf5 file
+            gpc.save_gpc_matrix_hdf5()
 
         com.close()
 
@@ -726,12 +729,12 @@ class MEStatic(Algorithm):
                                          data=megpc[i_qoi].gpc[i_gpc].gpc_matrix,
                                          maxshape=None, dtype="float64")
 
-                    if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
-                        if self.options["gradient_enhanced"]:
-                            for i_gpc in range(megpc[i_qoi].n_gpc):
-                                f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(i_gpc),
-                                                 data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
-                                                 maxshape=None, dtype="float64")
+                        if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
+                            if self.options["gradient_enhanced"]:
+                                for i_gpc in range(megpc[i_qoi].n_gpc):
+                                    f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(i_gpc),
+                                                     data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
+                                                     maxshape=None, dtype="float64")
 
         if self.options["fn_results"]:
 
@@ -1486,12 +1489,12 @@ class MEStaticProjection(Algorithm):
                                          data=megpc[i_qoi].gpc[i_gpc].gpc_matrix,
                                          maxshape=None, dtype="float64")
 
-                    if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
-                        if self.options["gradient_enhanced"]:
-                            for i_gpc in range(megpc[i_qoi].n_gpc):
-                                f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(i_gpc),
-                                                 data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
-                                                 maxshape=None, dtype="float64")
+                        if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
+                            if self.options["gradient_enhanced"]:
+                                for i_gpc in range(megpc[i_qoi].n_gpc):
+                                    f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(i_gpc),
+                                                     data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
+                                                     maxshape=None, dtype="float64")
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("p_matrix" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -1823,8 +1826,22 @@ class RegAdaptive(Algorithm):
                                              dtype="float64",
                                              data=grad_res_2D)
 
-                # save gpc matrix in .hdf5 file
-                gpc.save_gpc_matrix_hdf5()
+                    try:
+                        del f["gpc_matrix"]
+                    except KeyError:
+                        pass
+                    f.create_dataset("gpc_matrix",
+                                     data=gpc.gpc_matrix,
+                                     maxshape=None, dtype="float64")
+
+                    if gpc.gpc_matrix_gradient is not None:
+                        try:
+                            del f["gpc_matrix_gradient"]
+                        except KeyError:
+                            pass
+                        f.create_dataset("gpc_matrix_gradient",
+                                         data=gpc.gpc_matrix_gradient,
+                                         maxshape=None, dtype="float64")
 
         # determine gpc coefficients
         coeffs = gpc.solve(results=res,
@@ -1841,6 +1858,23 @@ class RegAdaptive(Algorithm):
                 if "coeffs" in f.keys():
                     del f['coeffs']
                 f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+
+                try:
+                    del f["gpc_matrix"]
+                except KeyError:
+                    pass
+                f.create_dataset("gpc_matrix",
+                                 data=gpc.gpc_matrix,
+                                 maxshape=None, dtype="float64")
+
+                if gpc.gpc_matrix_gradient is not None:
+                    try:
+                        del f["gpc_matrix_gradient"]
+                    except KeyError:
+                        pass
+                    f.create_dataset("gpc_matrix_gradient",
+                                     data=gpc.gpc_matrix_gradient,
+                                     maxshape=None, dtype="float64")
 
                 # misc
                 f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_gpc_pkl)[1]]).astype("|S"))
@@ -2786,6 +2820,27 @@ class MERegAdaptiveProjection(Algorithm):
                                          maxshape=None, dtype="float64")
                         f.create_dataset("validation/grid/coords_norm", data=megpc[0].validation.grid.coords_norm,
                                          maxshape=None, dtype="float64")
+
+                    # save gpc matrix
+                    for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
+                        try:
+                            del f["gpc_matrix" + hdf5_subfolder + "/dom_" + str(d)]
+                        except KeyError:
+                            pass
+                        f.create_dataset("gpc_matrix" + hdf5_subfolder + "/dom_" + str(d),
+                                         data=megpc[i_qoi].gpc[d].gpc_matrix,
+                                         maxshape=None, dtype="float64")
+
+                        # save gradient gpc matrix
+                        if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
+                            try:
+                                del f["gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(d)]
+                            except KeyError:
+                                pass
+                            if self.options["gradient_enhanced"]:
+                                f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(d),
+                                                 data=megpc[i_qoi].gpc[d].gpc_matrix_gradient,
+                                                 maxshape=None, dtype="float64")
 
                     try:
                         del f["coeffs"]

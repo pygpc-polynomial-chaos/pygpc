@@ -2,6 +2,7 @@
 import numpy as np
 import os
 import h5py
+import copy
 
 from abc import ABCMeta, abstractmethod
 from .misc import display_fancy_bar
@@ -23,6 +24,13 @@ class AbstractModel:
         starting a matlab engine etc...
         """
         pass
+
+    def __copy__(self):
+        return copy.deepcopy(self)
+
+    def __clean__(self):
+        if self.__dict__:
+            del self.__dict__
 
     def set_parameters(self, p, context=None):
         """

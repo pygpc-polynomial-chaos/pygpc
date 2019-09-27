@@ -41,7 +41,7 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pd
     smooth_pdf : bool, optional, default: True
         Smooth probability density functions using a Savgol filter
     fn_out : str or None
-        Filename of validation results and pdf plot comparing original vs gPC model
+        Filename of validation results and plot comparing original vs gPC model (w/o file extension)
     plot : boolean, optional, default: True
         Plots the pdfs of the original model function and the gPC approximation
 
@@ -54,6 +54,10 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pd
     <file> : .pdf file
         Plot showing the pdfs of the original and the gpc approximation
     """
+
+    if smooth_pdf is True:
+        smooth_pdf = [51, 5]
+
     if type(gpc) is list:
         gpc = gpc[output_idx]
         coeffs = coeffs[output_idx]

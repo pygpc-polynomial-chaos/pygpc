@@ -413,13 +413,15 @@ def plot_2d_grid(coords, weights=None, fn_plot=None):
 
     if weights is not None:
         weights = np.abs(weights)
+    else:
+        weights = np.ones(coords.shape[0])
 
     mpl.rc('text', usetex=True)
     mpl.rc('xtick', labelsize=12)
     mpl.rc('ytick', labelsize=12)
 
     fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
-    ax1.scatter(coords[:, 0], coords[:, 1], s=weights)
+    ax1.scatter(coords[:, 0], coords[:, 1], s=weights/np.max(weights)*20)
     ax1.grid()
     ax1.set_xlabel('$x_1$', fontsize=16)
     ax1.set_ylabel('$x_2$', fontsize=16)

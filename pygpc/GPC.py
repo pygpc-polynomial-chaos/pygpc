@@ -425,14 +425,14 @@ class GPC(object):
 
         # handle (N,) arrays
         if len(coeffs.shape) == 1:
-            n_out = 1
-        else:
-            n_out = coeffs.shape[1]
+            coeffs = coeffs[:, np.newaxis]
 
         # if output index array is not provided, determine pdfs of all outputs
         if output_idx is None:
-            output_idx = np.linspace(0, n_out - 1, n_out)
+            output_idx = np.linspace(0, coeffs.shape[1])
             output_idx = output_idx[np.newaxis, :]
+
+        n_out = len(output_idx)
 
         # sample gPC expansion
         samples_in, samples_out = self.get_samples(n_samples=n_samples, coeffs=coeffs, output_idx=output_idx)
