@@ -416,7 +416,7 @@ def plot_2d_grid(coords, weights=None, fn_plot=None):
     else:
         weights = np.ones(coords.shape[0])
 
-    mpl.rc('text', usetex=True)
+    # mpl.rc('text', usetex=True)
     mpl.rc('xtick', labelsize=12)
     mpl.rc('ytick', labelsize=12)
 
@@ -427,6 +427,7 @@ def plot_2d_grid(coords, weights=None, fn_plot=None):
     ax1.set_ylabel('$x_2$', fontsize=16)
 
     fn = os.path.splitext(fn_plot)[0]
+    plt.tight_layout()
     plt.savefig(fn, facecolor='#ffffff', format="pdf")
 
 

@@ -103,6 +103,16 @@ class TestPygpcMethods(unittest.TestCase):
     #                                  algorithm="standard",
     #                                  n_samples=1e3)
     #
+    #     if plot:
+    #         # Validate gPC vs original model function (2D-surface)
+    #         pygpc.validate_gpc_plot(gpc=gpc,
+    #                                 coeffs=coeffs,
+    #                                 random_vars=list(problem.parameters_random.keys()),
+    #                                 n_grid=[51, 51],
+    #                                 output_idx=0,
+    #                                 fn_out=options["fn_results"] + "_val",
+    #                                 n_cpu=options["n_cpu"])
+    #
     #     # Validate gPC vs original model function (Monte Carlo)
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
     #                                   coeffs=coeffs,
@@ -179,6 +189,16 @@ class TestPygpcMethods(unittest.TestCase):
     #                                  calc_pdf=True,
     #                                  algorithm="standard",
     #                                  n_samples=1e3)
+    #
+    #     if plot:
+    #         # Validate gPC vs original model function (2D-surface)
+    #         pygpc.validate_gpc_plot(gpc=gpc,
+    #                                 coeffs=coeffs,
+    #                                 random_vars=list(problem.parameters_random.keys()),
+    #                                 n_grid=[51, 51],
+    #                                 output_idx=0,
+    #                                 fn_out=options["fn_results"] + "_val",
+    #                                 n_cpu=options["n_cpu"])
     #
     #     # Validate gPC vs original model function (Monte Carlo)
     #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
@@ -367,132 +387,52 @@ class TestPygpcMethods(unittest.TestCase):
     #     print("> Checking file consistency...")
     #     self.expect_true(files_consistent, error_msg)
     #     print("done!\n")
-    #
-    # def test_4_MEStaticProjection_gpc(self):
-    #     """
-    #     Algorithm: MEStaticProjection
-    #     Method: Regression
-    #     Solver: Moore-Penrose
-    #     Grid: RandomGrid
-    #     """
-    #     global folder, plot
-    #     test_name = 'pygpc_test_4_MEStaticProjection_gpc'
-    #     print(test_name)
-    #
-    #     # define model
-    #     model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
-    #
-    #     # define problem
-    #     parameters = OrderedDict()
-    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-    #     problem = pygpc.Problem(model, parameters)
-    #
-    #     # gPC options
-    #     options = dict()
-    #     options["method"] = "reg"
-    #     options["solver"] = "Moore-Penrose"
-    #     options["settings"] = None
-    #     options["order"] = [3, 3]
-    #     options["order_max"] = 3
-    #     options["interaction_order"] = 2
-    #     options["matrix_ratio"] = 2
-    #     options["n_cpu"] = 0
-    #     options["gradient_enhanced"] = True
-    #     options["gradient_calculation"] = "standard_forward"
-    #     options["n_grid_gradient"] = 200
-    #     options["error_type"] = "nrmsd"
-    #     options["n_samples_validation"] = 1e4
-    #     options["qoi"] = "all"
-    #     options["classifier"] = "learning"
-    #     options["classifier_options"] = {"clusterer": "KMeans",
-    #                                      "n_clusters": 2,
-    #                                      "classifier": "MLPClassifier",
-    #                                      "classifier_solver": "lbfgs"}
-    #     options["fn_results"] = os.path.join(folder, test_name)
-    #
-    #     # define algorithm
-    #     algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
-    #
-    #     # run gPC algorithm
-    #     gpc, coeffs, results = algorithm.run()
-    #
-    #     if plot:
-    #         # Validate gPC vs original model function (2D-surface)
-    #         pygpc.validate_gpc_plot(gpc=gpc,
-    #                                 coeffs=coeffs,
-    #                                 random_vars=list(problem.parameters_random.keys()),
-    #                                 n_grid=[51, 51],
-    #                                 output_idx=0,
-    #                                 fn_out=options["fn_results"] + "_val",
-    #                                 n_cpu=options["n_cpu"])
-    #
-    #     # Post-process gPC
-    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
-    #                                  output_idx=None,
-    #                                  calc_sobol=True,
-    #                                  calc_global_sens=True,
-    #                                  calc_pdf=True,
-    #                                  algorithm="sampling",
-    #                                  n_samples=1e3)
-    #
-    #     # Validate gPC vs original model function (Monte Carlo)
-    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-    #                                   coeffs=coeffs,
-    #                                   n_samples=int(5e4),
-    #                                   output_idx=0,
-    #                                   n_cpu=options["n_cpu"],
-    #                                   smooth_pdf=True,
-    #                                   fn_out=options["fn_results"] + "_pdf",
-    #                                   plot=plot)
-    #
-    #     files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
-    #
-    #     print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
-    #     # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
-    #     print("> Checking file consistency...")
-    #     self.expect_true(files_consistent, error_msg)
-    #     print("done!\n")
 
-    def test_5_RegAdaptive_gpc(self):
+    def test_4_MEStaticProjection_gpc(self):
         """
-        Algorithm: RegAdaptive
+        Algorithm: MEStaticProjection
         Method: Regression
         Solver: Moore-Penrose
         Grid: RandomGrid
         """
         global folder, plot
-        test_name = 'pygpc_test_5_RegAdaptive_gpc'
+        test_name = 'pygpc_test_4_MEStaticProjection_gpc'
         print(test_name)
 
-        # Model
-        model = pygpc.testfunctions.Ishigami()
+        # define model
+        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
 
-        # Problem
+        # define problem
         parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
-        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
-        parameters["x3"] = 0.
-        parameters["a"] = 7.
-        parameters["b"] = 0.1
-
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
         problem = pygpc.Problem(model, parameters)
 
         # gPC options
         options = dict()
-        options["order_start"] = 5
-        options["order_end"] = 20
-        options["solver"] = "LarsLasso"
+        options["method"] = "reg"
+        options["solver"] = "Moore-Penrose"
+        options["settings"] = None
+        options["order"] = [3, 3]
+        options["order_max"] = 3
         options["interaction_order"] = 2
-        options["order_max_norm"] = 0.7
+        options["matrix_ratio"] = 2
         options["n_cpu"] = 0
-        options["adaptive_sampling"] = True
         options["gradient_enhanced"] = True
+        options["gradient_calculation"] = "standard_forward"
+        options["n_grid_gradient"] = 200
+        options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e4
+        options["qoi"] = "all"
+        options["classifier"] = "learning"
+        options["classifier_options"] = {"clusterer": "KMeans",
+                                         "n_clusters": 2,
+                                         "classifier": "MLPClassifier",
+                                         "classifier_solver": "lbfgs"}
         options["fn_results"] = os.path.join(folder, test_name)
-        options["eps"] = 0.0075
 
         # define algorithm
-        algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+        algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
 
         # run gPC algorithm
         gpc, coeffs, results = algorithm.run()
@@ -519,7 +459,7 @@ class TestPygpcMethods(unittest.TestCase):
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
                                       coeffs=coeffs,
-                                      n_samples=int(1e4),
+                                      n_samples=int(5e4),
                                       output_idx=0,
                                       n_cpu=options["n_cpu"],
                                       smooth_pdf=True,
@@ -534,6 +474,86 @@ class TestPygpcMethods(unittest.TestCase):
         self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
+    # def test_5_RegAdaptive_gpc(self):
+    #     """
+    #     Algorithm: RegAdaptive
+    #     Method: Regression
+    #     Solver: Moore-Penrose
+    #     Grid: RandomGrid
+    #     """
+    #     global folder, plot
+    #     test_name = 'pygpc_test_5_RegAdaptive_gpc'
+    #     print(test_name)
+    #
+    #     # Model
+    #     model = pygpc.testfunctions.Ishigami()
+    #
+    #     # Problem
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+    #     parameters["x3"] = 0.
+    #     parameters["a"] = 7.
+    #     parameters["b"] = 0.1
+    #
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["order_start"] = 5
+    #     options["order_end"] = 20
+    #     options["solver"] = "LarsLasso"
+    #     options["interaction_order"] = 2
+    #     options["order_max_norm"] = 0.7
+    #     options["n_cpu"] = 2
+    #     options["adaptive_sampling"] = True
+    #     options["gradient_enhanced"] = True
+    #     options["fn_results"] = os.path.join(folder, test_name)
+    #     options["eps"] = 0.0075
+    #
+    #     # define algorithm
+    #     algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+    #
+    #     # run gPC algorithm
+    #     gpc, coeffs, results = algorithm.run()
+    #
+    #     if plot:
+    #         # Validate gPC vs original model function (2D-surface)
+    #         pygpc.validate_gpc_plot(gpc=gpc,
+    #                                 coeffs=coeffs,
+    #                                 random_vars=list(problem.parameters_random.keys()),
+    #                                 n_grid=[51, 51],
+    #                                 output_idx=0,
+    #                                 fn_out=options["fn_results"] + "_val",
+    #                                 n_cpu=options["n_cpu"])
+    #
+    #     # Post-process gPC
+    #     pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+    #                                  output_idx=None,
+    #                                  calc_sobol=True,
+    #                                  calc_global_sens=True,
+    #                                  calc_pdf=True,
+    #                                  algorithm="sampling",
+    #                                  n_samples=1e3)
+    #
+    #     # Validate gPC vs original model function (Monte Carlo)
+    #     nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+    #                                   coeffs=coeffs,
+    #                                   n_samples=int(1e4),
+    #                                   output_idx=0,
+    #                                   n_cpu=options["n_cpu"],
+    #                                   smooth_pdf=True,
+    #                                   fn_out=options["fn_results"] + "_pdf",
+    #                                   plot=plot)
+    #
+    #     files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+    #
+    #     print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+    #     # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+    #     print("> Checking file consistency...")
+    #     self.expect_true(files_consistent, error_msg)
+    #     print("done!\n")
+    #
     # def test_6_RegAdaptiveProjection_gpc(self):
     #     """
     #     Algorithm: RegAdaptiveProjection
