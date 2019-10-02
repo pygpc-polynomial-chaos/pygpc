@@ -222,6 +222,9 @@ class SGPC(GPC):
         # iprint("Determining Sobol indices...", tab=0)
 
         if algorithm == "standard":
+            if self.p_matrix is not None:
+                raise NotImplementedError("Please use algorithm='sampling' in case of reduced gPC (projection).")
+
             # handle (N,) arrays
             if len(coeffs.shape) == 1:
                 n_out = 1
@@ -231,7 +234,7 @@ class SGPC(GPC):
             n_coeffs = coeffs.shape[0]
 
             if n_coeffs == 1:
-                raise Exception('Number of coefficients is 1 ... no sobol indices to calculate ...')
+                raise Exception('Number of coefficients is 1 ... no Sobol indices to calculate ...')
 
             # Generate boolean matrix of all basis functions where order > 0 = True
             # size: [n_basis x dim]
@@ -284,8 +287,18 @@ class SGPC(GPC):
             else:
                 dim = self.problem_original.dim
 
-            # generate sobol sequence (original parameter space, scaled to [-1, 1])
-            coords_norm = 2 * saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True) - 1
+            if self.problem_original is None:
+                problem_original = self.problem
+            else:
+                problem_original = self.problem_original
+
+            # generate uniform distributed sobol sequence (parameter space [0, 1])
+            coords_norm_01 = saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True)
+            coords_norm = np.zeros(coords_norm_01.shape)
+
+            # transform to respective input pdfs using inverse cdfs
+            for i_key, key in enumerate(problem_original.parameters_random.keys()):
+                coords_norm[:, i_key] = problem_original.parameters_random[key].icdf(coords_norm_01[:, i_key])
 
             # run model evaluations
             res = self.get_approximation(coeffs=coeffs, x=coords_norm)
