@@ -728,7 +728,7 @@ class MEGPC(object):
         return std
 
     # noinspection PyTypeChecker
-    def get_sobol_indices(self, coeffs, algorithm="sampling", n_samples=1e4):
+    def get_sobol_indices(self, coeffs, n_samples=1e4):
         """
         Calculate the available sobol indices from the gPC coefficients by sampling up to second order.
 
@@ -770,8 +770,15 @@ class MEGPC(object):
         # iprint("Determining Sobol indices...", tab=0)
         dim = self.problem.dim
 
-        # generate sobol sequence (original parameter space, scaled to [-1, 1])
-        coords_norm = 2 * saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True) - 1
+        problem_original = self.problem
+
+        # generate uniform distributed sobol sequence (parameter space [0, 1])
+        coords_norm_01 = saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True)
+        coords_norm = np.zeros(coords_norm_01.shape)
+
+        # transform to respective input pdfs using inverse cdfs
+        for i_key, key in enumerate(problem_original.parameters_random.keys()):
+            coords_norm[:, i_key] = problem_original.parameters_random[key].icdf(coords_norm_01[:, i_key])
 
         # run model evaluations
         res = self.get_approximation(coeffs=coeffs, x=coords_norm)
