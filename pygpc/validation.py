@@ -296,74 +296,76 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     matplotlib.rc('ytick', labelsize=13)
     fs = 14
 
-    # One random variable
-    if len(random_vars) == 1:
-        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, squeeze=True, figsize=(12, 5))
+    for i in range(len(output_idx)):
+        # One random variable
+        if len(random_vars) == 1:
+            fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, squeeze=True, figsize=(12, 5))
 
-        ax1.plot(coords, y_orig)
-        ax1.plot(coords, y_gpc)
-        ax1.legend([r"original", r"gPC"], fontsize=fs)
-        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
-        ax1.set_ylabel(r"y(%s)" % random_vars[0], fontsize=fs)
-        ax1.grid()
+            ax1.plot(coords, y_orig[:, i])
+            ax1.plot(coords, y_gpc[:, i])
+            ax1.legend([r"original", r"gPC"], fontsize=fs)
+            ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+            ax1.set_ylabel(r"y(%s)" % random_vars[0], fontsize=fs)
+            ax1.grid()
 
-        ax2.plot(coords, y_dif, '--k')
-        ax2.legend([r"difference"], fontsize=fs)
-        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
-        ax2.grid()
+            ax2.plot(coords, y_dif[:, i], '--k')
+            ax2.legend([r"difference"], fontsize=fs)
+            ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+            ax2.grid()
 
-    # Two random variables
-    elif len(random_vars) == 2:
-        fig, (ax1, ax2, ax3) = matplotlib.pyplot.subplots(nrows=1, ncols=3,
-                                                          sharex='all', sharey='all',
-                                                          squeeze=True, figsize=(16, 5))
+        # Two random variables
+        elif len(random_vars) == 2:
+            fig, (ax1, ax2, ax3) = matplotlib.pyplot.subplots(nrows=1, ncols=3,
+                                                              sharex='all', sharey='all',
+                                                              squeeze=True, figsize=(16, 5))
 
-        x1_2d, x2_2d = np.meshgrid(x[0], x[1])
+            x1_2d, x2_2d = np.meshgrid(x[0], x[1])
 
-        min_all = np.min(np.array(np.min(y_orig), np.min(y_gpc)))
-        max_all = np.max(np.array(np.max(y_orig), np.max(y_gpc)))
+            min_all = np.min(np.array(np.min(y_orig[:, i]), np.min(y_gpc[:, i])))
+            max_all = np.max(np.array(np.max(y_orig[:, i]), np.max(y_gpc[:, i])))
 
-        # Original model function
-        im1 = ax1.pcolor(x1_2d, x2_2d, np.reshape(y_orig, (x[1].size, x[0].size), order='f'),
-                         cmap="jet",
-                         vmin=min_all,
-                         vmax=max_all)
-        ax1.set_title(r'Original model', fontsize=fs)
-        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
-        ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
+            # Original model function
+            im1 = ax1.pcolor(x1_2d, x2_2d, np.reshape(y_orig[:, i], (x[1].size, x[0].size), order='f'),
+                             cmap="jet",
+                             vmin=min_all,
+                             vmax=max_all)
+            ax1.set_title(r'Original model', fontsize=fs)
+            ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+            ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
 
-        # gPC approximation
-        # Original model function
-        im2 = ax2.pcolor(x1_2d, x2_2d, np.reshape(y_gpc, (x[1].size, x[0].size), order='f'),
-                         cmap="jet",
-                         vmin=min_all,
-                         vmax=max_all)
-        ax2.set_title(r'gPC approximation', fontsize=fs)
-        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
-        ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
+            # gPC approximation
+            # Original model function
+            im2 = ax2.pcolor(x1_2d, x2_2d, np.reshape(y_gpc[:, i], (x[1].size, x[0].size), order='f'),
+                             cmap="jet",
+                             vmin=min_all,
+                             vmax=max_all)
+            ax2.set_title(r'gPC approximation', fontsize=fs)
+            ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+            ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
 
-        # Difference
-        min_dif = np.min(y_dif)
-        max_dif = np.max(y_dif)
-        b2rcw_cmap = make_cmap(b2rcw(min_dif, max_dif))
+            # Difference
+            min_dif = np.min(y_dif[:, i])
+            max_dif = np.max(y_dif[:, i])
 
-        im3 = ax3.pcolor(x1_2d, x2_2d, np.reshape(y_dif, (x[1].size, x[0].size), order='f'),
-                         cmap=b2rcw_cmap,
-                         vmin=min_dif,
-                         vmax=max_dif)
-        ax3.set_title(r'Difference (Original vs gPC)', fontsize=fs)
-        ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
-        ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
+            b2rcw_cmap = make_cmap(b2rcw(min_dif, max_dif))
 
-        fig.colorbar(im1, ax=ax1, orientation='vertical')
-        fig.colorbar(im2, ax=ax2, orientation='vertical')
-        fig.colorbar(im3, ax=ax3, orientation='vertical')
+            im3 = ax3.pcolor(x1_2d, x2_2d, np.reshape(y_dif[:, i], (x[1].size, x[0].size), order='f'),
+                             cmap=b2rcw_cmap,
+                             vmin=min_dif,
+                             vmax=max_dif)
+            ax3.set_title(r'Difference (Original vs gPC)', fontsize=fs)
+            ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+            ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
 
-        plt.tight_layout()
+            fig.colorbar(im1, ax=ax1, orientation='vertical')
+            fig.colorbar(im2, ax=ax2, orientation='vertical')
+            fig.colorbar(im3, ax=ax3, orientation='vertical')
 
-    if fn_out is not None:
-        plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.png', dpi=600)
-        plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx) + '.pdf')
+            plt.tight_layout()
+
+        if fn_out is not None:
+            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=600)
+            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
 
 
 def plot_gpc(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, fn_out=None):

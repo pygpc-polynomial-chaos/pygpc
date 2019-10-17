@@ -385,7 +385,8 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             f.create_dataset(data=res, name="sens/res")
 
         if calc_sobol:
-            f.create_dataset(data=sobol, name="sens/sobol")
+            f.create_dataset(data=sobol * var, name="sens/sobol")
+            f.create_dataset(data=sobol, name="sens/sobol_norm")
             f.create_dataset(data=sobol_idx_bool, name="sens/sobol_idx_bool")
 
         if calc_global_sens:

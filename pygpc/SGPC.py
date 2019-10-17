@@ -406,8 +406,8 @@ class SGPC(GPC):
                     sobol_rel_1st_order_std.append(0)
 
                     str_out.append("\t{}{}: {:.4f}"
-                                   .format((max_len - len(self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j][0]])) * ' ',
-                                           self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j][0]],
+                                   .format((max_len - len(list(self.problem.parameters_random.keys())[sobol_extracted_idx_1st[j][0]])) * ' ',
+                                           list(self.problem.parameters_random.keys())[sobol_extracted_idx_1st[j][0]],
                                            sobol_rel_1st_order_mean[j]))
 
             # for 2nd order indices, determine ratios of all random variables
