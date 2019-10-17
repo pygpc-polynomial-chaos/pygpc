@@ -198,7 +198,7 @@ class GPC(object):
             raise NotImplementedError
 
         return gpc_matrix
-        
+
         #
         # if not self.gpu:
         #
