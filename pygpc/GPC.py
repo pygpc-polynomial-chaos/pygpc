@@ -199,7 +199,7 @@ class GPC(object):
 
         return gpc_matrix
 
-        #
+
         # if not self.gpu:
         #
         #     if not gradient:
