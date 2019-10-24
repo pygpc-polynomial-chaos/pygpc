@@ -80,7 +80,7 @@ class GPC(object):
 
     def __init__(self, problem, options, validation=None):
         """
-        Constructor; Initializes MEGPC class
+        Constructor; Initializes GPC class
 
         Parameters
         ----------

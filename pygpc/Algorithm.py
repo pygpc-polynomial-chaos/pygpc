@@ -6,7 +6,6 @@ import time
 import shutil
 from .Problem import *
 from .SGPC import *
-from .io import write_gpc_pkl
 from .misc import determine_projection_matrix
 from .misc import get_num_coeffs_sparse
 from .misc import ten2mat
@@ -430,12 +429,9 @@ class Static(Algorithm):
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
 
-            fn_gpc_pkl = fn_results + '.pkl'
-            write_gpc_pkl(gpc, fn_gpc_pkl)
-
             with h5py.File(fn_results + ".hdf5", "a") as f:
 
-                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_gpc_pkl)[1]]).astype("|S"))
+                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
                 f.create_dataset("grid/coords", data=gpc.grid.coords, maxshape=None, dtype="float64")
@@ -699,21 +695,14 @@ class MEStatic(Algorithm):
             # save data
             if self.options["fn_results"]:
 
-                fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
-
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -783,10 +772,7 @@ class MEStatic(Algorithm):
 
         com.close()
 
-        if n_qoi == 1:
-            return megpc[0], coeffs[0], res
-        else:
-            return megpc, coeffs, res
+        return megpc, coeffs, res
 
 
 class StaticProjection(Algorithm):
@@ -1078,21 +1064,14 @@ class StaticProjection(Algorithm):
             # save gpc objects and gpc coeffs
             if self.options["fn_results"]:
 
-                fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                write_gpc_pkl(gpc[i_qoi], fn_gpc_pkl_qoi)
-
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     f.create_dataset("error" + hdf5_subfolder,
                                      data=eps,
@@ -1149,10 +1128,7 @@ class StaticProjection(Algorithm):
 
         com.close()
 
-        if n_qoi == 1:
-            return gpc[0], coeffs[0], res_all
-        else:
-            return gpc, coeffs, res_all
+        return gpc, coeffs, res_all
 
 
 class MEStaticProjection(Algorithm):
@@ -1476,21 +1452,14 @@ class MEStaticProjection(Algorithm):
             # save data
             if self.options["fn_results"]:
 
-                fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
-
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -1565,10 +1534,7 @@ class MEStaticProjection(Algorithm):
 
         com.close()
 
-        if n_qoi == 1:
-            return megpc[0], coeffs[0], res
-        else:
-            return megpc, coeffs, res
+        return megpc, coeffs, res
 
 
 class RegAdaptive(Algorithm):
@@ -1834,9 +1800,6 @@ class RegAdaptive(Algorithm):
             # save gpc object and coeffs for this sub-iteration
             if self.options["fn_results"]:
 
-                fn_gpc_pkl = fn_results + '.pkl'
-                write_gpc_pkl(gpc, fn_gpc_pkl)
-
                 with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
                     # overwrite coeffs
@@ -1884,7 +1847,6 @@ class RegAdaptive(Algorithm):
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
-            write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
 
             with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
                 if "coeffs" in f.keys():
@@ -1909,7 +1871,7 @@ class RegAdaptive(Algorithm):
                                      maxshape=None, dtype="float64")
 
                 # misc
-                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_gpc_pkl)[1]]).astype("|S"))
+                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
 
@@ -2701,9 +2663,6 @@ class MERegAdaptiveProjection(Algorithm):
                     # save gpc object and coeffs for this sub-iteration
                     if self.options["fn_results"]:
 
-                        fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                        write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
-
                         with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
                             # overwrite coeffs
@@ -2796,7 +2755,7 @@ class MERegAdaptiveProjection(Algorithm):
 
             # determine gpc coefficients
             if self.options["gradient_enhanced"]:
-                grad_res_3D_passed = grad_res_3D[:, q_idx, :][:, np.newaxis, :]
+                grad_res_3D_passed = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
             else:
                 grad_res_3D_passed = None
 
@@ -2809,19 +2768,15 @@ class MERegAdaptiveProjection(Algorithm):
 
             # save gpc object and gpc coeffs
             if self.options["fn_results"]:
-                write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
 
                 with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl", data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     try:
                         del f["grid"]
@@ -2851,7 +2806,10 @@ class MERegAdaptiveProjection(Algorithm):
                         f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D),
                                          maxshape=None, dtype="float64")
 
-                    f.create_dataset("misc/error_type", data=self.options["error_type"])
+                    try:
+                        f.create_dataset("misc/error_type", data=self.options["error_type"])
+                    except RuntimeError:
+                        pass
 
                     if megpc[0].validation is not None:
                         f.create_dataset("validation/results", data=megpc[0].validation.results,
@@ -2883,7 +2841,8 @@ class MERegAdaptiveProjection(Algorithm):
                                                  maxshape=None, dtype="float64")
 
                     try:
-                        del f["coeffs"]
+                        for i_gpc in range(megpc[i_qoi].n_gpc):
+                            del f["coeffs" + hdf5_subfolder + "/dom_" + str(i_gpc)]
                     except KeyError:
                         pass
 
@@ -3368,9 +3327,6 @@ class RegAdaptiveProjection(Algorithm):
                 # save gpc object and coeffs for this sub-iteration
                 if self.options["fn_results"]:
 
-                    fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                    write_gpc_pkl(gpc[i_qoi], fn_gpc_pkl_qoi)
-
                     with h5py.File(os.path.splitext(fn_results)[0] + ".hdf5", "a") as f:
                         # overwrite coeffs
                         try:
@@ -3437,21 +3393,14 @@ class RegAdaptiveProjection(Algorithm):
             # save gpc object gpc coeffs and projection matrix
             if self.options["fn_results"]:
 
-                fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                write_gpc_pkl(gpc[i_qoi], fn_gpc_pkl_qoi)
-
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"][:]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     try:
                         del f["coeffs" + hdf5_subfolder]
@@ -3495,7 +3444,4 @@ class RegAdaptiveProjection(Algorithm):
 
         com.close()
 
-        if n_qoi == 1:
-            return gpc[0], coeffs[0], res
-        else:
-            return gpc, coeffs, res
+        return gpc, coeffs, res

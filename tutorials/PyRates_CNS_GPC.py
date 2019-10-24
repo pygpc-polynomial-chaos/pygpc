@@ -69,7 +69,7 @@ with h5py.File(fn_results + "_validation.hdf5") as f:
     val_results = f["model_evaluations/original_all_qoi"][:]
 
 # Validate gPC vs original model function (2D-slice)
-pygpc.validate_gpc_plot(gpc=gpc,
+pygpc.validate_gpc_plot(session=gpc,
                         coeffs=coeffs,
                         random_vars=["w_ein_pc", "w_iin_pc"],
                         coords=val_coords,
@@ -80,7 +80,7 @@ pygpc.validate_gpc_plot(gpc=gpc,
 
 
 # Validate gPC vs original model function (Monte Carlo)
-nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+nrmsd = pygpc.validate_gpc_mc(session=gpc,
                               coeffs=coeffs,
                               n_samples=int(1e3),
                               output_idx=0,

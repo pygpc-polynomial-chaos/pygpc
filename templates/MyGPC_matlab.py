@@ -49,7 +49,7 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              n_samples=1e4)
 
 # Validate gPC vs original model function
-pygpc.validate_gpc_plot(gpc=gpc,
+pygpc.validate_gpc_plot(session=gpc,
                         coeffs=coeffs,
                         random_vars=["x1", "x2"],
                         n_grid=[51, 51],
@@ -58,7 +58,7 @@ pygpc.validate_gpc_plot(gpc=gpc,
                         n_cpu=options["n_cpu"])
 
 # Validate gPC vs original model function (Monte Carlo)
-nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+nrmsd = pygpc.validate_gpc_mc(session=gpc,
                               coeffs=coeffs,
                               n_samples=int(1e4),
                               output_idx=0,

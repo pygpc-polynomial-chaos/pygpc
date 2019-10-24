@@ -2905,6 +2905,7 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
         y[np.logical_not(mask)] = y_2.flatten()
 
         y_out = y[:, np.newaxis]
+        y_out = np.hstack((y_out, y_out))
 
         return y_out
 

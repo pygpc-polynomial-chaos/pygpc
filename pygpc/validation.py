@@ -20,7 +20,7 @@ except ModuleNotFoundError:
     pass
 
 
-def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pdf=[51, 5], fn_out=None, plot=True):
+def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pdf=[51, 5], fn_out=None, plot=True):
     """
     Compares gPC approximation with original model function. Evaluates both at "n_samples" sampling points and
     evaluates the root mean square deviation. It also computes the pdf at the output quantity with output_idx
@@ -28,13 +28,13 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pd
 
     Parameters
     ----------
-    gpc : GPC object instance
-        GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
+    session : GPC Session object instance
+        GPC session object containing all information i.e., gPC, Problem, Model, Grid, Basis, RandomParameter instances
     coeffs : ndarray of float [n_coeffs x n_out]
         GPC coefficients
     n_samples : int
         Number of samples to validate the gPC approximation
-    output_idx : ndarray, optional, default=None [1 x n_out]
+    output_idx : ndarray or list, optional, default=None [1 x n_out]
         Index of output quantities to consider (if output_idx=None, all output quantities are considered)
     n_cpu : int, optional, default=1
         Number of CPU cores to use (parallel function evaluations) to evaluate original model function
@@ -58,34 +58,22 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pd
     if smooth_pdf is True:
         smooth_pdf = [51, 5]
 
-    if type(gpc) is list:
-        gpc = gpc[output_idx]
-        coeffs = coeffs[output_idx]
-        output_idx_gpc = 0
-    else:
-        output_idx_gpc = output_idx
+    if type(output_idx) is int:
+        output_idx = [output_idx]
 
-    if isinstance(gpc, MEGPC):
-        problem = gpc.problem
-    else:
-        if gpc.p_matrix is not None:
-            problem = gpc.problem_original
-        else:
-            problem = gpc.problem
-
-    if gpc.validation is None:
+    if session.validation is None:
         # Create sampling points
-        grid_mc = RandomGrid(parameters_random=problem.parameters_random,
+        grid_mc = RandomGrid(parameters_random=session.parameters_random,
                              options={"n_grid": n_samples, "seed": None})
 
         coords_norm = grid_mc.coords_norm
         coords = grid_mc.coords
 
         # Evaluate original model at grid points
-        com = Computation(n_cpu=n_cpu, matlab_model=gpc.matlab_model)
+        com = Computation(n_cpu=n_cpu, matlab_model=session.matlab_model)
 
-        y_orig = com.run(model=gpc.problem.model,
-                         problem=problem,
+        y_orig = com.run(model=session.model,
+                         problem=session.problem,
                          coords=coords,
                          coords_norm=coords_norm,
                          i_iter=None,
@@ -94,15 +82,22 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pd
                          print_func_time=False)[:, output_idx]
 
     else:
-        y_orig = gpc.validation.results[:, output_idx]
-        coords_norm = gpc.validation.grid.coords_norm
-        coords = gpc.validation.grid.coords
+        y_orig = session.validation.results[:, output_idx]
+        coords_norm = session.validation.grid.coords_norm
+        coords = session.validation.grid.coords
 
     if y_orig.ndim == 1:
         y_orig = y_orig[:, np.newaxis]
 
-    # Evaluate gPC approximation at grid points
-    y_gpc = gpc.get_approximation(coeffs=coeffs, x=coords_norm, output_idx=None)[:, output_idx_gpc]
+    # Evaluate gPC expansion on grid
+    if session.qoi_specific:
+        y_gpc = np.zeros((coords_norm.shape[0], len(output_idx)))
+
+        for i, o_idx in enumerate(output_idx):
+            y_gpc[:, i] = session.gpc[o_idx].get_approximation(coeffs=coeffs[o_idx], x=coords_norm, output_idx=0).flatten()
+
+    else:
+        y_gpc = session.gpc[0].get_approximation(coeffs=coeffs, x=coords_norm, output_idx=output_idx)
 
     if y_gpc.ndim == 1:
         y_gpc = y_gpc[:, np.newaxis]
@@ -110,51 +105,57 @@ def validate_gpc_mc(gpc, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pd
     # Calculate normalized root mean square deviation
     relative_error_nrmsd = nrmsd(y_gpc, y_orig)
 
-    pdf_y_gpc, tmp = np.histogram(y_gpc[:, output_idx_gpc].flatten(), bins=100, density=True)
-    pdf_x_gpc = (tmp[1:] + tmp[0:-1]) / 2.
-
-    pdf_y_orig, tmp = np.histogram(y_orig.flatten(), bins=100, density=True)
-    pdf_x_orig = (tmp[1:] + tmp[0:-1]) / 2.
-
-    if smooth_pdf is not None:
-        if smooth_pdf is not False:
-            pdf_y_gpc = savgol_filter(pdf_y_gpc, smooth_pdf[0], smooth_pdf[1])
-            pdf_y_orig = savgol_filter(pdf_y_orig, smooth_pdf[0], smooth_pdf[1])
-
-    # plot pdfs
-    if plot:
-        matplotlib.rc('text', usetex=False)
-        matplotlib.rc('xtick', labelsize=12)
-        matplotlib.rc('ytick', labelsize=12)
-
-        fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
-
-        ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
-        ax1.legend([r'gpc', r'original'], fontsize=14)
-        ax1.grid()
-        ax1.set_xlabel(r'$y$', fontsize=16)
-        ax1.set_ylabel(r'$p(y)$', fontsize=16)
-        ax1.text(0.05, 0.95, r'$error=%.2f$' % (relative_error_nrmsd[0],) + "%",
-                 transform=ax1.transAxes, fontsize=12, verticalalignment='top',
-                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
-
     if fn_out:
-        plt.savefig(os.path.splitext(fn_out)[0] + '.pdf', facecolor='#ffffff')
-
         # save results in .hdf5 file
         with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
             f.create_dataset('results/original', data=y_orig)
             f.create_dataset('results/gpc', data=y_gpc)
             f.create_dataset('grid/coords', data=coords)
             f.create_dataset('grid/coords_norm', data=coords_norm)
-            f.create_dataset('error/nrmsd', data=relative_error_nrmsd)
-            f.create_dataset('pdf/original', data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
-            f.create_dataset('pdf/gpc', data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
+
+    for i, o_idx in enumerate(output_idx):
+        pdf_y_gpc, tmp = np.histogram(y_gpc[:, i].flatten(), bins=100, density=True)
+        pdf_x_gpc = (tmp[1:] + tmp[0:-1]) / 2.
+
+        pdf_y_orig, tmp = np.histogram(y_orig[:, i].flatten(), bins=100, density=True)
+        pdf_x_orig = (tmp[1:] + tmp[0:-1]) / 2.
+
+        if smooth_pdf is not None:
+            if smooth_pdf is not False:
+                pdf_y_gpc = savgol_filter(pdf_y_gpc, smooth_pdf[0], smooth_pdf[1])
+                pdf_y_orig = savgol_filter(pdf_y_orig, smooth_pdf[0], smooth_pdf[1])
+
+        # plot pdfs
+        if plot:
+            matplotlib.rc('text', usetex=False)
+            matplotlib.rc('xtick', labelsize=12)
+            matplotlib.rc('ytick', labelsize=12)
+
+            fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
+
+            ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
+            ax1.legend([r'gpc', r'original'], fontsize=14)
+            ax1.grid()
+            ax1.set_xlabel(r'$y$', fontsize=16)
+            ax1.set_ylabel(r'$p(y)$', fontsize=16)
+            ax1.text(0.05, 0.95, r'$error=%.2f$' % (relative_error_nrmsd[0],) + "%",
+                     transform=ax1.transAxes, fontsize=12, verticalalignment='top',
+                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+        if fn_out:
+            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.pdf')
+            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.png', dpi=600)
+
+            # save results in .hdf5 file
+            with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
+                f.create_dataset('error/qoi_{}/nrmsd'.format(o_idx), data=relative_error_nrmsd[i])
+                f.create_dataset('pdf/qoi_{}/original'.format(o_idx), data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
+                f.create_dataset('pdf/qoi_{}/gpc'.format(o_idx), data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
 
     return relative_error_nrmsd
 
 
-def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, data_original=None,
+def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, data_original=None,
                       fn_out=None, n_cpu=1):
     """
     Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
@@ -163,8 +164,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
 
     Parameters
     ----------
-    gpc : GPC object instance
-        GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
+    session : GPC Session object instance
+        GPC session object containing all information i.e., gPC, Problem, Model, Grid, Basis, RandomParameter instances
     coeffs : ndarray of float [n_coeffs x n_out] or list of ndarray of float [n_qoi][n_coeffs x n_out]
         GPC coefficients
     random_vars: str or list of str [2]
@@ -191,20 +192,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     <file> : .png and .pdf file
         Plot comparing original vs gPC model
     """
-    output_idx_gpc = output_idx
-
-    if type(gpc) is list:
-        gpc = gpc[output_idx]
-        coeffs = coeffs[output_idx]
-        output_idx_gpc = 0
-
-    if isinstance(gpc, MEGPC):
-        problem = gpc.problem
-    else:
-        if gpc.p_matrix is not None:
-            problem = gpc.problem_original
-        else:
-            problem = gpc.problem
+    if type(output_idx) is int:
+        output_idx = [output_idx]
 
     if type(random_vars) is not list:
         random_vars = random_vars.tolist()
@@ -214,16 +203,16 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
 
     # Create grid such that it includes the mean values of other random variables
     if coords is None:
-        grid = np.zeros((np.prod(n_grid), len(problem.parameters_random)))
+        grid = np.zeros((np.prod(n_grid), len(session.parameters_random)))
     else:
-        grid = np.zeros((coords.shape[0], len(problem.parameters_random)))
+        grid = np.zeros((coords.shape[0], len(session.parameters_random)))
 
     idx = []
 
     # sort random_vars according to gpc.parameters
-    for i_p, p in enumerate(problem.parameters_random.keys()):
+    for i_p, p in enumerate(session.parameters_random.keys()):
         if p not in random_vars:
-            grid[:, i_p] = problem.parameters_random[p].mean
+            grid[:, i_p] = session.parameters_random[p].mean
 
         else:
             idx.append(random_vars.index(p))
@@ -235,8 +224,8 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
         n_grid = [n_grid[i] for i in idx]
 
         for i_p, p in enumerate(random_vars):
-            x.append(np.linspace(problem.parameters_random[p].pdf_limits[0],
-                                 problem.parameters_random[p].pdf_limits[1],
+            x.append(np.linspace(session.parameters_random[p].pdf_limits[0],
+                                 session.parameters_random[p].pdf_limits[1],
                                  n_grid[i_p]))
 
         coords = get_cartesian_product(x)
@@ -248,16 +237,23 @@ def validate_gpc_plot(gpc, coeffs, random_vars, n_grid=None, coords=None, output
     grid[:, (grid == 0).all(axis=0)] = coords
 
     # Normalize grid
-    grid_norm = Grid(parameters_random=problem.parameters_random).get_normalized_coordinates(grid)
+    grid_norm = Grid(parameters_random=session.parameters_random).get_normalized_coordinates(grid)
 
     # Evaluate gPC expansion on grid
-    y_gpc = gpc.get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx_gpc)
+    if session.qoi_specific:
+        y_gpc = np.zeros((grid_norm.shape[0], len(output_idx)))
+
+        for i, o_idx in enumerate(output_idx):
+            y_gpc[:, i] = session.gpc[o_idx].get_approximation(coeffs=coeffs[o_idx], x=grid_norm, output_idx=0).flatten()
+
+    else:
+        y_gpc = session.gpc[0].get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx)
 
     # Evaluate original model function on grid
     if data_original is None:
-        com = Computation(n_cpu=n_cpu, matlab_model=gpc.options["matlab_model"])
-        y_orig_all = com.run(model=gpc.problem.model,
-                             problem=problem,
+        com = Computation(n_cpu=n_cpu, matlab_model=session.matlab_model)
+        y_orig_all = com.run(model=session.model,
+                             problem=session.problem,
                              coords=grid,
                              coords_norm=grid_norm,
                              i_iter=None,

@@ -19,16 +19,14 @@ def check_file_consistency(fn_hdf5):
     error_msg : list of str
         Error messages if files are not consistent
     """
-    gpc = []
     error_msg = []
     file_status = True
-    projection = False
 
     # get list of filenames of gPC .pkl files
     try:
         with h5py.File(fn_hdf5, "r") as f:
             try:
-                fn_gpc_pkl = [fn.astype(str) for fn in list(f["misc/fn_gpc_pkl"][:].flatten())]
+                fn_gpc_pkl = os.path.join(os.path.split(fn_hdf5)[0], f["misc/fn_gpc_pkl"][0].astype(str))
             except KeyError:
                 error_msg.append("misc/fn_gpc_pkl not found in results file: {}".format(fn_hdf5))
                 file_status = False
@@ -42,9 +40,9 @@ def check_file_consistency(fn_hdf5):
     ###########################
     for fn in fn_gpc_pkl:
         try:
-            gpc.append(read_gpc_pkl(os.path.join(os.path.split(fn_hdf5)[0], fn)))
+            session = read_gpc_pkl(fn_gpc_pkl)
         except FileNotFoundError:
-            error_msg.append("gPC object file not found: {}".format(fn))
+            error_msg.append("gPC session object file not found: {}".format(fn))
             file_status = False
             return file_status, error_msg
 
@@ -56,33 +54,15 @@ def check_file_consistency(fn_hdf5):
             if "qoi" in list(f["coeffs"].keys())[0]:
                 qoi_keys = list(f["coeffs"].keys())
                 qoi_idx = [int(key.split("qoi_")[1]) for key in qoi_keys]
-                qoi_specific = True
+
         except AttributeError:
             qoi_keys = [""]
-            qoi_specific = False
 
-    for i_qoi in range(len(gpc)):
-        if isinstance(gpc[i_qoi], MEGPC):
-            multi_element_gpc = True
-            dom_keys = ["dom_{}".format(int(i)) for i in range(len(np.unique(gpc[i_qoi].domains)))]
+    if session.gpc_type == "megpc":
+        dom_keys = ["dom_{}".format(int(i)) for i in range(len(np.unique(session.gpc[0].domains)))]
 
-        else:
-            multi_element_gpc = False
-            dom_keys = [""]
-
-    # check for projection approach
-    if qoi_specific and multi_element_gpc:
-        if str(type(gpc[0].gpc[0].p_matrix)) != "<class 'NoneType'>":
-            projection = True
-    elif not qoi_specific and not multi_element_gpc:
-        if str(type(gpc[0].p_matrix)) != "<class 'NoneType'>":
-            projection = True
-    elif not qoi_specific and multi_element_gpc:
-        if str(type(gpc[0].gpc[0].p_matrix)) != "<class 'NoneType'>":
-            projection = True
-    elif qoi_specific and not multi_element_gpc:
-        if str(type(gpc[0].p_matrix)) != "<class 'NoneType'>":
-            projection = True
+    else:
+        dom_keys = [""]
 
     # check for general .hdf5 file content
     ######################################
@@ -96,7 +76,7 @@ def check_file_consistency(fn_hdf5):
                 error_msg.append(target + " not found in results file: {}".format(fn_hdf5))
                 file_status = False
 
-        if gpc[0].gradient or projection:
+        if session.gradient or session.projection:
             for target in ["grid/coords_gradient", "grid/coords_gradient_norm", "model_evaluations/gradient_results"]:
                 try:
                     if type(f[target][()]) is not np.ndarray:
@@ -121,7 +101,7 @@ def check_file_consistency(fn_hdf5):
         for i_qoi, q_idx in enumerate(qoi_keys):
 
             for target in ["domains"]:
-                if not(target == "domains" and not multi_element_gpc):
+                if not(target == "domains" and not session.gpc_type == "megpc"):
                     try:
                         h5_path = target + "/" + q_idx
                         if type(f[h5_path][()]) not in [np.ndarray, np.float64]:
@@ -163,7 +143,7 @@ def check_file_consistency(fn_hdf5):
                         error_msg.append(h5_path + " not found in results file: {}".format(fn_hdf5))
                         file_status = False
 
-                if gpc[0].gradient or projection:
+                if session.gradient or session.projection:
                     for target in ["gpc_matrix_gradient"]:
                         try:
                             h5_path = target + "/" + q_idx + "/" + d_idx
@@ -174,7 +154,7 @@ def check_file_consistency(fn_hdf5):
                             error_msg.append(h5_path + " not found in results file: {}".format(fn_hdf5))
                             file_status = False
 
-                if projection:
+                if session.projection:
                     for target in ["p_matrix"]:
                         try:
                             h5_path = target + "/" + q_idx + "/" + d_idx
