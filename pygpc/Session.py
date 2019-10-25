@@ -32,6 +32,7 @@ class Session(object):
         self.validation = None
         self.projection = None
         self.gradient = None
+        self.n_cpu = self.algorithm.options["n_cpu"]
 
         # safe the original problem and random parameters
         self.problem = self.algorithm.problem

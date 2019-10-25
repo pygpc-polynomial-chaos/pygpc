@@ -2812,12 +2812,15 @@ class MERegAdaptiveProjection(Algorithm):
                         pass
 
                     if megpc[0].validation is not None:
-                        f.create_dataset("validation/results", data=megpc[0].validation.results,
-                                         maxshape=None, dtype="float64")
-                        f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
-                                         maxshape=None, dtype="float64")
-                        f.create_dataset("validation/grid/coords_norm", data=megpc[0].validation.grid.coords_norm,
-                                         maxshape=None, dtype="float64")
+                        try:
+                            del f["validation"]
+                        except KeyError:
+                            f.create_dataset("validation/results", data=megpc[0].validation.results,
+                                             maxshape=None, dtype="float64")
+                            f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
+                                             maxshape=None, dtype="float64")
+                            f.create_dataset("validation/grid/coords_norm", data=megpc[0].validation.grid.coords_norm,
+                                             maxshape=None, dtype="float64")
 
                     # save gpc matrix
                     for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
