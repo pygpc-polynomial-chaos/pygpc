@@ -145,7 +145,8 @@ class Algorithm(object):
                 self.options["solver"] = 'NumInt'
                 self.options["settings"] = None
             elif self.options["method"] == "reg" and not (self.options["solver"] == "Moore-Penrose" or
-                                                          self.options["solver"] == "OMP"):
+                                                          self.options["solver"] == "OMP" or
+                                                          self.options["solver"] == "LarsLasso"):
                 raise AssertionError("Please specify 'Moore-Penrose' or 'OMP' as solver for 'reg' method")
 
         if "n_cpu" in self.options.keys():

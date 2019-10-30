@@ -28,7 +28,6 @@ def get_psd(data, tmin=0.):
 
 
 def psd(data, tmin=0., tmax=None, **kwargs):
-
     # prepare data frame
     dt = data.index[1] - data.index[0]
     tmin = int(tmin / dt)
@@ -66,8 +65,7 @@ class PyRates_CNS_Model(AbstractModel):
         If multiple grid-points are evaluated in one function call, return a dict for every grid-point in a list
     """
 
-    def __init__(self, p, context):
-        super(PyRates_CNS_Model, self).__init__(p, context)
+    def __init__(self):
         from pyrates.frontend import OperatorTemplate
         from pyrates.frontend import NodeTemplate, CircuitTemplate
 
@@ -118,7 +116,7 @@ class PyRates_CNS_Model(AbstractModel):
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id, matlab_engine=None):
         T = 500.
         dt = 1e-3
         dts = 1e-2
@@ -127,24 +125,25 @@ class PyRates_CNS_Model(AbstractModel):
         sys.stdout = io.StringIO()
 
         # run PyRates with parameter combinations
-        results = grid_search(deepcopy(self.jrc_template),
-                              param_grid={'w_ep': self.p['w_ein_pc'], 'w_ip': self.p['w_iin_pc']},
-                              param_map={'w_ep': {'var': [(None, 'weight')],
-                                                  'edges': [('EINs.0', 'PCs.0', 0)]},
-                                         'w_ip': {'var': [(None, 'weight')],
-                                                  'edges': [('IINs.0', 'PCs.0', 0)]}},
-                              simulation_time=T, dt=dt, sampling_step_size=dts,
-                              inputs={('PCs.0', 'Op_exc_syn.0', 'I_ext'): ext_input},
-                              outputs={'r': ('PCs.0', 'Op_exc_syn.0', 'r')},
-                              init_kwargs={'vectorization': 'nodes', 'build_in_place': False},
-                              permute_grid=False,
-                              backend="numpy",  # "tensorflow"
-                              decorator=njit)
+        results, result_map = grid_search(deepcopy(self.jrc_template),
+                                          param_grid={'w_ep': self.p['w_ein_pc'], 'w_ip': self.p['w_iin_pc']},
+                                          param_map={'w_ep': {'vars': ['weight'],
+                                                              'edges': [('EINs', 'PCs')]},
+                                                     'w_ip': {'vars': ['weight'],
+                                                              'edges': [('IINs', 'PCs')]}},
+                                          simulation_time=T, dt=dt, sampling_step_size=dts,
+                                          inputs={'PCs/Op_exc_syn/I_ext': ext_input},
+                                          outputs={'r': 'PCs/Op_exc_syn/r'},
+                                          init_kwargs={'vectorization': True},
+                                          permute_grid=False,
+                                          backend="numpy",  # "tensorflow"
+                                          decorator=njit)
 
         y = np.zeros((len(self.p['w_ein_pc']), 1))
 
         # extract QOI
         for idx, (we, wi) in enumerate(zip(self.p['w_ein_pc'], self.p['w_iin_pc'])):
+            res_idx = result_map.loc[(result_map == (we, wi)).all(1), :].index
             # plot_psd
             # plot_psd(results[we][wi], tmin=30.0, show=False)
             # p = plt.gca().get_lines()[-1].get_ydata()
@@ -161,7 +160,8 @@ class PyRates_CNS_Model(AbstractModel):
             # y[idx, 1] = p[max_idx]
 
             # fft
-            f, p = get_psd(results[we][wi], tmin=30.0)
+            # f, p = psd(data=results[res_idx], nperseg=4096, tmin=30.0)
+            f, p = get_psd(data=results[res_idx], tmin=30.0)
             p = p[:int(len(p) / 2)]
             f = f[np.argmax(np.abs(p))]
             y[idx, 0] = f
@@ -170,5 +170,4 @@ class PyRates_CNS_Model(AbstractModel):
         sys.stdout = sys.__stdout__
 
         return y
-
 

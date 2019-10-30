@@ -683,18 +683,19 @@ class TestPygpcMethods(unittest.TestCase):
         # gPC options
         options = dict()
         options["method"] = "reg"
-        options["solver"] = "Moore-Penrose"
+        options["solver"] = "LarsLasso" #"Moore-Penrose"
         options["settings"] = None
-        options["order_start"] = 0
+        options["order_start"] = 3
         options["order_end"] = 15
         options["interaction_order"] = 2
         options["matrix_ratio"] = 2
         options["projection"] = True
         options["n_cpu"] = 0
-        options["gradient_enhanced"] = True
+        options["gradient_enhanced"] = False
         options["gradient_calculation"] = "standard_forward"
         options["error_type"] = "loocv"
-        options["qoi"] = "all"
+        options["error_norm"] = "absolute" # "relative"
+        options["qoi"] = 0 # "all"
         options["classifier"] = "learning"
         options["classifier_options"] = {"clusterer": "KMeans",
                                          "n_clusters": 2,
@@ -702,8 +703,8 @@ class TestPygpcMethods(unittest.TestCase):
                                          "classifier_solver": "lbfgs"}
         options["n_samples_discontinuity"] = 10
         options["adaptive_sampling"] = True
-        options["eps"] = 0.01
-        options["n_grid_init"] = 10
+        options["eps"] = 0.02
+        options["n_grid_init"] = 2
         options["GPU"] = False
         options["fn_results"] = os.path.join(folder, test_name)
 
