@@ -2150,6 +2150,8 @@ class MERegAdaptiveProjection(Algorithm):
                                             seed=None,
                                             domain=d)
 
+                    megpc[i_qoi].grid = copy.deepcopy(grid)
+
             if grid.n_grid > i_grid:
 
                 # Run some more initial simulations
@@ -2163,8 +2165,8 @@ class MERegAdaptiveProjection(Algorithm):
                                   problem=self.problem,
                                   coords=grid.coords[i_grid:, ],
                                   coords_norm=grid.coords_norm[i_grid:, ],
-                                  i_iter=basis_order[0],
-                                  i_subiter=basis_order[1],
+                                  i_iter=None,
+                                  i_subiter=None,
                                   fn_results=os.path.splitext(self.options["fn_results"])[0],
                                   print_func_time=self.options["print_func_time"])
 
@@ -2182,12 +2184,17 @@ class MERegAdaptiveProjection(Algorithm):
                                                         results=res_all,
                                                         com=com,
                                                         gradient_results=grad_res_3D_all,
-                                                        i_iter=basis_order[0],
-                                                        i_subiter=basis_order[1])
+                                                        i_iter=None,
+                                                        i_subiter=None)
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
                 megpc[i_qoi].grid = copy.deepcopy(grid)
+
+                # update classifier
+                iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
+                megpc[i_qoi].update_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                               results=res_all[:, q_idx][:, np.newaxis])
 
             # create validation set if necessary
             if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
@@ -2292,15 +2299,22 @@ class MERegAdaptiveProjection(Algorithm):
                                                results=res_all[:, q_idx][:, np.newaxis])
 
                 # update sub-gPCs if number of domains changed
-                if len(np.unique(megpc[i_qoi].domains)) > len(megpc[i_qoi].gpc):
+                if len(np.unique(megpc[i_qoi].domains)) != len(megpc[i_qoi].gpc):
 
                     iprint("New domains found! Updating number of sub-gPCs from {} to {} ".
                            format(len(megpc[i_qoi].gpc), len(np.unique(megpc[i_qoi].domains))),
                            tab=0, verbose=self.options["verbose"])
 
-                    del megpc[i_qoi].gpc
+                    megpc[i_qoi].gpc = None
 
-                    basis_order.append([self.options["order_start"], self.options["interaction_order"]])
+                    megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                                 results=res_all[:, q_idx][:, np.newaxis],
+                                                 algorithm=self.options["classifier"],
+                                                 options=self.options["classifier_options"])
+
+                    basis_order["poly_dom_{}".format(d)][0] = self.options["order_start"]
+                    basis_order["poly_dom_{}".format(d)][1] = self.options["interaction_order"]
+
                     eps = np.hstack((eps, np.array(self.options["eps"] + 1)))
 
                     for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):

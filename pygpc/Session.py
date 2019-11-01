@@ -46,17 +46,10 @@ class Session(object):
                     self.qoi_specific = False
             except AttributeError:
 
-                try:
-                    if type(list(f["coeffs"].keys())[0] is str):
-                        try:
-                            if f["coeffs/dom_0"].any():
-                                self.qoi_specific = True
-
-                        except KeyError:
-                            self.qoi_specific = False
-
-                except AttributeError:
-                    pass
+                if np.array([True for s in list(f["coeffs/"]) if "qoi" in s]).any():
+                    self.qoi_specific = True
+                else:
+                    self.qoi_specific = False
 
         if type(gpc) is list:
             self.gpc = gpc

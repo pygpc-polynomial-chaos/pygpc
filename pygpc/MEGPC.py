@@ -526,7 +526,9 @@ class MEGPC(object):
         pce: ndarray of float [n_x x n_out]
             GPC approximation at normalized coordinates x.
         """
-        if type(output_idx) != np.ndarray and output_idx is not None:
+        if type(output_idx) is list:
+            output_idx = np.array(output_idx)
+        elif type(output_idx) != np.ndarray and output_idx is not None:
             output_idx = np.array([output_idx])
         else:
             if type(coeffs) is list:
@@ -542,7 +544,7 @@ class MEGPC(object):
         # determine gPC approximation for sub-domains
         for d in np.unique(domains):
             pce[domains == d, :] = self.gpc[d].get_approximation(coeffs=coeffs[d],
-                                                                 x=x[domains == d, :],
+                                                                 x=x[(domains == d).flatten(), :],
                                                                  output_idx=output_idx)
 
         return pce

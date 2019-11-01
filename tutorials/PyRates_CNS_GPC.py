@@ -80,7 +80,6 @@ pygpc.validate_gpc_plot(session=session,
                         fn_out=session.fn_results + '_val',
                         n_cpu=session.n_cpu)
 
-
 # Validate gPC vs original model function (Monte Carlo)
 nrmsd = pygpc.validate_gpc_mc(session=session,
                               coeffs=coeffs,

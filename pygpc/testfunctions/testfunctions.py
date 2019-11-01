@@ -2696,6 +2696,62 @@ class BinaryDiscontinuousSphere(AbstractModel):
         return y_out
 
 
+class Cluster3Simple(AbstractModel):
+    """
+    2-dimensional testfunction containing a spherical and a linear discontinuity.
+
+    .. math::
+       y = \\begin{cases}
+       2, & \\text{if } \\sqrt{\\sum_{i=1}^{N}(x_i-0.5)^2} \\leq 0.25 \\\\
+       1, & \\text{otherwise}
+       \\end{cases}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [0, 1]
+    p["x2"]: float or ndarray of float [n_grid]
+        2-nd parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 500)
+       parameters["x2"] = np.linspace(0, 1, 500)
+
+       plot("Cluster3Simple", parameters)
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        x = np.vstack([self.p[key].squeeze() for key in self.p.keys()])
+
+        y = np.ones(x.shape[1])
+        y[np.linalg.norm(x, axis=0) <= 0.25] = 2.
+        y[np.sum(x, axis=0) >= 1.5] = 3.
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
 class ContinuousDiscontinuousSphere(AbstractModel):
     """
     N-dimensional testfunction containing a spherical discontinuity.

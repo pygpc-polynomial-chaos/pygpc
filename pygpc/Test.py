@@ -682,6 +682,28 @@ class ZakharovFunction(Test):
 # Low Dimensional Discontinuous Testfunctions #
 ###############################################
 
+class Cluster3Simple(Test):
+    """
+    Cluster3Simple test function
+    """
+    def __init__(self):
+        """
+        Initializes Cluster3Simple test function
+        """
+        super(Cluster3Simple, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.Cluster3Simple()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
 class DeJongFunctionFive(Test):
     """
     DeJongFunctionFive test function

@@ -120,16 +120,23 @@ class GPC(object):
         self.n_out = []
 
         # options
-        self.gradient = options["gradient_enhanced"]
+        if options is not None:
+            self.gradient = options["gradient_enhanced"]
+            if "fn_results" not in options.keys():
+                options["fn_results"] = None
+            self.fn_results = options["fn_results"]
+            self.matlab_model = options["matlab_model"]
+        else:
+            self.gradient = None
+            self.fn_results = None
+            self.matlab_model = None
+
         self.solver = None
         self.settings = None
         self.gpu = None
         self.verbose = True
-        if "fn_results" not in options.keys():
-            options["fn_results"] = None
-        self.fn_results = options["fn_results"]
+
         self.options = options
-        self.matlab_model = options["matlab_model"]
 
     def init_gpc_matrix(self):
         """

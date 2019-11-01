@@ -51,11 +51,13 @@ def check_file_consistency(fn_hdf5):
 
     with h5py.File(fn_hdf5, "r") as f:
         try:
-            if "qoi" in list(f["coeffs"].keys())[0]:
+            if np.array([True for s in list(f["coeffs/"]) if "qoi" in s]).any():
                 qoi_keys = list(f["coeffs"].keys())
                 qoi_idx = [int(key.split("qoi_")[1]) for key in qoi_keys]
+            else:
+                qoi_keys = [""]
 
-        except AttributeError:
+        except KeyError:
             qoi_keys = [""]
 
     if session.gpc_type == "megpc":
