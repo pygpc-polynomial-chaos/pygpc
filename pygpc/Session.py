@@ -48,7 +48,13 @@ class Session(object):
 
                 try:
                     if type(list(f["coeffs"].keys())[0] is str):
-                        self.qoi_specific = True
+                        try:
+                            if f["coeffs/dom_0"].any():
+                                self.qoi_specific = True
+
+                        except KeyError:
+                            self.qoi_specific = False
+
                 except AttributeError:
                     pass
 

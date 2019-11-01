@@ -1,0 +1,111 @@
+%YAML 1.2
+---
+
+# Operator templates
+####################
+
+Op_exc_syn:
+  base: OperatorTemplate
+  equations:
+    - 'd/dt * r = (delta/(PI*tau) + 2.*r*v) /tau'
+    - 'd/dt * v = (v^2 + eta + I_ext + (I_exc - I_inh)*tau - (PI*r*tau)^2) /tau'
+    - 'd/dt * I_exc = J*r + r_exc - I_exc/tau_exc'
+    - 'd/dt * I_inh =  r_inh - I_inh/tau_inh'
+  variables:
+    r:
+      default: output
+    v:
+      default: variable
+    I_exc:
+      default: variable
+    I_inh:
+      default: variable
+    delta:
+      default: 1.0
+    tau:
+      default: 1.0
+    eta:
+      default: -0.5
+    J:
+      default: 0.0
+    tau_exc:
+      default: 1.0
+    tau_inh:
+      default: 2.0
+    I_ext:
+      default: input
+    r_exc:
+      default: input
+    r_inh:
+      default: input
+
+
+Op_inh_syn:
+  base: OperatorTemplate
+  equations:
+    - 'd/dt * r = (delta/(PI*tau) + 2.*r*v) /tau'
+    - 'd/dt * v = (v^2 + eta + I_ext + (I_exc - I_inh)*tau - (PI*r*tau)^2) /tau'
+    - 'd/dt * I_exc = r_exc - I_exc/tau_exc'
+    - 'd/dt * I_inh = J*r + r_inh - I_inh/tau_inh'
+  variables:
+    r:
+      default: output
+    v:
+      default: variable
+    I_exc:
+      default: variable
+    I_inh:
+      default: variable
+    delta:
+      default: 1.0
+    tau:
+      default: 2.0
+    eta:
+      default: -0.5
+    J:
+      default: 0.0
+    tau_exc:
+      default: 1.0
+    tau_inh:
+      default: 2.0
+    I_ext:
+      default: input
+    r_exc:
+      default: input
+    r_inh:
+      default: input
+
+# Population templates
+######################
+
+Pop_exc_syn:
+  base: NodeTemplate
+  operators:
+    - Op_exc_syn
+
+Pop_inh_syn:
+  base: NodeTemplate
+  operators:
+    - Op_inh_syn
+
+# Edge templates
+################
+
+DummyEdge:
+  base: EdgeTemplate
+  operators: []
+
+# Circuit templates
+###################
+
+JRC:
+  base: CircuitTemplate
+  nodes:
+    PC: Pop_exc_syn
+    EIN: Pop_exc_syn
+    IIN: Pop_inh_syn
+  edges:
+    - [PC/Op_exc_syn/r, EIN/Op_exc_syn/r_exc, DummyEdge, {weight: 13.5}]
+    - [EIN/Op_exc_syn/r, PC/Op_exc_syn/r_exc, DummyEdge, {weight: 10.8}]
+    - [PC/Op_exc_syn/r, IIN/Op_inh_syn/r_exc, DummyEdge, {weight: 3.375}]
+    - [IIN/Op_inh_syn/r, PC/Op_exc_syn/r_inh, DummyEdge, {weight: 23.625}]

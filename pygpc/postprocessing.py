@@ -244,13 +244,11 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             # determine Sobol indices
             if calc_sobol:
                 sobol, sobol_idx, sobol_idx_bool = session.gpc[0].get_sobol_indices(coeffs=coeffs,
-                                                                                    algorithm=algorithm,
                                                                                     n_samples=n_samples)
 
             # determine global derivative based sensitivity coefficients
             if calc_global_sens:
                 global_sens[:, ] = session.gpc[0].get_global_sens(coeffs=coeffs,
-                                                                  algorithm=algorithm,
                                                                   n_samples=n_samples)
 
             # determine pdfs

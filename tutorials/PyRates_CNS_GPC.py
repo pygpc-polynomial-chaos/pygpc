@@ -2,7 +2,7 @@ import os
 import h5py
 import pygpc
 from collections import OrderedDict
-from tutorials.PyRates_CNS_Model import PyRates_CNS_Model
+from tutorials.PyRates_CNS_Model_old import PyRates_CNS_Model
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -65,7 +65,7 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              algorithm="sampling",
                              n_samples=1e4)
 
-with h5py.File(fn_results + "_validation.hdf5") as f:
+with h5py.File(fn_results + "_validation.hdf5", "r") as f:
     val_coords_norm = f["grid/coords_norm"][:]
     val_coords = f["grid/coords"][:]
     val_results = f["model_evaluations/original_all_qoi"][:]

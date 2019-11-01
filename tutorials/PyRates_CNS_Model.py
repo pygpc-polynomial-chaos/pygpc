@@ -8,6 +8,7 @@ import numpy as np
 from numba import njit
 import sys
 import io
+import os
 
 
 # auxiliary function to determine QOI
@@ -66,74 +67,29 @@ class PyRates_CNS_Model(AbstractModel):
     """
 
     def __init__(self):
-        from pyrates.frontend import OperatorTemplate
-        from pyrates.frontend import NodeTemplate, CircuitTemplate
-
-        exc_syn = ['d/dt * r = (delta/(PI*tau) + 2.*r*v) /tau',
-                   'd/dt * v = (v^2 + eta + I_ext + (I_exc - I_inh)*tau - (PI*r*tau)^2) /tau',
-                   'd/dt * I_exc = J*r + r_exc - I_exc/tau_exc',
-                   'd/dt * I_inh =  r_inh - I_inh/tau_inh'
-                   ]
-        inh_syn = ['d/dt * r = (delta/(PI*tau) + 2.*r*v) /tau',
-                   'd/dt * v = (v^2 + eta + I_ext + (I_exc - I_inh)*tau - (PI*r*tau)^2) /tau',
-                   'd/dt * I_exc = r_exc - I_exc/tau_exc',
-                   'd/dt * I_inh = J*r + r_inh - I_inh/tau_inh'
-                   ]
-        variables = {'delta': {'default': 1.0},
-                     'tau': {'default': 1.0},
-                     'eta': {'default': -2.5},
-                     'J': {'default': 0.0},
-                     'tau_exc': {'default': 1.0},
-                     'tau_inh': {'default': 2.0},
-                     'r': {'default': 'output'},
-                     'v': {'default': 'variable'},
-                     'I_exc': {'default': 'variable'},
-                     'I_inh': {'default': 'variable'},
-                     'I_ext': {'default': 'input'},
-                     'r_exc': {'default': 'input'},
-                     'r_inh': {'default': 'input'},
-                     }
-
-        op_exc_syn = OperatorTemplate(name='Op_exc_syn', path=None, equations=exc_syn, variables=variables)
-        op_inh_syn = OperatorTemplate(name='Op_inh_syn', path=None, equations=inh_syn, variables=variables)
-
-        pcs = NodeTemplate(name='PCs', path=None, operators=[op_exc_syn])
-        eins = NodeTemplate(name='EINs', path=None, operators={op_exc_syn: {'eta': -0.5}})
-        iins = NodeTemplate(name='IINs', path=None, operators={op_inh_syn: {'tau': 2.0, 'eta': -0.5}})
-
-        self.jrc_template = CircuitTemplate(name='jrc_template', path=None,
-                                            nodes={'PCs': pcs, 'EINs': eins, 'IINs': iins},
-                                            edges=[('PCs/Op_exc_syn/r', 'EINs/Op_exc_syn/r_exc',
-                                                    None, {'weight': 13.5}),
-                                                   ('EINs/Op_exc_syn/r', 'PCs/Op_exc_syn/r_exc',
-                                                    None, {'weight': 0.8 * 13.5}),
-                                                   ('PCs/Op_exc_syn/r', 'IINs/Op_inh_syn/r_exc',
-                                                    None, {'weight': 0.25 * 13.5}),
-                                                   ('IINs/Op_inh_syn/r', 'PCs/Op_exc_syn/r_inh',
-                                                    None, {'weight': 1.75 * 13.5})]
-                                            )
+        pass
 
     def validate(self):
         pass
 
     def simulate(self, process_id, matlab_engine=None):
-        T = 500.
+        T = 10.
         dt = 1e-3
         dts = 1e-2
         ext_input = np.random.uniform(3., 5., (int(T / dt), 1))
 
-        sys.stdout = io.StringIO()
+        # sys.stdout = io.StringIO()
 
         # run PyRates with parameter combinations
-        results, result_map = grid_search(deepcopy(self.jrc_template),
+        results, result_map = grid_search(circuit_template=f'{os.path.dirname(__file__)}/PyRates_model_template/JRC',
                                           param_grid={'w_ep': self.p['w_ein_pc'], 'w_ip': self.p['w_iin_pc']},
                                           param_map={'w_ep': {'vars': ['weight'],
-                                                              'edges': [('EINs', 'PCs')]},
+                                                              'edges': [('EIN', 'PC')]},
                                                      'w_ip': {'vars': ['weight'],
-                                                              'edges': [('IINs', 'PCs')]}},
+                                                              'edges': [('IIN', 'PC')]}},
                                           simulation_time=T, dt=dt, sampling_step_size=dts,
-                                          inputs={'PCs/Op_exc_syn/I_ext': ext_input},
-                                          outputs={'r': 'PCs/Op_exc_syn/r'},
+                                          inputs={'PC/Op_exc_syn/I_ext': ext_input},
+                                          outputs={'r': 'PC/Op_exc_syn/r'},
                                           init_kwargs={'vectorization': True},
                                           permute_grid=False,
                                           backend="numpy",  # "tensorflow"

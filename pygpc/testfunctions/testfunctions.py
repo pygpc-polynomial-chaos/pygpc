@@ -322,9 +322,9 @@ class CrossinTrayFunction(AbstractModel):
         return y_out
 
 
-class BohachevskyFunctions(AbstractModel):
+class BohachevskyFunction1(AbstractModel):
     """
-    2-dimensional Bohachevsky functions [1][2].
+    2-dimensional first Bohachevsky function [1][2].
     The Bohachevsky functions all have the same similar bowl shape. The one shown above is the first function.
 
     .. math::
@@ -383,7 +383,7 @@ class BohachevskyFunctions(AbstractModel):
 
 class PermFunction(AbstractModel):
     """
-    d-dimensional Perm function 0, d, b [1][2].
+    d-dimensional Perm function 0, D, b (beta) [1][2]. The parameter b (beta) is often assumed to be b=10.
 
     .. math::
       y = \\sum_{i=1}^{d}\\left(\\sum_{j=1}^{d}(j + \\beta)\\left(x_j^i-\\frac{1}{j^i}\\right)\\right)^2
@@ -520,7 +520,7 @@ class SixHumpCamelFunction(AbstractModel):
 
 class RotatedHyperEllipsoid(AbstractModel):
     """
-    d-dimensional Rotated-Hyper Ellipsoid Function[1][2].
+    d-dimensional Rotated-Hyper Ellipsoid Function [1][2].
     The Rotated Hyper-Ellipsoid function is continuous, convex and unimodal.
     It is an extension of the Axis Parallel Hyper-Ellipsoid function, also referred to as the Sum Squares function.
     The plot shows its two-dimensional form.
@@ -588,7 +588,7 @@ class RotatedHyperEllipsoid(AbstractModel):
 
 class SumOfDifferentPowersFunction(AbstractModel):
     """
-    d-dimensional Sum Of Different Powers Function[1][2].
+    d-dimensional Sum Of Different Powers Function [1][2].
     The Sum of Different Powers function is unimodal. It is shown here in its two-dimensional form.
 
     .. math::
@@ -598,8 +598,8 @@ class SumOfDifferentPowersFunction(AbstractModel):
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [-1, 1]
-    p["x2"]: float or ndarray of float [n_grid]
-        second parameter defined in [-1, 1]
+    p["xj"]: float or ndarray of float [n_grid]
+        j-th parameter defined in [-1, 1]
 
     Returns
     -------
@@ -622,7 +622,7 @@ class SumOfDifferentPowersFunction(AbstractModel):
 
        plot("SumOfDifferentPowersFunction", parameters, constants)
 
-    .. [1]Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
+    .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
        Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
     .. [2] https://www.sfu.ca/~ssurjano/sumpow.html
     """
@@ -657,7 +657,7 @@ class ZakharovFunction(AbstractModel):
     The Zakharov function has no local minima except the global one. It is shown here in its two-dimensional form.
 
     .. math::
-       y = \\sum_{i=1}^{d} x_i^2+\\left(\\sum_{i+1}^{d}0,5ix_i\\right)^2+\\left(\\sum_{i+1}^d0,5ix_i\\right)^4
+       y = \\sum_{i=1}^{d} x_i^2+\\left(\\sum_{i+1}^{d}0.5ix_i\\right)^2+\\left(\\sum_{i+1}^d0.5ix_i\\right)^4
 
     Parameters
     ----------
@@ -788,7 +788,7 @@ class DixonPriceFunction(AbstractModel):
     d-dimensional Dixon-Price Function [1][2].
 
     .. math::
-      y = (x_1-1)^2+\\sum_{i=2}^{2}(2x_{i}^{2}-x_{i-1})^2
+      y = (x_1-1)^2+\\sum_{i=d}^{2}(2x_{i}^{2}-x_{i-1})^2
 
     Parameters
     ----------
@@ -1013,7 +1013,7 @@ class MichalewiczFunction(AbstractModel):
 
 class DeJongFunctionFive(AbstractModel):
     """
-    2-dimensional De Jong Function Number Five [1][2].
+    2-dimensional DeJong Function Number Five [1][2].
     The fifth function of De Jong is multimodal, with very sharp drops on a mainly flat surface.
 
     .. math::
@@ -1084,7 +1084,7 @@ class DeJongFunctionFive(AbstractModel):
 
 class MatyasFunction(AbstractModel):
     """
-    2-dimensional Matyas function[1][2].
+    2-dimensional Matyas function [1][2].
     The Matyas function has no local minima except the global one.
 
     .. math::
@@ -1199,10 +1199,9 @@ class GramacyLeeFunction(AbstractModel):
         return y_out
 
 
-class SchafferFunctionVier(AbstractModel):
+class SchafferFunction4(AbstractModel):
     """
-    2-dimensional Schaffer function Nr. 4.[1][2].
-    The fourth Schaffer function. It is shown on a smaller input domain in the second plot to show detail.
+    2-dimensional Schaffer function No. 4. [1][2].
 
     .. math::
       y = 0.5+\\frac{\\cos{(\\sin{(\mid x_1^2-x_2^2 \mid )})}-0.5}{(1+0.001(x_1^2+x_2^2))^2}
@@ -1326,9 +1325,9 @@ class SphereFunction(AbstractModel):
         return y_out
 
 
-class MccormickFunction(AbstractModel):
+class McCormickFunction(AbstractModel):
     """
-    2-dimensional Mccormick Function.[1][2].
+    2-dimensional McCormick Function [1][2].
 
     .. math::
       y = \\sin(x_1+x_2)+(x_1-x_2)^2-1.5x_1+2.5x_2+1
@@ -2555,59 +2554,6 @@ class Ishigami(AbstractModel):
 
         if type(y) is not np.ndarray:
             y = np.array([y])
-
-        y_out = y[:, np.newaxis]
-
-        return y_out
-
-
-class SphereFun(AbstractModel):
-    """
-    N-dimensional sphere function with zero mean.
-
-    .. math:: y = \sum_{i=1}^{N}x_i^2
-
-    Parameters
-    ----------
-    p["x1"]: float or ndarray of float [n_grid]
-        First parameter [-1, 1]
-    p["xi"]: float or ndarray of float [n_grid]
-        i-th parameter defined in [-1, 1]
-    p["xN"]: float or ndarray of float [n_grid]
-        Nth parameter [-1, 1]
-
-    Returns
-    -------
-    y: ndarray of float [n_grid x 1]
-        Output data
-
-    Notes
-    -----
-    .. plot::
-
-       import numpy as np
-       from pygpc.testfunctions import plot_testfunction as plot
-       from collections import OrderedDict
-
-       parameters = OrderedDict()
-       parameters["x1"] = np.linspace(-1, 1, 100)
-       parameters["x2"] = np.linspace(-1, 1, 100)
-
-       plot("SphereFun", parameters)
-    """
-
-    def __init__(self):
-        pass
-
-    def validate(self):
-        pass
-
-    def simulate(self, process_id=None, matlab_engine=None):
-        # determine output
-        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
-
-        for i, key in enumerate(self.p.keys()):
-            y += self.p[key] ** 2
 
         y_out = y[:, np.newaxis]
 
