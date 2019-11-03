@@ -59,7 +59,7 @@ class TestBench(object):
         self.problem = problem
         self.fn_results = copy.deepcopy(options["fn_results"])
         self.repetitions = repetitions
-        self.problem_keys = problem.keys()
+        self.problem_keys = list(problem.keys())
 
         # Setting up parallelization (setup thread pool)
         n_cpu_available = multiprocessing.cpu_count()
@@ -82,7 +82,7 @@ class TestBench(object):
                                                      order_glob_max_norm=options["order_max_norm"],
                                                      dim=problem[key].dim)
 
-                    if "seed" in options.keys():
+                    if "seed" in list(options.keys()):
                         grid = RandomGrid(parameters_random=problem[key].parameters_random,
                                           options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": options["seed"]})
                     else:
@@ -112,12 +112,13 @@ class TestBench(object):
         Run algorithms with test problems and save results
         """
 
-        session_list = [self.session[key] for key in self.session.keys()]
+        session_list = [self.session[key] for key in list(self.session.keys())]
 
-        run_test(session_list[0])
-        # self.pool.map(self.run_test_partial, session_list)
-        # self.pool.close()
-        # self.pool.join()
+        # for session in session_list:
+        #     run_test(session)
+        self.pool.map(self.run_test_partial, session_list)
+        self.pool.close()
+        self.pool.join()
 
         print("Merging .hdf5 files ...")
         # merge .hdf5 files of repetitions
@@ -138,7 +139,7 @@ class TestBench(object):
                     f.create_group(str(rep).zfill(4))
 
                     with h5py.File(self.session[key + "_" + str(rep).zfill(4)].fn_results + ".hdf5", 'r') as g:
-                        for gkey in g.keys():
+                        for gkey in list(g.keys()):
                             g.copy(gkey, f[str(rep).zfill(4)])
 
                     # delete individual .hdf5 files
@@ -150,7 +151,7 @@ class TestBench(object):
             #         f.create_group(str(rep).zfill(4))
             #
             #         with h5py.File(os.path.splitext(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_validation_mc.hdf5", 'r') as g:
-            #             for gkey in g.keys():
+            #             for gkey in list(g.keys()):
             #                 g.copy(gkey, f[str(rep).zfill(4)])
             #
             #         # delete individual .hdf5 files
@@ -164,8 +165,7 @@ class TestBench(object):
 
         # save TestBench object
         print("Saving testbench.pkl object ...")
-        with open(os.path.join(self.fn_results, "testbench.pkl"), 'wb') as output:
-            pickle.dump(self, output, -1)
+        write_gpc_pkl(self, os.path.join(self.fn_results, "testbench.pkl"))
 
 
 class TestBenchContinuous(TestBench):
@@ -201,8 +201,8 @@ class TestBenchContinuous(TestBench):
         # create validation sets
         for p in problem:
             gpc = GPC(problem=problem[p], options=None, validation=None)
-            gpc.create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
-            self.validation = gpc.validation
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchContinuous, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 
@@ -235,7 +235,6 @@ class TestBenchContinuousND(TestBench):
         problem = OrderedDict()
 
         for d in dims:
-            gpc = GPC(problem=problem[p], options=None, validation=None)
             problem["ManufactureDecay_{}D".format(d)] = ManufactureDecay(dim=d).problem
             problem["GenzContinuous_{}D".format(d)] = GenzContinuous(dim=d).problem
             problem["GenzCornerPeak_{}D".format(d)] = GenzCornerPeak(dim=d).problem
@@ -243,12 +242,14 @@ class TestBenchContinuousND(TestBench):
             problem["GenzOscillatory_{}D".format(d)] = GenzOscillatory(dim=d).problem
             problem["GenzProductPeak_{}D".format(d)] = GenzProductPeak(dim=d).problem
             problem["Ridge_{}D".format(d)] = Ridge(dim=d).problem
-            problem["SphereFun_{}D".format(d)] = SphereFun(dim=d).problem
+            problem["SphereFun_{}D".format(d)] = SphereFunction(dim=d).problem
             problem["GFunction_{}D".format(d)] = GFunction(dim=d).problem
 
         # create validation sets
         for p in problem:
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchContinuousND, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 
@@ -284,7 +285,8 @@ class TestBenchContinuousHD(TestBench):
         # create validation sets
         for p in problem:
             gpc = GPC(problem=problem[p], options=None, validation=None)
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchContinuousHD, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 
@@ -321,7 +323,8 @@ class TestBenchDiscontinuous(TestBench):
         # create validation sets
         for p in problem:
             gpc = GPC(problem=problem[p], options=None, validation=None)
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchDiscontinuous, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 

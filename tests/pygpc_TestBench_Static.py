@@ -2,11 +2,14 @@ import pygpc
 import copy
 import os
 
-folder = "/data/pt_01756/tmp/TestBench"
-n_cpu = 16
-repetitions = 3
-order = [2, 4, 6, 8, 10, 12, 14]  # 2, 4, 6, 8, 10, 12, 14
-dims = [2, 3, 4, 5]
+folder = "/home/kporzig/tmp/TestBench"
+n_cpu = 8
+repetitions = 2
+# order = [2, 4, 6, 8, 10, 12, 14]  # 2, 4, 6, 8, 10, 12, 14
+# dims = [2, 3, 4, 5]
+
+order = [6, 10]  # 2, 4, 6, 8, 10, 12, 14
+dims = [2, 3]
 
 ##########
 # Static #
@@ -49,7 +52,7 @@ for g_e in gradient_enhanced:
             #                                                     dims=dims,
             #                                                     n_cpu=n_cpu)
             # TestBenchContinuousND.run()
-            #
+
             # options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuous/{}_{}_q_{}_ge_{}".format(
             #     algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
             # TestBenchDiscontinuous = pygpc.TestBenchDiscontinuous(algorithm=algorithm,
