@@ -114,6 +114,7 @@ class TestBench(object):
 
         session_list = [self.session[key] for key in list(self.session.keys())]
 
+
         # for session in session_list:
         #     run_test(session)
         self.pool.map(self.run_test_partial, session_list)
