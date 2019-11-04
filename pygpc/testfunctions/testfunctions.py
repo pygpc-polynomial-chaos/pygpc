@@ -64,43 +64,40 @@ def plot_testfunction(testfunction_name: object, parameters: object, constants: 
 
     y = model.simulate()
 
-    # fig, ax = plt.subplots(n_qoi, figsize=(6, ((n_qoi-1)*0.85+1) * 5), sharex=False, sharey=False)
-    fig = plt.figure(figsize=(7, ((n_qoi - 1) * 0.85 + 1) * 5))
-    ax = fig.gca(projection='3d')
+    fig = plt.figure(figsize=(6, ((n_qoi-1)*0.85+1) * 5))
 
-    if type(ax) is not np.ndarray:
-        ax = np.array([ax])
+    for i, o in enumerate(output_idx):
+        ax = fig.add_subplot(n_qoi, 1, i+1, projection='3d')
 
-    for o in output_idx:
         # omit "additional_data" if present
         if type(y) is tuple:
             y = y[0]
 
         if len(p_names) == 2:
-            # im = ax[o].pcolor(x1,
-            #                   x2,
-            #                   np.reshape(y[:, o],
-            #                              (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
-            #                              order='c'),
-            #                   cmap="jet")
+            # im = ax.pcolor(x1,
+            #                x2,
+            #                np.reshape(y[:, o],
+            #                           (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
+            #                           order='c'),
+            #                cmap="jet")
 
-            im = ax[o].plot_surface(x1,
-                                    x2,
-                                    np.reshape(y[:, o],
-                                               (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
-                                               order='c'),
-                                    cmap="jet")
+            im = ax.plot_surface(x1,
+                                 x2,
+                                 np.reshape(y[:, o],
+                                            (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
+                                            order='c'),
+                                 cmap="jet")
 
-            ax[o].set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
-            fig.colorbar(im, ax=ax[o], orientation='vertical')
+            ax.set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
+            fig.colorbar(im, ax=ax, orientation='vertical')
 
         else:
-            ax[o].plot(parameters[p_names[0]], y)
-            ax[o].set_ylabel(r"$y({})$".format(p_names[0]), fontsize=12)
+            ax.plot(parameters[p_names[0]], y)
+            ax.set_ylabel(r"$y({})$".format(p_names[0]), fontsize=12)
 
-        ax[o].set_xlabel(r"${}$".format(p_names[0]), fontsize=12)
+        ax.set_xlabel(r"${}$".format(p_names[0]), fontsize=12)
 
-    ax[0].set_title("{} function".format(model.__class__.__name__))
+    ax.set_title("{} function".format(model.__class__.__name__))
     plt.tight_layout()
     plt.show()
 
@@ -156,10 +153,13 @@ class Ackley(AbstractModel):
     .. [1] Adorio, E. P., & Diliman, U. P. MVF - Multivariate Test Functions Library in C
        for Unconstrained Global Optimization (2005). Retrieved June 2013,
        from http://http://www.geocities.ws/eadorio/mvf.pdf
+
     .. [2] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
        Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
+
     .. [3] Back, T. (1996). Evolutionary algorithms in theory and practice: evolution strategies,
        evolutionary programming, genetic algorithms. Oxford University Press on Demand
+
     .. [4] https://www.sfu.ca/~ssurjano/ackley.html
     """
 
@@ -241,6 +241,7 @@ class BukinFunctionNumber6(AbstractModel):
 
     .. [1] Global Optimization Test Functions Index. Retrieved June 2013, from
        http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
+
     .. [2] https://www.sfu.ca/~ssurjano/bukin6.html
 
     """
@@ -358,7 +359,7 @@ class BohachevskyFunction1(AbstractModel):
 
        constants = None
 
-       plot("BohachevskyFunctions", parameters, constants)
+       plot("BohachevskyFunction1", parameters, constants)
 
     .. [1] Global Optimization x_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7 Test Problems.
        Retrieved June 2013, from http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
@@ -1232,10 +1233,11 @@ class SchafferFunction4(AbstractModel):
 
        constants = None
 
-       plot("SchafferFunctionVier", parameters, constants)
+       plot("SchafferFunction4", parameters, constants)
 
     .. [1] Test functions for optimization. In Wikipedia.
        Retrieved June 2013, from https://en.wikipedia.org/wiki/Test_functions_for_optimization.
+
     .. [2] https://www.sfu.ca/~ssurjano/schaffer4.html
     """
 
@@ -1358,10 +1360,11 @@ class McCormickFunction(AbstractModel):
 
        constants = None
 
-       plot("MccormickFunction", parameters, constants)
+       plot("McCormickFunction", parameters, constants)
 
     .. [1] Adorio, E. P., & Diliman, U. P. MVF - Multivariate Test Functions Library in C for Unconstrained
        Global Optimization (2005). Retrieved June 2013, from http://http://www.geocities.ws/eadorio/mvf.pdf.
+
     .. [2] https://www.sfu.ca/~ssurjano/mccorm.html
     """
 

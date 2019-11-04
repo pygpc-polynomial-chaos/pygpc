@@ -23,11 +23,29 @@ def run_test(session):
     session, coeffs, results = session.run()
 
     # Post-process gPC
-    # get_sensitivities_hdf5(fn_gpc=algorithm.options["fn_results"],
-    #                        output_idx=None,
-    #                        calc_sobol=True,
-    #                        calc_global_sens=True,
-    #                        calc_pdf=True)
+    get_sensitivities_hdf5(fn_gpc=session.fn_results,
+                           output_idx=None,
+                           calc_sobol=True,
+                           calc_global_sens=True,
+                           calc_pdf=True)
+
+    # Validate gPC vs original model function (2D-surface)
+    if len(list(session.parameters_random.keys())) == 1:
+        random_vars = list(session.parameters_random.keys())
+        n_grid = [101]
+    else:
+        random_vars = list(session.parameters_random.keys())[0:2]
+        n_grid = [51, 51]
+
+    validate_gpc_plot(session=session,
+                      coeffs=coeffs,
+                      random_vars=random_vars,
+                      n_grid=n_grid,
+                      output_idx=0,
+                      fn_out=session.fn_results + "_val",
+                      n_cpu=session.n_cpu)
+
+    return session
 
 
 class TestBench(object):
@@ -114,12 +132,15 @@ class TestBench(object):
 
         session_list = [self.session[key] for key in list(self.session.keys())]
 
-
         # for session in session_list:
         #     run_test(session)
-        self.pool.map(self.run_test_partial, session_list)
+        session_list = self.pool.map(self.run_test_partial, session_list)
         self.pool.close()
         self.pool.join()
+
+        # transform session list back to dict
+        for i, key in enumerate(self.session_keys):
+            self.session[key] = session_list[i]
 
         print("Merging .hdf5 files ...")
         # merge .hdf5 files of repetitions
@@ -129,6 +150,7 @@ class TestBench(object):
             print(key)
             if isinstance(self.session[key + "_0000"].algorithm, Static) or \
                     isinstance(self.session[key + "_0000"].algorithm, StaticProjection):
+
                 fn_hdf5 = os.path.join(self.fn_results, key + "_p_{}".format(
                     self.session[key + "_0000"].gpc[0].options["order"][0])) + ".hdf5"
             else:
@@ -193,11 +215,17 @@ class TestBenchContinuous(TestBench):
 
         # set up test problems
         problem = OrderedDict()
-        problem["Peaks"] = Peaks().problem
+        problem["BohachevskyFunction1"] = BohachevskyFunction1().problem
+        problem["BoothFunction"] = BoothFunction().problem
+        problem["BukinFunctionNumber6"] = BukinFunctionNumber6().problem
         problem["Franke"] = Franke().problem
-        problem["Lim2002"] = Lim2002().problem
         problem["Ishigami_2D"] = Ishigami(dim=2).problem
         problem["Ishigami_3D"] = Ishigami(dim=3).problem
+        problem["Lim2002"] = Lim2002().problem
+        problem["MatyasFunction"] = MatyasFunction().problem
+        problem["McCormickFunction"] = McCormickFunction().problem
+        problem["Peaks"] = Peaks().problem
+        problem["SixHumpCamelFunction"] = SixHumpCamelFunction().problem
 
         # create validation sets
         for p in problem:
@@ -236,15 +264,21 @@ class TestBenchContinuousND(TestBench):
         problem = OrderedDict()
 
         for d in dims:
-            problem["ManufactureDecay_{}D".format(d)] = ManufactureDecay(dim=d).problem
+            problem["DixonPriceFunction{}D".format(d)] = DixonPriceFunction(dim=d).problem
             problem["GenzContinuous_{}D".format(d)] = GenzContinuous(dim=d).problem
             problem["GenzCornerPeak_{}D".format(d)] = GenzCornerPeak(dim=d).problem
             problem["GenzGaussianPeak_{}D".format(d)] = GenzGaussianPeak(dim=d).problem
             problem["GenzOscillatory_{}D".format(d)] = GenzOscillatory(dim=d).problem
             problem["GenzProductPeak_{}D".format(d)] = GenzProductPeak(dim=d).problem
-            problem["Ridge_{}D".format(d)] = Ridge(dim=d).problem
-            problem["SphereFun_{}D".format(d)] = SphereFunction(dim=d).problem
             problem["GFunction_{}D".format(d)] = GFunction(dim=d).problem
+            problem["ManufactureDecay_{}D".format(d)] = ManufactureDecay(dim=d).problem
+            problem["PermFunction{}D".format(d)] = PermFunction(dim=d).problem
+            problem["Ridge_{}D".format(d)] = Ridge(dim=d).problem
+            problem["RosenbrockFunction{}D".format(d)] = RosenbrockFunction(dim=d).problem
+            problem["RotatedHyperEllipsoid{}D".format(d)] = RotatedHyperEllipsoid(dim=d).problem
+            problem["SphereFunction{}D".format(d)] = SphereFunction(dim=d).problem
+            problem["SumOfDifferentPowersFunction{}D".format(d)] = SumOfDifferentPowersFunction(dim=d).problem
+            problem["ZakharovFunction{}D".format(d)] = ZakharovFunction(dim=d).problem
 
         # create validation sets
         for p in problem:
@@ -316,6 +350,8 @@ class TestBenchDiscontinuous(TestBench):
 
         # set up test problems
         problem = OrderedDict()
+        problem["Cluster3Simple"] = Cluster3Simple().problem
+        problem["DeJongFunctionFive"] = DeJongFunctionFive().problem
         problem["HyperbolicTangent"] = HyperbolicTangent().problem
         problem["MovingParticleFrictionForce"] = MovingParticleFrictionForce().problem
         problem["SurfaceCoverageSpecies_2D"] = SurfaceCoverageSpecies(dim=2).problem
@@ -358,10 +394,88 @@ class TestBenchDiscontinuousND(TestBench):
         problem = OrderedDict()
         for d in dims:
             problem["GenzDiscontinuous_{}D".format(d)] = GenzDiscontinuous().problem
+            problem["MichalewiczFunction{}D".format(d)] = MichalewiczFunction().problem
 
         # create validation sets
         for p in problem:
             gpc = GPC(problem=problem[p], options=None, validation=None)
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchDiscontinuousND, self).__init__(algorithm, problem, options, repetitions, n_cpu)
+
+
+class TestBenchNoisy(TestBench):
+    """
+    TestBenchNoisy
+    """
+    def __init__(self, algorithm, options, repetitions, n_cpu=1):
+        """
+        Initializes TestBenchNoisy class. Setting up pygpc.Problem instances.
+
+        Parameters
+        ----------
+        algorithm : pygpc.Algorithm Object
+            Algorithm to benchmark
+        options : Dict or OrderedDict()
+            Algorithm options
+        repetitions : int
+            Number of repeated runs
+        n_cpu : int
+            Number of threads to run pygpc.Problems in parallel
+        """
+        self.dims = []
+        self.validation = OrderedDict()
+
+        # set up test problems
+        problem = OrderedDict()
+        problem["CrossinTrayFunction"] = CrossinTrayFunction().problem
+        problem["DropWaveFunction"] = DropWaveFunction().problem
+        problem["GramacyLeeFunction"] = GramacyLeeFunction().problem
+        problem["SchafferFunction4"] = SchafferFunction4().problem
+
+        # create validation sets
+        for p in problem:
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
+
+        super(TestBenchNoisy, self).__init__(algorithm, problem, options, repetitions, n_cpu)
+
+
+class TestBenchNoisyND(TestBench):
+    """
+    TestBenchNoisyND
+    """
+    def __init__(self, algorithm, options, dims, repetitions, n_cpu=1):
+        """
+        Initializes TestBenchNoisyND class. Setting up pygpc.Problem instances.
+
+        Parameters
+        ----------
+        algorithm : pygpc.Algorithm Object
+            Algorithm to benchmark
+        options : Dict or OrderedDict()
+            Algorithm options
+        dims : list of int
+            Number of dimensions
+        repetitions : int
+            Number of repeated runs
+        n_cpu : int
+            Number of threads to run pygpc.Problems in parallel
+        """
+        self.dims = dims
+        self.validation = OrderedDict()
+
+        # set up test problems
+        problem = OrderedDict()
+        for d in dims:
+            problem["Ackley{}D".format(d)] = Ackley().problem
+
+        # create validation sets
+        for p in problem:
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
+
+        super(TestBenchNoisyND, self).__init__(algorithm, problem, options, repetitions, n_cpu)

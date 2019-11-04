@@ -234,7 +234,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
         for i_p, p in enumerate(random_vars):
             x.append(np.unique(coords[:, i_p]))
 
-    grid[:, (grid == 0).all(axis=0)] = coords
+    grid[:, idx] = coords
 
     # Normalize grid
     grid_norm = Grid(parameters_random=session.parameters_random).get_normalized_coordinates(grid)
@@ -360,7 +360,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
             plt.tight_layout()
 
         if fn_out is not None:
-            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=600)
+            # plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=600)
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
 
 
