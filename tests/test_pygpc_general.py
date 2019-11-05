@@ -9,7 +9,7 @@ import os
 import shutil
 
 # test options
-folder = './tmp '    # output folder
+folder = './tmp'    # output folder
 # folder = '/NOBACKUP2/tmp'    # output folder
 plot = False         # plot and save output
 gpu = False          # test GPU functionality
