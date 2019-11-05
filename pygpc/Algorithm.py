@@ -6,7 +6,6 @@ import time
 import shutil
 from .Problem import *
 from .SGPC import *
-from .io import write_gpc_pkl
 from .misc import determine_projection_matrix
 from .misc import get_num_coeffs_sparse
 from .misc import ten2mat
@@ -146,7 +145,8 @@ class Algorithm(object):
                 self.options["solver"] = 'NumInt'
                 self.options["settings"] = None
             elif self.options["method"] == "reg" and not (self.options["solver"] == "Moore-Penrose" or
-                                                          self.options["solver"] == "OMP"):
+                                                          self.options["solver"] == "OMP" or
+                                                          self.options["solver"] == "LarsLasso"):
                 raise AssertionError("Please specify 'Moore-Penrose' or 'OMP' as solver for 'reg' method")
 
         if "n_cpu" in self.options.keys():
@@ -182,11 +182,10 @@ class Algorithm(object):
             else:
                 self.options["settings"] = {"alpha": 1e-5}
 
-
         if "verbose" not in self.options.keys():
             self.options["verbose"] = True
 
-    def get_gradient(self, grid, results, com, gradient_results=None):
+    def get_gradient(self, grid, results, com, gradient_results=None, i_iter=None, i_subiter=None):
         """
         Determines the gradient of the model function in the grid points (self.grid.coords).
         The method to determine the gradient can be specified in self.options["gradient_calculation"] to be either:
@@ -205,6 +204,10 @@ class Algorithm(object):
             Computation class instance to run the computations
         gradient_results : ndarray of float [n_grid_old x n_out x dim], optional, default: None
             Gradient of model function in grid points, already determined in previous calculations.
+        i_iter : int (optional, default: None)
+            Current iteration
+        i_subiter : int (optional, default: None)
+            Current sub-iteration
 
         Returns
         -------
@@ -228,10 +231,11 @@ class Algorithm(object):
                                                problem=self.problem,
                                                coords=ten2mat(grid.coords_gradient[n_gradient_results:, :, :]),
                                                coords_norm=ten2mat(grid.coords_gradient_norm[n_gradient_results:, :, :]),
-                                               i_iter=None,
-                                               i_subiter=None,
+                                               i_iter=i_iter,
+                                               i_subiter=i_subiter,
                                                fn_results=None,
-                                               print_func_time=self.options["print_func_time"])
+                                               print_func_time=self.options["print_func_time"],
+                                               increment_grid=False)
 
                 delta = np.repeat(np.linalg.norm(
                     ten2mat(grid.coords_gradient_norm[n_gradient_results:, :, :]) - \
@@ -320,7 +324,6 @@ class Static(Algorithm):
         if "interaction_order" not in self.options.keys():
             self.options["interaction_order"] = self.problem.dim
 
-
     def run(self):
         """
         Runs static gPC algorithm to solve problem.
@@ -399,7 +402,9 @@ class Static(Algorithm):
             start_time = time.time()
             grad_res_3D = self.get_gradient(grid=gpc.grid,
                                             results=res,
-                                            com=com)
+                                            com=com,
+                                            i_iter=gpc.order_max,
+                                            i_subiter=gpc.interaction_order)
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
 
@@ -425,12 +430,9 @@ class Static(Algorithm):
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
 
-            fn_gpc_pkl = fn_results + '.pkl'
-            write_gpc_pkl(gpc, fn_gpc_pkl)
-
             with h5py.File(fn_results + ".hdf5", "a") as f:
 
-                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_gpc_pkl)[1]]).astype("|S"))
+                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
                 f.create_dataset("grid/coords", data=gpc.grid.coords, maxshape=None, dtype="float64")
@@ -604,7 +606,9 @@ class MEStatic(Algorithm):
             start_time = time.time()
             grad_res_3D_all = self.get_gradient(grid=grid,
                                                 results=res_all,
-                                                com=com)
+                                                com=com,
+                                                i_iter=self.options["order_max"],
+                                                i_subiter=self.options["interaction_order"])
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
 
@@ -692,21 +696,14 @@ class MEStatic(Algorithm):
             # save data
             if self.options["fn_results"]:
 
-                fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
-
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -726,9 +723,8 @@ class MEStatic(Algorithm):
                                          data=megpc[i_qoi].gpc[i_gpc].gpc_matrix,
                                          maxshape=None, dtype="float64")
 
-                    if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
-                        if self.options["gradient_enhanced"]:
-                            for i_gpc in range(megpc[i_qoi].n_gpc):
+                        if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
+                            if self.options["gradient_enhanced"]:
                                 f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(i_gpc),
                                                  data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
                                                  maxshape=None, dtype="float64")
@@ -736,6 +732,16 @@ class MEStatic(Algorithm):
         if self.options["fn_results"]:
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
+
+                try:
+                    del f["grid/coords"]
+                    del f["grid/coords_norm"]
+                    del f["grid/coords_gradient"]
+                    del f["grid/coords_gradient_norm"]
+
+                except KeyError:
+                    pass
+
                 f.create_dataset("grid/coords", data=grid.coords,
                                  maxshape=None, dtype="float64")
                 f.create_dataset("grid/coords_norm", data=grid.coords_norm,
@@ -767,10 +773,7 @@ class MEStatic(Algorithm):
 
         com.close()
 
-        if n_qoi == 1:
-            return megpc[0], coeffs[0], res
-        else:
-            return megpc, coeffs, res
+        return megpc, coeffs, res
 
 
 class StaticProjection(Algorithm):
@@ -896,7 +899,9 @@ class StaticProjection(Algorithm):
         start_time = time.time()
         grad_res_3D_all = self.get_gradient(grid=grid_original,
                                             results=res_all,
-                                            com=com)
+                                            com=com,
+                                            i_iter=self.options["order_max"],
+                                            i_subiter=self.options["interaction_order"])
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
@@ -997,7 +1002,9 @@ class StaticProjection(Algorithm):
                     grad_res_3D_all = self.get_gradient(grid=grid_original,
                                                         results=res_all,
                                                         com=com,
-                                                        gradient_results=grad_res_3D_all)
+                                                        gradient_results=grad_res_3D_all,
+                                                        i_iter=self.options["order_max"],
+                                                        i_subiter=self.options["interaction_order"])
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
@@ -1058,21 +1065,14 @@ class StaticProjection(Algorithm):
             # save gpc objects and gpc coeffs
             if self.options["fn_results"]:
 
-                fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                write_gpc_pkl(gpc[i_qoi], fn_gpc_pkl_qoi)
-
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     f.create_dataset("error" + hdf5_subfolder,
                                      data=eps,
@@ -1129,10 +1129,7 @@ class StaticProjection(Algorithm):
 
         com.close()
 
-        if n_qoi == 1:
-            return gpc[0], coeffs[0], res_all
-        else:
-            return gpc, coeffs, res_all
+        return gpc, coeffs, res_all
 
 
 class MEStaticProjection(Algorithm):
@@ -1260,7 +1257,9 @@ class MEStaticProjection(Algorithm):
         start_time = time.time()
         grad_res_3D_all = self.get_gradient(grid=grid,
                                             results=res_all,
-                                            com=com)
+                                            com=com,
+                                            i_iter=self.options["order_max"],
+                                            i_subiter=self.options["interaction_order"])
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
@@ -1385,7 +1384,9 @@ class MEStaticProjection(Algorithm):
                     grad_res_3D_all = self.get_gradient(grid=grid,
                                                         results=res,
                                                         com=com,
-                                                        gradient_results=grad_res_3D_all)
+                                                        gradient_results=grad_res_3D_all,
+                                                        i_iter=self.options["order_max"],
+                                                        i_subiter=self.options["interaction_order"])
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
@@ -1452,21 +1453,14 @@ class MEStaticProjection(Algorithm):
             # save data
             if self.options["fn_results"]:
 
-                fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
-
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -1486,9 +1480,8 @@ class MEStaticProjection(Algorithm):
                                          data=megpc[i_qoi].gpc[i_gpc].gpc_matrix,
                                          maxshape=None, dtype="float64")
 
-                    if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
-                        if self.options["gradient_enhanced"]:
-                            for i_gpc in range(megpc[i_qoi].n_gpc):
+                        if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
+                            if self.options["gradient_enhanced"]:
                                 f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(i_gpc),
                                                  data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
                                                  maxshape=None, dtype="float64")
@@ -1501,6 +1494,16 @@ class MEStaticProjection(Algorithm):
         if self.options["fn_results"]:
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
+
+                try:
+                    del f["grid/coords"]
+                    del f["grid/coords_norm"]
+                    del f["grid/coords_gradient"]
+                    del f["grid/coords_gradient_norm"]
+
+                except KeyError:
+                    pass
+
                 f.create_dataset("grid/coords", data=grid.coords,
                                  maxshape=None, dtype="float64")
                 f.create_dataset("grid/coords_norm", data=grid.coords_norm,
@@ -1532,10 +1535,7 @@ class MEStaticProjection(Algorithm):
 
         com.close()
 
-        if n_qoi == 1:
-            return megpc[0], coeffs[0], res
-        else:
-            return megpc, coeffs, res
+        return megpc, coeffs, res
 
 
 class RegAdaptive(Algorithm):
@@ -1622,6 +1622,7 @@ class RegAdaptive(Algorithm):
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
 
         # Initialize Reg gPC object
+        print("Initializing gPC object...")
         gpc = Reg(problem=self.problem,
                   order=self.options["order_start"] * np.ones(self.problem.dim),
                   order_max=self.options["order_start"],
@@ -1651,6 +1652,7 @@ class RegAdaptive(Algorithm):
         gpc.options = copy.deepcopy(self.options)
 
         # Initialize gpc matrix
+        print("Initializing gPC matrix...")
         gpc.init_gpc_matrix()
         gpc.n_grid.pop(0)
         gpc.n_basis.pop(0)
@@ -1734,8 +1736,8 @@ class RegAdaptive(Algorithm):
                                           problem=gpc.problem,
                                           coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
                                           coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
-                                          i_iter=order,
-                                          i_subiter=gpc.interaction_order_current,
+                                          i_iter=basis_order[0],
+                                          i_subiter=basis_order[1],
                                           fn_results=gpc.fn_results,
                                           print_func_time=self.options["print_func_time"])
 
@@ -1753,7 +1755,9 @@ class RegAdaptive(Algorithm):
                             grad_res_3D = self.get_gradient(grid=gpc.grid,
                                                             results=res,
                                                             com=com,
-                                                            gradient_results=grad_res_3D)
+                                                            gradient_results=grad_res_3D,
+                                                            i_iter=basis_order[0],
+                                                            i_subiter=basis_order[1])
                             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                    tab=0, verbose=self.options["verbose"])
 
@@ -1797,9 +1801,6 @@ class RegAdaptive(Algorithm):
             # save gpc object and coeffs for this sub-iteration
             if self.options["fn_results"]:
 
-                fn_gpc_pkl = fn_results + '.pkl'
-                write_gpc_pkl(gpc, fn_gpc_pkl)
-
                 with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
                     # overwrite coeffs
@@ -1821,8 +1822,22 @@ class RegAdaptive(Algorithm):
                                              dtype="float64",
                                              data=grad_res_2D)
 
-                # save gpc matrix in .hdf5 file
-                gpc.save_gpc_matrix_hdf5()
+                    try:
+                        del f["gpc_matrix"]
+                    except KeyError:
+                        pass
+                    f.create_dataset("gpc_matrix",
+                                     data=gpc.gpc_matrix,
+                                     maxshape=None, dtype="float64")
+
+                    if gpc.gpc_matrix_gradient is not None:
+                        try:
+                            del f["gpc_matrix_gradient"]
+                        except KeyError:
+                            pass
+                        f.create_dataset("gpc_matrix_gradient",
+                                         data=gpc.gpc_matrix_gradient,
+                                         maxshape=None, dtype="float64")
 
         # determine gpc coefficients
         coeffs = gpc.solve(results=res,
@@ -1833,15 +1848,31 @@ class RegAdaptive(Algorithm):
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"]:
-            write_gpc_pkl(gpc, os.path.splitext(self.options["fn_results"])[0] + '.pkl')
 
             with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
                 if "coeffs" in f.keys():
                     del f['coeffs']
                 f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
 
+                try:
+                    del f["gpc_matrix"]
+                except KeyError:
+                    pass
+                f.create_dataset("gpc_matrix",
+                                 data=gpc.gpc_matrix,
+                                 maxshape=None, dtype="float64")
+
+                if gpc.gpc_matrix_gradient is not None:
+                    try:
+                        del f["gpc_matrix_gradient"]
+                    except KeyError:
+                        pass
+                    f.create_dataset("gpc_matrix_gradient",
+                                     data=gpc.gpc_matrix_gradient,
+                                     maxshape=None, dtype="float64")
+
                 # misc
-                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_gpc_pkl)[1]]).astype("|S"))
+                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
 
@@ -1993,7 +2024,9 @@ class MERegAdaptiveProjection(Algorithm):
             start_time = time.time()
             grad_res_3D_all = self.get_gradient(grid=grid,
                                                 results=res_all,
-                                                com=com)
+                                                com=com,
+                                                i_iter=self.options["order_start"],
+                                                i_subiter=self.options["interaction_order"])
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
 
@@ -2117,6 +2150,8 @@ class MERegAdaptiveProjection(Algorithm):
                                             seed=None,
                                             domain=d)
 
+                    megpc[i_qoi].grid = copy.deepcopy(grid)
+
             if grid.n_grid > i_grid:
 
                 # Run some more initial simulations
@@ -2130,8 +2165,8 @@ class MERegAdaptiveProjection(Algorithm):
                                   problem=self.problem,
                                   coords=grid.coords[i_grid:, ],
                                   coords_norm=grid.coords_norm[i_grid:, ],
-                                  i_iter=self.options["order_start"],
-                                  i_subiter=self.options["interaction_order"],
+                                  i_iter=None,
+                                  i_subiter=None,
                                   fn_results=os.path.splitext(self.options["fn_results"])[0],
                                   print_func_time=self.options["print_func_time"])
 
@@ -2148,11 +2183,18 @@ class MERegAdaptiveProjection(Algorithm):
                     grad_res_3D_all = self.get_gradient(grid=grid,
                                                         results=res_all,
                                                         com=com,
-                                                        gradient_results=grad_res_3D_all)
+                                                        gradient_results=grad_res_3D_all,
+                                                        i_iter=None,
+                                                        i_subiter=None)
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
                 megpc[i_qoi].grid = copy.deepcopy(grid)
+
+                # update classifier
+                iprint("Updating classifier ...", tab=0, verbose=self.options["verbose"])
+                megpc[i_qoi].update_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                               results=res_all[:, q_idx][:, np.newaxis])
 
             # create validation set if necessary
             if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
@@ -2212,7 +2254,7 @@ class MERegAdaptiveProjection(Algorithm):
                                    problem=self.problem,
                                    coords=coords_disc,
                                    coords_norm=coords_norm_disc,
-                                   i_iter=None,
+                                   i_iter="Domain boundary",
                                    i_subiter=None,
                                    fn_results=os.path.splitext(self.options["fn_results"])[0],  # + "_temp"
                                    print_func_time=self.options["print_func_time"])
@@ -2229,7 +2271,9 @@ class MERegAdaptiveProjection(Algorithm):
                     grad_res_3D_all = self.get_gradient(grid=grid,
                                                         results=res_all,
                                                         com=com,
-                                                        gradient_results=grad_res_3D_all)
+                                                        gradient_results=grad_res_3D_all,
+                                                        i_iter="Domain boundary",
+                                                        i_subiter=None)
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
@@ -2255,15 +2299,22 @@ class MERegAdaptiveProjection(Algorithm):
                                                results=res_all[:, q_idx][:, np.newaxis])
 
                 # update sub-gPCs if number of domains changed
-                if len(np.unique(megpc[i_qoi].domains)) > len(megpc[i_qoi].gpc):
+                if len(np.unique(megpc[i_qoi].domains)) != len(megpc[i_qoi].gpc):
 
                     iprint("New domains found! Updating number of sub-gPCs from {} to {} ".
                            format(len(megpc[i_qoi].gpc), len(np.unique(megpc[i_qoi].domains))),
                            tab=0, verbose=self.options["verbose"])
 
-                    del megpc[i_qoi].gpc
+                    megpc[i_qoi].gpc = None
 
-                    basis_order.append([self.options["order_start"], self.options["interaction_order"]])
+                    megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                                 results=res_all[:, q_idx][:, np.newaxis],
+                                                 algorithm=self.options["classifier"],
+                                                 options=self.options["classifier_options"])
+
+                    basis_order["poly_dom_{}".format(d)][0] = self.options["order_start"]
+                    basis_order["poly_dom_{}".format(d)][1] = self.options["interaction_order"]
+
                     eps = np.hstack((eps, np.array(self.options["eps"] + 1)))
 
                     for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
@@ -2501,7 +2552,9 @@ class MERegAdaptiveProjection(Algorithm):
                                         grad_res_3D_all = self.get_gradient(grid=grid,
                                                                             results=res_all,
                                                                             com=com,
-                                                                            gradient_results=grad_res_3D_all)
+                                                                            gradient_results=grad_res_3D_all,
+                                                                            i_iter=basis_order["poly_dom_{}".format(d)][0],
+                                                                            i_subiter=basis_order["poly_dom_{}".format(d)][1])
                                         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                                tab=0, verbose=self.options["verbose"])
 
@@ -2625,9 +2678,6 @@ class MERegAdaptiveProjection(Algorithm):
                     # save gpc object and coeffs for this sub-iteration
                     if self.options["fn_results"]:
 
-                        fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                        write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
-
                         with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
                             # overwrite coeffs
@@ -2720,7 +2770,7 @@ class MERegAdaptiveProjection(Algorithm):
 
             # determine gpc coefficients
             if self.options["gradient_enhanced"]:
-                grad_res_3D_passed = grad_res_3D[:, q_idx, :][:, np.newaxis, :]
+                grad_res_3D_passed = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
             else:
                 grad_res_3D_passed = None
 
@@ -2733,19 +2783,15 @@ class MERegAdaptiveProjection(Algorithm):
 
             # save gpc object and gpc coeffs
             if self.options["fn_results"]:
-                write_gpc_pkl(megpc[i_qoi], fn_gpc_pkl_qoi)
 
                 with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl", data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     try:
                         del f["grid"]
@@ -2775,18 +2821,46 @@ class MERegAdaptiveProjection(Algorithm):
                         f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D),
                                          maxshape=None, dtype="float64")
 
-                    f.create_dataset("misc/error_type", data=self.options["error_type"])
+                    try:
+                        f.create_dataset("misc/error_type", data=self.options["error_type"])
+                    except RuntimeError:
+                        pass
 
                     if megpc[0].validation is not None:
-                        f.create_dataset("validation/results", data=megpc[0].validation.results,
-                                         maxshape=None, dtype="float64")
-                        f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
-                                         maxshape=None, dtype="float64")
-                        f.create_dataset("validation/grid/coords_norm", data=megpc[0].validation.grid.coords_norm,
+                        try:
+                            del f["validation"]
+                        except KeyError:
+                            f.create_dataset("validation/results", data=megpc[0].validation.results,
+                                             maxshape=None, dtype="float64")
+                            f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
+                                             maxshape=None, dtype="float64")
+                            f.create_dataset("validation/grid/coords_norm", data=megpc[0].validation.grid.coords_norm,
+                                             maxshape=None, dtype="float64")
+
+                    # save gpc matrix
+                    for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
+                        try:
+                            del f["gpc_matrix" + hdf5_subfolder + "/dom_" + str(d)]
+                        except KeyError:
+                            pass
+                        f.create_dataset("gpc_matrix" + hdf5_subfolder + "/dom_" + str(d),
+                                         data=megpc[i_qoi].gpc[d].gpc_matrix,
                                          maxshape=None, dtype="float64")
 
+                        # save gradient gpc matrix
+                        if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
+                            try:
+                                del f["gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(d)]
+                            except KeyError:
+                                pass
+                            if self.options["gradient_enhanced"]:
+                                f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(d),
+                                                 data=megpc[i_qoi].gpc[d].gpc_matrix_gradient,
+                                                 maxshape=None, dtype="float64")
+
                     try:
-                        del f["coeffs"]
+                        for i_gpc in range(megpc[i_qoi].n_gpc):
+                            del f["coeffs" + hdf5_subfolder + "/dom_" + str(i_gpc)]
                     except KeyError:
                         pass
 
@@ -2927,7 +3001,9 @@ class RegAdaptiveProjection(Algorithm):
         grad_res_3D_all = self.get_gradient(grid=grid_original,
                                             results=res_all,
                                             com=com,
-                                            gradient_results=None)
+                                            gradient_results=None,
+                                            i_iter=self.options["order_start"],
+                                            i_subiter=self.options["interaction_order"])
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
@@ -3125,7 +3201,9 @@ class RegAdaptiveProjection(Algorithm):
                             grad_res_3D_all = self.get_gradient(grid=grid_original,
                                                                 results=res_all,
                                                                 com=com,
-                                                                gradient_results=grad_res_3D_all)
+                                                                gradient_results=grad_res_3D_all,
+                                                                i_iter=basis_order[0],
+                                                                i_subiter=basis_order[1])
                             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                    tab=0, verbose=self.options["verbose"])
 
@@ -3267,9 +3345,6 @@ class RegAdaptiveProjection(Algorithm):
                 # save gpc object and coeffs for this sub-iteration
                 if self.options["fn_results"]:
 
-                    fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                    write_gpc_pkl(gpc[i_qoi], fn_gpc_pkl_qoi)
-
                     with h5py.File(os.path.splitext(fn_results)[0] + ".hdf5", "a") as f:
                         # overwrite coeffs
                         try:
@@ -3336,21 +3411,14 @@ class RegAdaptiveProjection(Algorithm):
             # save gpc object gpc coeffs and projection matrix
             if self.options["fn_results"]:
 
-                fn_gpc_pkl_qoi = fn_results + "_qoi_" + str(q_idx) + '.pkl'
-                write_gpc_pkl(gpc[i_qoi], fn_gpc_pkl_qoi)
-
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
                         fn_gpc_pkl = f["misc/fn_gpc_pkl"][:]
-                        fn_gpc_pkl = np.vstack((fn_gpc_pkl, np.array([os.path.split(fn_gpc_pkl_qoi)[1]])))
-                        del f["misc/fn_gpc_pkl"]
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=fn_gpc_pkl.astype("|S"))
 
                     except KeyError:
                         f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_gpc_pkl_qoi)[1]]).astype("|S"))
+                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
 
                     try:
                         del f["coeffs" + hdf5_subfolder]
@@ -3394,7 +3462,4 @@ class RegAdaptiveProjection(Algorithm):
 
         com.close()
 
-        if n_qoi == 1:
-            return gpc[0], coeffs[0], res
-        else:
-            return gpc, coeffs, res
+        return gpc, coeffs, res

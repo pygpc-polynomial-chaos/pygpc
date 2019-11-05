@@ -3,21 +3,25 @@ import unittest
 import pygpc
 from collections import OrderedDict
 import numpy as np
+import h5py
 import sys
 import os
 import shutil
 
-# temporary folder
-try:
-    os.mkdir('./tmp')
-except FileExistsError:
-    pass
-
 # test options
-folder = 'tmp'    # output folder
+folder = './tmp '    # output folder
+# folder = '/NOBACKUP2/tmp'    # output folder
 plot = False         # plot and save output
 gpu = False          # test GPU functionality
 matlab = False       # test Matlab functionality
+
+# temporary folder
+try:
+    os.mkdir(folder)
+
+except FileExistsError:
+    pass
+
 
 class TestPygpcMethods(unittest.TestCase):
 
@@ -35,6 +39,17 @@ class TestPygpcMethods(unittest.TestCase):
             raise failure
         except failure.__class__:
             self._result.addFailure(self, sys.exc_info())
+
+    def expect_isclose(self, a, b, msg='', atol=None, rtol=None):
+        if atol is None:
+            atol = 1.e-8
+        if rtol is None:
+            rtol = 1.e-5
+
+        if np.isclose(a, b, atol=atol, rtol=rtol).all():
+            msg = '({}) Expected {} to be close {}. '.format(self._num_expectations, a, b) + msg
+            self._fail(self.failureException(msg))
+        self._num_expectations += 1
 
     def expect_equal(self, a, b, msg=''):
         if a != b:
@@ -77,6 +92,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["order_max"] = 9
         options["interaction_order"] = 2
         options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e3
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["GPU"] = False
@@ -88,8 +104,11 @@ class TestPygpcMethods(unittest.TestCase):
         # define algorithm
         algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
 
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
         # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+        session, coeffs, results = session.run()
 
         # Post-process gPC
         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
@@ -100,12 +119,22 @@ class TestPygpcMethods(unittest.TestCase):
                                      algorithm="standard",
                                      n_samples=1e3)
 
+        if plot:
+            # Validate gPC vs original model function (2D-surface)
+            pygpc.validate_gpc_plot(session=session,
+                                    coeffs=coeffs,
+                                    random_vars=list(problem.parameters_random.keys()),
+                                    n_grid=[51, 51],
+                                    output_idx=[0, 1],
+                                    fn_out=options["fn_results"] + "_val",
+                                    n_cpu=options["n_cpu"])
+
         # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+        nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
-                                      output_idx=0,
-                                      fn_out=None,
+                                      output_idx=[0, 1],
+                                      fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -148,6 +177,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["interaction_order"] = 2
         options["matrix_ratio"] = 2
         options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e3
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
@@ -165,8 +195,11 @@ class TestPygpcMethods(unittest.TestCase):
         # define algorithm
         algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
 
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
         # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+        session, coeffs, results = session.run()
 
         # Post-process gPC
         pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
@@ -177,12 +210,22 @@ class TestPygpcMethods(unittest.TestCase):
                                      algorithm="standard",
                                      n_samples=1e3)
 
+        if plot:
+            # Validate gPC vs original model function (2D-surface)
+            pygpc.validate_gpc_plot(session=session,
+                                    coeffs=coeffs,
+                                    random_vars=list(problem.parameters_random.keys()),
+                                    n_grid=[51, 51],
+                                    output_idx=0,
+                                    fn_out=options["fn_results"] + "_val",
+                                    n_cpu=options["n_cpu"])
+
         # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+        nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
-                                      fn_out=None,
+                                      fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -228,7 +271,6 @@ class TestPygpcMethods(unittest.TestCase):
         options["gradient_enhanced"] = True
         options["gradient_calculation"] = "standard_forward"
         options["error_type"] = "loocv"
-        options["n_samples_validation"] = 1e4
         options["qoi"] = "all"
         options["n_grid_gradient"] = 5
         options["classifier"] = "learning"
@@ -245,17 +287,20 @@ class TestPygpcMethods(unittest.TestCase):
         # define algorithm
         algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
 
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
         # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+        session, coeffs, results = session.run()
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
-            pygpc.validate_gpc_plot(gpc=gpc,
+            pygpc.validate_gpc_plot(session=session,
                                     coeffs=coeffs,
                                     random_vars=list(problem.parameters_random.keys()),
                                     n_grid=[51, 51],
                                     output_idx=0,
-                                    fn_out=None,
+                                    fn_out=options["fn_results"] + "_val",
                                     n_cpu=options["n_cpu"])
 
         # Post-process gPC
@@ -268,13 +313,13 @@ class TestPygpcMethods(unittest.TestCase):
                                      n_samples=1e3)
 
         # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+        nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
                                       n_cpu=options["n_cpu"],
                                       smooth_pdf=False,
-                                      fn_out=None,
+                                      fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -315,6 +360,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["interaction_order"] = 1
         options["n_cpu"] = 0
         options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e3
         options["error_norm"] = "relative"
         options["matrix_ratio"] = 2
         options["qoi"] = 0
@@ -325,17 +371,20 @@ class TestPygpcMethods(unittest.TestCase):
         # define algorithm
         algorithm = pygpc.StaticProjection(problem=problem, options=options)
 
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
         # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+        session, coeffs, results = session.run()
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
-            pygpc.validate_gpc_plot(gpc=gpc,
+            pygpc.validate_gpc_plot(session=session,
                                     coeffs=coeffs,
                                     random_vars=list(problem.parameters_random.keys()),
                                     n_grid=[51, 51],
                                     output_idx=0,
-                                    fn_out=None,
+                                    fn_out=options["fn_results"] + "_val",
                                     n_cpu=options["n_cpu"])
 
         # Post-process gPC
@@ -348,13 +397,13 @@ class TestPygpcMethods(unittest.TestCase):
                                      n_samples=1e3)
 
         # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+        nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
                                       n_cpu=options["n_cpu"],
                                       smooth_pdf=False,
-                                      fn_out=None,
+                                      fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -399,7 +448,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["gradient_calculation"] = "standard_forward"
         options["n_grid_gradient"] = 200
         options["error_type"] = "nrmsd"
-        options["n_samples_validation"] = 1e4
+        options["n_samples_validation"] = 1e3
         options["qoi"] = "all"
         options["classifier"] = "learning"
         options["classifier_options"] = {"clusterer": "KMeans",
@@ -411,17 +460,20 @@ class TestPygpcMethods(unittest.TestCase):
         # define algorithm
         algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
 
-        # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
-            pygpc.validate_gpc_plot(gpc=gpc,
+            pygpc.validate_gpc_plot(session=session,
                                     coeffs=coeffs,
                                     random_vars=list(problem.parameters_random.keys()),
                                     n_grid=[51, 51],
                                     output_idx=0,
-                                    fn_out=None,
+                                    fn_out=options["fn_results"] + "_val",
                                     n_cpu=options["n_cpu"])
 
         # Post-process gPC
@@ -434,13 +486,13 @@ class TestPygpcMethods(unittest.TestCase):
                                      n_samples=1e3)
 
         # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+        nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(5e4),
                                       output_idx=0,
                                       n_cpu=options["n_cpu"],
                                       smooth_pdf=True,
-                                      fn_out=None,
+                                      fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -491,17 +543,20 @@ class TestPygpcMethods(unittest.TestCase):
         # define algorithm
         algorithm = pygpc.RegAdaptive(problem=problem, options=options)
 
-        # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
-            pygpc.validate_gpc_plot(gpc=gpc,
+            pygpc.validate_gpc_plot(session=session,
                                     coeffs=coeffs,
                                     random_vars=list(problem.parameters_random.keys()),
                                     n_grid=[51, 51],
                                     output_idx=0,
-                                    fn_out=None,
+                                    fn_out=options["fn_results"] + "_val",
                                     n_cpu=options["n_cpu"])
 
         # Post-process gPC
@@ -514,13 +569,13 @@ class TestPygpcMethods(unittest.TestCase):
                                      n_samples=1e3)
 
         # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+        nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
                                       n_cpu=options["n_cpu"],
                                       smooth_pdf=True,
-                                      fn_out=None,
+                                      fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -574,17 +629,20 @@ class TestPygpcMethods(unittest.TestCase):
         # define algorithm
         algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
 
-        # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
-            pygpc.validate_gpc_plot(gpc=gpc,
+            pygpc.validate_gpc_plot(session=session,
                                     coeffs=coeffs,
                                     random_vars=list(problem.parameters_random.keys()),
                                     n_grid=[51, 51],
                                     output_idx=0,
-                                    fn_out=None,
+                                    fn_out=options["fn_results"] + "_val",
                                     n_cpu=options["n_cpu"])
 
         # Post-process gPC
@@ -597,13 +655,13 @@ class TestPygpcMethods(unittest.TestCase):
                                      n_samples=1e3)
 
         # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+        nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
                                       n_cpu=options["n_cpu"],
                                       smooth_pdf=False,
-                                      fn_out=None,
+                                      fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -637,45 +695,59 @@ class TestPygpcMethods(unittest.TestCase):
         # gPC options
         options = dict()
         options["method"] = "reg"
-        options["solver"] = "Moore-Penrose"
+        options["solver"] = "LarsLasso" #"Moore-Penrose"
         options["settings"] = None
-        options["order_start"] = 0
+        options["order_start"] = 3
         options["order_end"] = 15
         options["interaction_order"] = 2
         options["matrix_ratio"] = 2
-        options["projection"] = True
+        options["projection"] = False
         options["n_cpu"] = 0
-        options["gradient_enhanced"] = True
+        options["gradient_enhanced"] = False
         options["gradient_calculation"] = "standard_forward"
         options["error_type"] = "loocv"
-        options["n_samples_validation"] = 1e4
-        options["qoi"] = "all"
+        options["error_norm"] = "absolute" # "relative"
+        options["qoi"] = 0 # "all"
         options["classifier"] = "learning"
         options["classifier_options"] = {"clusterer": "KMeans",
                                          "n_clusters": 2,
                                          "classifier": "MLPClassifier",
                                          "classifier_solver": "lbfgs"}
         options["n_samples_discontinuity"] = 10
-        options["adaptive_sampling"] = True
-        options["eps"] = 0.01
-        options["n_grid_init"] = 10
+        options["adaptive_sampling"] = False
+        options["eps"] = 0.75
+        options["n_grid_init"] = 20
         options["GPU"] = False
         options["fn_results"] = os.path.join(folder, test_name)
 
         # define algorithm
         algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
 
-        # run gPC algorithm
-        gpc, coeffs, results = algorithm.run()
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
+
+        # Validate gPC vs original model function (Monte Carlo)
+        plot = True
+        nrmsd = pygpc.validate_gpc_mc(session=session,
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=[0],
+                                      n_cpu=options["n_cpu"],
+                                      smooth_pdf=True,
+                                      fn_out=options["fn_results"] + "_pdf",
+                                      plot=plot)
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
-            pygpc.validate_gpc_plot(gpc=gpc,
+            pygpc.validate_gpc_plot(session=session,
                                     coeffs=coeffs,
                                     random_vars=list(problem.parameters_random.keys()),
                                     n_grid=[51, 51],
-                                    output_idx=0,
-                                    fn_out=None,
+                                    output_idx=[0, 1],
+                                    fn_out=options["fn_results"] + "_val",
                                     n_cpu=options["n_cpu"])
 
         # Post-process gPC
@@ -685,17 +757,7 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_global_sens=True,
                                      calc_pdf=True,
                                      algorithm="sampling",
-                                     n_samples=1e3)
-
-        # Validate gPC vs original model function (Monte Carlo)
-        nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
-                                      coeffs=coeffs,
-                                      n_samples=int(1e4),
-                                      output_idx=0,
-                                      n_cpu=options["n_cpu"],
-                                      smooth_pdf=True,
-                                      fn_out=None,
-                                      plot=plot)
+                                     n_samples=1e4)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
 
@@ -762,6 +824,26 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         tests = []
+        tests.append(pygpc.Ackley())
+        tests.append(pygpc.BukinFunctionNumber6())
+        tests.append(pygpc.CrossinTrayFunction())
+        tests.append(pygpc.BohachevskyFunction1())
+        tests.append(pygpc.PermFunction())
+        tests.append(pygpc.SixHumpCamelFunction())
+        tests.append(pygpc.RotatedHyperEllipsoid())
+        tests.append(pygpc.SumOfDifferentPowersFunction())
+        tests.append(pygpc.ZakharovFunction())
+        tests.append(pygpc.DropWaveFunction())
+        tests.append(pygpc.DixonPriceFunction())
+        tests.append(pygpc.RosenbrockFunction())
+        tests.append(pygpc.MichalewiczFunction())
+        tests.append(pygpc.DeJongFunctionFive())
+        tests.append(pygpc.MatyasFunction())
+        tests.append(pygpc.GramacyLeeFunction())
+        tests.append(pygpc.SchafferFunction4())
+        tests.append(pygpc.SphereFunction())
+        tests.append(pygpc.McCormickFunction())
+        tests.append(pygpc.BoothFunction())
         tests.append(pygpc.Peaks())
         tests.append(pygpc.Franke())
         tests.append(pygpc.Lim2002())
@@ -772,13 +854,11 @@ class TestPygpcMethods(unittest.TestCase):
         tests.append(pygpc.GenzOscillatory())
         tests.append(pygpc.GenzProductPeak())
         tests.append(pygpc.Ridge())
-        tests.append(pygpc.SphereFun())
         tests.append(pygpc.OakleyOhagan2004())
         tests.append(pygpc.Welch1992())
         tests.append(pygpc.HyperbolicTangent())
         tests.append(pygpc.MovingParticleFrictionForce())
         tests.append(pygpc.SurfaceCoverageSpecies())
-        tests.append(pygpc.GenzDiscontinuous())
 
         for n_cpu in [4, 0]:
             if n_cpu != 0:
@@ -790,7 +870,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             for t in tests:
                 grid = pygpc.RandomGrid(parameters_random=t.problem.parameters_random,
-                                        options={"n_grid": 100, "seed": 1})
+                                        options={"n_grid": 10, "seed": 1})
                 res = com.run(model=t.problem.model,
                               problem=t.problem,
                               coords=grid.coords,
@@ -801,6 +881,7 @@ class TestPygpcMethods(unittest.TestCase):
                               print_func_time=False)
 
             com.close()
+
 
     def test_10_RandomParameters(self):
         """
@@ -819,6 +900,8 @@ class TestPygpcMethods(unittest.TestCase):
         parameters["x6"] = pygpc.Norm(pdf_shape=[5, 1])
 
         if plot:
+            import matplotlib.pyplot as plt
+            fig = plt.figure()
             ax = parameters["x1"].plot_pdf()
             ax = parameters["x2"].plot_pdf()
             ax = parameters["x3"].plot_pdf()
@@ -827,7 +910,6 @@ class TestPygpcMethods(unittest.TestCase):
             ax = parameters["x6"].plot_pdf()
             ax.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
             ax.savefig(os.path.join(folder, test_name) + ".png")
-
 
     def test_11_Grids(self):
         """
@@ -840,22 +922,27 @@ class TestPygpcMethods(unittest.TestCase):
         test = pygpc.Peaks()
 
         grids = []
+        fn_out = []
         grids.append(pygpc.RandomGrid(parameters_random=test.problem.parameters_random,
                                       options={"n_grid": 100, "seed": 1}))
+        fn_out.append(test_name + "_RandomGrid")
         grids.append(pygpc.TensorGrid(parameters_random=test.problem.parameters_random,
                                       options={"grid_type": ["hermite", "jacobi"], "n_dim": [5, 10]}))
+        fn_out.append(test_name + "_TensorGrid_1")
         grids.append(pygpc.TensorGrid(parameters_random=test.problem.parameters_random,
                                       options={"grid_type": ["patterson", "fejer2"], "n_dim": [3, 10]}))
+        fn_out.append(test_name + "_TensorGrid_2")
         grids.append(pygpc.SparseGrid(parameters_random=test.problem.parameters_random,
                                       options={"grid_type": ["jacobi", "jacobi"],
                                                "level": [3, 3],
                                                "level_max": 3,
                                                "interaction_order": 2,
                                                "order_sequence_type": "exp"}))
+        fn_out.append(test_name + "_SparseGrid")
 
         if plot:
-            for g in grids:
-                pygpc.plot_2d_grid(coords=g.coords_norm, weights=g.weights, fn_plot=os.path.join(folder, test_name))
+            for i, g in enumerate(grids):
+                pygpc.plot_2d_grid(coords=g.coords_norm, weights=g.weights, fn_plot=os.path.join(folder, fn_out[i]))
 
     def test_12_Matlab_gpc(self):
         """
@@ -911,7 +998,7 @@ class TestPygpcMethods(unittest.TestCase):
                                         random_vars=list(problem.parameters_random.keys()),
                                         n_grid=[51, 51],
                                         output_idx=0,
-                                        fn_out=None,
+                                        fn_out=options["fn_results"] + "_val",
                                         n_cpu=options["n_cpu"])
 
             # Post-process gPC
@@ -930,7 +1017,7 @@ class TestPygpcMethods(unittest.TestCase):
                                           output_idx=0,
                                           n_cpu=options["n_cpu"],
                                           smooth_pdf=True,
-                                          fn_out=None,
+                                          fn_out=options["fn_results"] + "_pdf",
                                           plot=plot)
 
             files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -943,6 +1030,195 @@ class TestPygpcMethods(unittest.TestCase):
 
         else:
             print("Skipping Matlab test...")
+
+    def test_13_random_vars_postprocessing(self):
+        """
+        Algorithm: Static
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: RandomGrid
+        """
+        global folder, plot
+        test_name = 'pygpc_test_13_random_vars_postprocessing_sobol'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.Peaks()
+
+        # define problem
+
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+        parameters["x2"] = pygpc.Norm(pdf_shape=[1, 0.25])
+        parameters["x3"] = pygpc.Beta(pdf_shape=[3, 5], pdf_limits=[0, 0.6])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "Moore-Penrose"
+        options["settings"] = None
+        options["order"] = [9, 9, 9]
+        options["order_max"] = 9
+        options["interaction_order"] = 2
+        options["matrix_ratio"] = 2
+        options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e3
+        options["n_cpu"] = 0
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["gradient_enhanced"] = True
+        options["GPU"] = False
+
+        # generate grid
+        n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
+                                               order_glob_max=options["order_max"],
+                                               order_inter_max=options["interaction_order"],
+                                               dim=problem.dim)
+
+        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+                                options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
+
+        # define algorithm
+        algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC algorithm
+        session, coeffs, results = session.run()
+
+        # Validate gPC vs original model function (Monte Carlo)
+        nrmsd = pygpc.validate_gpc_mc(session=session,
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      fn_out=options["fn_results"] + "_pdf",
+                                      plot=plot)
+
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+        # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
+
+        # Determine Sobol indices using standard approach (gPC coefficients)
+        sobol_standard, sobol_idx_standard, sobol_idx_bool_standard = session.gpc[0].get_sobol_indices(coeffs=coeffs,
+                                                                                                       algorithm="standard")
+
+        sobol_sampling, sobol_idx_sampling, sobol_idx_bool_sampling = session.gpc[0].get_sobol_indices(coeffs=coeffs,
+                                                                                                       algorithm="sampling",
+                                                                                                       n_samples=1e5)
+
+        for i in range(sobol_standard.shape[0]):
+            self.expect_true(np.max(np.abs(sobol_standard[i, :]-sobol_sampling[i, :])) < 0.001,
+                             msg="Sobol index: {}".format(str(sobol_idx_sampling[3])))
+
+        if plot:
+            # Validate gPC vs original model function (2D-surface)
+            pygpc.validate_gpc_plot(session=session,
+                                    coeffs=coeffs,
+                                    random_vars=["x1", "x2"],
+                                    n_grid=[51, 51],
+                                    output_idx=0,
+                                    fn_out=options["fn_results"] + "_val",
+                                    n_cpu=options["n_cpu"])
+
+        print("done!\n")
+
+    def test_14_clustering_3_domains(self):
+        """
+        Algorithm: MERegAdaptiveprojection
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: RandomGrid
+        """
+        global folder, plot
+        test_name = 'pygpc_test_14_clustering_3_domains'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.Cluster3Simple()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "LarsLasso" #"Moore-Penrose"
+        options["settings"] = None
+        options["order_start"] = 1
+        options["order_end"] = 15
+        options["interaction_order"] = 2
+        options["matrix_ratio"] = 1
+        options["projection"] = False
+        options["n_cpu"] = 0
+        options["gradient_enhanced"] = False
+        options["gradient_calculation"] = "standard_forward"
+        options["error_type"] = "loocv"
+        options["error_norm"] = "absolute" # "relative"
+        options["qoi"] = 0 # "all"
+        options["classifier"] = "learning"
+        options["classifier_options"] = {"clusterer": "KMeans",
+                                         "n_clusters": 3,
+                                         "classifier": "MLPClassifier",
+                                         "classifier_solver": "lbfgs"}
+        options["n_samples_discontinuity"] = 50
+        options["adaptive_sampling"] = False
+        options["eps"] = 0.01
+        options["n_grid_init"] = 50
+        options["GPU"] = False
+        options["fn_results"] = os.path.join(folder, test_name)
+
+        # define algorithm
+        algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
+
+        if plot:
+            # Validate gPC vs original model function (2D-surface)
+            pygpc.validate_gpc_plot(session=session,
+                                    coeffs=coeffs,
+                                    random_vars=list(problem.parameters_random.keys()),
+                                    n_grid=[51, 51],
+                                    output_idx=[0],
+                                    fn_out=options["fn_results"] + "_val",
+                                    n_cpu=options["n_cpu"])
+
+        # Validate gPC vs original model function (Monte Carlo)
+        nrmsd = pygpc.validate_gpc_mc(session=session,
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      n_cpu=options["n_cpu"],
+                                      smooth_pdf=True,
+                                      fn_out=options["fn_results"] + "_pdf",
+                                      plot=plot)
+
+        # Post-process gPC
+        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True,
+                                     algorithm="sampling",
+                                     n_samples=1e4)
+
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)))
+        # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        print("> Checking file consistency...")
+        self.expect_true(files_consistent, error_msg)
+        print("done!\n")
 
 
 if __name__ == '__main__':

@@ -77,7 +77,7 @@ class ComputationPoolMap:
             self.matlab_engine = matlab.engine.start_matlab()
 
     def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
-            print_func_time=False):
+            print_func_time=False, increment_grid=True):
         """
         Runs model evaluations for parameter combinations specified in coords array
 
@@ -99,6 +99,8 @@ class ComputationPoolMap:
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
         print_func_time : bool
             Print time of single function evaluation
+        increment_grid : bool
+            Increment grid counter (not done in case of gradient calculation)
 
         Returns
         -------
@@ -129,6 +131,10 @@ class ComputationPoolMap:
         # -> As a result we have the same keys in the dictionary but
         #    no RandomParameters anymore but a sample from the defined PDF.
 
+        # deepcopy model and delete attributes
+        model_ = copy.deepcopy(model)
+        model_.__clean__()
+
         for j, random_var_instances in enumerate(grid_new):
 
             if coords_norm is None:
@@ -151,6 +157,7 @@ class ComputationPoolMap:
                 'print_func_time': print_func_time
             }
 
+            # deepcopy parameters
             parameters = OrderedDict()
             for key in problem.parameters:
                 parameters[key] = problem.parameters[key]
@@ -162,10 +169,26 @@ class ComputationPoolMap:
                 parameters[list(problem.parameters_random.keys())[i]] = random_var_instances[i]
 
             # append new worker which will evaluate the model with particular parameters from grid
-            model_ = copy.deepcopy(model)
-            worker_objs.append(model_.set_parameters(p=parameters, context=context))
+            import time
 
-            self.i_grid += 1
+            # start = time.time()
+            # model_ = copy.deepcopy(model)
+            # end = time.time()
+            # print("copy.deepcopy: {}s".format(end-start))
+
+            # start = time.time()
+            # model_worker = model_.__copy__().set_parameters(p=parameters, context=context)
+            # model_worker1 = model_.__copy__().set_parameters(p=parameters, context=context)
+            # end = time.time()
+            # print("__copy__: {}s".format(end - start))
+
+            # model_worker.p["exp_idx"] = 99
+            # model_worker1.p["exp_idx"]
+
+            worker_objs.append(model_.__copy__().set_parameters(p=parameters, context=context))
+
+            if increment_grid:
+                self.i_grid += 1
             seq_num += 1
 
         # start model evaluations
@@ -222,7 +245,7 @@ class ComputationFuncPar:
             self.matlab_engine = matlab.engine.start_matlab()
 
     def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
-            print_func_time=False):
+            print_func_time=False, increment_grid=True):
         """
         Runs model evaluations for parameter combinations specified in coords array
 
@@ -244,6 +267,8 @@ class ComputationFuncPar:
             If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file
         print_func_time : bool
             Print time of single function evaluation
+        increment_grid : bool
+            Increment grid counter (not done in case of gradient calculation)
 
         Returns
         -------
@@ -259,7 +284,8 @@ class ComputationFuncPar:
         n_grid = coords.shape[0]
 
         # i_grid indices is now a range [min_idx, max_idx]
-        self.i_grid = [np.max(self.i_grid), np.max(self.i_grid) + n_grid]
+        if increment_grid:
+            self.i_grid = [np.max(self.i_grid), np.max(self.i_grid) + n_grid]
 
         # assign the instances of the random_vars to the respective
         # replace random vars of the Problem with single instances

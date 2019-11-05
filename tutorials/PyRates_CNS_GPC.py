@@ -2,14 +2,14 @@ import os
 import h5py
 import pygpc
 from collections import OrderedDict
-from tutorials.PyRates_CNS_Model import PyRates_CNS_Model
+from tutorials.PyRates_CNS_Model_old import PyRates_CNS_Model
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-fn_results = os.path.join(os.path.split(pygpc.__path__[0])[0], "tutorials", "datasets", "PyRates_CNS_GPC")
+fn_results = os.path.join(os.path.split(pygpc.__path__[0])[0], "tutorials", "datasets", "PyRates_CNS_GPC_new")
 
-model = PyRates_CNS_Model
+model = PyRates_CNS_Model()
 
 # define problem (the parameter names have to be the same as in the model)
 parameters = OrderedDict()
@@ -19,7 +19,6 @@ problem = pygpc.Problem(model, parameters)
 
 # gPC options
 options = dict()
-options["method"] = "reg"
 options["solver"] = "LarsLasso"
 options["settings"] = None
 options["order_start"] = 3
@@ -39,7 +38,7 @@ options["qoi"] = 0
 options["classifier"] = "learning"
 options["n_samples_discontinuity"] = 10
 options["adaptive_sampling"] = True
-options["eps"] = 0.02
+options["eps"] = 0.03
 options["n_grid_init"] = 100
 options["GPU"] = False
 options["fn_results"] = fn_results
@@ -51,8 +50,11 @@ options["classifier_options"] = {"clusterer": "KMeans",
 # define algorithm
 algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
 
-# run gPC algorithm
-gpc, coeffs, results = algorithm.run()
+# Initialize gPC Session
+session = pygpc.Session(algorithm=algorithm)
+
+# run gPC session
+session, coeffs, results = session.run()
 
 # Post-process gPC
 pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
@@ -63,25 +65,24 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              algorithm="sampling",
                              n_samples=1e4)
 
-with h5py.File(fn_results + "_validation.hdf5") as f:
+with h5py.File(fn_results + "_validation.hdf5", "r") as f:
     val_coords_norm = f["grid/coords_norm"][:]
     val_coords = f["grid/coords"][:]
     val_results = f["model_evaluations/original_all_qoi"][:]
 
 # Validate gPC vs original model function (2D-slice)
-pygpc.validate_gpc_plot(gpc=gpc,
+pygpc.validate_gpc_plot(session=session,
                         coeffs=coeffs,
                         random_vars=["w_ein_pc", "w_iin_pc"],
                         coords=val_coords,
                         data_original=val_results,
                         output_idx=0,
-                        fn_out=options["fn_results"] + '_validation',
-                        n_cpu=0)
-
+                        fn_out=session.fn_results + '_val',
+                        n_cpu=session.n_cpu)
 
 # Validate gPC vs original model function (Monte Carlo)
-nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+nrmsd = pygpc.validate_gpc_mc(session=session,
                               coeffs=coeffs,
                               n_samples=int(1e3),
                               output_idx=0,
-                              fn_out=options["fn_results"] + '_validation_mc')
+                              fn_out=session.fn_results + '_mc')

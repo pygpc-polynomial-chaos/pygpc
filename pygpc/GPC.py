@@ -79,7 +79,7 @@ class GPC(object):
 
     def __init__(self, problem, options, validation=None):
         """
-        Constructor; Initializes MEGPC class
+        Constructor; Initializes GPC class
 
         Parameters
         ----------
@@ -119,16 +119,23 @@ class GPC(object):
         self.n_out = []
 
         # options
-        self.gradient = options["gradient_enhanced"]
+        if options is not None:
+            self.gradient = options["gradient_enhanced"]
+            if "fn_results" not in options.keys():
+                options["fn_results"] = None
+            self.fn_results = options["fn_results"]
+            self.matlab_model = options["matlab_model"]
+        else:
+            self.gradient = None
+            self.fn_results = None
+            self.matlab_model = None
+
         self.solver = None
         self.settings = None
         self.gpu = None
         self.verbose = True
-        if "fn_results" not in options.keys():
-            options["fn_results"] = None
-        self.fn_results = options["fn_results"]
+
         self.options = options
-        self.matlab_model = options["matlab_model"]
 
     def init_gpc_matrix(self):
         """
@@ -198,6 +205,24 @@ class GPC(object):
 
         return gpc_matrix
 
+
+        # if not self.gpu:
+        #
+        #     if not gradient:
+        #         gpc_matrix = np.ones([x.shape[0], len(b)])
+        #         calc_gpc_matrix_cpu(b, x, gpc_matrix, gradient=-1)
+        #     else:
+        #         gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
+        #         new_gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
+        #         for i_dim_gradient in range(self.problem.dim):
+        #             _gpc_matrix = np.ones((x.shape[0], len(b)))
+        #             calc_gpc_matrix_cpu(b, x, _gpc_matrix, gradient=i_dim_gradient)
+        #             gpc_matrix[:, :, i_dim_gradient] = _gpc_matrix
+        # else:
+        #     raise NotImplementedError
+        #
+        # return gpc_matrix
+
     # TODO: @Lucas: Implement this on the GPU
     def loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
         """
@@ -250,67 +275,67 @@ class GPC(object):
         #     matrix = self.gpc_matrix
         #     results_complete = results
 
+        # matrix = self.gpc_matrix
+        # results_complete = results
+
+        # Analytical error estimation in case of overdetermined systems
+        # if matrix.shape[0] > 2*matrix.shape[1]:
+            # determine Psi (Psi^T Psi)^-1 Psi^T
+            # h = np.dot(np.dot(matrix, np.linalg.inv(np.dot(matrix.transpose(), matrix))), matrix.transpose())
+            #
+            # # determine loocv error
+            # err = np.mean(((results_complete - np.dot(matrix, coeffs)) /
+            #                (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
+            #
+            # if error_norm == "relative":
+            #     norm = np.var(results_complete, axis=0, ddof=1)
+            # else:
+            #     norm = 1.
+            #
+            # # normalize
+            # relative_error_loocv = np.mean(err / norm)
+
+        # else:
+        # perform manual loocv without gradient
         matrix = self.gpc_matrix
         results_complete = results
 
-        # Analytical error estimation in case of overdetermined systems
-        if matrix.shape[0] > 2*matrix.shape[1]:
-            # determine Psi (Psi^T Psi)^-1 Psi^T
-            h = np.dot(np.dot(matrix, np.linalg.inv(np.dot(matrix.transpose(), matrix))), matrix.transpose())
+        n_loocv = 25
 
-            # determine loocv error
-            err = np.mean(((results_complete - np.dot(matrix, coeffs)) /
-                           (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
+        # define number of performed cross validations (max 100)
+        n_loocv_points = np.min((results_complete.shape[0], n_loocv))
+
+        # make list of indices, which are randomly sampled
+        loocv_point_idx = random.sample(list(range(results_complete.shape[0])), n_loocv_points)
+
+        start = time.time()
+        relative_error = np.zeros(n_loocv_points)
+        for i in range(n_loocv_points):
+            # get mask of eliminated row
+            mask = np.arange(results_complete.shape[0]) != loocv_point_idx[i]
+
+            # determine gpc coefficients (this takes a lot of time for large problems)
+            coeffs_loo = self.solve(results=results_complete[mask, :],
+                                    solver=self.options["solver"],
+                                    matrix=matrix[mask, :],
+                                    settings=self.options["settings"],
+                                    verbose=False)
+
+            sim_results_temp = results_complete[loocv_point_idx[i], :]
 
             if error_norm == "relative":
-                norm = np.var(results_complete, axis=0, ddof=1)
+                norm = scipy.linalg.norm(sim_results_temp)
             else:
                 norm = 1.
 
-            # normalize
-            relative_error_loocv = np.mean(err / norm)
+            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx[i], :],
+                                                                            coeffs_loo))\
+                                / norm
+            display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
 
-        else:
-            # perform manual loocv without gradient
-            matrix = self.gpc_matrix
-            results_complete = results
-
-            n_loocv = 25
-
-            # define number of performed cross validations (max 100)
-            n_loocv_points = np.min((results_complete.shape[0], n_loocv))
-
-            # make list of indices, which are randomly sampled
-            loocv_point_idx = random.sample(list(range(results_complete.shape[0])), n_loocv_points)
-
-            start = time.time()
-            relative_error = np.zeros(n_loocv_points)
-            for i in range(n_loocv_points):
-                # get mask of eliminated row
-                mask = np.arange(results_complete.shape[0]) != loocv_point_idx[i]
-
-                # determine gpc coefficients (this takes a lot of time for large problems)
-                coeffs_loo = self.solve(results=results_complete[mask, :],
-                                        solver=self.options["solver"],
-                                        matrix=matrix[mask, :],
-                                        settings=self.options["settings"],
-                                        verbose=False)
-
-                sim_results_temp = results_complete[loocv_point_idx[i], :]
-
-                if error_norm == "relative":
-                    norm = scipy.linalg.norm(sim_results_temp)
-                else:
-                    norm = 1.
-
-                relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx[i], :],
-                                                                                coeffs_loo))\
-                                    / norm
-                display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
-
-            # store result in relative_error_loocv
-            relative_error_loocv = np.mean(relative_error)
-            iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
+        # store result in relative_error_loocv
+        relative_error_loocv = np.mean(relative_error)
+        iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
 
         return relative_error_loocv
 
@@ -406,14 +431,14 @@ class GPC(object):
 
         # handle (N,) arrays
         if len(coeffs.shape) == 1:
-            n_out = 1
-        else:
-            n_out = coeffs.shape[1]
+            coeffs = coeffs[:, np.newaxis]
 
         # if output index array is not provided, determine pdfs of all outputs
         if output_idx is None:
-            output_idx = np.linspace(0, n_out - 1, n_out)
+            output_idx = np.linspace(0, coeffs.shape[1])
             output_idx = output_idx[np.newaxis, :]
+
+        n_out = len(output_idx)
 
         # sample gPC expansion
         samples_in, samples_out = self.get_samples(n_samples=n_samples, coeffs=coeffs, output_idx=output_idx)

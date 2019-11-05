@@ -19,7 +19,7 @@ def write_gpc_pkl(obj, fname):
     obj: GPC or derived class
         Class instance containing the gPC information
     fname: str
-        path to output file
+        Path to output file
 
     Returns
     -------

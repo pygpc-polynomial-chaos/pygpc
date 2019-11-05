@@ -222,6 +222,9 @@ class SGPC(GPC):
         # iprint("Determining Sobol indices...", tab=0)
 
         if algorithm == "standard":
+            if self.p_matrix is not None:
+                raise NotImplementedError("Please use algorithm='sampling' in case of reduced gPC (projection).")
+
             # handle (N,) arrays
             if len(coeffs.shape) == 1:
                 n_out = 1
@@ -231,7 +234,7 @@ class SGPC(GPC):
             n_coeffs = coeffs.shape[0]
 
             if n_coeffs == 1:
-                raise Exception('Number of coefficients is 1 ... no sobol indices to calculate ...')
+                raise Exception('Number of coefficients is 1 ... no Sobol indices to calculate ...')
 
             # Generate boolean matrix of all basis functions where order > 0 = True
             # size: [n_basis x dim]
@@ -284,8 +287,18 @@ class SGPC(GPC):
             else:
                 dim = self.problem_original.dim
 
-            # generate sobol sequence (original parameter space, scaled to [-1, 1])
-            coords_norm = 2 * saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True) - 1
+            if self.problem_original is None:
+                problem_original = self.problem
+            else:
+                problem_original = self.problem_original
+
+            # generate uniform distributed sobol sequence (parameter space [0, 1])
+            coords_norm_01 = saltelli_sampling(n_samples=n_samples, dim=dim, calc_second_order=True)
+            coords_norm = np.zeros(coords_norm_01.shape)
+
+            # transform to respective input pdfs using inverse cdfs
+            for i_key, key in enumerate(problem_original.parameters_random.keys()):
+                coords_norm[:, i_key] = problem_original.parameters_random[key].icdf(coords_norm_01[:, i_key])
 
             # run model evaluations
             res = self.get_approximation(coeffs=coeffs, x=coords_norm)
@@ -307,155 +320,6 @@ class SGPC(GPC):
             raise AssertionError("Please provide valid algorithm argument (""standard"" or ""sampling"")")
 
         return sobol, sobol_idx, sobol_idx_bool
-
-    def get_sobol_composition(self, sobol, sobol_idx_bool):
-        """
-        Determine average ratios of Sobol indices over all output quantities:
-        (i) over all orders and (e.g. 1st: 90%, 2nd: 8%, 3rd: 2%)
-        (ii) for the 1st order indices w.r.t. each random variable. (1st: x1: 50%, x2: 40%)
-
-        sobol, sobol_idx, sobol_rel_order_mean, sobol_rel_order_std, sobol_rel_1st_order_mean, sobol_rel_1st_order_std
-        = SGPC.get_sobol_composition(coeffs, sobol, sobol_idx, sobol_idx_bool)
-
-        Parameters
-        ----------
-        sobol: ndarray of float [n_sobol x n_out]
-            Unnormalized sobol_indices
-        sobol_idx_bool: list of ndarray of bool
-            Boolean mask which contains unique multi indices.
-
-        Returns
-        -------
-        sobol_rel_order_mean: ndarray of float [n_out]
-            Average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,),
-            (over all output quantities)
-        sobol_rel_order_std: ndarray of float [n_out]
-            Standard deviation of the proportion of the Sobol indices of the different order to the total variance
-            (1st, 2nd, etc..,), (over all output quantities)
-        sobol_rel_1st_order_mean: ndarray of float [n_out]
-            Average proportion of the random variables of the 1st order Sobol indices to the total variance,
-            (over all output quantities)
-        sobol_rel_1st_order_std: ndarray of float [n_out]
-            Standard deviation of the proportion of the random variables of the 1st order Sobol indices to the total
-            variance
-            (over all output quantities)
-        sobol_rel_2nd_order_mean: ndarray of float [n_out]
-            Average proportion of the random variables of the 2nd order Sobol indices to the total variance,
-            (over all output quantities)
-        sobol_rel_2nd_order_std: ndarray of float [n_out]
-            Standard deviation of the proportion of the random variables of the 2nd order Sobol indices to the total
-            variance
-            (over all output quantities)
-        """
-
-        sobol_idx = [np.argwhere(sobol_idx_bool[i, :]).flatten() for i in range(sobol_idx_bool.shape[0])]
-
-        # get max order
-        order_max = np.max(np.sum(sobol_idx_bool, axis=1))
-
-        # total variance
-        var = np.sum(sobol, axis=0).flatten()
-
-        # get NaN values
-        not_nan_mask = np.logical_not(np.isnan(var))
-
-        sobol_rel_order_mean = []
-        sobol_rel_order_std = []
-        sobol_rel_1st_order_mean = []
-        sobol_rel_1st_order_std = []
-        sobol_rel_2nd_order_mean = []
-        sobol_rel_2nd_order_std = []
-        str_out = []
-
-        # get maximum length of random_vars label
-        max_len = max([len(p) for p in self.problem.parameters_random])
-
-        for i in range(order_max):
-            # extract sobol coefficients of order i
-            sobol_extracted, sobol_extracted_idx = self.get_extracted_sobol_order(sobol, sobol_idx_bool, i + 1)
-
-            # determine average sobol index over all elements
-            sobol_rel_order_mean.append(np.sum(np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten()) /
-                                        np.sum(var[not_nan_mask]))
-
-            sobol_rel_order_std.append(np.std(np.sum(sobol_extracted[:, not_nan_mask], axis=0).flatten() /
-                                              var[not_nan_mask]))
-
-            iprint("Ratio: Sobol indices order {} / total variance: {:.4f} +- {:.4f}"
-                   .format(i+1, sobol_rel_order_mean[i], sobol_rel_order_std[i]), tab=0, verbose=self.verbose)
-
-            # for 1st order indices, determine ratios of all random variables
-            if i == 0:
-                sobol_extracted_idx_1st = sobol_extracted_idx[:]
-                for j in range(sobol_extracted.shape[0]):
-                    sobol_rel_1st_order_mean.append(np.sum(sobol_extracted[j, not_nan_mask].flatten())
-                                                    / np.sum(var[not_nan_mask]))
-                    sobol_rel_1st_order_std.append(0)
-
-                    str_out.append("\t{}{}: {:.4f}"
-                                   .format((max_len - len(self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j][0]])) * ' ',
-                                           self.problem.parameters_random.keys()[sobol_extracted_idx_1st[j][0]],
-                                           sobol_rel_1st_order_mean[j]))
-
-            # for 2nd order indices, determine ratios of all random variables
-            if i == 1:
-                for j in range(sobol_extracted.shape[0]):
-                    sobol_rel_2nd_order_mean.append(np.sum(sobol_extracted[j, not_nan_mask].flatten())
-                                                    / np.sum(var[not_nan_mask]))
-                    sobol_rel_2nd_order_std.append(0)
-
-        sobol_rel_order_mean = np.array(sobol_rel_order_mean)
-        sobol_rel_1st_order_mean = np.array(sobol_rel_1st_order_mean)
-        sobol_rel_2nd_order_mean = np.array(sobol_rel_2nd_order_mean)
-
-        # print output of 1st order Sobol indices ratios of parameters
-        if self.verbose:
-            for j in range(len(str_out)):
-                print(str_out[j])
-
-        return sobol_rel_order_mean, sobol_rel_order_std, \
-               sobol_rel_1st_order_mean, sobol_rel_1st_order_std, \
-               sobol_rel_2nd_order_mean, sobol_rel_2nd_order_std
-
-    @staticmethod
-    def get_extracted_sobol_order(sobol, sobol_idx_bool, order=1):
-        """
-        Extract Sobol indices with specified order from Sobol data.
-
-        sobol_1st, sobol_idx_1st = SGPC.get_extracted_sobol_order(sobol, sobol_idx, order=1)
-
-        Parameters
-        ----------
-        sobol: ndarray of float [n_sobol x n_out]
-            Sobol indices of n_out output quantities
-        sobol_idx_bool: list of ndarray of bool
-            Boolean mask which contains unique multi indices.
-        order: int, optional, default=1
-            Sobol index order to extract
-
-        Returns
-        -------
-        sobol_n_order: ndarray of float [n_out]
-            n-th order Sobol indices of n_out output quantities
-        sobol_idx_n_order: ndarray of int
-            Parameter label indices belonging to n-th order Sobol indices
-        """
-
-        sobol_idx = [np.argwhere(sobol_idx_bool[i, :]).flatten() for i in range(sobol_idx_bool.shape[0])]
-
-        # make mask of nth order sobol indices
-        mask = [index for index, sobol_element in enumerate(sobol_idx) if sobol_element.shape[0] == order]
-
-        # extract from dataset
-        sobol_n_order = sobol[mask, :]
-        sobol_idx_n_order = np.array([sobol_idx[m] for m in mask])
-
-        # sort sobol indices according to parameter indices in ascending order
-        sort_idx = np.argsort(sobol_idx_n_order, axis=0)[:, 0]
-        sobol_n_order = sobol_n_order[sort_idx, :]
-        sobol_idx_n_order = sobol_idx_n_order[sort_idx, :]
-
-        return sobol_n_order, sobol_idx_n_order
 
     # noinspection PyTypeChecker
     def get_global_sens(self, coeffs, algorithm="standard", n_samples=1e5):

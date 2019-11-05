@@ -64,33 +64,40 @@ def plot_testfunction(testfunction_name: object, parameters: object, constants: 
 
     y = model.simulate()
 
-    fig, ax = plt.subplots(n_qoi, figsize=(6, ((n_qoi-1)*0.85+1) * 5), sharex=False, sharey=False)
+    fig = plt.figure(figsize=(6, ((n_qoi-1)*0.85+1) * 5))
 
-    if type(ax) is not np.ndarray:
-        ax = np.array([ax])
+    for i, o in enumerate(output_idx):
+        ax = fig.add_subplot(n_qoi, 1, i+1, projection='3d')
 
-    for o in output_idx:
         # omit "additional_data" if present
         if type(y) is tuple:
             y = y[0]
 
         if len(p_names) == 2:
-            im = ax[o].pcolor(x1,
-                              x2,
-                              np.reshape(y[:, o],
-                                         (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
-                                         order='c'),
-                              cmap="jet")
-            ax[o].set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
-            fig.colorbar(im, ax=ax[o], orientation='vertical')
+            # im = ax.pcolor(x1,
+            #                x2,
+            #                np.reshape(y[:, o],
+            #                           (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
+            #                           order='c'),
+            #                cmap="jet")
+
+            im = ax.plot_surface(x1,
+                                 x2,
+                                 np.reshape(y[:, o],
+                                            (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
+                                            order='c'),
+                                 cmap="jet")
+
+            ax.set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
+            fig.colorbar(im, ax=ax, orientation='vertical')
 
         else:
-            ax[o].plot(parameters[p_names[0]], y)
-            ax[o].set_ylabel(r"$y({})$".format(p_names[0]), fontsize=12)
+            ax.plot(parameters[p_names[0]], y)
+            ax.set_ylabel(r"$y({})$".format(p_names[0]), fontsize=12)
 
-        ax[o].set_xlabel(r"${}$".format(p_names[0]), fontsize=12)
+        ax.set_xlabel(r"${}$".format(p_names[0]), fontsize=12)
 
-    ax[0].set_title("{} function".format(model.__class__.__name__))
+    ax.set_title("{} function".format(model.__class__.__name__))
     plt.tight_layout()
     plt.show()
 
@@ -144,14 +151,14 @@ class Ackley(AbstractModel):
        plot("Ackley", parameters, constants)
 
     .. [1] Adorio, E. P., & Diliman, U. P. MVF - Multivariate Test Functions Library in C
-    for Unconstrained Global Optimization (2005). Retrieved June 2013,
-    from http://http://www.geocities.ws/eadorio/mvf.pdf
+       for Unconstrained Global Optimization (2005). Retrieved June 2013,
+       from http://http://www.geocities.ws/eadorio/mvf.pdf
 
     .. [2] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
-    Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
+       Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf
 
     .. [3] Back, T. (1996). Evolutionary algorithms in theory and practice: evolution strategies,
-    evolutionary programming, genetic algorithms. Oxford University Press on Demand
+       evolutionary programming, genetic algorithms. Oxford University Press on Demand
 
     .. [4] https://www.sfu.ca/~ssurjano/ackley.html
     """
@@ -202,7 +209,8 @@ class BukinFunctionNumber6(AbstractModel):
     The sixth Bukin Function has many local minima, all of which lie in a ridge.
 
     .. math::
-       y = 100\\sqrt\\abs(x_2 - 0.01 * x_1^2)\\+ 0.01 * \\abs(x_1 + 10)
+       y = 100\\sqrt{\\mid x_2 - 0.01 x_1^2 \\mid} + 0.01\\mid x_1 + 10 \\mid
+
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
@@ -227,10 +235,12 @@ class BukinFunctionNumber6(AbstractModel):
        parameters["x1"] = np.linspace(-15, -5, 100)
        parameters["x2"] = np.linspace(-3, 3, 100)
 
-       plot("Bukin Function N. 6", parameters)
+       constants = None
+
+       plot("BukinFunctionNumber6", parameters, constants)
 
     .. [1] Global Optimization Test Functions Index. Retrieved June 2013, from
-    http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
+       http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
 
     .. [2] https://www.sfu.ca/~ssurjano/bukin6.html
 
@@ -246,38 +256,6 @@ class BukinFunctionNumber6(AbstractModel):
 
         y = 100 * np.sqrt(abs(self.p["x2"] - 0.01 * self.p["x1"] ** 2)) + 0.01 * abs(self.p["x1"] + 10)
 
-        # for x1, key in enumerate(self.p.keys()):
-        #     if type(self.p[key]) is np.ndarray:
-        #         self.p[key] = self.p[key].flatten()
-        # for x2, key in enumerate(self.p.keys()):
-        #     if type(self.p[key]) is np.ndarray:
-        #         self.p[key] = self.p[key]
-
-        # determine sum in exponent
-        # s1 = np.zeros(np.array(p[list(p.keys())[0]]).size)
-        # s2 = np.zeros(np.array(p[list(p.keys())[0]]).size)
-        # x1, x2 = np.meshgrid(self.p["x1"], self.p["x2"])
-        # x1 = np.squeeze(x1)
-        # x2 = np.squeeze(x2)
-
-        # y = np.zeros(len(self.p["x1"]) * len(self.p["x2"]))
-        # for m, (x1_, x2_) in enumerate(zip(x1, x2)):
-        #     y[m] = 100 * np.sqrt(abs(x2_ - 0.01 * x1_ ** 2)) + 0.01 * abs(x1_ + 10)
-        # for n, x2 in enumerate(self.p["x2"]):
-        #     print(f'iteration{n + len(self.p["x2"]) * m}')
-        #     y[n + len(self.p["x2"]) * m] = 100 * np.sqrt(abs(x2 - 0.01 * x1**2)) + 0.01 * abs(x1 + 10)
-
-      # for x1, key in enumerate(p.keys()):
-
-        # s1 += p[key]
-        # s2 += p[key] *0,1
-        #
-        # s1 = 100\\ * frac{1}{2}\\-0.01 * s2**2
-        # s2 = 0.01 * 10
-        #
-        # # determine output
-        # y = s1 + s2
-        #
         y_out = y[:, np.newaxis]
 
         return y_out
@@ -291,7 +269,8 @@ class CrossinTrayFunction(AbstractModel):
     so that its characteristic "cross" will be visible.
 
     .. math::
-    y = -0.0001 * (abs(sin(x_1) * sin(x_2) * exp * (abs(100-frac {sqrt(x1 **2 + x2 **2)}{pi})) + 1) **0.1
+    y = -0.0001\\left(\\mid\\sin(x_1)\\sin(x_2)\\exp\\left(\\mid 100-\\frac{\\left\\sqrt{x_1^2 + x_2^2}\\right}
+    {pi}\\right) + 1\\right)^0.1
 
     Parameters
     ----------
@@ -319,10 +298,12 @@ class CrossinTrayFunction(AbstractModel):
        parameters["x1"] = np.linspace(-10, 10, 100)
        parameters["x2"] = np.linspace(-10, 10, 100)
 
-       plot("Cross-in-Tray Function", parameters)
+       constants = None
+
+       plot("CrossinTrayFunction", parameters, constants)
 
     .. [1]Test functions for optimization. In Wikipedia. Retrieved June 2013, from
-    https://en.wikipedia.org/wiki/Test_functions_for_optimization.
+       https://en.wikipedia.org/wiki/Test_functions_for_optimization.
     .. [2] https://www.sfu.ca/~ssurjano/crossit.html
     """
 
@@ -334,26 +315,27 @@ class CrossinTrayFunction(AbstractModel):
 
     def simulate(self, process_id=None, matlab_engine=None):
 
-        y = -0.0001 * (np.abs(np.sin(self.p["x1"]) * np.sin(self.p["x2"]) * np.exp(np.abs(100 - (np.sqrt(self.p["x1"]**2 + self.p["x2"]**2)) / np.pi))) + 1) **0.1
+        y = -0.0001 * (np.abs(np.sin(self.p["x1"]) * np.sin(self.p["x2"]) *
+                              np.exp(np.abs(100 - (np.sqrt(self.p["x1"]**2 + self.p["x2"]**2)) / np.pi))) + 1) **0.1
 
         y_out = y[:, np.newaxis]
 
         return y_out
 
 
-class BohachevskyFunctions(AbstractModel):
+class BohachevskyFunction1(AbstractModel):
     """
-    2-dimensional Bohachevsky functions [1][2].
+    2-dimensional first Bohachevsky function [1][2].
     The Bohachevsky functions all have the same similar bowl shape. The one shown above is the first function.
 
     .. math::
-      y = x_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7
+     y = x_1^2 + 2x_2^2 - 0.3\\cos(3\\pi x_1) - 0.4\\cos(4\\pi x_2) + 0.7
 
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
         First parameter defined in [-100, 100]
-    p["xi"]: float or ndarray of float [n_grid]
+    p["x2"]: float or ndarray of float [n_grid]
         second parameter defined in [-100, 100]
     p["xi"]: float or ndarray of float [n_grid]
         i-th parameter defined in [-100, 100]
@@ -375,11 +357,71 @@ class BohachevskyFunctions(AbstractModel):
        parameters["x1"] = np.linspace(-100, 100 , 100)
        parameters["x2"] = np.linspace(-100, 100 , 100)
 
-       plot("Bohachevsky functions", parameters)
+       constants = None
 
-    .. [1] Global Optimization x_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7Test Problems. Retrieved June 2013, from
-    http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+       plot("BohachevskyFunction1", parameters, constants)
 
+    .. [1] Global Optimization x_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7 Test Problems.
+       Retrieved June 2013, from http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+    .. [2] https://www.sfu.ca/~ssurjano/boha.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = (self.p["x1"] **2) + (self.p["x2"] **2) - 0.3 * np.cos(3 * np.pi * self.p["x1"])\
+            - 0.4 * np.cos(4 * np.pi * self.p["x2"]) + 0.7
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class PermFunction(AbstractModel):
+    """
+    d-dimensional Perm function 0, D, b (beta) [1][2]. The parameter b (beta) is often assumed to be b=10.
+
+    .. math::
+      y = \\sum_{i=1}^{d}\\left(\\sum_{j=1}^{d}(j + \\beta)\\left(x_j^i-\\frac{1}{j^i}\\right)\\right)^2
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-d, d]
+    p["xi"]: float or ndarray of float [n_grid]
+        i parameter defined in [-d, d]
+    p["xj"]: float or ndarray of float [n_grid]
+        j parameter defined in [-d, d]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-2, 2, 100)
+       parameters["x2"] = np.linspace(-2, 2, 100)
+
+       constants = OrderedDict()
+       constants["b"] = 10
+
+       plot("PermFunction", parameters, constants)
+
+    .. [1] Global Optimization Test Problems. Retrieved June 2013, from
+       http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
     .. [2] https://www.sfu.ca/~ssurjano/perm0db.html
     """
 
@@ -391,89 +433,30 @@ class BohachevskyFunctions(AbstractModel):
 
     def simulate(self, process_id=None, matlab_engine=None):
 
-        y = (self.p["x1"] **2) + (self.p["x2"] **2) - 0.3 * np.cos(3 * np.pi * self.p["x1"]) - 0.4 * np.cos(4 * np.pi * self.p["x2"]) + 0.7
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+                self.p[key] = self.p[key].flatten()
+
+        # set constants
+        p = copy.deepcopy(self.p)
+        b = self.p["b"]
+        del p["b"]
+
+        n = len(p.keys())
+
+        # determine sum
+        y = np.zeros(np.array(p[list(p.keys())[0]]).size)
+        tmp = np.zeros(np.array(p[list(p.keys())[0]]).size)
+
+        for i, i_key in enumerate(p.keys()):
+            for j, j_key in enumerate(p.keys()):
+                tmp += (j+1+b)*(p[j_key]**(i+1)-1/((j+1)**(i+1)))
+            y += tmp**2
+            tmp = np.zeros(np.array(p[list(p.keys())[0]]).size)
 
         y_out = y[:, np.newaxis]
 
         return y_out
-
-
-# class PermFunction0dβ(AbstractModel):
-#     """
-#     d-dimensional Perm function 0, d, β [1][2].
-#
-#     .. math::
-#        y = sum_{i=1} **{d} * (sum_{j=1} **{d} * (j + β) * (x_j **i -frac{1}{j **i})) **2
-#
-#     Parameters
-#     ----------
-#     p["x1"]: float or ndarray of float [n_grid]
-#         First parameter defined in [-d, d]
-#     p["xi"]: float or ndarray of float [n_grid]
-#         i-th parameter defined in [-d, d]
-#     p["xd"]: float or ndarray of float [n_grid]
-#         d-th parameter defined in [-d, d]
-#x_1 **2 + 2x_2 **2 - 0.3 * cosx_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7
-#     Returns
-#     -------
-#     y: ndarray of float [n_grid x 1]
-#         Output
-#
-#     Notes
-#     -----
-#     .. plot::
-#
-#        import numpy as np
-#        from pygpc.testfunctions import plot_testfunction as plot
-#        from collections import OrderedDict
-#
-#        parameters = OrderedDict()
-#        parameters["x1"] = np.linspace(-d, d, 100)
-#        parameters["x2"] = np.linspace(-d, d, 100)
-#
-#        constants = OrderedDict()
-#        constants["j"] = j.
-#        constants["β"] = β
-#        constants["i"] = i
-#        plot("Perm function 0, d, β", parameters, constants)
-#
-#     .. [1] Global Optimization Test Problems. Retrieved June 2013, from
-#     http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
-#
-#     .. [2] https://www.sfu.ca/~ssurjano/ackley.html
-#     """
-#
-#     def __init__(self):
-#         pass
-#
-#     def validate(self):
-#         pass
-#
-#     def simulate(self, process_id=None, matlab_engine=None):
-#
-#         # set constants
-#         p = copy.deepcopy(self.p)
-#         j = self.p["j"]
-#         β = self.p["β"]
-#         i = self.p["i"]
-#         del p["j"], p["β"], p["i"]
-#
-#         y = np.sum{i = 1} **{d} * ((np.sum{j = 1} **{d}) * (j + β) * ((self.p["xj"] **i) - {1}/{j **i})) **2
-#
-#         y_out = y[:, np.newaxis]
-#
-#
-#         x1 = np.linspace(-2,2,100)
-#         x2 = np.linspace(-2,2,100)
-#         for i in [1,2]:
-#             for j in [1,2]:
-#                 (j + beta)*()
-#
-#
-#                 pass
-#
-#
-#         return y_out
 
 
 class SixHumpCamelFunction(AbstractModel):
@@ -485,8 +468,7 @@ class SixHumpCamelFunction(AbstractModel):
     The function has six local minima, two of which are global.
 
     .. math::
-      y = (4 - 2.1 * x1 **2 + frac{x1 **2}{3}) * x1 **2 + x1 * x2 + (-4 + 4x2 **2) *x2 **2
-
+      y = \\left(4 - 2.1x_1^2 + \\frac{x_1^4}{3}\\right)x_1^2 + x_1x_2 + (-4 + 4x_2^2)x_2^2
 
     Parameters
     ----------
@@ -512,11 +494,12 @@ class SixHumpCamelFunction(AbstractModel):
        parameters["x1"] = np.linspace(-3, 3 , 100)
        parameters["x2"] = np.linspace(-2, 2 , 100)
 
-       plot("Six - Hump Camel function", parameters)
+       constants = None
+
+       plot("SixHumpCamelFunction", parameters, constants)
 
     .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005). Retrieved June 2013, from
-    http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
-
+       http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
     .. [2] https://www.sfu.ca/~ssurjano/camel6.html
     """
 
@@ -528,7 +511,926 @@ class SixHumpCamelFunction(AbstractModel):
 
     def simulate(self, process_id=None, matlab_engine=None):
 
-        y = (4 - 2.1*(self.p["x1"] **2) + (self.p["x1"] **4)/3) * (self.p["x1"] **2) + self.p["x1"] * self.p["x2"] + (-4 + 4 * (self.p["x2"] **2)) * (self.p["x2"] **2)
+        y = (4 - 2.1*(self.p["x1"] **2) + (self.p["x1"] **4)/3) * (self.p["x1"] **2) + self.p["x1"] * self.p["x2"] + \
+            (-4 + 4 * (self.p["x2"] **2)) * (self.p["x2"] **2)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class RotatedHyperEllipsoid(AbstractModel):
+    """
+    d-dimensional Rotated-Hyper Ellipsoid Function [1][2].
+    The Rotated Hyper-Ellipsoid function is continuous, convex and unimodal.
+    It is an extension of the Axis Parallel Hyper-Ellipsoid function, also referred to as the Sum Squares function.
+    The plot shows its two-dimensional form.
+
+    .. math::
+       y = \\sum_{i=1}^{d}\\sum_{j=1}^{i}\\* x_j^2
+
+    Parameters
+    ----------
+    p["xi"]: float or ndarray of float [n_grid]
+        i parameter defined in [-65.536, 65.536]
+    p["xj"]: float or ndarray of float [n_grid]
+        j parameter defined in [-65.536, 65.536]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-65.536, 65.536, 100)
+       parameters["x2"] = np.linspace(-65.536, 65.536, 100)
+
+       constants = None
+
+       plot("RotatedHyperEllipsoid", parameters, constants)
+
+    .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
+       Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
+    .. [2] https://www.sfu.ca/~ssurjano/rothyp.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+                self.p[key] = self.p[key].flatten()
+
+        # determine sum
+        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        for i, i_key in enumerate(keys):
+            for j, j_key in enumerate(keys[0:i+1]):
+               y += self.p[j_key]**2
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class SumOfDifferentPowersFunction(AbstractModel):
+    """
+    d-dimensional Sum Of Different Powers Function [1][2].
+    The Sum of Different Powers function is unimodal. It is shown here in its two-dimensional form.
+
+    .. math::
+         y = \\sum_{i=1}^{d}\\mid x_i \\mid ^{i+1}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-1, 1]
+    p["xj"]: float or ndarray of float [n_grid]
+        j-th parameter defined in [-1, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-1, 1, 100)
+       parameters["x2"] = np.linspace(-1, 1, 100)
+
+       constants = None
+
+       plot("SumOfDifferentPowersFunction", parameters, constants)
+
+    .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
+       Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
+    .. [2] https://www.sfu.ca/~ssurjano/sumpow.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+                self.p[key] = self.p[key].flatten()
+
+        # determine sum
+        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        for i, i_key in enumerate(keys):
+               y += np.abs(self.p[i_key] **(i+2))
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class ZakharovFunction(AbstractModel):
+    """
+    d-dimensional Zakharov Function [1][2].
+    The Zakharov function has no local minima except the global one. It is shown here in its two-dimensional form.
+
+    .. math::
+       y = \\sum_{i=1}^{d} x_i^2+\\left(\\sum_{i+1}^{d}0.5ix_i\\right)^2+\\left(\\sum_{i+1}^d0.5ix_i\\right)^4
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-5, 10]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [-5, 10]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-5, 10, 100)
+       parameters["xi"] = np.linspace(-5, 10, 100)
+
+       constants = None
+
+       plot("ZakharovFunction", parameters, constants)
+
+    .. [1] Global Optimization Test Problems. Retrieved June 2013, from
+       http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+
+    .. [2] https://www.sfu.ca/~ssurjano/zakharov.html
+
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+               self.p[key] = self.p[key].flatten()
+
+        # determine sum
+        s1 = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        s2 = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        for i, key in enumerate(keys):
+            s1 += (self.p[key] ** 2)
+            s2 += 0.5 * (i+1) * self.p[key]
+
+        # determine output
+        y = s1 + s2 ** 2 + s2 ** 4
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class DropWaveFunction(AbstractModel):
+    """
+    2-dimensional DropWaveFunction [1][2].
+    The Drop-Wave function is multimodal and highly complex.
+    The second plot above shows the function on a smaller input domain, to illustrate its characteristic features.
+
+    .. math::
+      y = -\\frac{1+\\cos\\left(12\\sqrt{x_1^2+x_2^2}\\right)}{0.5(x_1^2+x_2^2)+2}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-5.12, 5.12]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-5.12, 5.12]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-5.12, 5.12, 100)
+       parameters["x2"] = np.linspace(-5.12, 5.12, 100)
+
+       constants = None
+
+       plot("DropWaveFunction", parameters, constants)
+
+    .. [1] Global Optimization Test Functions Index.
+       Retrieved June 2013, from http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
+
+    .. [2] https://www.sfu.ca/~ssurjano/drop.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = - (1 + np.cos(12 * np.sqrt(self.p["x1"] ** 2 + self.p["x2"] ** 2))) \
+            / (0.5 * (self.p["x1"] ** 2 + self.p["x2"] ** 2) + 2)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class DixonPriceFunction(AbstractModel):
+    """
+    d-dimensional Dixon-Price Function [1][2].
+
+    .. math::
+      y = (x_1-1)^2+\\sum_{i=d}^{2}(2x_{i}^{2}-x_{i-1})^2
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-10, 10]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [-10, 10]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-10, 10, 100)
+       parameters["x2"] = np.linspace(-10, 10, 100)
+
+       constants = None
+
+       plot("DixonPriceFunction ", parameters, constants)
+
+    .. [1] Global Optimization Test Functions Index.
+       Retrieved June 2013, from http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
+
+    .. [2] https://www.sfu.ca/~ssurjano/dixonpr.html
+
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+               self.p[key] = self.p[key].flatten()
+
+        s1 = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        for i, key in enumerate(keys[1:]):
+            s1 += (i+2) * (2 * self.p[key] ** 2 - self.p[keys[i]]) ** 2
+
+        # determine output
+        y = (self.p[keys[0]] - 1) ** 2 + s1
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class RosenbrockFunction(AbstractModel):
+    """
+    d-dimensional Rosenbrock Function [1][2][3][4][5].
+    The Rosenbrock function, also referred to as the Valley or Banana function,
+    is a popular test problem for gradient-based optimization algorithms.
+    It is shown in the plot above in its two-dimensional form.
+    The function is unimodal, and the global minimum lies in a narrow, parabolic valley.
+    However, even though this valley is easy to find, convergence to the minimum is difficult (Picheny et al., 2012).
+
+    .. math::
+      y = \\sum_{i=1}^{d-1}[100(x_{i+1}-x_i^2)^2+(x_i-1)^2]
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-5, 10]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [-5, 10]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-5, 10, 100)
+       parameters["x2"] = np.linspace(-5, 10, 100)
+
+       constants = None
+
+       plot("RosenbrockFunction ", parameters, constants)
+
+    .. [1] Dixon, L. C. W., & Szego, G. P. (1978). The global optimization problem: an introduction.
+       Towards global optimization, 2, 1-15.
+
+    .. [2] Global Optimization Test Problems. Retrieved June 2013, from
+       http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+
+    .. [3] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
+       Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
+
+    .. [4] Picheny, V., Wagner, T., & Ginsbourger, D. (2012).
+       A benchmark of kriging-based infill criteria for noisy optimization.
+
+    .. [5]https://www.sfu.ca/~ssurjano/rosen.html
+
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+               self.p[key] = self.p[key].flatten()
+
+        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        for i, key in enumerate(keys[:-1]):
+            y += 100 * (self.p[keys[i+1]] - self.p[key] ** 2) ** 2 + (self.p[key] - 1) ** 2
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class MichalewiczFunction(AbstractModel):
+    """
+    d-dimensional Michalewicz function [1][2][3][4].
+    The Michalewicz function has d! local minima, and it is multimodal.
+    The parameter m defines the steepness of they valleys and ridges; a larger m leads to a more difficult search.
+    The recommended value of m is m = 10. The function's two-dimensional form is shown in the plot above.
+
+    .. math::
+       y=-\\sum_{i=1}^{d}\\sin(x_i)\\sin^{2m}\\left(\\frac{i x_i^2}{\\pi}\\right)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, np.pi]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, np.pi]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, np.pi, 100)
+       parameters["xi"] = np.linspace(0, np.pi, 100)
+
+       constants = OrderedDict()
+       constants["m"] = 10.
+
+       plot("MichalewiczFunction", parameters, constants)
+
+    .. [1] Global Optimization Test Functions Index.
+       Retrieved June 2013, from http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
+
+    .. [2]Global Optimization Test Problems. Retrieved June 2013, from
+       http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+
+    .. [3] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
+       Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
+
+    .. [4] https://www.sfu.ca/~ssurjano/michal.html
+
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+               self.p[key] = self.p[key].flatten()
+
+        # set constants
+        p = copy.deepcopy(self.p)
+        m = self.p["m"]
+        del p["m"]
+
+        # determine sum
+        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        for i, key in enumerate(keys):
+            y += - np.sin(self.p[key]) * (np.sin(self.p[keys[i]] * (self.p[key] ** 2) / np.pi)) ** (2 * m)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class DeJongFunctionFive(AbstractModel):
+    """
+    2-dimensional DeJong Function Number Five [1][2].
+    The fifth function of De Jong is multimodal, with very sharp drops on a mainly flat surface.
+
+    .. math::
+      y = \\left(0.002+\\sum_{i+1}^{25}\\frac{1}{i+(x_1-a_{1i})^6+(x_2-a_{2i})^6}\\right)^{-1}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-65.536, 65.536]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-65.536, 65.536]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-65.536, 65.536, 100)
+       parameters["x2"] = np.linspace(-65.536, 65.536, 100)
+
+       constants = None
+
+       plot("DeJongFunctionFive", parameters, constants)
+
+    .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
+       Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
+    .. [2] https://www.sfu.ca/~ssurjano/dejong5.html
+
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+               self.p[key] = self.p[key].flatten()
+
+        # set constants
+        seq = [-32, -16, 0, 16, 32]
+        a = np.array([seq * 5, np.hstack([[i] * 5 for i in seq])])
+        s1 = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        # determine sum
+        for i in range(25):
+            s1 += 1 / (i+1 + (self.p[keys[0]] - a[0, i]) ** 6 + (self.p[keys[1]] - a[1, i]) ** 6)
+
+        y = 1 / (0.002 + s1)
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class MatyasFunction(AbstractModel):
+    """
+    2-dimensional Matyas function [1][2].
+    The Matyas function has no local minima except the global one.
+
+    .. math::
+      y = 0.26(x_1^2+x_2^2)-0.48x_1x_2
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-10, 10]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-10, 10]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-10, 10, 100)
+       parameters["x2"] = np.linspace(-10, 10, 100)
+
+       constants = None
+
+       plot("MatyasFunction", parameters, constants)
+
+    .. [1] Global Optimization Test Problems. Retrieved June 2013, from
+       http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+
+    .. [2] https://www.sfu.ca/~ssurjano/matya.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = 0.26 * (self.p["x1"] ** 2 + self.p["x2"] ** 2) - 0.48 * self.p["x1"] * self.p["x2"]
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class GramacyLeeFunction(AbstractModel):
+    """
+    1-dimensional Gramacy and Lee function[1][2][3].
+    This is a simple one-dimensional test function.
+
+    .. math::
+      y = \\frac{\\sin(10 \\pi x)}{2x}+(x-1)^4
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0.5, 2.5]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [0.5, 2.5]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0.5, 2.5, 100)
+       parameters["x2"] = np.linspace(0.5, 2.5, 100)
+
+       constants = None
+
+       plot("GramacyLeeFunction", parameters, constants)
+
+    .. [1] Gramacy, R. B., & Lee, H. K. (2012). Cases for the nugget in modeling computer experiments.
+       Statistics and Computing, 22(3), 713-722.
+
+    .. [2] Ranjan, P. (2013). Comment: EI Criteria for Noisy Computer Simulators. Technometrics, 55(1), 24-28.
+
+    .. [3] https://www.sfu.ca/~ssurjano/grlee12.html
+
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = (np.sin(10 * np.pi * self.p["x1"]) / 2 * self.p["x1"]) + (self.p["x1"] - 1) ** 4
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class SchafferFunction4(AbstractModel):
+    """
+    2-dimensional Schaffer function No. 4. [1][2].
+
+    .. math::
+      y = 0.5+\\frac{\\cos{(\\sin{(\mid x_1^2-x_2^2 \mid )})}-0.5}{(1+0.001(x_1^2+x_2^2))^2}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-100, 100]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-100, 100]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-100, 100, 100)
+       parameters["x2"] = np.linspace(-100, 100, 100)
+
+       constants = None
+
+       plot("SchafferFunction4", parameters, constants)
+
+    .. [1] Test functions for optimization. In Wikipedia.
+       Retrieved June 2013, from https://en.wikipedia.org/wiki/Test_functions_for_optimization.
+
+    .. [2] https://www.sfu.ca/~ssurjano/schaffer4.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = 0.5 + (np.cos(np.sin(np.abs(self.p["x1"] ** 2 - self.p["x2"] ** 2))) - 0.5) /\
+            (1 + 0.001 * (self.p["x1"] ** 2 + self.p["x2"] ** 2)) ** 2
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class SphereFunction(AbstractModel):
+    """
+    d-dimensional Sphere Function [1][2][3][4].
+    The Sphere function has d local minima except for the global one. It is continuous, convex and unimodal.
+    The plot shows its two-dimensional form.
+
+    .. math::
+         y = \\sum_{i=1}^{d}x_i^2
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-5.12, 5.12]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-5.12, 5.12]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-5.12, 5.12, 100)
+       parameters["x2"] = np.linspace(-5.12, 5.12, 100)
+
+       constants = None
+
+       plot("SphereFunction", parameters, constants)
+
+    .. [1]Dixon, L. C. W., & Szego, G. P. (1978). The global optimization problem: an introduction.
+       Towards global optimization, 2, 1-15.
+    .. [2] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005). Retrieved June 2013,
+       from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
+    .. [3]Picheny, V., Wagner, T., & Ginsbourger, D. (2012).
+       A benchmark of kriging-based infill criteria for noisy optimization.
+    .. [4]https://www.sfu.ca/~ssurjano/spheref.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+                self.p[key] = self.p[key].flatten()
+
+        # determine sum
+        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        for i, i_key in enumerate(keys):
+               y += self.p[i_key] ** 2
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class McCormickFunction(AbstractModel):
+    """
+    2-dimensional McCormick Function [1][2].
+
+    .. math::
+      y = \\sin(x_1+x_2)+(x_1-x_2)^2-1.5x_1+2.5x_2+1
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-1.5, 4]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-3, 4]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-1.5, 4, 100)
+       parameters["x2"] = np.linspace(-3, 4, 100)
+
+       constants = None
+
+       plot("McCormickFunction", parameters, constants)
+
+    .. [1] Adorio, E. P., & Diliman, U. P. MVF - Multivariate Test Functions Library in C for Unconstrained
+       Global Optimization (2005). Retrieved June 2013, from http://http://www.geocities.ws/eadorio/mvf.pdf.
+
+    .. [2] https://www.sfu.ca/~ssurjano/mccorm.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = np.sin(self.p["x1"] + self.p["x2"]) + (self.p["x1"] - self.p["x2"]) ** 2 - 1.5 * self.p["x1"] + 2.5 * self.p["x2"] + 1
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class BoothFunction(AbstractModel):
+    """
+    2-dimensional BoothFunction.[1][2].
+
+    .. math::
+      y = (x_1+2x_2-7)^2+(2x_1+x_2-5)^2
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-10, 10]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-10, 10]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-10, 10, 100)
+       parameters["x2"] = np.linspace(-10, 10, 100)
+
+       constants = None
+
+       plot("BoothFunction", parameters, constants)
+
+    .. [1] Global Optimization Test Problems. Retrieved June 2013, from
+       http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
+    .. [2] https://www.sfu.ca/~ssurjano/booth.html
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        y = (self.p["x1"] + 2 * self.p["x2"] - 7) ** 2 + (2 * self.p["x1"] + self.p["x2"] - 5) ** 2
 
         y_out = y[:, np.newaxis]
 
@@ -537,9 +1439,11 @@ class SixHumpCamelFunction(AbstractModel):
 
 class Peaks(AbstractModel):
     """
-    Two-dimensional peaks function.
+    Three-dimensional peaks function.
 
-    y = Peaks(x)
+    .. math::
+      y = 3(1-x_1)^2\\exp{-(x_1^2)-(x_3+1)^2}-10(\\frac{x_1}{5}-x_1^3-x_3^5)\\exp{-x_1^2-x_3^2}-
+      \\frac{1}{3}\\exp{-(x_1+1)^2 - x_3^2} + x_2
 
     Parameters
     ----------
@@ -656,8 +1560,8 @@ class DiscontinuousRidgeManufactureDecayGenzDiscontinuous(AbstractModel):
 
     def simulate(self, process_id=None, matlab_engine=None):
 
-        y_1 = DiscontinuousRidgeManufactureDecay(self.p).simulate()
-        y_2 = BinaryDiscontinuousSphere(self.p).simulate()
+        y_1 = DiscontinuousRidgeManufactureDecay().set_parameters(self.p).simulate()
+        y_2 = GenzDiscontinuous().set_parameters(self.p).simulate()
 
         y = np.hstack((y_1, y_2))
 
@@ -882,7 +1786,7 @@ class SurfaceCoverageSpecies(AbstractModel):
                        args=(self.p["alpha"].flatten()[i], self.p["beta"].flatten()[i], gamma,))
             y_out[i, 0] = np.array([y[-1]])
 
-        y_out = np.hstack((y_out, 2.*y_out))
+        # y_out = np.hstack((y_out, 2.*y_out))
 
         return y_out
 
@@ -1299,7 +2203,7 @@ class GenzOscillatory(AbstractModel):
     """
     N-dimensional "Oscillatory" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
 
-    .. math:: y = \cos \\left( 2 \pi u_1 + \sum_{i=1}^{N}a_i x_i \\right)
+    .. math:: y = \\cos \\left( 2 \\pi u_1 + \\sum_{i=1}^{N}a_i x_i \\right)
 
     Parameters
     ----------
@@ -1659,59 +2563,6 @@ class Ishigami(AbstractModel):
         return y_out
 
 
-class SphereFun(AbstractModel):
-    """
-    N-dimensional sphere function with zero mean.
-
-    .. math:: y = \sum_{i=1}^{N}x_i^2
-
-    Parameters
-    ----------
-    p["x1"]: float or ndarray of float [n_grid]
-        First parameter [-1, 1]
-    p["xi"]: float or ndarray of float [n_grid]
-        i-th parameter defined in [-1, 1]
-    p["xN"]: float or ndarray of float [n_grid]
-        Nth parameter [-1, 1]
-
-    Returns
-    -------
-    y: ndarray of float [n_grid x 1]
-        Output data
-
-    Notes
-    -----
-    .. plot::
-
-       import numpy as np
-       from pygpc.testfunctions import plot_testfunction as plot
-       from collections import OrderedDict
-
-       parameters = OrderedDict()
-       parameters["x1"] = np.linspace(-1, 1, 100)
-       parameters["x2"] = np.linspace(-1, 1, 100)
-
-       plot("SphereFun", parameters)
-    """
-
-    def __init__(self):
-        pass
-
-    def validate(self):
-        pass
-
-    def simulate(self, process_id=None, matlab_engine=None):
-        # determine output
-        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
-
-        for i, key in enumerate(self.p.keys()):
-            y += self.p[key] ** 2
-
-        y_out = y[:, np.newaxis]
-
-        return y_out
-
-
 class GFunction(AbstractModel):
     """
     N-dimensional g-function used by Saltelli and Sobol (1995) [1].
@@ -1842,6 +2693,62 @@ class BinaryDiscontinuousSphere(AbstractModel):
 
         y = np.ones(x.shape[1])
         y[np.linalg.norm(x-0.5, axis=0) <= 0.25] = 2.
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class Cluster3Simple(AbstractModel):
+    """
+    2-dimensional testfunction containing a spherical and a linear discontinuity.
+
+    .. math::
+       y = \\begin{cases}
+       2, & \\text{if } \\sqrt{\\sum_{i=1}^{N}(x_i-0.5)^2} \\leq 0.25 \\\\
+       1, & \\text{otherwise}
+       \\end{cases}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [0, 1]
+    p["x2"]: float or ndarray of float [n_grid]
+        2-nd parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 500)
+       parameters["x2"] = np.linspace(0, 1, 500)
+
+       plot("Cluster3Simple", parameters)
+    """
+
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        x = np.vstack([self.p[key].squeeze() for key in self.p.keys()])
+
+        y = np.ones(x.shape[1])
+        y[np.linalg.norm(x, axis=0) <= 0.25] = 2.
+        y[np.sum(x, axis=0) >= 1.5] = 3.
 
         y_out = y[:, np.newaxis]
 
@@ -1984,6 +2891,7 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
 
         y = np.zeros(x.shape[0])
         mask = (np.sum(x, axis=1) <= 1.).flatten()
+        # mask = np.logical_and(mask, np.linalg.norm(x-0.85, axis=1) > .8)
 
         p_1 = OrderedDict()
         p_2 = OrderedDict()
@@ -2002,6 +2910,7 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
         y[np.logical_not(mask)] = y_2.flatten()
 
         y_out = y[:, np.newaxis]
+        y_out = np.hstack((y_out, y_out))
 
         return y_out
 

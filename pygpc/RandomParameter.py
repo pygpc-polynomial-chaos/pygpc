@@ -31,7 +31,6 @@ class RandomParameter(object):
         Standard deviation
     var: float
         Variance
-
     """
     def __init__(self, pdf_type=None, pdf_shape=None, pdf_limits=None):
         """
@@ -45,7 +44,10 @@ class RandomParameter(object):
         self.std = None
         self.var = None
 
-    def pdf(self):
+    def pdf(self, x):
+        pass
+
+    def icdf(self, p):
         pass
 
     def plot_pdf(self, legend_str=None):
@@ -108,10 +110,12 @@ class Beta(RandomParameter):
 
         self.mean = float(self.pdf_shape[0]) / (self.pdf_shape[0] + self.pdf_shape[1]) * \
                     (self.pdf_limits[1] - self.pdf_limits[0]) + self.pdf_limits[0]
+
         self.std = np.sqrt(self.pdf_shape[0] * self.pdf_shape[1] / \
                            ((self.pdf_shape[0] + self.pdf_shape[1] + 1) *
                             (self.pdf_shape[0] + self.pdf_shape[1])**2)) * \
                    (self.pdf_limits[1] - self.pdf_limits[0])
+
         self.var = self.std**2
 
     def init_basis_function(self, order):
@@ -188,6 +192,26 @@ class Beta(RandomParameter):
 
         return y
 
+    def icdf(self, p):
+        """
+        Inverse cumulative density function [0, 1]
+
+        Parameters
+        ----------
+        p: ndarray of float [n_p]
+            Cumulative probability
+
+        Returns
+        -------
+        x: ndarray of float [n_p]
+            Sample value of the random variable such that the probability of the variable being less than or equal
+            to that value equals the given probability.
+        """
+        b = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
+        x = 2 * b.ppf(p.flatten()) - 1
+
+        return x
+
 
 class Norm(RandomParameter):
     """
@@ -202,19 +226,12 @@ class Norm(RandomParameter):
     """
     def __init__(self, pdf_shape):
         """
-        Constructor; Initializes beta distributed random variable
+        Constructor; Initializes normal distributed random variable
 
         Parameters
         ----------
         pdf_shape: list of float [2]
             Shape parameters of normal distributed random variable [mean, std]
-
-        Attributes
-        ----------
-        pdf_shape: list of float [2]
-            Shape parameters of beta distributed random variable [mean, std]
-        pdf_limits: list of float [2]
-            Upper and lower bound of random variable (default: mean +- 3 * std)
 
         Examples
         --------
@@ -279,3 +296,23 @@ class Norm(RandomParameter):
         """
 
         return scipy.stats.norm.pdf(x, loc=0, scale=1)
+
+    def icdf(self, p):
+        """
+        Inverse cumulative density function [0, 1]
+
+        Parameters
+        ----------
+        p: ndarray of float [n_p]
+            Cumulative probability
+
+        Returns
+        -------
+        x: ndarray of float [n_p]
+            Sample value of the random variable such that the probability of the variable being less than or equal
+            to that value equals the given probability.
+        """
+        n = scipy.stats.norm()
+        x = n.ppf(p.flatten())
+
+        return x

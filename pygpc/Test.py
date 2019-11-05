@@ -21,24 +21,67 @@ class Test(object):
 # Low-Dimensional Continuous Testfunctions  #
 #############################################
 
-class Peaks(Test):
+class BohachevskyFunction1(Test):
     """
-    Peaks test function
+    BohachevskyFunction1 test function
     """
     def __init__(self):
         """
-        Initializes Peaks test function
+        Initializes BohachevskyFunction1 test function
         """
-        super(Peaks, self).__init__(dim=2)
+        super(BohachevskyFunction1, self).__init__(dim=2)
 
         # define model
-        self.model = testfunctions.Peaks()
+        self.model = testfunctions.BohachevskyFunction1()
 
         # define parameters
         self.parameters = OrderedDict()
-        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        self.parameters["x3"] = np.array([0.])
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-100., 100.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-100., 100.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class BoothFunction(Test):
+    """
+    BoothFunction test function
+    """
+    def __init__(self):
+        """
+        Initializes BoothFunction test function
+        """
+        super(BoothFunction, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.BoothFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-10., 10.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-10., 10.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class BukinFunctionNumber6(Test):
+    """
+    BukinFunctionNumber6 test function
+    """
+    def __init__(self):
+        """
+        Initializes BukinFunctionNumber6 test function
+        """
+        super(BukinFunctionNumber6, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.BukinFunctionNumber6()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-15., -5.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-3., 3.])
 
         # define problem
         self.problem = Problem(self.model, self.parameters)
@@ -56,28 +99,6 @@ class Franke(Test):
 
         # define model
         self.model = testfunctions.Franke()
-
-        # define parameters
-        self.parameters = OrderedDict()
-        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
-
-        # define problem
-        self.problem = Problem(self.model, self.parameters)
-
-
-class Lim2002(Test):
-    """
-    Lim2002 test function
-    """
-    def __init__(self):
-        """
-        Initializes Lim2002 test function
-        """
-        super(Lim2002, self).__init__(dim=2)
-
-        # define model
-        self.model = testfunctions.Lim2002()
 
         # define parameters
         self.parameters = OrderedDict()
@@ -118,28 +139,139 @@ class Ishigami(Test):
         self.problem = Problem(self.model, self.parameters)
 
 
+class Lim2002(Test):
+    """
+    Lim2002 test function
+    """
+    def __init__(self):
+        """
+        Initializes Lim2002 test function
+        """
+        super(Lim2002, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.Lim2002()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class MatyasFunction(Test):
+    """
+    MatyasFunction test function
+    """
+    def __init__(self):
+        """
+        Initializes MatyasFunction test function
+        """
+        super(MatyasFunction, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.MatyasFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-10., 10.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-10., 10.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class McCormickFunction(Test):
+    """
+    McCormickFunction test function
+    """
+    def __init__(self):
+        """
+        Initializes McCormickFunction test function
+        """
+        super(McCormickFunction, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.McCormickFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1.5, 4.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-3., 4.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class Peaks(Test):
+    """
+    Peaks test function
+    """
+    def __init__(self):
+        """
+        Initializes Peaks test function
+        """
+        super(Peaks, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.Peaks()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        self.parameters["x3"] = np.array([0.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class SixHumpCamelFunction(Test):
+    """
+    SixHumpCamelFunction test function
+    """
+    def __init__(self):
+        """
+        Initializes SixHumpCamelFunction test function
+        """
+        super(SixHumpCamelFunction, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.SixHumpCamelFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-3., 3.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-2., 2.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
 ##########################################
 # N-Dimensional Continuous Testfunctions #
 ##########################################
 
-class ManufactureDecay(Test):
+class DixonPriceFunction(Test):
     """
-    ManufactureDecay test function
+    DixonPriceFunction test function
     """
     def __init__(self, dim=2):
         """
-        Initializes ManufactureDecay test function
+        Initializes DixonPriceFunction test function
         """
-        super(ManufactureDecay, self).__init__(dim=dim)
+        super(DixonPriceFunction, self).__init__(dim=dim)
 
         # define model
-        self.model = testfunctions.ManufactureDecay()
+        self.model = testfunctions.DixonPriceFunction()
 
         # define parameters
         self.parameters = OrderedDict()
 
         for i in range(dim):
-            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-10., 10.])
 
         # define problem
         self.problem = Problem(self.model, self.parameters)
@@ -260,52 +392,6 @@ class GenzProductPeak(Test):
         self.problem = Problem(self.model, self.parameters)
 
 
-class Ridge(Test):
-    """
-    Ridge test function
-    """
-    def __init__(self, dim=2):
-        """
-        Initializes Ridge test function
-        """
-        super(Ridge, self).__init__(dim=dim)
-
-        # define model
-        self.model = testfunctions.Ridge()
-
-        # define parameters
-        self.parameters = OrderedDict()
-
-        for i in range(dim):
-            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-4., 4.])
-
-        # define problem
-        self.problem = Problem(self.model, self.parameters)
-
-
-class SphereFun(Test):
-    """
-    SphereFun test function
-    """
-    def __init__(self, dim=2):
-        """
-        Initializes SphereFun test function
-        """
-        super(SphereFun, self).__init__(dim=dim)
-
-        # define model
-        self.model = testfunctions.SphereFun()
-
-        # define parameters
-        self.parameters = OrderedDict()
-
-        for i in range(dim):
-            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
-
-        # define problem
-        self.problem = Problem(self.model, self.parameters)
-
-
 class GFunction(Test):
     """
     GFunction test function
@@ -331,6 +417,29 @@ class GFunction(Test):
         self.problem = Problem(self.model, self.parameters)
 
 
+class ManufactureDecay(Test):
+    """
+    ManufactureDecay test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes ManufactureDecay test function
+        """
+        super(ManufactureDecay, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.ManufactureDecay()
+
+        # define parameters
+        self.parameters = OrderedDict()
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
 class OakleyOhagan2004(Test):
     """
     OakleyOhagan2004 test function
@@ -349,6 +458,145 @@ class OakleyOhagan2004(Test):
 
         for i in range(self.dim):
             self.parameters["x{}".format(i)] = Norm(pdf_shape=[0., 1.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class PermFunction(Test):
+    """
+    PermFunction test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes PermFunction test function
+        """
+        super(PermFunction, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.PermFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["b"] = 10.
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-dim, dim])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class Ridge(Test):
+    """
+    Ridge test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes Ridge test function
+        """
+        super(Ridge, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.Ridge()
+
+        # define parameters
+        self.parameters = OrderedDict()
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-4., 4.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class RosenbrockFunction(Test):
+    """
+    RosenbrockFunction test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes RosenbrockFunction test function
+        """
+        super(RosenbrockFunction, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.RosenbrockFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-5., 10.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class RotatedHyperEllipsoid(Test):
+    """
+    RotatedHyperEllipsoid test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes RotatedHyperEllipsoid test function
+        """
+        super(RotatedHyperEllipsoid, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.RotatedHyperEllipsoid()
+
+        # define parameters
+        self.parameters = OrderedDict()
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-60., 60.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class SphereFunction(Test):
+    """
+    SphereFunction test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes SphereFunction test function
+        """
+        super(SphereFunction, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.SphereFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class SumOfDifferentPowersFunction(Test):
+    """
+    SumOfDifferentPowersFunction test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes SphereFun test function
+        """
+        super(SumOfDifferentPowersFunction, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.SumOfDifferentPowersFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
 
         # define problem
         self.problem = Problem(self.model, self.parameters)
@@ -407,9 +655,76 @@ class WingWeight(Test):
         self.problem = Problem(self.model, self.parameters)
 
 
+class ZakharovFunction(Test):
+    """
+    ZakharovFunction test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes ZakharovFunction test function
+        """
+        super(ZakharovFunction, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.ZakharovFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-4., 10.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
 ###############################################
 # Low Dimensional Discontinuous Testfunctions #
 ###############################################
+
+class Cluster3Simple(Test):
+    """
+    Cluster3Simple test function
+    """
+    def __init__(self):
+        """
+        Initializes Cluster3Simple test function
+        """
+        super(Cluster3Simple, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.Cluster3Simple()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class DeJongFunctionFive(Test):
+    """
+    DeJongFunctionFive test function
+    """
+    def __init__(self):
+        """
+        Initializes DeJongFunctionFive test function
+        """
+        super(DeJongFunctionFive, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.DeJongFunctionFive()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-65.536, 65.536])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-65.536, 65.536])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
 
 class HyperbolicTangent(Test):
     """
@@ -502,6 +817,152 @@ class GenzDiscontinuous(Test):
 
         for i in range(dim):
             self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class MichalewiczFunction(Test):
+    """
+    MichalewiczFunction test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes MichalewiczFunction test function
+        """
+        super(MichalewiczFunction, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.MichalewiczFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["m"] = 10.
+
+        for i in range(dim):
+            self.parameters["x{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[0., np.pi])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+########################################
+# Low-Dimensional Noisy Testfunctions  #
+########################################
+
+class CrossinTrayFunction(Test):
+    """
+    CrossinTrayFunction test function
+    """
+    def __init__(self):
+        """
+        Initializes CrossinTrayFunction test function
+        """
+        super(CrossinTrayFunction, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.CrossinTrayFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-10., 10.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-10., 10.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class DropWaveFunction(Test):
+    """
+    DropWaveFunction test function
+    """
+    def __init__(self):
+        """
+        Initializes DropWaveFunction test function
+        """
+        super(DropWaveFunction, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.DropWaveFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-5., 5.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-5., 5.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class GramacyLeeFunction(Test):
+    """
+    GramacyLeeFunction test function
+    """
+    def __init__(self):
+        """
+        Initializes GramacyLeeFunction test function
+        """
+        super(GramacyLeeFunction, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.GramacyLeeFunction()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[.5, 2.5])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[.5, 2.5])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+class SchafferFunction4(Test):
+    """
+    SchafferFunction4 test function
+    """
+    def __init__(self):
+        """
+        Initializes SchafferFunction4 test function
+        """
+        super(SchafferFunction4, self).__init__(dim=2)
+
+        # define model
+        self.model = testfunctions.SchafferFunction4()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["x1"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-100., 100.])
+        self.parameters["x2"] = Beta(pdf_shape=[1., 1.], pdf_limits=[-100., 100.])
+
+        # define problem
+        self.problem = Problem(self.model, self.parameters)
+
+
+######################################
+# N-Dimensional Noisy Testfunctions  #
+######################################
+
+class Ackley(Test):
+    """
+    Ackley test function
+    """
+    def __init__(self, dim=2):
+        """
+        Initializes Ackley test function
+        """
+        super(Ackley, self).__init__(dim=dim)
+
+        # define model
+        self.model = testfunctions.Ackley()
+
+        # define parameters
+        self.parameters = OrderedDict()
+        self.parameters["a"] = 20.
+        self.parameters["b"] = 0.2
+        self.parameters["c"] = 0.5 * np.pi
+
+        for i in range(self.dim):
+            self.parameters["x{}".format(i+1)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-32.768, 32.76])
 
         # define problem
         self.problem = Problem(self.model, self.parameters)

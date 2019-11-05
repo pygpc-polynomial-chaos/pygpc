@@ -14,19 +14,38 @@ from .Test import *
 from .misc import *
 from .postprocessing import *
 from .validation import *
+from .Session import *
 
 
-def run_test(algorithm):
-    print("Running: Algorithm: {}   -    Problem: {}".format(type(algorithm).__name__,
-                                                             os.path.split(algorithm.options["fn_results"])[1]))
-    gpc, coeffs, results = algorithm.run()
+def run_test(session):
+    print("Running: Algorithm: {}   -    Problem: {}".format(type(session).__name__,
+                                                             os.path.split(session.fn_results)[1]))
+    session, coeffs, results = session.run()
 
     # Post-process gPC
-    # get_sensitivities_hdf5(fn_gpc=algorithm.options["fn_results"],
-    #                        output_idx=None,
-    #                        calc_sobol=True,
-    #                        calc_global_sens=True,
-    #                        calc_pdf=True)
+    get_sensitivities_hdf5(fn_gpc=session.fn_results,
+                           output_idx=None,
+                           calc_sobol=True,
+                           calc_global_sens=True,
+                           calc_pdf=True)
+
+    # Validate gPC vs original model function (2D-surface)
+    if len(list(session.parameters_random.keys())) == 1:
+        random_vars = list(session.parameters_random.keys())
+        n_grid = [101]
+    else:
+        random_vars = list(session.parameters_random.keys())[0:2]
+        n_grid = [51, 51]
+
+    validate_gpc_plot(session=session,
+                      coeffs=coeffs,
+                      random_vars=random_vars,
+                      n_grid=n_grid,
+                      output_idx=0,
+                      fn_out=session.fn_results + "_val",
+                      n_cpu=session.n_cpu)
+
+    return session
 
 
 class TestBench(object):
@@ -51,13 +70,14 @@ class TestBench(object):
         n_cpu : int (default=1)
             Number of threads to run tests in parallel
         """
+        self.session = OrderedDict()
+        self.session_keys = []
         self.algorithm = OrderedDict()
         self.algorithm_type = algorithm
         self.problem = problem
         self.fn_results = copy.deepcopy(options["fn_results"])
         self.repetitions = repetitions
-        self.problem_keys = problem.keys()
-        self.algorithm_keys = []
+        self.problem_keys = list(problem.keys())
 
         # Setting up parallelization (setup thread pool)
         n_cpu_available = multiprocessing.cpu_count()
@@ -68,7 +88,7 @@ class TestBench(object):
         for key in self.problem_keys:
             for rep in range(repetitions):
 
-                self.algorithm_keys.append(key + "_" + str(rep).zfill(4))
+                self.session_keys.append(key + "_" + str(rep).zfill(4))
 
                 if algorithm == Static:
                     options["fn_results"] = os.path.join(self.fn_results,
@@ -80,49 +100,59 @@ class TestBench(object):
                                                      order_glob_max_norm=options["order_max_norm"],
                                                      dim=problem[key].dim)
 
-                    if "seed" in options.keys():
+                    if "seed" in list(options.keys()):
                         grid = RandomGrid(parameters_random=problem[key].parameters_random,
                                           options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": options["seed"]})
                     else:
                         grid = RandomGrid(parameters_random=problem[key].parameters_random,
                                           options={"n_grid": options["matrix_ratio"] * n_coeffs})
 
-                    self.algorithm[self.algorithm_keys[-1]] = algorithm(problem=problem[key],
-                                                                        options=copy.deepcopy(options),
-                                                                        grid=copy.deepcopy(grid))
+                    self.algorithm[self.session_keys[-1]] = algorithm(problem=problem[key],
+                                                                      options=copy.deepcopy(options),
+                                                                      grid=copy.deepcopy(grid))
 
                 elif algorithm == StaticProjection:
                     options["fn_results"] = os.path.join(self.fn_results,
                                                          key + "_p_{}_".format(options["order"][0]) + str(rep).zfill(4))
 
-                    self.algorithm[self.algorithm_keys[-1]] = algorithm(problem=problem[key],
-                                                                        options=copy.deepcopy(options))
+                    self.algorithm[self.session_keys[-1]] = algorithm(problem=problem[key],
+                                                                      options=copy.deepcopy(options))
 
                 else:
                     options["fn_results"] = os.path.join(self.fn_results, key + "_" + str(rep).zfill(4))
-                    self.algorithm[self.algorithm_keys[-1]] = algorithm(problem=problem[key],
-                                                                        options=copy.deepcopy(options))
+                    self.algorithm[self.session_keys[-1]] = algorithm(problem=problem[key],
+                                                                      options=copy.deepcopy(options))
+
+                self.session[self.session_keys[-1]] = Session(algorithm=self.algorithm[self.session_keys[-1]])
 
     def run(self):
         """
         Run algorithms with test problems and save results
         """
 
-        algorithm_list = [self.algorithm[key] for key in self.algorithm.keys()]
+        session_list = [self.session[key] for key in list(self.session.keys())]
 
-        self.pool.map(self.run_test_partial, algorithm_list)
+        # for session in session_list:
+        #     run_test(session)
+        session_list = self.pool.map(self.run_test_partial, session_list)
         self.pool.close()
         self.pool.join()
+
+        # transform session list back to dict
+        for i, key in enumerate(self.session_keys):
+            self.session[key] = session_list[i]
 
         print("Merging .hdf5 files ...")
         # merge .hdf5 files of repetitions
         for key in self.problem_keys:
 
             # merge gpc files
-            if isinstance(self.algorithm[key + "_0000"], Static) or \
-                    isinstance(self.algorithm[key + "_0000"], StaticProjection):
+            print(key)
+            if isinstance(self.session[key + "_0000"].algorithm, Static) or \
+                    isinstance(self.session[key + "_0000"].algorithm, StaticProjection):
+
                 fn_hdf5 = os.path.join(self.fn_results, key + "_p_{}".format(
-                    self.algorithm[key + "_0000"].options["order"][0])) + ".hdf5"
+                    self.session[key + "_0000"].gpc[0].options["order"][0])) + ".hdf5"
             else:
                 fn_hdf5 = os.path.join(self.fn_results, key) + ".hdf5"
 
@@ -131,12 +161,12 @@ class TestBench(object):
                 for rep in range(self.repetitions):
                     f.create_group(str(rep).zfill(4))
 
-                    with h5py.File(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"] + ".hdf5", 'r') as g:
-                        for gkey in g.keys():
+                    with h5py.File(self.session[key + "_" + str(rep).zfill(4)].fn_results + ".hdf5", 'r') as g:
+                        for gkey in list(g.keys()):
                             g.copy(gkey, f[str(rep).zfill(4)])
 
                     # delete individual .hdf5 files
-                    os.remove(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"] + ".hdf5")
+                    os.remove(self.session[key + "_" + str(rep).zfill(4)].fn_results + ".hdf5")
 
             # # merge validation files
             # with h5py.File(os.path.join(self.fn_results, key) + "_validation_mc.hdf5", 'w') as f:
@@ -144,7 +174,7 @@ class TestBench(object):
             #         f.create_group(str(rep).zfill(4))
             #
             #         with h5py.File(os.path.splitext(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_validation_mc.hdf5", 'r') as g:
-            #             for gkey in g.keys():
+            #             for gkey in list(g.keys()):
             #                 g.copy(gkey, f[str(rep).zfill(4)])
             #
             #         # delete individual .hdf5 files
@@ -158,8 +188,7 @@ class TestBench(object):
 
         # save TestBench object
         print("Saving testbench.pkl object ...")
-        with open(os.path.join(self.fn_results, "testbench.pkl"), 'wb') as output:
-            pickle.dump(self, output, -1)
+        write_gpc_pkl(self, os.path.join(self.fn_results, "testbench.pkl"))
 
 
 class TestBenchContinuous(TestBench):
@@ -182,18 +211,27 @@ class TestBenchContinuous(TestBench):
             Number of threads to run pygpc.Problems in parallel
         """
         self.dims = []
+        self.validation = OrderedDict()
 
         # set up test problems
         problem = OrderedDict()
-        problem["Peaks"] = Peaks().problem
+        problem["BohachevskyFunction1"] = BohachevskyFunction1().problem
+        problem["BoothFunction"] = BoothFunction().problem
+        problem["BukinFunctionNumber6"] = BukinFunctionNumber6().problem
         problem["Franke"] = Franke().problem
-        problem["Lim2002"] = Lim2002().problem
         problem["Ishigami_2D"] = Ishigami(dim=2).problem
         problem["Ishigami_3D"] = Ishigami(dim=3).problem
+        problem["Lim2002"] = Lim2002().problem
+        problem["MatyasFunction"] = MatyasFunction().problem
+        problem["McCormickFunction"] = McCormickFunction().problem
+        problem["Peaks"] = Peaks().problem
+        problem["SixHumpCamelFunction"] = SixHumpCamelFunction().problem
 
         # create validation sets
         for p in problem:
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchContinuous, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 
@@ -220,24 +258,33 @@ class TestBenchContinuousND(TestBench):
             Number of threads to run pygpc.Problems in parallel
         """
         self.dims = dims
+        self.validation = OrderedDict()
 
         # set up test problems
         problem = OrderedDict()
 
         for d in dims:
-            problem["ManufactureDecay_{}D".format(d)] = ManufactureDecay(dim=d).problem
+            problem["DixonPriceFunction{}D".format(d)] = DixonPriceFunction(dim=d).problem
             problem["GenzContinuous_{}D".format(d)] = GenzContinuous(dim=d).problem
             problem["GenzCornerPeak_{}D".format(d)] = GenzCornerPeak(dim=d).problem
             problem["GenzGaussianPeak_{}D".format(d)] = GenzGaussianPeak(dim=d).problem
             problem["GenzOscillatory_{}D".format(d)] = GenzOscillatory(dim=d).problem
             problem["GenzProductPeak_{}D".format(d)] = GenzProductPeak(dim=d).problem
-            problem["Ridge_{}D".format(d)] = Ridge(dim=d).problem
-            problem["SphereFun_{}D".format(d)] = SphereFun(dim=d).problem
             problem["GFunction_{}D".format(d)] = GFunction(dim=d).problem
+            problem["ManufactureDecay_{}D".format(d)] = ManufactureDecay(dim=d).problem
+            problem["PermFunction{}D".format(d)] = PermFunction(dim=d).problem
+            problem["Ridge_{}D".format(d)] = Ridge(dim=d).problem
+            problem["RosenbrockFunction{}D".format(d)] = RosenbrockFunction(dim=d).problem
+            problem["RotatedHyperEllipsoid{}D".format(d)] = RotatedHyperEllipsoid(dim=d).problem
+            problem["SphereFunction{}D".format(d)] = SphereFunction(dim=d).problem
+            problem["SumOfDifferentPowersFunction{}D".format(d)] = SumOfDifferentPowersFunction(dim=d).problem
+            problem["ZakharovFunction{}D".format(d)] = ZakharovFunction(dim=d).problem
 
         # create validation sets
         for p in problem:
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchContinuousND, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 
@@ -262,6 +309,7 @@ class TestBenchContinuousHD(TestBench):
             Number of threads to run pygpc.Problems in parallel
         """
         self.dims = []
+        self.validation = OrderedDict()
 
         # set up test problems
         problem = OrderedDict()
@@ -271,7 +319,9 @@ class TestBenchContinuousHD(TestBench):
 
         # create validation sets
         for p in problem:
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchContinuousHD, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 
@@ -296,9 +346,12 @@ class TestBenchDiscontinuous(TestBench):
             Number of threads to run pygpc.Problems in parallel
         """
         self.dims = []
+        self.validation = OrderedDict()
 
         # set up test problems
         problem = OrderedDict()
+        problem["Cluster3Simple"] = Cluster3Simple().problem
+        problem["DeJongFunctionFive"] = DeJongFunctionFive().problem
         problem["HyperbolicTangent"] = HyperbolicTangent().problem
         problem["MovingParticleFrictionForce"] = MovingParticleFrictionForce().problem
         problem["SurfaceCoverageSpecies_2D"] = SurfaceCoverageSpecies(dim=2).problem
@@ -306,7 +359,9 @@ class TestBenchDiscontinuous(TestBench):
 
         # create validation sets
         for p in problem:
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchDiscontinuous, self).__init__(algorithm, problem, options, repetitions, n_cpu)
 
@@ -333,14 +388,94 @@ class TestBenchDiscontinuousND(TestBench):
             Number of threads to run pygpc.Problems in parallel
         """
         self.dims = dims
+        self.validation = OrderedDict()
 
         # set up test problems
         problem = OrderedDict()
         for d in dims:
             problem["GenzDiscontinuous_{}D".format(d)] = GenzDiscontinuous().problem
+            problem["MichalewiczFunction{}D".format(d)] = MichalewiczFunction().problem
 
         # create validation sets
         for p in problem:
-            problem[p].create_validation_set(n_samples=1e4, n_cpu=options["n_cpu"])
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
 
         super(TestBenchDiscontinuousND, self).__init__(algorithm, problem, options, repetitions, n_cpu)
+
+
+class TestBenchNoisy(TestBench):
+    """
+    TestBenchNoisy
+    """
+    def __init__(self, algorithm, options, repetitions, n_cpu=1):
+        """
+        Initializes TestBenchNoisy class. Setting up pygpc.Problem instances.
+
+        Parameters
+        ----------
+        algorithm : pygpc.Algorithm Object
+            Algorithm to benchmark
+        options : Dict or OrderedDict()
+            Algorithm options
+        repetitions : int
+            Number of repeated runs
+        n_cpu : int
+            Number of threads to run pygpc.Problems in parallel
+        """
+        self.dims = []
+        self.validation = OrderedDict()
+
+        # set up test problems
+        problem = OrderedDict()
+        problem["CrossinTrayFunction"] = CrossinTrayFunction().problem
+        problem["DropWaveFunction"] = DropWaveFunction().problem
+        problem["GramacyLeeFunction"] = GramacyLeeFunction().problem
+        problem["SchafferFunction4"] = SchafferFunction4().problem
+
+        # create validation sets
+        for p in problem:
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
+
+        super(TestBenchNoisy, self).__init__(algorithm, problem, options, repetitions, n_cpu)
+
+
+class TestBenchNoisyND(TestBench):
+    """
+    TestBenchNoisyND
+    """
+    def __init__(self, algorithm, options, dims, repetitions, n_cpu=1):
+        """
+        Initializes TestBenchNoisyND class. Setting up pygpc.Problem instances.
+
+        Parameters
+        ----------
+        algorithm : pygpc.Algorithm Object
+            Algorithm to benchmark
+        options : Dict or OrderedDict()
+            Algorithm options
+        dims : list of int
+            Number of dimensions
+        repetitions : int
+            Number of repeated runs
+        n_cpu : int
+            Number of threads to run pygpc.Problems in parallel
+        """
+        self.dims = dims
+        self.validation = OrderedDict()
+
+        # set up test problems
+        problem = OrderedDict()
+        for d in dims:
+            problem["Ackley{}D".format(d)] = Ackley().problem
+
+        # create validation sets
+        for p in problem:
+            gpc = GPC(problem=problem[p], options=None, validation=None)
+            gpc.create_validation_set(n_samples=int(1e4), n_cpu=options["n_cpu"])
+            self.validation[p] = gpc.validation
+
+        super(TestBenchNoisyND, self).__init__(algorithm, problem, options, repetitions, n_cpu)

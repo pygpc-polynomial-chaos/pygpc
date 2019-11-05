@@ -49,7 +49,7 @@ from distutils.extension import Extension
 
 
 setup(name='pygpc',
-      version='0.2.5',
+      version='0.2.6.post1',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
