@@ -129,6 +129,46 @@ class Hermite(BasisFunction):
             self.fun_der_int = np.dot(self.fun_der(knots), weights)
 
 
+class Laguerre(BasisFunction):
+    """
+    Laguerre basis function used in the orthogonal gPC to model gamma distributed random variables.
+    It is defined in the gpc space from [0, inf]
+    """
+
+    def __init__(self, p):
+        """
+        Constructor; initializes a Laguerre basis function
+
+        Parameters
+        ----------
+        p : dict
+            Parameters of the Laguerre polynomial
+            - p["i"] ... order
+            - p["alpha"] ... shape parameter (alpha_poly = alpha_pdf - 1)
+            - p["beta"] ... rate parameter (   )
+        """
+
+        super(Laguerre, self).__init__(p)
+
+        # normalization factor of polynomial (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
+        self.fun_norm = scipy.special.gamma(p["i"]+p["alpha"]+1) / scipy.special.factorial(p["i"])
+
+        # define basis function
+        self.fun = scipy.special.laguerre(p["i"], monic=False) / np.sqrt(self.fun_norm)
+
+        # derivative of polynomial
+        self.fun_der = np.polyder(self.fun)
+
+        # integral of fun and fun_der w.r.t. pdf (numerical integration with corresponding weights)
+        if self.p["i"] == 0:
+            self.fun_int = 1.0
+            self.fun_der_int = 0.0
+        else:
+            knots, weights = Grid([0]).get_quadrature_laguerre_1d(n=10 * self.p["i"], alpha=p["alpha"])
+            self.fun_int = np.dot(self.fun(knots), weights)
+            self.fun_der_int = np.dot(self.fun_der(knots), weights)
+
+
 class StepUp(BasisFunction):
     """
     StepUp (from 0 to 1) basis function used in the non-orthogonal gPC.

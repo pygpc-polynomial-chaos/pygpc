@@ -2,6 +2,7 @@
 import uuid
 import copy
 import numpy as np
+from scipy.special import roots_genlaguerre
 from scipy.fftpack import ifft
 from .io import iprint
 from .misc import get_multi_indices
@@ -214,6 +215,32 @@ class Grid(object):
         n = np.int(n)
         knots, weights = np.polynomial.hermite_e.hermegauss(n)
         weights = np.array(list(2.0 * weights / np.sum(weights)))
+
+        return knots, weights
+
+    @staticmethod
+    def get_quadrature_laguerre_1d(n, alpha):
+        """
+        Get knots and weights of Laguerre polynomials (gamma distribution).
+
+        knots, weights = Grid.get_quadrature_laguerre_1d(n)
+
+        Parameters
+        ----------
+        n: int
+            number of knots
+        alpha: float
+            Parameter of Laguerre polynomial
+
+        Returns
+        -------
+        knots: np.ndarray
+            knots of the grid
+        weights: np.ndarray
+            weights of the grid
+        """
+        n = np.int(n)
+        knots, weights = roots_genlaguerre(n=n, alpha=alpha)
 
         return knots, weights
 
@@ -581,6 +608,10 @@ class Grid(object):
                 coords[:, i_p, ] = coords_norm[:, i_p, ] * self.parameters_random[p].pdf_shape[1] + \
                                  self.parameters_random[p].pdf_shape[0]
 
+            if self.parameters_random[p].pdf_type in ["gamma"]:
+                coords[:, i_p, ] = coords_norm[:, i_p, ] / self.parameters_random[p].pdf_shape[1] + \
+                                   self.parameters_random[p].pdf_shape[2]
+
         return coords
 
     def get_normalized_coordinates(self, coords):
@@ -612,6 +643,10 @@ class Grid(object):
 
             if self.parameters_random[p].pdf_type in ["norm", "normal"]:
                 coords_norm[:, i_p] = (coords[:, i_p] - self.parameters_random[p].pdf_shape[0]) / \
+                                      self.parameters_random[p].pdf_shape[1]
+
+            if self.parameters_random[p].pdf_type in ["gamma"]:
+                coords_norm[:, i_p] = (coords[:, i_p] - self.parameters_random[p].pdf_shape[2]) * \
                                       self.parameters_random[p].pdf_shape[1]
 
         return coords_norm
@@ -1149,6 +1184,7 @@ class RandomGrid(Grid):
         # Generate random samples for each random input variable [n_grid x dim]
         self.coords_norm = np.zeros([self.n_grid, self.dim])
 
+        # TODO: cut off sampling to percentile interval of random variables
         # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
         if self.seed:
             for i_grid in range(self.n_grid):
@@ -1160,7 +1196,25 @@ class RandomGrid(Grid):
                                                                        1) * 2.0 - 1
 
                     if self.parameters_random[p].pdf_type in ["norm", "normal"]:
-                        self.coords_norm[i_grid, i_p] = np.random.normal(0, 1, 1)
+
+                        resample = True
+
+                        while resample:
+                            self.coords_norm[i_grid, i_p] = np.random.normal(loc=0,
+                                                                             scale=1,
+                                                                             size=1)
+                            resample = self.coords_norm[i_grid, i_p] < self.parameters_random[p].x_perc_norm[0] or \
+                                       self.coords_norm[i_grid, i_p] > self.parameters_random[p].x_perc_norm[1]
+
+                    if self.parameters_random[p].pdf_type in ["gamma"]:
+
+                        resample = True
+
+                        while resample:
+                            self.coords_norm[i_grid, i_p] = np.random.gamma(shape=self.parameters_random[p].pdf_shape[0],
+                                                                            scale=1.0,
+                                                                            size=1)
+                            resample = self.coords_norm[i_grid, i_p] > self.parameters_random[p].x_perc_norm
 
         else:
             for i_p, p in enumerate(self.parameters_random):
@@ -1170,7 +1224,37 @@ class RandomGrid(Grid):
                                                                [self.n_grid, 1]) * 2.0 - 1)[:, 0]
 
                 if self.parameters_random[p].pdf_type in ["norm", "normal"]:
-                    self.coords_norm[:, i_p] = (np.random.normal(0, 1, [self.n_grid, 1]))[:, 0]
+                    resample = True
+                    outlier_mask = np.ones(self.n_grid, dtype=bool)
+                    j = 0
+                    while resample:
+                        # print("Iteration: {}".format(j+1))
+                        self.coords_norm[outlier_mask, i_p] = (np.random.normal(loc=0,
+                                                                                scale=1,
+                                                                                size=[np.sum(outlier_mask), 1]))[:, 0]
+
+                        outlier_mask = np.logical_or(self.coords_norm[:, i_p] < self.parameters_random[p].x_perc_norm[0],
+                                                     self.coords_norm[:, i_p] > self.parameters_random[p].x_perc_norm[1])
+
+                        resample = outlier_mask.any()
+
+                        j += 1
+
+                if self.parameters_random[p].pdf_type in ["gamma"]:
+                    resample = True
+                    outlier_mask = np.ones(self.n_grid, dtype=bool)
+                    j = 0
+                    while resample:
+                        # print("Iteration: {}".format(j + 1))
+                        self.coords_norm[outlier_mask, i_p] = (np.random.gamma(shape=self.parameters_random[p].pdf_shape[0],
+                                                                               scale=1.0,
+                                                                               size=[np.sum(outlier_mask), 1]))[:, 0]
+
+                        outlier_mask = np.array(self.coords_norm[:, i_p] > self.parameters_random[p].x_perc_norm)
+
+                        resample = outlier_mask.any()
+
+                        j += 1
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)

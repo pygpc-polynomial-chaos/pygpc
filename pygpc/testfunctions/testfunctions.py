@@ -1442,8 +1442,8 @@ class Peaks(AbstractModel):
     Three-dimensional peaks function.
 
     .. math::
-      y = 3(1-x_1)^2\\exp{-(x_1^2)-(x_3+1)^2}-10(\\frac{x_1}{5}-x_1^3-x_3^5)\\exp{-x_1^2-x_3^2}-
-      \\frac{1}{3}\\exp{-(x_1+1)^2 - x_3^2} + x_2
+      y = 3(1-x_1)^2 e^{-(x_1^2)-(x_3+1)^2}-10(\\frac{x_1}{5}-x_1^3-x_3^5) e^{-x_1^2-x_3^2}-
+      \\frac{1}{3} e^{-(x_1+1)^2 - x_3^2} + x_2
 
     Parameters
     ----------

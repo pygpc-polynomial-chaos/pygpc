@@ -212,6 +212,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
         grid = np.zeros((coords.shape[0], len(session.parameters_random)))
 
     idx = []
+    idx_global = []
 
     # sort random_vars according to gpc.parameters
     for i_p, p in enumerate(session.parameters_random.keys()):
@@ -220,6 +221,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
 
         else:
             idx.append(random_vars.index(p))
+            idx_global.append(i_p)
 
     random_vars = [random_vars[i] for i in idx]
     x = []
@@ -238,7 +240,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
         for i_p, p in enumerate(random_vars):
             x.append(np.unique(coords[:, i_p]))
 
-    grid[:, idx] = coords
+    grid[:, idx_global] = coords
 
     # Normalize grid
     grid_norm = Grid(parameters_random=session.parameters_random).get_normalized_coordinates(grid)
