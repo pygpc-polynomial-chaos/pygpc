@@ -138,7 +138,7 @@ def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smoot
             ax1.grid()
             ax1.set_xlabel(r'$y$', fontsize=16)
             ax1.set_ylabel(r'$p(y)$', fontsize=16)
-            ax1.text(0.05, 0.95, r'$error=%.2f$' % (relative_error_nrmsd[0],) + "%",
+            ax1.text(0.05, 0.95, r'$error=%.2f$' % (100 * relative_error_nrmsd[0],) + "%",
                      transform=ax1.transAxes, fontsize=12, verticalalignment='top',
                      bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
 
@@ -151,6 +151,10 @@ def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smoot
                 f.create_dataset('error/qoi_{}/nrmsd'.format(o_idx), data=relative_error_nrmsd[i])
                 f.create_dataset('pdf/qoi_{}/original'.format(o_idx), data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
                 f.create_dataset('pdf/qoi_{}/gpc'.format(o_idx), data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
+                f.create_dataset('grid/coords', data=coords)
+                f.create_dataset('grid/coords_norm', data=coords_norm)
+                f.create_dataset('model_evaluations/results/gpc', data=y_gpc)
+                f.create_dataset('model_evaluations/results/orig', data=y_orig)
 
     return relative_error_nrmsd
 

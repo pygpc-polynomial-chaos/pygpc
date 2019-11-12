@@ -2225,6 +2225,11 @@ class MERegAdaptiveProjection(Algorithm):
                                  i in range(megpc[i_qoi].n_gpc)]
                 stop_by_error = eps < self.options["eps"]
 
+                print("stop_by_order: {}".format(stop_by_order))
+                print("stop_by_error: {}".format(stop_by_error))
+                print("eps: {}".format(eps))
+
+                # TODO: ValueError: operands could not be broadcast together with shapes (2,) (3,)
                 if np.logical_or(stop_by_order, stop_by_error).all():
                     break
 
@@ -2315,7 +2320,8 @@ class MERegAdaptiveProjection(Algorithm):
                     basis_order["poly_dom_{}".format(d)][0] = self.options["order_start"]
                     basis_order["poly_dom_{}".format(d)][1] = self.options["interaction_order"]
 
-                    eps = np.hstack((eps, np.array(self.options["eps"] + 1)))
+                    # eps = np.hstack((eps, np.array(self.options["eps"] + 1)))
+                    eps = np.array([self.options["eps"] + 1.0 for _ in range(len(np.unique(megpc[i_qoi].domains)))])
 
                     for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
                         megpc[i_qoi].add_sub_gpc(problem=problem_original,

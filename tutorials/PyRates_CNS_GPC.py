@@ -2,7 +2,7 @@ import os
 import h5py
 import pygpc
 from collections import OrderedDict
-from tutorials.PyRates_CNS_Model_old import PyRates_CNS_Model
+from tutorials.PyRates_CNS_Model import PyRates_CNS_Model
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -84,5 +84,6 @@ pygpc.validate_gpc_plot(session=session,
 nrmsd = pygpc.validate_gpc_mc(session=session,
                               coeffs=coeffs,
                               n_samples=int(1e3),
+                              n_cpu=session.n_cpu,
                               output_idx=0,
                               fn_out=session.fn_results + '_mc')
