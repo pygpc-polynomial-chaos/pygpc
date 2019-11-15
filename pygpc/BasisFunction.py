@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scipy.special
+import scipy.stats
 import numpy as np
 from .Grid import Grid
 
@@ -151,10 +152,21 @@ class Laguerre(BasisFunction):
         super(Laguerre, self).__init__(p)
 
         # normalization factor of polynomial (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
-        self.fun_norm = scipy.special.gamma(p["i"]+p["alpha"]+1) / scipy.special.factorial(p["i"])
+        # self.fun_norm = scipy.special.gamma(p["i"]+p["alpha"]+2
+        #                                     ) / (scipy.special.factorial(p["i"]) * scipy.special.gamma(p["alpha"] + 2))
+
+        self.fun_norm = (scipy.special.factorial(p["i"]+p["alpha"]) / scipy.special.factorial(p["i"])) / scipy.special.gamma(p["alpha"] + 1)
+
+        # xmax = scipy.stats.gamma.ppf(0.99999999999, a=p["alpha"]+1, loc=0., scale=1.)
+        # x = np.linspace(0, xmax, int(5e5))
+        # poly = scipy.special.genlaguerre(n=p["i"], alpha=p["alpha"], monic=False)
+        # y_pdf = scipy.stats.gamma.pdf(x, a=p["alpha"]+1, loc=0., scale=1.)
+        # y_poly = poly(x) * poly(x)
+        # y = y_pdf * y_poly
+        # self.fun_norm = np.trapz(x=x, y=y)
 
         # define basis function
-        self.fun = scipy.special.laguerre(p["i"], monic=False) / np.sqrt(self.fun_norm)
+        self.fun = scipy.special.genlaguerre(p["i"], alpha=p["alpha"], monic=False) / np.sqrt(self.fun_norm)
 
         # derivative of polynomial
         self.fun_der = np.polyder(self.fun)

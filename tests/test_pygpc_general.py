@@ -10,7 +10,7 @@ import shutil
 
 # test options
 # folder = './tmp '    # output folder
-folder = '/NOBACKUP2/tmp'    # output folder
+folder = '/tmp'    # output folder
 plot = True         # plot and save output
 gpu = False          # test GPU functionality
 matlab = False       # test Matlab functionality
@@ -1048,10 +1048,12 @@ class TestPygpcMethods(unittest.TestCase):
         # define problem
 
         parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
-        parameters["x2"] = pygpc.Norm(pdf_shape=[1, 0.25])
-        parameters["x3"] = pygpc.Gamma(pdf_shape=[2, 2, 1.25])
-        # parameters["x3"] = pygpc.Beta(pdf_shape=[2, 1], pdf_limits=[1.2, 2])
+        # parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[1.25, 1.72])
+        parameters["x1"] = pygpc.Gamma(pdf_shape=[3., 10., 1.25], p_perc=0.98)
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0.6, 1.4])
+        # parameters["x3"] = pygpc.Norm(pdf_shape=[1., 0.25], p_perc=0.95)
+        parameters["x2"] = 1.
+        # parameters["x2"] = pygpc.Norm(pdf_shape=[1, 1], p_perc=0.98)
         problem = pygpc.Problem(model, parameters)
 
         # gPC options
@@ -1059,9 +1061,9 @@ class TestPygpcMethods(unittest.TestCase):
         options["method"] = "reg"
         options["solver"] = "Moore-Penrose"
         options["settings"] = None
-        options["order"] = [11, 11, 11]
-        options["order_max"] = 11
-        options["interaction_order"] = 3
+        options["order"] = [3, 3]
+        options["order_max"] = 3
+        options["interaction_order"] = 2
         options["matrix_ratio"] = 2
         options["error_type"] = "loocv"
         options["n_samples_validation"] = 1e3
@@ -1094,15 +1096,38 @@ class TestPygpcMethods(unittest.TestCase):
 
         sobol_sampling, sobol_idx_sampling, sobol_idx_bool_sampling = session.gpc[0].get_sobol_indices(coeffs=coeffs,
                                                                                                        algorithm="sampling",
-                                                                                                       n_samples=1e4)
+                                                                                                       n_samples=3e4)
+
+        grid = pygpc.RandomGrid(parameters_random=session.parameters_random,
+                                options={"n_grid": 5e5, "seed": None})
+
+        com = pygpc.Computation(n_cpu=0, matlab_model=session.matlab_model)
+        y_orig = com.run(model=session.model,
+                         problem=session.problem,
+                         coords=grid.coords,
+                         coords_norm=grid.coords_norm,
+                         i_iter=None,
+                         i_subiter=None,
+                         fn_results=None,
+                         print_func_time=False)
+        y_gpc = session.gpc[0].get_approximation(coeffs=coeffs, x=grid.coords_norm)
+
+        mean_gpc_coeffs = session.gpc[0].get_mean(coeffs=coeffs)
+        mean_gpc_sampling = session.gpc[0].get_mean(samples=y_gpc)
+        mean_orig = np.mean(y_orig, axis=0)
+
+        std_gpc_coeffs = session.gpc[0].get_std(coeffs=coeffs)
+        std_gpc_sampling = session.gpc[0].get_std(samples=y_gpc)
+        std_orig = np.std(y_orig, axis=0)
 
         pygpc.validate_gpc_plot(session=session,
                                 coeffs=coeffs,
-                                random_vars=["x2", "x3"],
+                                random_vars=["x1", "x3"],
                                 n_grid=[51, 51],
                                 output_idx=0,
                                 fn_out=options["fn_results"] + "_val",
                                 n_cpu=options["n_cpu"])
+
 
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(session=session,
@@ -1119,8 +1144,6 @@ class TestPygpcMethods(unittest.TestCase):
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
         print("> Checking file consistency...")
         self.expect_true(files_consistent, error_msg)
-
-
 
         for i in range(sobol_standard.shape[0]):
             self.expect_true(np.max(np.abs(sobol_standard[i, :]-sobol_sampling[i, :])) < 0.001,

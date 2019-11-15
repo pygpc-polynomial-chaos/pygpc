@@ -40,6 +40,7 @@ class RandomParameter(object):
         self.pdf_type = pdf_type
         self.pdf_shape = np.array(pdf_shape).astype(float)
         self.pdf_limits = np.array(pdf_limits).astype(float)
+        self.pdf_limits_norm = None
         self.mean = None
         self.std = None
         self.var = None
@@ -128,6 +129,8 @@ class Beta(RandomParameter):
                    (self.pdf_limits[1] - self.pdf_limits[0])
 
         self.var = self.std**2
+
+        self.pdf_limits_norm = [-1, 1]
 
     def init_basis_function(self, order):
         """
@@ -272,6 +275,7 @@ class Norm(RandomParameter):
         self.mean = self.pdf_shape[0]
         self.std = self.pdf_shape[1]
         self.var = self.std ** 2
+        self.pdf_limits_norm = [self.x_perc_norm[0], self.x_perc_norm[1]]
 
 
     @staticmethod
@@ -378,7 +382,7 @@ class Gamma(RandomParameter):
         Examples
         --------
         >>> import pygpc
-        >>> pygpc.RandomParameter.Gamma(pdf_shape=[5, 2])
+        >>> pygpc.RandomParameter.Gamma(pdf_shape=[5, 2, 1.2])
         """
         self.p_perc = p_perc
         self.x_perc = scipy.stats.gamma.ppf(self.p_perc,
@@ -395,11 +399,13 @@ class Gamma(RandomParameter):
                                     pdf_shape=pdf_shape,
                                     pdf_limits=[pdf_shape[2], self.x_perc])
 
-        self.mean = self.pdf_shape[0] / self.pdf_shape[1]
+        self.mean = self.pdf_shape[0] / self.pdf_shape[1] + self.pdf_shape[2]
 
         self.std = np.sqrt(self.pdf_shape[0] / self.pdf_shape[1]**2)
 
         self.var = self.std**2
+
+        self.pdf_limits_norm = [0, self.x_perc_norm]
 
     def init_basis_function(self, order):
         """
@@ -483,7 +489,7 @@ class Gamma(RandomParameter):
 
         x = scipy.stats.gamma.ppf(p.flatten(),
                                   a=self.pdf_shape[0],
-                                  loc=self.pdf_shape[2],
-                                  scale=1 / self.pdf_shape[1])
+                                  loc=0.,
+                                  scale=1.)
 
         return x

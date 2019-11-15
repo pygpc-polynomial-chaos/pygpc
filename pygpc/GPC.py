@@ -531,6 +531,13 @@ class GPC(object):
         if len(x.shape) == 1:
             x = x[:, np.newaxis]
 
+        # crop coordinates to gPC boundaries (values outside do not yield meaningful values)
+        for i_dim, key in enumerate(list(self.problem.parameters_random.keys())):
+            xmin = self.problem.parameters_random[key].pdf_limits_norm[0]
+            xmax = self.problem.parameters_random[key].pdf_limits_norm[1]
+            x[x[:, i_dim] < xmin, i_dim] = xmin
+            x[x[:, i_dim] > xmax, i_dim] = xmax
+
         if output_idx is not None:
             # convert to 1d array
             output_idx = np.asarray(output_idx).flatten().astype(int)

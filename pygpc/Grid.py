@@ -1184,7 +1184,6 @@ class RandomGrid(Grid):
         # Generate random samples for each random input variable [n_grid x dim]
         self.coords_norm = np.zeros([self.n_grid, self.dim])
 
-        # TODO: cut off sampling to percentile interval of random variables
         # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
         if self.seed:
             for i_grid in range(self.n_grid):
