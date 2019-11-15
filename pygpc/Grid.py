@@ -1346,3 +1346,47 @@ class RandomGrid(Grid):
 
         if gradient:
             self.create_gradient_grid()
+
+
+class LHSGrid(Grid):
+    """
+    RandomGrid object
+
+    RandomGrid(parameters_random, options)
+
+    Attributes
+    ----------
+    n_grid: int
+        Number of random samples to generate
+    seed: float
+        Seeding point to replicate random grids
+    """
+
+    def __init__(self, parameters_random, options):
+        """
+        Constructor; Initializes RandomGrid instance; Generates grid
+
+        Parameters
+        ----------
+        parameters_random : OrderedDict of RandomParameter instances
+            OrderedDict containing the RandomParameter instances the grids are generated for
+        options: dict
+            Grid parameters
+            - n_grid (int) ... Number of random samples in grid
+            - seed (float) optional, default=None ... Seeding point to replicate random grid
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> grid = pygpc.RandomGrid(parameters_random=parameters_random,
+        >>>                         options={"n_grid": 100, "seed": 1})
+        """
+        super(RandomGrid, self).__init__(parameters_random)
+
+        self.n_grid = int(options["n_grid"])     # Number of random samples
+
+        if "seed" in options.keys():
+            self.seed = options["seed"]              # Seed of random grid (if necessary to reproduce random grid)
+            np.random.seed(self.seed)
+        else:
+            self.seed = None

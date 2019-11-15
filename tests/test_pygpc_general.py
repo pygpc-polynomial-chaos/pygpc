@@ -1071,6 +1071,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
         options["GPU"] = False
+        options["grid_type"] = "RandomGrid"
+        options["grid_options"] = {"a": 0, "b": 0}
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],

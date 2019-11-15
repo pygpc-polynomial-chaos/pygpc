@@ -185,6 +185,10 @@ class Algorithm(object):
         if "verbose" not in self.options.keys():
             self.options["verbose"] = True
 
+        if "grid_type" not in self.options.keys():
+            self.options["grid_type"] = "RandomGrid"
+            self.options["grid_options"] = None
+
     def get_gradient(self, grid, results, com, gradient_results=None, i_iter=None, i_subiter=None):
         """
         Determines the gradient of the model function in the grid points (self.grid.coords).
