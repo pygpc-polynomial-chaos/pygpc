@@ -63,8 +63,10 @@ def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smoot
 
     if session.validation is None:
         # Create sampling points
-        grid_mc = RandomGrid(parameters_random=session.parameters_random,
-                             options={"n_grid": n_samples, "seed": None})
+        grid_mc = Random(parameters_random=session.parameters_random,
+                         n_grid=n_samples,
+                         seed=None,
+                         options=None)
 
         coords_norm = grid_mc.coords_norm
         coords = grid_mc.coords

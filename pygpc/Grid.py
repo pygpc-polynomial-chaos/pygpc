@@ -22,13 +22,13 @@ class Grid(object):
     _coords: ndarray of float [n_grid x dim]
         Denormalized coordinates xi
     _coords_norm: ndarray of float [n_grid x dim]
-        Normalized [-1, 1] coordinates xi
+        Normalized coordinates xi
     _domains: ndarray of float [n_grid]
         Domain IDs of grid points for multi-element gPC
     _coords_gradient: ndarray of float [n_grid x dim x dim]
         Denormalized coordinates xi
     _coords_gradient_norm: ndarray of float [n_grid x dim x dim]
-        Normalized [-1, 1] coordinates xi
+        Normalized coordinates xi
     coords_id: list of UUID objects (version 4) [n_grid]
         Unique IDs of grid points
     n_grid: int
@@ -48,27 +48,27 @@ class Grid(object):
         _coords: ndarray of float [n_grid x dim]
             Denormalized coordinates xi
         _coords_norm: ndarray of float [n_grid x dim]
-            Normalized [-1, 1] coordinates xi
+            Normalized coordinates xi
         _domains: ndarray of float [n_grid]
             Domain IDs of grid points for multi-element gPC
         _coords_gradient: ndarray of float [n_grid x dim x dim]
             Denormalized coordinates xi
         _coords_gradient_norm: ndarray of float [n_grid x dim x dim]
-            Normalized [-1, 1] coordinates xi
+            Normalized coordinates xi
         coords_id: list of UUID objects (version 4) [n_grid]
             Unique IDs of grid points
         n_grid: int
             Total number of nodes in grid.
         """
         self._coords = coords                         # Coordinates of gpc model calculation in the system space
-        self._coords_norm = coords_norm               # Coordinates of gpc model calculation in the gpc space [-1,1]
+        self._coords_norm = coords_norm               # Coordinates of gpc model calculation in the gpc space
         self.coords_id = coords_id                    # Unique IDs of grid points
         self.coords_gradient_id = coords_gradient_id  # Unique IDs of grid gradient points
         self._weights = None                          # Weights for numerical integration
         self.parameters_random = parameters_random    # OrderedDict of RandomParameter instances
         self.dim = len(self.parameters_random)        # Number of random variables
         self._coords_gradient = coords_gradient       # Shifted coordinates for gradient calculation in the system space
-        self._coords_gradient_norm = coords_gradient_norm  # Normalized coordinates for gradient calculation [-1,1]
+        self._coords_gradient_norm = coords_gradient_norm  # Normalized coordinates for gradient calculation
 
         if coords is not None:
             self.n_grid = self.coords.shape[0]                    # Total number of grid points
@@ -580,14 +580,14 @@ class Grid(object):
 
     def get_denormalized_coordinates(self, coords_norm):
         """
-        Denormalize grid from standardized ([-1, 1] except hermite) to original parameter space for simulations.
+        Denormalize grid from normalized to original parameter space for simulations.
 
         coords = Grid.get_denormalized_coordinates(coords_norm)
 
         Parameters
         ----------
         coords_norm: [N_samples x dim] np.ndarray
-            normalized [-1, 1] coordinates xi
+            Normalized coordinates xi
 
         Returns
         -------
@@ -616,7 +616,7 @@ class Grid(object):
 
     def get_normalized_coordinates(self, coords):
         """
-        Normalize grid from original parameter (except hermite) to standardized ([-1, 1] space for simulations.
+        Normalize grid from original parameter to normalized space for simulations.
 
         coords_norm = Grid.get_normalized_coordinates(coords)
 
@@ -628,7 +628,7 @@ class Grid(object):
         Returns
         -------
         coords_norm : [N_samples x dim] np.ndarray
-            Normalized [-1, 1] coordinates xi
+            Normalized coordinates xi
         """
         coords_norm = np.zeros(coords.shape)
 
@@ -659,9 +659,9 @@ class Grid(object):
         Parameters
         ----------
         delta : float, optional, default: 1e-3
-            Shift of grid-points along axes in normalized parameter space [-1, 1]
+            Shift of grid-points along axes in normalized parameter space
         """
-        # shift of gradient grid in normalized space [-1, 1]
+        # shift of gradient grid in normalized space
         delta = delta * np.eye(self.dim)
 
         # Create or update the gradient grid [n_grid x dim x dim]
@@ -1152,7 +1152,7 @@ class RandomGrid(Grid):
         Seeding point to replicate random grids
     """
 
-    def __init__(self, parameters_random, options):
+    def __init__(self, parameters_random, n_grid, seed=None, options=None):
         """
         Constructor; Initializes RandomGrid instance; Generates grid
 
@@ -1160,106 +1160,23 @@ class RandomGrid(Grid):
         ----------
         parameters_random : OrderedDict of RandomParameter instances
             OrderedDict containing the RandomParameter instances the grids are generated for
-        options: dict
-            Grid parameters
-            - n_grid (int) ... Number of random samples in grid
-            - seed (float) optional, default=None ... Seeding point to replicate random grid
+        n_grid: int
+            Number of random samples in grid
+        seed : float, optional, default=None
+            Seeding point to replicate random grid
+        options : dict, optional, default=None
+            RandomGrid options depending on the grid type
 
         Examples
         --------
         >>> import pygpc
-        >>> grid = pygpc.RandomGrid(parameters_random=parameters_random,
-        >>>                         options={"n_grid": 100, "seed": 1})
+        >>> grid = pygpc.RandomGrid(parameters_random=parameters_random, n_grid=100, seed=1, options=None)
         """
         super(RandomGrid, self).__init__(parameters_random)
 
-        self.n_grid = int(options["n_grid"])     # Number of random samples
-
-        if "seed" in options.keys():
-            self.seed = options["seed"]              # Seed of random grid (if necessary to reproduce random grid)
-            np.random.seed(self.seed)
-        else:
-            self.seed = None
-
-        # Generate random samples for each random input variable [n_grid x dim]
-        self.coords_norm = np.zeros([self.n_grid, self.dim])
-
-        # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
-        if self.seed:
-            for i_grid in range(self.n_grid):
-                for i_p, p in enumerate(self.parameters_random):
-
-                    if self.parameters_random[p].pdf_type == "beta":
-                        self.coords_norm[i_grid, i_p] = np.random.beta(self.parameters_random[p].pdf_shape[0],
-                                                                       self.parameters_random[p].pdf_shape[1],
-                                                                       1) * 2.0 - 1
-
-                    if self.parameters_random[p].pdf_type in ["norm", "normal"]:
-
-                        resample = True
-
-                        while resample:
-                            self.coords_norm[i_grid, i_p] = np.random.normal(loc=0,
-                                                                             scale=1,
-                                                                             size=1)
-                            resample = self.coords_norm[i_grid, i_p] < self.parameters_random[p].x_perc_norm[0] or \
-                                       self.coords_norm[i_grid, i_p] > self.parameters_random[p].x_perc_norm[1]
-
-                    if self.parameters_random[p].pdf_type in ["gamma"]:
-
-                        resample = True
-
-                        while resample:
-                            self.coords_norm[i_grid, i_p] = np.random.gamma(shape=self.parameters_random[p].pdf_shape[0],
-                                                                            scale=1.0,
-                                                                            size=1)
-                            resample = self.coords_norm[i_grid, i_p] > self.parameters_random[p].x_perc_norm
-
-        else:
-            for i_p, p in enumerate(self.parameters_random):
-                if self.parameters_random[p].pdf_type == "beta":
-                    self.coords_norm[:, i_p] = (np.random.beta(self.parameters_random[p].pdf_shape[0],
-                                                               self.parameters_random[p].pdf_shape[1],
-                                                               [self.n_grid, 1]) * 2.0 - 1)[:, 0]
-
-                if self.parameters_random[p].pdf_type in ["norm", "normal"]:
-                    resample = True
-                    outlier_mask = np.ones(self.n_grid, dtype=bool)
-                    j = 0
-                    while resample:
-                        # print("Iteration: {}".format(j+1))
-                        self.coords_norm[outlier_mask, i_p] = (np.random.normal(loc=0,
-                                                                                scale=1,
-                                                                                size=[np.sum(outlier_mask), 1]))[:, 0]
-
-                        outlier_mask = np.logical_or(self.coords_norm[:, i_p] < self.parameters_random[p].x_perc_norm[0],
-                                                     self.coords_norm[:, i_p] > self.parameters_random[p].x_perc_norm[1])
-
-                        resample = outlier_mask.any()
-
-                        j += 1
-
-                if self.parameters_random[p].pdf_type in ["gamma"]:
-                    resample = True
-                    outlier_mask = np.ones(self.n_grid, dtype=bool)
-                    j = 0
-                    while resample:
-                        # print("Iteration: {}".format(j + 1))
-                        self.coords_norm[outlier_mask, i_p] = (np.random.gamma(shape=self.parameters_random[p].pdf_shape[0],
-                                                                               scale=1.0,
-                                                                               size=[np.sum(outlier_mask), 1]))[:, 0]
-
-                        outlier_mask = np.array(self.coords_norm[:, i_p] > self.parameters_random[p].x_perc_norm)
-
-                        resample = outlier_mask.any()
-
-                        j += 1
-
-        # Denormalize grid to original parameter space
-        self.coords = self.get_denormalized_coordinates(self.coords_norm)
-
-        # Generate unique IDs of grid points
-        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+        self.n_grid = int(n_grid)
+        self.seed = seed
+        self.options = options
 
     def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, seed=None,
                            classifier=None, domain=None, gradient=False):
@@ -1277,9 +1194,9 @@ class RandomGrid(Grid):
         coords : ndarray of float [n_grid_add x dim]
             Grid points to add (model space)
         coords_norm : ndarray of float [n_grid_add x dim]
-            Grid points to add (normalized space [-1, 1])
+            Grid points to add (normalized space)
         seed : float, optional, default=None
-            Random seeding point
+            Seeding point to replicate random grid
         classifier : Classifier object, optional, default: None
             Classifier
         domain : int, optional, default: None
@@ -1295,8 +1212,10 @@ class RandomGrid(Grid):
             if n_grid_add > 0:
                 # Generate new grid points
                 if classifier is None:
-                    new_grid = RandomGrid(parameters_random=self.parameters_random,
-                                          options={"n_grid": n_grid_add, "seed": seed})
+                    new_grid = self.__class__(parameters_random=self.parameters_random,
+                                              n_grid=n_grid_add,
+                                              seed=seed,
+                                              options=self.options)
 
                     # append points to existing grid
                     self.coords = np.vstack([self.coords, new_grid.coords])
@@ -1311,8 +1230,10 @@ class RandomGrid(Grid):
                         resample = True
 
                         while resample:
-                            new_grid = RandomGrid(parameters_random=self.parameters_random,
-                                                  options={"n_grid": 1, "seed": seed})
+                            new_grid = self.__class__(parameters_random=self.parameters_random,
+                                                      n_grid=1,
+                                                      seed=seed,
+                                                      options=self.options)
 
                             if classifier.predict(new_grid.coords_norm)[0] == domain:
                                 coords[i, :] = new_grid.coords
@@ -1348,11 +1269,11 @@ class RandomGrid(Grid):
             self.create_gradient_grid()
 
 
-class LHSGrid(Grid):
+class Random(RandomGrid):
     """
-    RandomGrid object
+    Random grid object
 
-    RandomGrid(parameters_random, options)
+    Random(parameters_random, options)
 
     Attributes
     ----------
@@ -1362,7 +1283,7 @@ class LHSGrid(Grid):
         Seeding point to replicate random grids
     """
 
-    def __init__(self, parameters_random, options):
+    def __init__(self, parameters_random, n_grid, seed=None, options=None):
         """
         Constructor; Initializes RandomGrid instance; Generates grid
 
@@ -1370,18 +1291,143 @@ class LHSGrid(Grid):
         ----------
         parameters_random : OrderedDict of RandomParameter instances
             OrderedDict containing the RandomParameter instances the grids are generated for
-        options: dict
-            Grid parameters
-            - n_grid (int) ... Number of random samples in grid
-            - seed (float) optional, default=None ... Seeding point to replicate random grid
+        n_grid : int or float
+            Number of random samples in grid
+        seed : float, optional, default=None
+            Seeding point to replicate random grid
+        options : dict, optional, default=None
+            RandomGrid options depending on the grid type
 
         Examples
         --------
         >>> import pygpc
-        >>> grid = pygpc.RandomGrid(parameters_random=parameters_random,
-        >>>                         options={"n_grid": 100, "seed": 1})
+        >>> grid = pygpc.RandomGrid(parameters_random=parameters_random, n_grid=100, seed=1)
         """
-        super(RandomGrid, self).__init__(parameters_random)
+
+        super(Random, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=None)
+
+        # Generate random samples for each random input variable [n_grid x dim]
+        self.coords_norm = np.zeros([self.n_grid, self.dim])
+
+        # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
+        if self.seed:
+            for i_grid in range(self.n_grid):
+                for i_p, p in enumerate(self.parameters_random):
+
+                    if self.parameters_random[p].pdf_type == "beta":
+                        self.coords_norm[i_grid, i_p] = np.random.beta(self.parameters_random[p].pdf_shape[0],
+                                                                       self.parameters_random[p].pdf_shape[1],
+                                                                       1) * 2.0 - 1
+
+                    if self.parameters_random[p].pdf_type in ["norm", "normal"]:
+
+                        resample = True
+
+                        while resample:
+                            self.coords_norm[i_grid, i_p] = np.random.normal(loc=0,
+                                                                             scale=1,
+                                                                             size=1)
+                            resample = self.coords_norm[i_grid, i_p] < self.parameters_random[p].x_perc_norm[0] or \
+                                       self.coords_norm[i_grid, i_p] > self.parameters_random[p].x_perc_norm[1]
+
+                    if self.parameters_random[p].pdf_type in ["gamma"]:
+
+                        resample = True
+
+                        while resample:
+                            self.coords_norm[i_grid, i_p] = np.random.gamma(
+                                shape=self.parameters_random[p].pdf_shape[0],
+                                scale=1.0,
+                                size=1)
+                            resample = self.coords_norm[i_grid, i_p] > self.parameters_random[p].x_perc_norm
+
+        else:
+            for i_p, p in enumerate(self.parameters_random):
+                if self.parameters_random[p].pdf_type == "beta":
+                    self.coords_norm[:, i_p] = (np.random.beta(self.parameters_random[p].pdf_shape[0],
+                                                               self.parameters_random[p].pdf_shape[1],
+                                                               [self.n_grid, 1]) * 2.0 - 1)[:, 0]
+
+                if self.parameters_random[p].pdf_type in ["norm", "normal"]:
+                    resample = True
+                    outlier_mask = np.ones(self.n_grid, dtype=bool)
+                    j = 0
+                    while resample:
+                        # print("Iteration: {}".format(j+1))
+                        self.coords_norm[outlier_mask, i_p] = (np.random.normal(loc=0,
+                                                                                scale=1,
+                                                                                size=[np.sum(outlier_mask), 1]))[:,
+                                                              0]
+
+                        outlier_mask = np.logical_or(
+                            self.coords_norm[:, i_p] < self.parameters_random[p].x_perc_norm[0],
+                            self.coords_norm[:, i_p] > self.parameters_random[p].x_perc_norm[1])
+
+                        resample = outlier_mask.any()
+
+                        j += 1
+
+                if self.parameters_random[p].pdf_type in ["gamma"]:
+                    resample = True
+                    outlier_mask = np.ones(self.n_grid, dtype=bool)
+                    j = 0
+                    while resample:
+                        # print("Iteration: {}".format(j + 1))
+                        self.coords_norm[outlier_mask, i_p] = (np.random.gamma(
+                            shape=self.parameters_random[p].pdf_shape[0],
+                            scale=1.0,
+                            size=[np.sum(outlier_mask), 1]))[:, 0]
+
+                        outlier_mask = np.array(self.coords_norm[:, i_p] > self.parameters_random[p].x_perc_norm)
+
+                        resample = outlier_mask.any()
+
+                        j += 1
+
+        # Denormalize grid to original parameter space
+        self.coords = self.get_denormalized_coordinates(self.coords_norm)
+
+        # Generate unique IDs of grid points
+        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+
+class LHS(RandomGrid):
+    """
+    LHS grid object
+
+    LHS(parameters_random, options)
+
+    Attributes
+    ----------
+    n_grid: int
+        Number of random samples to generate
+    seed: float
+        Seeding point to replicate random grids
+    """
+
+    def __init__(self, parameters_random, n_grid, seed=None, options=None):
+        """
+        Constructor; Initializes RandomGrid instance; Generates grid
+
+        Parameters
+        ----------
+        parameters_random : OrderedDict of RandomParameter instances
+            OrderedDict containing the RandomParameter instances the grids are generated for
+        n_grid: int
+            Number of random samples to generate
+        seed: float
+            Seeding point to replicate random grids
+        options: dict, optional, default=None
+            Grid parameters
+            - ???
+            - ???
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> grid = pygpc.LHS(parameters_random=parameters_random, n_grid=100, seed=1, options=None)
+        """
+        super(LHS, self).__init__(parameters_random)
 
         self.n_grid = int(options["n_grid"])     # Number of random samples
 
@@ -1390,3 +1436,13 @@ class LHSGrid(Grid):
             np.random.seed(self.seed)
         else:
             self.seed = None
+
+        # Generate random samples for each random input variable [n_grid x dim]
+        self.coords_norm = np.zeros([self.n_grid, self.dim])
+
+        # TODO: Erik: continue here to implement LHS grids
+        # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
+        if self.seed:
+            pass
+        else:
+            pass

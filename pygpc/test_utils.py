@@ -50,15 +50,15 @@ def check_file_consistency(fn_hdf5):
     ###################################################
 
     with h5py.File(fn_hdf5, "r") as f:
+        qoi_keys = [""]
         try:
-            if np.array([True for s in list(f["coeffs/"]) if "qoi" in s]).any():
-                qoi_keys = list(f["coeffs"].keys())
-                qoi_idx = [int(key.split("qoi_")[1]) for key in qoi_keys]
-            else:
-                qoi_keys = [""]
+            if isinstance(f["coeffs/"], h5py.Group):
+                if np.array(["qoi" in s for s in list(f["coeffs/"].keys())]).any():
+                    qoi_keys = list(f["coeffs"].keys())
+                    qoi_idx = [int(key.split("qoi_")[1]) for key in qoi_keys]
 
         except KeyError:
-            qoi_keys = [""]
+            pass
 
     if session.gpc_type == "megpc":
         dom_keys = ["dom_{}".format(int(i)) for i in range(len(np.unique(session.gpc[0].domains)))]

@@ -494,8 +494,10 @@ class MEGPC(object):
         np.random.seed()
 
         # generate temporary grid with random samples for each random input variable [n_samples x dim]
-        grid = RandomGrid(parameters_random=self.problem.parameters_random,
-                          options={"n_grid": n_samples, "seed": None})
+        grid = Random(parameters_random=self.problem.parameters_random,
+                      n_grid=n_samples,
+                      seed=None,
+                      options=None)
 
         # if output index list is not provided, sample all gpc outputs
         if output_idx is None:
@@ -667,8 +669,10 @@ class MEGPC(object):
         # create set of validation points
         n_samples = n_samples
 
-        grid = RandomGrid(parameters_random=self.problem.parameters_random,
-                          options={"n_grid": n_samples, "seed": None})
+        grid = Random(parameters_random=self.problem.parameters_random,
+                      n_grid=n_samples,
+                      seed=None,
+                      options=None)
 
         # Evaluate original model at grid points
         com = Computation(n_cpu=n_cpu, matlab_model=self.matlab_model)
@@ -826,8 +830,10 @@ class MEGPC(object):
         """
 
         # generate sample coordinates (original parameter space)
-        grid = RandomGrid(parameters_random=self.problem.parameters_random,
-                          options={"n_grid": n_samples, "seed": None})
+        grid = Random(parameters_random=self.problem.parameters_random,
+                      n_grid=n_samples,
+                      seed=None,
+                      options=None)
 
         local_sens = self.get_local_sens(coeffs, grid.coords_norm)
 

@@ -493,8 +493,9 @@ class GPC(object):
             problem = self.problem
 
         # generate temporary grid with random samples for each random input variable [n_samples x dim]
-        grid = RandomGrid(parameters_random=problem.parameters_random,
-                          options={"n_grid": n_samples, "seed": None})
+        grid = Random(parameters_random=problem.parameters_random,
+                      n_grid=n_samples,
+                      seed=None)
 
         # if output index list is not provided, sample all gpc outputs
         if output_idx is None:
@@ -581,8 +582,9 @@ class GPC(object):
         """
 
         # Generate new grid points
-        new_grid_points = RandomGrid(parameters_random=self.problem.parameters_random,
-                                     options={"n_grid": idx.size, "seed": seed})
+        new_grid_points = Random(parameters_random=self.problem.parameters_random,
+                                 n_grid=idx.size,
+                                 seed=seed)
 
         # replace old grid points
         self.grid.coords[idx, :] = new_grid_points.coords
@@ -988,8 +990,9 @@ class GPC(object):
         else:
             problem = self.problem
 
-        grid = RandomGrid(parameters_random=problem.parameters_random,
-                          options={"n_grid": n_samples, "seed": None})
+        grid = Random(parameters_random=problem.parameters_random,
+                      n_grid=n_samples,
+                      seed=None)
 
         # Evaluate original model at grid points
         com = Computation(n_cpu=n_cpu, matlab_model=self.matlab_model)
