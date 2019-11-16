@@ -1425,17 +1425,9 @@ class LHS(RandomGrid):
         Examples
         --------
         >>> import pygpc
-        >>> grid = pygpc.LHS(parameters_random=parameters_random, n_grid=100, seed=1, options=None)
+        >>> grid = pygpc.LHS(parameters_random=parameters_random, n_grid=100, seed=1, options=options)
         """
-        super(LHS, self).__init__(parameters_random)
-
-        self.n_grid = int(options["n_grid"])     # Number of random samples
-
-        if "seed" in options.keys():
-            self.seed = options["seed"]              # Seed of random grid (if necessary to reproduce random grid)
-            np.random.seed(self.seed)
-        else:
-            self.seed = None
+        super(LHS, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=options)
 
         # Generate random samples for each random input variable [n_grid x dim]
         self.coords_norm = np.zeros([self.n_grid, self.dim])
