@@ -96,6 +96,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["GPU"] = False
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # generate grid
         grid = pygpc.TensorGrid(parameters_random=problem.parameters_random,
@@ -182,6 +184,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
         options["GPU"] = False
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
@@ -280,6 +284,8 @@ class TestPygpcMethods(unittest.TestCase):
                                          "classifier": "MLPClassifier",
                                          "classifier_solver": "lbfgs"}
         options["fn_results"] = os.path.join(folder, test_name)
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # generate grid
         grid = pygpc.Random(parameters_random=problem.parameters_random,
@@ -369,6 +375,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_grid_gradient"] = 50
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # define algorithm
         algorithm = pygpc.StaticProjection(problem=problem, options=options)
@@ -458,6 +466,8 @@ class TestPygpcMethods(unittest.TestCase):
                                          "classifier": "MLPClassifier",
                                          "classifier_solver": "lbfgs"}
         options["fn_results"] = os.path.join(folder, test_name)
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # define algorithm
         algorithm = pygpc.MEStaticProjection(problem=problem, options=options)

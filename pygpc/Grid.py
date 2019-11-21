@@ -2,8 +2,10 @@
 import uuid
 import copy
 import numpy as np
+import scipy.stats
 from scipy.special import roots_genlaguerre
 from scipy.fftpack import ifft
+from pyDOE2 import lhs
 from .io import iprint
 from .misc import get_multi_indices
 from .misc import get_cartesian_product
@@ -1179,7 +1181,7 @@ class RandomGrid(Grid):
         self.options = options
 
     def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, seed=None,
-                           classifier=None, domain=None, gradient=False):
+                           classifier=None, domain=None, gradient=False, grid=None):
         """
         Add sample points according to input pdfs to grid (old points are kept). Define either the new total number of
         grid points with "n_grid_new" or add grid-points manually by providing "coords" and "coords_norm".
@@ -1203,6 +1205,8 @@ class RandomGrid(Grid):
             Adds grid points only in specified domain (needs Classifier object including a predict() method)
         gradient : bool, optional, default: False
             Add corresponding gradient grid points
+        grid : RandomGrid Object, optional, default=None
+            Optional initial grid, which gets extended
         """
 
         if n_grid_new is not None:
@@ -1212,14 +1216,20 @@ class RandomGrid(Grid):
             if n_grid_add > 0:
                 # Generate new grid points
                 if classifier is None:
-                    new_grid = self.__class__(parameters_random=self.parameters_random,
-                                              n_grid=n_grid_add,
-                                              seed=seed,
-                                              options=self.options)
+                    if isinstance(self, Random):
+                        new_grid = Random(parameters_random=self.parameters_random,
+                                          n_grid=n_grid_add,
+                                          seed=seed,
+                                          options=self.options)
 
-                    # append points to existing grid
-                    self.coords = np.vstack([self.coords, new_grid.coords])
-                    self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+                        # append points to existing grid
+                        self.coords = np.vstack([self.coords, new_grid.coords])
+                        self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+
+                    elif isinstance(self, LHS):
+                        # append points to existing grid
+                        self.coords = np.vstack([self.coords, self.coords_reservoir[self.n_grid:n_grid_new]])
+                        self.coords_norm = np.vstack([self.coords_norm, self.coords_norm_reservoir[self.n_grid:n_grid_new]])
 
                 else:
                     coords = np.zeros((n_grid_add, len(self.parameters_random)))
@@ -1228,17 +1238,32 @@ class RandomGrid(Grid):
                     # add grid points one by one because we are looking for samples in the right domain
                     for i in range(n_grid_add):
                         resample = True
-
                         while resample:
-                            new_grid = self.__class__(parameters_random=self.parameters_random,
-                                                      n_grid=1,
-                                                      seed=seed,
-                                                      options=self.options)
+                            if isinstance(self, Random):
+                                new_grid = Random(parameters_random=self.parameters_random,
+                                                  n_grid=1,
+                                                  seed=seed,
+                                                  options=self.options)
 
-                            if classifier.predict(new_grid.coords_norm)[0] == domain:
-                                coords[i, :] = new_grid.coords
-                                coords_norm[i, :] = new_grid.coords_norm
-                                resample = False
+                                # test if grid point lies in right domain
+                                if classifier.predict(new_grid.coords_norm)[0] == domain:
+                                    coords[i, :] = new_grid.coords
+                                    coords_norm[i, :] = new_grid.coords_norm
+                                    resample = False
+
+                            elif isinstance(self, LHS):
+                                # test if next grid point lies in right domain
+                                if classifier.predict(self.coords_norm_reservoir[self.n_grid, :])[0] == domain:
+                                    coords[i, :] = self.coords_reservoir[self.n_grid]
+                                    coords_norm[i, :] = self.coords_norm_reservoir[self.n_grid]
+                                    self.n_grid += 1
+                                    resample = False
+
+                                else:
+                                    # delete tested point
+                                    self.coords_norm_reservoir = np.delete(self.coords_norm_reservoir, self.n_grid, 0)
+                                    self.coords_reservoir = np.delete(self.coords_reservoir, self.n_grid, 0)
+                                    self.lhs_reservoir = np.delete(self.lhs_reservoir, self.n_grid, 0)
 
                     # append points to existing grid
                     self.coords = np.vstack([self.coords, coords])
@@ -1306,6 +1331,10 @@ class Random(RandomGrid):
 
         super(Random, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=None)
 
+        # Seed of random grid (if necessary to reproduce random grid)
+        if self.seed is not None:
+            np.random.seed(self.seed)
+
         # Generate random samples for each random input variable [n_grid x dim]
         self.coords_norm = np.zeros([self.n_grid, self.dim])
 
@@ -1356,8 +1385,7 @@ class Random(RandomGrid):
                         # print("Iteration: {}".format(j+1))
                         self.coords_norm[outlier_mask, i_p] = (np.random.normal(loc=0,
                                                                                 scale=1,
-                                                                                size=[np.sum(outlier_mask), 1]))[:,
-                                                              0]
+                                                                                size=[np.sum(outlier_mask), 1]))[:, 0]
 
                         outlier_mask = np.logical_or(
                             self.coords_norm[:, i_p] < self.parameters_random[p].x_perc_norm[0],
@@ -1418,23 +1446,65 @@ class LHS(RandomGrid):
         seed: float
             Seeding point to replicate random grids
         options: dict, optional, default=None
-            Grid parameters
-            - ???
-            - ???
+            Grid option:
+            maximin:
+                maximizes the minimal distance between points
+            center:
+                generates points nested around 'center' points
+            centermaximin:
+                combines the above
+            corr:
+                reduces correlation of the sampled points
+
+
 
         Examples
         --------
         >>> import pygpc
         >>> grid = pygpc.LHS(parameters_random=parameters_random, n_grid=100, seed=1, options=options)
         """
+
         super(LHS, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=options)
+
+        lh_option = None
+
+        if self.options is 'maximin':
+            lh_option = 'm'
+        elif self.options is 'c':
+            lh_option = 'center'
+        elif self.options is 'corr':
+            lh_option = 'corr'
+        elif self.options is 'centermaximin':
+            lh_option = 'cm'
+        elif self.options is None:
+            lh_option = None
+
+        n_grid_lhs = np.max((10 * self.n_grid, 10000))
+        self.coords_reservoir = np.zeros((n_grid_lhs, self.dim))
+        self.coords_norm_reservoir = np.zeros((n_grid_lhs, self.dim))
+        self.perc_mask = np.zeros((n_grid_lhs, self.dim)).astype(bool)
 
         # Generate random samples for each random input variable [n_grid x dim]
         self.coords_norm = np.zeros([self.n_grid, self.dim])
 
-        # TODO: Erik: continue here to implement LHS grids
-        # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
-        if self.seed:
-            pass
-        else:
-            pass
+        # generate LHS grid in icdf space (seed of random grid (if necessary to reproduce random grid)
+        self.lhs_reservoir = lhs(n=self.dim, samples=n_grid_lhs, criterion=lh_option, random_state=self.seed)
+
+        # transform sample points from icdf to pdf space
+        for i_p, p in enumerate(self.parameters_random):
+            self.coords_norm_reservoir[:, i_p] = self.parameters_random[p].icdf(self.lhs_reservoir[:, i_p])
+            self.perc_mask[:, i_p] = np.logical_and(self.parameters_random[p].pdf_limits_norm[0] < self.coords_norm_reservoir[:, i_p],
+                                                    self.coords_norm_reservoir[:, i_p] < self.parameters_random[p].pdf_limits_norm[1])
+
+        # get points all satisfying perc constraints
+        self.perc_mask = self.perc_mask.all(axis=1)
+        self.coords_norm_reservoir = self.coords_norm_reservoir[self.perc_mask, :]
+
+        self.coords_norm = self.coords_norm_reservoir[0:self.n_grid, :]
+
+        # Denormalize grid to original parameter space
+        self.coords = self.get_denormalized_coordinates(self.coords_norm)
+        self.coords_reservoir = self.get_denormalized_coordinates(self.coords_norm_reservoir)
+
+        # Generate unique IDs of grid points
+        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
