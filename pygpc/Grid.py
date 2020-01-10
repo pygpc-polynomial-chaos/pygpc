@@ -1489,247 +1489,6 @@ class LHS(RandomGrid):
 
         super(LHS, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=options)
 
-        lh_option = None
-
-        if self.options is 'maximin':
-            lh_option = 'm'
-        elif self.options is 'corr':
-            lh_option = 'corr'
-        elif self.options is 'ese':
-            lh_option = None
-
-        def CL2(array):
-            '''
-            Calculate the L2 discrepancy of the design
-            The discrepancy is a measure of the difference between the empirical cumulative distribution function
-            of an experimental design and the uniform cumulative distribution function.
-            A generalized discrepancy and quadrature error bound
-            Math. Comput., 67 (1998), pp. 299-322
-            :param array: nd array m x n with n rows of samples and m columns of variables/dimensions
-            :return: CL criterion for centered L2 discrepancy
-            '''
-            subtract = np.ones([np.shape(array)[0], np.shape(array)[1]])
-            array = array - 0.5 * subtract
-            prod_array_1 = np.zeros(np.shape(array)[0])
-            for n in range(0, np.shape(array)[0]):
-                prod_array_1[n] = (np.ones(np.shape(array)[1]) + (1 / 2 * (np.abs(array[n, :]))) - (
-                        1 / 2 * ((array[n, :]) ** 2))).prod()
-            prod_array_2 = np.zeros([np.shape(array)[0], np.shape(array)[0]])
-            for i in range(0, np.shape(array)[0]):
-                for j in range(0, np.shape(array)[0]):
-                    prod_array_2[i, j] = (np.ones(np.shape(array)[1]) + (1 / 2 * (np.abs(array[i, :]))) - (
-                            1 / 2 * np.abs(array[j, :]) - 1 / 2 * np.abs(array[i, :] - array[j, :]))).prod()
-            cl2d_crit = ((13 / 12) ** 2) - (2 / (np.shape(array)[0]) * prod_array_1.sum()) + (1 / (
-                    np.shape(array)[0] ** 2) * prod_array_2.sum())
-            # centered L2 discrepancy criteria
-            return cl2d_crit
-
-        def log_R(array):
-            """
-            currently only 2 dimensional
-            :param array: nd array
-            :return: Log(R) Entropy Criterion
-            """
-            # R will only ever be 2D
-            R = np.corrcoef(array[:, 0], array[:, 1])
-            for i in range(0, np.shape(array)[1]):
-                for j in range(0, np.shape(array)[1]):
-                    R[i, j] = np.exp((R[i, :] * np.abs(array[i, :] - array[j, :]) ** 2).sum())
-            log_R = np.log(np.linalg.norm(R))
-            return log_R
-
-        def PhiP(x, p=10):
-            """
-            Calculates the Phi-p criterion of the design x with power p.
-            M.D. Morris, T.J. Mitchell:
-            Exploratory designs for computational experiments
-            J. Statist. Plann. Inference, 43 (1995), pp. 381-402
-            x : array_like
-            The design where to calculate Phi-p
-            p : integer
-            The power used for the calculation of PhiP (default to 10)
-
-            """
-
-            return ((scipy.spatial.distance.pdist(x) ** (-p)).sum()) ** (1.0 / p)
-
-        def get_lhs_grid(dim, n, crit=None, random_state=None):
-            """
-            Create samples in an m*n matrix using Latin Hypercube Sampling,
-            M.D. McKay, R.J. Beckman, W.J. Conover: A comparison of three methods for selecting values
-            of input variables in the analysis of output from a computer code
-            dim : integer
-            Number of random variables
-            n : integer
-            Number of rows/ samples drawn for each variable
-            crit: 'corr' - optimizes design points in their spearman correlation coefficients
-                  'maximin' or 'm' - optimizes design points in their maximum minimal distance using the Phi-P criterion
-                  'ese' -  uses an enhanced evolutionary algorithm to optimize the Phi-P criterion
-
-            """
-            if random_state is None:
-                random_state = np.random.RandomState()
-            elif not isinstance(random_state, np.random.RandomState):
-                random_state = np.random.RandomState(random_state)
-
-            def lhs_initial(dim, n):
-                pi = np.zeros([n, dim])
-                # u = matrix of uniform (0,1) that vary in n subareas
-                u = np.random.rand(n, dim)
-                # if crit is 'norm':
-                #     u = np.zeros([n, dim ])
-                for i in range(0, dim):
-                    for j in range(0, n):
-                        pi[j, i] = j + 1
-                    np.random.shuffle(pi[:, i])
-
-                for i in range(0, dim):
-                    for j in range(0, n):
-                        pi[j, i] = (pi[j, i] - u[j, i]) / n
-                return pi
-
-            def lhs_corr(dim, n, iterations):
-                mincorr = np.inf
-                # Minimize the components correlation coefficients
-                for i in range(iterations):
-                    # Generate a random LHS
-                    test = lhs_initial(dim, n)
-                    R = scipy.stats.spearmanr(test)[0]
-                    if dim < 3:
-                        E = np.eye(np.shape(R)[0])
-                    else:
-                        E = 0
-                    if np.max(np.abs(R - E)) < mincorr:
-                        mincorr = np.max(np.abs(R - E))
-                        out = test.copy()
-                return out
-
-            def lhs_maximin(dim, n, iterations):
-                phi_best = max(1000, n * 100)
-                # Maximize the minimum distance between points
-                for i in range(iterations):
-                    test = lhs_initial(dim, n)
-                    phi = PhiP(test)
-                    if phi_best > phi:
-                        phi_best = phi
-                        out = test.copy()
-                return out
-
-            def lhs_ese(dim, n, T0=None):
-                '''
-
-                Enhanced Evelutionary Algorithm (For PhiP Maximin Criterion from SMT),
-                see R. Jin, W. Chen and A. Sudjianto (2005):
-                An efficient algorithm for constructing optimal design of computer
-                experiments. Journal of Statistical Planning and Inference, 134:268-287.
-                :param dim: Dimensions
-                :param n: number of samples
-                :param T0:  Threshold
-                :return: P_best: ESE optimized Design
-
-                '''
-
-                # Parameters
-                P0 = lhs_initial(dim, n)
-                J = 25
-                tol = 1e-3
-                p = 10
-                outer_loop = min(int(1.5 * dim), 30)
-                inner_loop = min(20 * dim, 100)
-                fixed_index = []
-                if T0 is None:
-                    T0 = 0.005 * PhiP(P0, p=p)
-
-                T = T0
-                P_ = P0[:]  # copy of initial design
-                P_best = P_[:]
-                Phi = PhiP(P_best, p=p)
-                Phi_best = Phi
-
-                # Outer loop
-                for z in range(outer_loop):
-                    Phi_oldbest = Phi_best
-                    n_acpt = 0
-                    n_imp = 0
-
-                    # Inner loop
-                    for i in range(inner_loop):
-                        modulo = (i + 1) % dim
-                        l_P = list()
-                        l_Phi = list()
-
-                        # Build J different designs with a single exchanged rows
-                        # See PhiP_exchange
-                        for j in range(J):
-                            l_P.append(P_.copy())
-                            l_Phi.append(PhiP_exchange(l_P[j], k=modulo, Phi=Phi, p=p, fixed_index=fixed_index))
-
-                        l_Phi = np.asarray(l_Phi)
-                        k = np.argmin(l_Phi)
-                        Phi_try = l_Phi[k]
-
-                        # Threshold of acceptance
-                        if Phi_try - Phi <= T * np.random.rand(1)[0]:
-                            Phi = Phi_try
-                            n_acpt = n_acpt + 1
-                            P_ = l_P[k]
-
-                            # Best design retained
-                            if Phi < Phi_best:
-                                P_best = P_
-                                Phi_best = Phi
-                                n_imp = n_imp + 1
-
-                    p_accpt = float(n_acpt) / inner_loop  # probability of acceptance
-                    p_imp = float(n_imp) / inner_loop  # probability of improvement
-
-                    if Phi_best - Phi_oldbest < tol:
-                        # flag_imp = 1
-                        if p_accpt >= 0.1 and p_imp < p_accpt:
-                            T = 0.8 * T
-                        elif p_accpt >= 0.1 and p_imp == p_accpt:
-                            pass
-                        else:
-                            T = T / 0.8
-                    else:
-                        # flag_imp = 0
-                        if p_accpt <= 0.1:
-                            T = T / 0.7
-                        else:
-                            T = 0.9 * T
-                return P_best
-
-            def PhiP_exchange(P, k, Phi, p, fixed_index):
-                # Choose two (different) random rows to perform the exchange
-                i1 = np.random.randint(P.shape[0])
-                while i1 in fixed_index:
-                    i1 = np.random.randint(P.shape[0])
-
-                i2 = np.random.randint(P.shape[0])
-                while i2 == i1 or i2 in fixed_index:
-                    i2 = np.random.randint(P.shape[0])
-
-                P_ = np.delete(P, [i1, i2], axis=0)
-
-                dist1 = scipy.spatial.distance.cdist([P[i1, :]], P_)
-                dist2 = scipy.spatial.distance.cdist([P[i2, :]], P_)
-                d1 = np.sqrt(dist1 ** 2 + (P[i2, k] - P_[:, k]) ** 2 - (P[i1, k] - P_[:, k]) ** 2)
-                d2 = np.sqrt(dist2 ** 2 - (P[i2, k] - P_[:, k]) ** 2 + (P[i1, k] - P_[:, k]) ** 2)
-
-                res = (Phi ** p + (d1 ** (-p) - dist1 ** (-p) + d2 ** (-p) - dist2 ** (-p)).sum()) ** (1.0 / p)
-
-                P[i1, k], P[i2, k] = P[i2, k], P[i1, k]
-                return res
-
-            if crit is 'corr':
-                return lhs_corr(dim, n, 100)
-            elif crit is 'maximin' or crit is 'm':
-                return lhs_maximin(dim, n, 100)
-            elif crit is 'ese':
-                return lhs_ese(dim, n)
-            else:
-                return lhs_initial(dim, n)
-
 
         n_grid_lhs = self.n_grid
         self.coords_reservoir = np.zeros((n_grid_lhs, self.dim))
@@ -1740,13 +1499,14 @@ class LHS(RandomGrid):
         self.coords_norm = np.zeros([self.n_grid, self.dim])
 
         # generate LHS grid in icdf space (seed of random grid (if necessary to reproduce random grid)
-        self.lhs_reservoir = get_lhs_grid(dim=self.dim, n=n_grid_lhs, crit=lh_option, random_state=self.seed)
+        self.lhs_reservoir = self.get_lhs_grid(dim=self.dim, n=n_grid_lhs, crit=self.options, random_state=self.seed)
 
         # transform sample points from icdf to pdf space
         for i_p, p in enumerate(self.parameters_random):
             self.coords_norm_reservoir[:, i_p] = self.parameters_random[p].icdf(self.lhs_reservoir[:, i_p])
-            self.perc_mask[:, i_p] = np.logical_and(self.parameters_random[p].pdf_limits_norm[0] < self.coords_norm_reservoir[:, i_p],
-                                                    self.coords_norm_reservoir[:, i_p] < self.parameters_random[p].pdf_limits_norm[1])
+            self.perc_mask[:, i_p] = np.logical_and(
+                self.parameters_random[p].pdf_limits_norm[0] < self.coords_norm_reservoir[:, i_p],
+                self.coords_norm_reservoir[:, i_p] < self.parameters_random[p].pdf_limits_norm[1])
 
         # get points all satisfying perc constraints
         self.perc_mask = self.perc_mask.all(axis=1)
@@ -1760,3 +1520,236 @@ class LHS(RandomGrid):
 
         # Generate unique IDs of grid points
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+    def CL2(self, array):
+        """
+        Calculate the L2 discrepancy of the design
+        The discrepancy is a measure of the difference between the empirical cumulative distribution function
+        of an experimental design and the uniform cumulative distribution function.
+        A generalized discrepancy and quadrature error bound
+        Math. Comput., 67 (1998), pp. 299-322
+        :param array: nd array m x n with n rows of samples and m columns of variables/dimensions
+        :return: CL criterion for centered L2 discrepancy
+        """
+        subtract = np.ones([np.shape(array)[0], np.shape(array)[1]])
+        array = array - 0.5 * subtract
+        prod_array_1 = np.zeros(np.shape(array)[0])
+        for n in range(0, np.shape(array)[0]):
+            prod_array_1[n] = (np.ones(np.shape(array)[1]) + (1 / 2 * (np.abs(array[n, :]))) - (
+                    1 / 2 * ((array[n, :]) ** 2))).prod()
+        prod_array_2 = np.zeros([np.shape(array)[0], np.shape(array)[0]])
+        for i in range(0, np.shape(array)[0]):
+            for j in range(0, np.shape(array)[0]):
+                prod_array_2[i, j] = (np.ones(np.shape(array)[1]) + (1 / 2 * (np.abs(array[i, :]))) - (
+                        1 / 2 * np.abs(array[j, :]) - 1 / 2 * np.abs(array[i, :] - array[j, :]))).prod()
+        cl2d_crit = ((13 / 12) ** 2) - (2 / (np.shape(array)[0]) * prod_array_1.sum()) + (1 / (
+                np.shape(array)[0] ** 2) * prod_array_2.sum())
+        # centered L2 discrepancy criteria
+        return cl2d_crit
+
+    def log_R(self, array):
+        """
+        currently only 2 dimensional
+        :param array: nd array
+        :return: Log(R) Entropy Criterion
+        """
+        # R will only ever be 2D
+        R = np.corrcoef(array[:, 0], array[:, 1])
+        for i in range(0, np.shape(array)[1]):
+            for j in range(0, np.shape(array)[1]):
+                R[i, j] = np.exp((R[i, :] * np.abs(array[i, :] - array[j, :]) ** 2).sum())
+        log_R = np.log(np.linalg.norm(R))
+
+        return log_R
+
+    def PhiP(self, x, p=10):
+        """
+        Calculates the Phi-p criterion of the design x with power p.
+        M.D. Morris, T.J. Mitchell:
+        Exploratory designs for computational experiments
+        J. Statist. Plann. Inference, 43 (1995), pp. 381-402
+        x : array_like
+        The design where to calculate Phi-p
+        p : integer
+        The power used for the calculation of PhiP (default to 10)
+
+        """
+
+        return ((scipy.spatial.distance.pdist(x) ** (-p)).sum()) ** (1.0 / p)
+
+    def PhiP_exchange(self, P, k, Phi, p, fixed_index):
+        # Choose two (different) random rows to perform the exchange
+        i1 = np.random.randint(P.shape[0])
+        while i1 in fixed_index:
+            i1 = np.random.randint(P.shape[0])
+
+        i2 = np.random.randint(P.shape[0])
+        while i2 == i1 or i2 in fixed_index:
+            i2 = np.random.randint(P.shape[0])
+
+        P_ = np.delete(P, [i1, i2], axis=0)
+
+        dist1 = scipy.spatial.distance.cdist([P[i1, :]], P_)
+        dist2 = scipy.spatial.distance.cdist([P[i2, :]], P_)
+        d1 = np.sqrt(dist1 ** 2 + (P[i2, k] - P_[:, k]) ** 2 - (P[i1, k] - P_[:, k]) ** 2)
+        d2 = np.sqrt(dist2 ** 2 - (P[i2, k] - P_[:, k]) ** 2 + (P[i1, k] - P_[:, k]) ** 2)
+
+        res = (Phi ** p + (d1 ** (-p) - dist1 ** (-p) + d2 ** (-p) - dist2 ** (-p)).sum()) ** (1.0 / p)
+
+        P[i1, k], P[i2, k] = P[i2, k], P[i1, k]
+        return res
+
+    def get_lhs_grid(self, dim, n, crit=None, random_state=None):
+        """
+        Create samples in an m*n matrix using Latin Hypercube Sampling,
+        M.D. McKay, R.J. Beckman, W.J. Conover: A comparison of three methods for selecting values
+        of input variables in the analysis of output from a computer code
+        dim : integer
+        Number of random variables
+        n : integer
+        Number of rows/ samples drawn for each variable
+        crit: 'corr' - optimizes design points in their spearman correlation coefficients
+              'maximin' or 'm' - optimizes design points in their maximum minimal distance using the Phi-P criterion
+              'ese' -  uses an enhanced evolutionary algorithm to optimize the Phi-P criterion
+
+        """
+        if random_state is None:
+            random_state = np.random.RandomState()
+        elif not isinstance(random_state, np.random.RandomState):
+            random_state = np.random.RandomState(random_state)
+        if crit is 'corr':
+            return self.lhs_corr(dim, n, 100)
+        elif crit is 'maximin' or crit is 'm':
+            return self.lhs_maximin(dim, n, 100)
+        elif crit is 'ese':
+            return self.lhs_ese(dim, n)
+        else:
+            return self.lhs_initial(dim, n)
+
+
+    def lhs_initial(self, dim, n):
+        pi = np.zeros([n, dim])
+        # u = matrix of uniform (0,1) that vary in n subareas
+        u = np.random.rand(n, dim)
+        # if crit is 'norm':
+        #     u = np.zeros([n, dim ])
+        for i in range(0, dim):
+            for j in range(0, n):
+                pi[j, i] = j + 1
+            np.random.shuffle(pi[:, i])
+
+        for i in range(0, dim):
+            for j in range(0, n):
+                pi[j, i] = (pi[j, i] - u[j, i]) / n
+        return pi
+
+    def lhs_corr(self, dim, n, iterations):
+        mincorr = np.inf
+        # Minimize the components correlation coefficients
+        for i in range(iterations):
+            # Generate a random LHS
+            test = self.lhs_initial(dim, n)
+            R = scipy.stats.spearmanr(test)[0]
+            if dim < 3:
+                E = np.eye(np.shape(R)[0])
+            else:
+                E = 0
+            if np.max(np.abs(R - E)) < mincorr:
+                mincorr = np.max(np.abs(R - E))
+                out = test.copy()
+        return out
+
+    def lhs_maximin(self, dim, n, iterations):
+        phi_best = max(1000, n * 100)
+        # Maximize the minimum distance between points
+        for i in range(iterations):
+            test = self.lhs_initial(dim, n)
+            phi = self.PhiP(test)
+            if phi_best > phi:
+                phi_best = phi
+                out = test.copy()
+        return out
+
+    def lhs_ese(self, dim, n, T0=None):
+        '''
+
+        Enhanced Evelutionary Algorithm (For PhiP Maximin Criterion from SMT),
+        see R. Jin, W. Chen and A. Sudjianto (2005):
+        An efficient algorithm for constructing optimal design of computer
+        experiments. Journal of Statistical Planning and Inference, 134:268-287.
+        :param dim: Dimensions
+        :param n: number of samples
+        :param T0:  Threshold
+        :return: P_best: ESE optimized Design
+
+        '''
+
+        # Parameters
+        P0 = self.lhs_initial(dim, n)
+        J = 25
+        tol = 1e-3
+        p = 10
+        outer_loop = min(int(1.5 * dim), 30)
+        inner_loop = min(20 * dim, 100)
+        fixed_index = []
+        if T0 is None:
+            T0 = 0.005 * self.PhiP(P0, p=p)
+
+        T = T0
+        P_ = P0[:]  # copy of initial design
+        P_best = P_[:]
+        Phi = self.PhiP(P_best, p=p)
+        Phi_best = Phi
+
+        # Outer loop
+        for z in range(outer_loop):
+            Phi_oldbest = Phi_best
+            n_acpt = 0
+            n_imp = 0
+
+            # Inner loop
+            for i in range(inner_loop):
+                modulo = (i + 1) % dim
+                l_P = list()
+                l_Phi = list()
+
+                # Build J different designs with a single exchanged rows
+                # See PhiP_exchange
+                for j in range(J):
+                    l_P.append(P_.copy())
+                    l_Phi.append(self.PhiP_exchange(l_P[j], k=modulo, Phi=Phi, p=p, fixed_index=fixed_index))
+
+                l_Phi = np.asarray(l_Phi)
+                k = np.argmin(l_Phi)
+                Phi_try = l_Phi[k]
+
+                # Threshold of acceptance
+                if Phi_try - Phi <= T * np.random.rand(1)[0]:
+                    Phi = Phi_try
+                    n_acpt = n_acpt + 1
+                    P_ = l_P[k]
+
+                    # Best design retained
+                    if Phi < Phi_best:
+                        P_best = P_
+                        Phi_best = Phi
+                        n_imp = n_imp + 1
+
+            p_accpt = float(n_acpt) / inner_loop  # probability of acceptance
+            p_imp = float(n_imp) / inner_loop  # probability of improvement
+
+            if Phi_best - Phi_oldbest < tol:
+                # flag_imp = 1
+                if p_accpt >= 0.1 and p_imp < p_accpt:
+                    T = 0.8 * T
+                elif p_accpt >= 0.1 and p_imp == p_accpt:
+                    pass
+                else:
+                    T = T / 0.8
+            else:
+                # flag_imp = 0
+                if p_accpt <= 0.1:
+                    T = T / 0.7
+                else:
+                    T = 0.9 * T
+        return P_best

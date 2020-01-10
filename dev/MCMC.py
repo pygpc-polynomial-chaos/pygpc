@@ -65,7 +65,7 @@ def MCMC_Hampton(n, p, d, dist='uniform'):
                 rho = np.zeros(d)
 
                 for k in range(d):
-                    rho[k] = np.min((g(x[k]) * f(x_[k]) * (w(x_) ** (-2))/(g(x_[k]) * f(x[k]) * (w(x) ** (-2)))))
+                    rho[k] = np.min(1, (g(x[k]) * f(x_[k]) * (w(x_) ** (-2))/(g(x_[k]) * f(x[k]) * (w(x) ** (-2)))))
                 # draw a uniform sample from [0, 1]
                 if (u.sum() < rho.sum()):
                     samples[i, :] = x_
