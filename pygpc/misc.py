@@ -2,6 +2,7 @@
 import numpy as np
 import scipy.special
 import scipy.stats
+import scipy.spatial
 import sys
 import math
 import itertools
@@ -332,9 +333,9 @@ def mutual_coherence(array):
     """
     Calculate the mutual coherence of a matrix A. It can also be referred as the cosine of the smallest angle
     between two columns.
-      
+
     mutual_coherence = mutual_coherence(array)
- 
+
     Parameters
     ----------
     array: ndarray of float
@@ -349,9 +350,34 @@ def mutual_coherence(array):
     t = np.dot(array.conj().T, array)
     s = np.sqrt(np.diag(t))
     s_sqrt = np.diag(s)
-    c = np.max(1.0*(t-s_sqrt)/np.outer(s, s))
-    
-    return c
+    mu = np.max(1.0*(t-s_sqrt)/np.outer(s, s))
+
+    return mu
+
+
+def RIP(A, x):
+    """
+    Calculate the restricted isometric property constant delta of a matrix A for a given sparse vector x.
+
+    delta = RIP(A, x)
+
+    Parameters
+    ----------
+    A: ndarray of float
+        Input matrix
+    x: ndarray of float
+        applied vector
+    Returns
+    -------
+    delta: float
+        restricted isometric property constant
+    """
+
+    norm_Ax = np.linalg.norm(np.dot(A, x))
+    norm_x = np.linalg.norm(x)
+    delta = (norm_Ax**2 / norm_x**2) - 1
+
+    return delta
 
 
 def wrap_function(fn, x, args):

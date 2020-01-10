@@ -2,8 +2,8 @@ import pygpc
 import copy
 import os
 
-folder = "/data/hu_emueller/tmp"
-n_cpu = 32
+folder = "/data/pt_01756/studies/pygpc/"
+n_cpu = 18
 repetitions = 10
 # order = [2, 4, 6, 8, 10, 12, 14]  # 2, 4, 6, 8, 10, 12, 14
 # dims = [2, 3, 4, 5]
@@ -28,6 +28,7 @@ for g_e in gradient_enhanced:
             options["order"] = [ord]
             options["order_max"] = ord
             options["order_max_norm"] = o
+            options["adaptive sampling"] = True
             options["interaction_order"] = 3
             options["matrix_ratio"] = 2
             options["n_cpu"] = 0
@@ -35,7 +36,7 @@ for g_e in gradient_enhanced:
             options["error_type"] = "nrmsd"
             options["gradient_enhanced"] = g_e
             options["gradient_calculation"] = "standard_forward"
-            options["grid"] = pygpc.LHS
+            options["grid"] = pygpc.Random
             options["grid_options"] = None
 
             options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_{}_q_{}_ge_{}".format(

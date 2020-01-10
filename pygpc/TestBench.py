@@ -217,14 +217,14 @@ class TestBenchContinuous(TestBench):
         # set up test problems
         problem = OrderedDict()
         problem["BohachevskyFunction1"] = BohachevskyFunction1().problem
-        problem["BoothFunction"] = BoothFunction().problem
+        # problem["BoothFunction"] = BoothFunction().problem
         # problem["BukinFunctionNumber6"] = BukinFunctionNumber6().problem
         # problem["Franke"] = Franke().problem
         # problem["Ishigami_2D"] = Ishigami(dim=2).problem
         # problem["Ishigami_3D"] = Ishigami(dim=3).problem
         # problem["Lim2002"] = Lim2002().problem
         # problem["MatyasFunction"] = MatyasFunction().problem
-        # problem["McCormickFunction"] = McCormickFunction().problem
+        problem["McCormickFunction"] = McCormickFunction().problem
         # problem["Peaks"] = Peaks().problem
         # problem["SixHumpCamelFunction"] = SixHumpCamelFunction().problem
 

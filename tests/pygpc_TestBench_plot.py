@@ -6,12 +6,13 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib
 
-folder = "/data/pt_01756/tmp/TestBench/TestBenchContinuous"
+folder = "/data/pt_01756/studies/pygpc/TestBenchContinuous/"
 algorithms = os.listdir(folder)
 algorithms.sort()
 testbench_objs = []
-# order = [2, 3, 4]
-order = [2, 4, 6, 8, 10, 12, 14]
+
+order = [2, 3, 4, 6, 8, 10, 12]
+
 for a in algorithms:
     with open(os.path.join(folder, a, "testbench.pkl"), 'rb') as f:
         testbench_objs.append(pickle.load(f))
@@ -43,17 +44,17 @@ for testbench in testbench_objs:
 
                 for i_o, o in enumerate(order):
                     fn = os.path.join(testbench.fn_results, pkey + "_p_" + str(o) + "_" + str(rep).zfill(4) + ".pkl")
-                    gpc = pygpc.read_gpc_pkl(fn)
-                    n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep].append(gpc.n_grid[0])
-                    n_basis[os.path.split(testbench.fn_results)[1]][pkey][rep].append(gpc.n_basis[0])
-                    nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep].append(gpc.relative_error_nrmsd[0])
-                    if gpc.relative_error_loocv:
-                        loocv[os.path.split(testbench.fn_results)[1]][pkey][rep].append(gpc.relative_error_loocv[0])
+                    session = pygpc.read_gpc_pkl(fn)
+                    n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep].append(session.gpc[0].n_grid[0])
+                    n_basis[os.path.split(testbench.fn_results)[1]][pkey][rep].append(session.gpc[0].n_basis[0])
+                    nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep].append(session.gpc[0].relative_error_nrmsd[0])
+                    if session.gpc[0].relative_error_loocv:
+                        loocv[os.path.split(testbench.fn_results)[1]][pkey][rep].append(session.gpc[0].relative_error_loocv[0])
 
                 n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep])
                 n_basis[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(n_basis[os.path.split(testbench.fn_results)[1]][pkey][rep])
                 nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep])
-                if gpc.relative_error_loocv:
+                if session.gpc[0].relative_error_loocv:
                     loocv[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(loocv[os.path.split(testbench.fn_results)[1]][pkey][rep])
     else:
         n_grid[os.path.split(testbench.fn_results)[1]] = dict()
@@ -71,17 +72,17 @@ for testbench in testbench_objs:
 
             for rep in range(testbench.repetitions):
                 fn = os.path.join(testbench.fn_results, pkey + "_" + str(rep).zfill(4) + ".pkl")
-                gpc = pygpc.read_gpc_pkl(fn)
+                session = pygpc.read_gpc_pkl(fn)
 
-                n_grid[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(gpc.n_grid))
-                n_basis[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(gpc.n_basis))
-                nrmsd[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(gpc.relative_error_nrmsd))
+                n_grid[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(session.gpc[0].n_grid))
+                n_basis[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(session.gpc[0].n_basis))
+                nrmsd[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(session.gpc[0].relative_error_nrmsd))
 
                 # if "Projection" in os.path.split(testbench.fn_results)[1]:
                 #     n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep] = n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep][1:]
 
-                if gpc.relative_error_loocv:
-                    loocv[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(gpc.relative_error_nrmsd))
+                if session.gpc[0].relative_error_loocv:
+                    loocv[os.path.split(testbench.fn_results)[1]][pkey].append(np.array(session.gpc[0].relative_error_nrmsd))
 
 dims = testbench.dims
 
