@@ -1246,6 +1246,7 @@ class RandomGrid(Grid):
                                           seed=seed,
                                           options=self.options)
 
+
                         # append points to existing grid
                         self.coords = np.vstack([self.coords, new_grid.coords])
                         self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])

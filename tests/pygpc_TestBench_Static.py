@@ -36,7 +36,7 @@ for g_e in gradient_enhanced:
             options["error_type"] = "nrmsd"
             options["gradient_enhanced"] = g_e
             options["gradient_calculation"] = "standard_forward"
-            options["grid"] = pygpc.Random
+            options["grid"] = pygpc.LHS
             options["grid_options"] = None
 
             options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_{}_q_{}_ge_{}".format(
