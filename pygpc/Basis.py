@@ -123,6 +123,10 @@ class Basis:
                 self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(
                     order=multi_indices[i_basis, i_dim])
 
+        # save poly coeffs in array
+        # TODO: Lucas read out poly coeffs and save as numpy in list?
+        # self.b_coeffs = np.array([list(map(lambda x: x.fun_norm, _b)) for _b in self.b])
+
         # Generate unique IDs of basis functions
         self.b_id = [uuid.uuid4() for _ in range(self.n_basis)]
 
@@ -231,6 +235,10 @@ class Basis:
 
         # initialize gpu coefficient array
         self.init_polynomial_basis_gpu()
+
+        # save poly coeffs in array
+        # TODO: Lucas read out poly coeffs and save as numpy in list?
+        # self.b_coeffs = np.array([list(map(lambda x: x.fun_norm, _b)) for _b in self.b])
 
     # TODO: @Lucas (GPU) adapt this to function objects
     def init_polynomial_basis_gpu(self):
