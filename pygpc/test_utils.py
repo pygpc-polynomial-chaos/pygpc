@@ -3,6 +3,7 @@ import h5py
 from .io import read_gpc_pkl
 from .MEGPC import *
 
+
 def check_file_consistency(fn_hdf5):
     """
     Test gPC output files for consistency.
@@ -51,11 +52,16 @@ def check_file_consistency(fn_hdf5):
 
     with h5py.File(fn_hdf5, "r") as f:
         try:
-            if np.array([True for s in list(f["coeffs/"]) if "qoi" in s]).any():
+            # disable warnings temporarily
+            # there is a disagreement between Python and Numpy and the code produces a warning here
+            warnings.simplefilter(action='ignore', category=FutureWarning)
+            if any([True for s in list(f["coeffs/"]) if "qoi" in s]):
                 qoi_keys = list(f["coeffs"].keys())
                 qoi_idx = [int(key.split("qoi_")[1]) for key in qoi_keys]
             else:
                 qoi_keys = [""]
+            # enable warnings
+            warnings.simplefilter(action='default', category=FutureWarning)
 
         except KeyError:
             qoi_keys = [""]

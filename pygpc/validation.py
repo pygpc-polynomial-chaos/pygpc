@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+import os
+import scipy.stats
+import h5py
+import warnings
 from pygpc.Computation import *
 from .MEGPC import *
 from .Grid import *
@@ -6,10 +9,7 @@ from .misc import nrmsd
 from .misc import get_cartesian_product
 from .Visualization import *
 from scipy.signal import savgol_filter
-import os
-import scipy.stats
-import h5py
-import warnings
+
 
 try:
     import matplotlib

@@ -1,16 +1,14 @@
-# -*- coding: utf-8 -*-
 import unittest
 import pygpc
-from collections import OrderedDict
 import numpy as np
 import h5py
 import sys
 import os
 import shutil
+from collections import OrderedDict
 
 # test options
-folder = './tmp'    # output folder
-# folder = '/NOBACKUP2/tmp'    # output folder
+folder = './tmp'     # output folder
 plot = False         # plot and save output
 gpu = False          # test GPU functionality
 matlab = False       # test Matlab functionality
@@ -881,7 +879,6 @@ class TestPygpcMethods(unittest.TestCase):
                               print_func_time=False)
 
             com.close()
-
 
     def test_10_RandomParameters(self):
         """

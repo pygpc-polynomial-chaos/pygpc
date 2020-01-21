@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import copy
 import h5py
 import os
@@ -73,8 +72,8 @@ class Algorithm(object):
             - "standard_forward" ... Forward approximation (creates additional dim*n_grid grid-points in the axis
             directions)
             - "???" ... ???
-        options["GPU"] : boolean, optional, default: False
-            Use GPU to accelerate pygpc
+        options["backend"] : str, optional, default: "python"
+            Default computing backend, certain functions can be computed with Multicore-CPU or GPU acceleration
         options["lambda_eps_gradient"] : float, optional, default: 0.95
             Bound of principal components in %. All eigenvectors are included until lambda_eps of total sum of all
             eigenvalues is included in the system.
@@ -108,6 +107,10 @@ class Algorithm(object):
             - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0
         options["verbose"] : boolean, optional, default=True
             Print output of iterations and sub-iterations (True/False)
+        options["backend"] : str
+            Backend for performance intensive computations
+            - "python" ... Use native python implementation
+            - "cpu" .. Use C Implementaion without multicore-support
         """
 
         if "eps" not in self.options.keys():
@@ -128,8 +131,8 @@ class Algorithm(object):
         if "gradient_calculation" not in self.options.keys():
             self.options["gradient_calculation"] = "standard_forward"
 
-        if "GPU" not in self.options.keys():
-            self.options["GPU"] = False
+        if "backend" not in self.options.keys():
+            self.options["backend"] = "python"
 
         if "lambda_eps_gradient" not in self.options.keys():
             self.options["lambda_eps_gradient"] = 0.95
@@ -184,6 +187,9 @@ class Algorithm(object):
 
         if "verbose" not in self.options.keys():
             self.options["verbose"] = True
+
+        if "backend" not in self.options.keys():
+            self.options["backend"] = "python"
 
     def get_gradient(self, grid, results, com, gradient_results=None, i_iter=None, i_subiter=None):
         """
@@ -367,7 +373,7 @@ class Static(Algorithm):
         else:
             raise AssertionError("Please specify correct gPC method ('reg' or 'quad')")
 
-        gpc.gpu = self.options["GPU"]
+        gpc.backend = self.options["backend"]
 
         # Write grid in gpc object
         gpc.grid = copy.deepcopy(self.grid)

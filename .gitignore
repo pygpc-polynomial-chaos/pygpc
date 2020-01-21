@@ -27,3 +27,6 @@ pygpc/*.so
 
 # ignore tmp folder for tests
 tests/tmp
+
+# ignore tmp folder
+/tmp

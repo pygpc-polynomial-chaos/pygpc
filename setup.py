@@ -1,9 +1,5 @@
-import sys
-import subprocess
 from setuptools import setup, find_packages
 from distutils.extension import Extension
-# from Cython.Build import cythonize
-# import numpy as np
 
 
 # pygpc software framework for uncertainty and sensitivity
@@ -28,24 +24,13 @@ from distutils.extension import Extension
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
-# try to import build dependencies, if not installed, pip them
-# try:
-#     import numpy as np
-# except (ImportError, ModuleNotFoundError):
-#     command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
-#     if 'user' in str(sys.argv):
-#         raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
-#     subprocess.run(command)
-#     import numpy as np
-#
-# try:
-#     from Cython.Build import cythonize
-# except (ImportError, ModuleNotFoundError):
-#     command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
-#     if 'user' in str(sys.argv):
-#         raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
-#     subprocess.run(command)
-#     from Cython.Build import cythonize
+# parser = argparse.ArgumentParser('Install pygpc with or without multicore and/or gpu support')
+# parser.add_argument('--enable-openmp', type=bool, default=False)
+# args = parser.parse_args()
+# 
+# 
+# if(args.enable-openmp):
+#     print('OpenMP')
 
 
 setup(name='pygpc',
@@ -54,12 +39,18 @@ setup(name='pygpc',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
       license='GPL3',
+      cmdclass={
+          'install': InstallCommand
+      },
       packages=find_packages(exclude=['tests', 'tests.*', 'templates', 'templates.*', 'tutorials', 'tutorials.*']),
       install_requires=['scipy>=1.0.0',
+                        'numpy>=1.16.4',
                         'fastmat>=0.1.2.post1',
                         'scikit-learn>=0.19.1',
                         'h5py>=2.9.0',
-                        'dispy>=4.9.0',
-                        ],
+                        'dispy>=4.9.0'],
+      project_urls={
+        "Documentation": "https://pygpc.readthedocs.io/en/latest/",
+        "Source Code": "https://github.com/pygpc-polynomial-chaos/pygpc"},
       zip_safe=False,
       include_package_data=True)
