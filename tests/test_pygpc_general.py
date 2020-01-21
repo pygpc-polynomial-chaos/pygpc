@@ -1277,6 +1277,12 @@ class TestPygpcMethods(unittest.TestCase):
         self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
+    def test_15_save_and_load_session(self):
+        """
+        Save and load a gPC Session
+        """
+        # TODO: implement unittest
+        pass
 
 if __name__ == '__main__':
     unittest.main()

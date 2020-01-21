@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import copy
+import inspect
 import warnings
 import numpy as np
 import scipy.special
@@ -2876,7 +2877,8 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        super(DiscontinuousRidgeManufactureDecay, self).__init__()
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass

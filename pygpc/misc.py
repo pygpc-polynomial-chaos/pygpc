@@ -10,6 +10,28 @@ import random
 from .Visualization import plot_beta_pdf_fit
 
 
+def is_instance(obj):
+    """
+    Tests if obj is a class instance of any type.
+
+    Parameters
+    ----------
+    obj : any
+        Input object
+
+    Returns
+    -------
+    out : bool
+        Flag if obj is class instance or not
+    """
+    try:
+        _ = obj.__dict__
+        return True
+
+    except AttributeError:
+        return False
+
+
 def display_fancy_bar(text, i, n_i, more_text=None):
     """
     Display a simple progress bar. Call in each iteration and start with i=1.

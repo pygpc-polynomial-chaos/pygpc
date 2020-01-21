@@ -2,7 +2,10 @@
 import scipy.special
 import scipy.stats
 import numpy as np
-from .Grid import Grid
+from .Grid import *
+from .Quadrature import get_quadrature_jacobi_1d
+from .Quadrature import get_quadrature_hermite_1d
+from .Quadrature import get_quadrature_laguerre_1d
 
 
 class BasisFunction(object):
@@ -88,7 +91,7 @@ class Jacobi(BasisFunction):
         self.fun_der = np.polyder(self.fun)
 
         # integral of fun and fun_der w.r.t. pdf (numerical integration with corresponding weights)
-        knots, weights = Grid([0]).get_quadrature_jacobi_1d(n=10 * self.p["i"], p=self.p["p"] - 1, q=self.p["q"] - 1)
+        knots, weights = get_quadrature_jacobi_1d(n=10 * self.p["i"], p=self.p["p"] - 1, q=self.p["q"] - 1)
         self.fun_int = np.dot(self.fun(knots), weights)
         self.fun_der_int = np.dot(self.fun_der(knots), weights)
 
@@ -125,7 +128,7 @@ class Hermite(BasisFunction):
             self.fun_int = 1.0
             self.fun_der_int = 0.0
         else:
-            knots, weights = Grid([0]).get_quadrature_hermite_1d(n=10 * self.p["i"])
+            knots, weights = get_quadrature_hermite_1d(n=10 * self.p["i"])
             self.fun_int = np.dot(self.fun(knots), weights)
             self.fun_der_int = np.dot(self.fun_der(knots), weights)
 
@@ -176,7 +179,7 @@ class Laguerre(BasisFunction):
             self.fun_int = 1.0
             self.fun_der_int = 0.0
         else:
-            knots, weights = Grid([0]).get_quadrature_laguerre_1d(n=10 * self.p["i"], alpha=p["alpha"])
+            knots, weights = get_quadrature_laguerre_1d(n=10 * self.p["i"], alpha=p["alpha"])
             self.fun_int = np.dot(self.fun(knots), weights)
             self.fun_der_int = np.dot(self.fun_der(knots), weights)
 

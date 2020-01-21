@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import pygpc.GPC
+from .GPC import *
 import pygpc.SGPC
 import pygpc.testfunctions
-import pygpc.Visualization
 import pygpc.AbstractModel
 import pygpc.Basis
 import pygpc.BasisFunction
