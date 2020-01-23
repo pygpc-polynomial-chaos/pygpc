@@ -5,82 +5,97 @@ import time
 from collections import OrderedDict
 
 
-folder = "./tmp"
+folder = "tmp"
 test_name = "benchmark pygpc_extensions"
 
-dimensions_lst = [8]
-# order_lst = np.linspace(1, 10, 10)
-# n_samples_validation_lst = np.logspace(2, 6, 5)
-order_lst = [10]
-n_samples_validation_lst = [1000000]
+dimensions_lst = [4]
+order_lst = np.linspace(5, 10, 5)
+n_samples_validation_lst = np.logspace(2, 6, 5)
+n_gpc_coeffs_lst = [100000]
+
 time_python_lst = []
-time_cpu_lst = []
+time_omp_lst = []
 n_basis_lst = []
 
-for i_dimensions in dimensions_lst:
-    for i_order in order_lst:
-        for i_n_samples_validation in n_samples_validation_lst:
+for i_n_gpc_coeffs in n_gpc_coeffs_lst:
+    for i_dimensions in dimensions_lst:
+        for i_order in order_lst:
+            for i_n_samples_validation in n_samples_validation_lst:
 
-            # define model
-            model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
+                print("----------")
 
-            # define problem
-            parameters = OrderedDict()
-            for i_local_parameters in range(i_dimensions):
-                name = "x" + str(i_local_parameters)
-                parameters[name] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
-            problem = pygpc.Problem(model, parameters)
+                n_basis = pygpc.get_num_coeffs_sparse(i_order, i_order, i_order, i_dimensions)
 
-            # gPC options
-            options = dict()
-            options["gradient_enhanced"] = False
-            options["matlab_model"] = False
+                print("Number of basis functions: ", n_basis)
+                print("Number of random samples", i_n_samples_validation)
 
-            # define test grid
-            grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                    options={"n_grid": 100, "seed": 1})
+                # define model
+                model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
 
-            # run benchmark for python implementation
-            options["backend"] = "python"
-            # setup gPC
-            gpc = pygpc.Reg(problem=problem,
-                            order=[i_order]*i_dimensions,
-                            order_max=i_order,
-                            order_max_norm=0.8,
-                            interaction_order=2,
-                            interaction_order_current=2,
-                            options=options)
-            gpc.grid = grid
+                # define problem
+                parameters = OrderedDict()
+                for i_local_parameters in range(i_dimensions):
+                    name = "x" + str(i_local_parameters)
+                    parameters[name] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+                problem = pygpc.Problem(model, parameters)
 
-            start = time.time()
+                # gPC options
+                options = dict()
+                options["gradient_enhanced"] = False
+                options["matlab_model"] = False
 
-            # run function
-            gpc.init_gpc_matrix()
+                # define test grid
+                grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
+                                        options={"n_grid": 100, "seed": 1})
 
-            time_python = time.time() - start
-            time_python_lst.append(time_python)
+                # run benchmark for python implementation
+                options["backend"] = "python"
+                # setup gPC
+                gpc = pygpc.Reg(problem=problem,
+                                order=[i_order]*i_dimensions,
+                                order_max=i_order,
+                                order_max_norm=1,
+                                interaction_order=i_order,
+                                interaction_order_current=i_order,
+                                options=options)
+                gpc.grid = grid
+                # generate gpc coeffs matrix
+                coeffs = np.ones([len(gpc.basis.b), i_n_gpc_coeffs])
 
-            # run benchmark for cpu implementation
-            options["backend"] = "cpu"
-            # setup gPC
-            gpc = pygpc.Reg(problem=problem,
-                            order=[i_order] * i_dimensions,
-                            order_max=i_order,
-                            order_max_norm=0.8,
-                            interaction_order=2,
-                            interaction_order_current=2,
-                            options=options)
-            gpc.grid = grid
+                start = time.time()
 
-            start = time.time()
+                # run function
+                gpc.get_approximation(coeffs, gpc.grid.coords_norm)
 
-            # run function
-            gpc.init_gpc_matrix()
+                time_python = time.time() - start
+                time_python_lst.append(time_python)
 
-            time_cpu = time.time() - start
-            time_cpu_lst.append(time_cpu)
+                print("Time Python: ", time_python)
+
+                # run benchmark for omp implementation
+                options["backend"] = "omp"
+                # setup gPC
+                gpc = pygpc.Reg(problem=problem,
+                                order=[i_order] * i_dimensions,
+                                order_max=i_order,
+                                order_max_norm=1,
+                                interaction_order=i_order,
+                                interaction_order_current=i_order,
+                                options=options)
+                gpc.grid = grid
+                # generate gpc coeffs matrix
+                coeffs = np.ones([len(gpc.basis.b), i_n_gpc_coeffs])
+
+                start = time.time()
+
+                # run function
+                gpc.get_approximation(coeffs, gpc.grid.coords_norm)
+
+                time_omp = time.time() - start
+                time_omp_lst.append(time_omp)
+
+                print("Time OpenMP:", time_omp)
+                print("Performance gain: ", time_python/time_omp)
 
 time_python_array = np.array(time_python_lst)
-time_cpu_array = np.array(time_cpu_lst)
-
-print(time_python_array/time_cpu_array)
+time_omp_array = np.array(time_omp_lst)

@@ -1,12 +1,14 @@
-from setuptools import setup, find_packages
-from distutils.extension import Extension
+import argparse
+import os
+import numpy as np
+from setuptools import setup, find_packages, Extension
 
 
 # pygpc software framework for uncertainty and sensitivity
 # analysis of complex systems. See also:
 # https://github.com/konstantinweise/pygpc
 #
-# Copyright (C) 2017-2019 the original author (Konstantin Weise),
+# Copyright (C) 2017-2020 the original author (Konstantin Weise),
 # the Max-Planck-Institute for Human Cognitive Brain Sciences ("MPI CBS")
 # and contributors
 #
@@ -24,13 +26,36 @@ from distutils.extension import Extension
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
-# parser = argparse.ArgumentParser('Install pygpc with or without multicore and/or gpu support')
-# parser.add_argument('--enable-openmp', type=bool, default=False)
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--enable-openmp', action='store_true')
+#
 # args = parser.parse_args()
-# 
-# 
-# if(args.enable-openmp):
-#     print('OpenMP')
+#
+# pygpc_extensions_src_file_path=os.path.join('pckg', 'pygpc_extensions',
+#                                             'src', 'pygpc_extensions.cpp')
+# pygpc_extensions_include_path=os.path.join('pckg', 'pygpc_extensions',
+#                                            'include')
+#
+# if args.enable_openmp:
+#     openmp_compile_args = ['-fopenmp']
+#     openmp_link_args = ['-lgomp']
+# else:
+#     openmp_compile_args = []
+#     openmp_link_args = []
+
+
+openmp_compile_args = ['-fopenmp']
+openmp_link_args = ['-lgomp']
+pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
+                                               'src', 'pygpc_extensions.cpp')]
+pygpc_extensions_include_path = [os.path.join('pckg', 'pygpc_extensions',
+                                              'include'), np.get_include()]
+
+extensions = [Extension('pygpc_extensions',
+                        sources=pygpc_extensions_src_file_path,
+                        include_dirs=pygpc_extensions_include_path,
+                        extra_compile_args=openmp_compile_args,
+                        extra_link_args=openmp_link_args)]
 
 
 setup(name='pygpc',
@@ -39,16 +64,15 @@ setup(name='pygpc',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
       license='GPL3',
-      cmdclass={
-          'install': InstallCommand
-      },
-      packages=find_packages(exclude=['tests', 'tests.*', 'templates', 'templates.*', 'tutorials', 'tutorials.*']),
+      packages=find_packages(exclude=['tests', 'tests.*', 'templates',
+                                      'templates.*', 'tutorials',
+                                      'tutorials.*']),
       install_requires=['scipy>=1.0.0',
                         'numpy>=1.16.4',
                         'fastmat>=0.1.2.post1',
                         'scikit-learn>=0.19.1',
-                        'h5py>=2.9.0',
-                        'dispy>=4.9.0'],
+                        'h5py>=2.9.0'],
+      ext_modules=extensions,
       project_urls={
         "Documentation": "https://pygpc.readthedocs.io/en/latest/",
         "Source Code": "https://github.com/pygpc-polynomial-chaos/pygpc"},

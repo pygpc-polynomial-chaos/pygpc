@@ -1,3 +1,11 @@
+import numpy as np
+import fastmat as fm
+import scipy.stats
+import copy
+import h5py
+import time
+import random
+from sklearn import linear_model
 from .Grid import *
 from .SGPC import *
 from .misc import get_cartesian_product
@@ -9,14 +17,6 @@ from .misc import increment_basis
 from .ValidationSet import *
 from .Computation import *
 from .Classifier import *
-import numpy as np
-import fastmat as fm
-import scipy.stats
-import copy
-import h5py
-import time
-import random
-from sklearn import linear_model
 
 
 class MEGPC(object):

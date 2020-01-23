@@ -1,8 +1,9 @@
-from .BasisFunction import *
-from .misc import get_multi_indices
 import uuid
 import numpy as np
 import warnings
+from .BasisFunction import *
+from .misc import get_multi_indices
+
 
 try:
     import matplotlib.pyplot as plt

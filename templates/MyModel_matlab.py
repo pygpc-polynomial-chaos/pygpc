@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-from pygpc.AbstractModel import AbstractModel
 import numpy as np
 import matlab.engine
+from pygpc.AbstractModel import AbstractModel
 
 
 class MyModel_matlab(AbstractModel):

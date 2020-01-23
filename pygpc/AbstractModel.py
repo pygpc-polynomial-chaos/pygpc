@@ -1,9 +1,9 @@
-from abc import ABCMeta, abstractmethod
-from .misc import display_fancy_bar
 import numpy as np
 import os
 import h5py
 import copy
+from abc import ABCMeta, abstractmethod
+from .misc import display_fancy_bar
 
 
 class AbstractModel:

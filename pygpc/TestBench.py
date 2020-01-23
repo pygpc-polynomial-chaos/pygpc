@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import copy
 import glob
 import h5py
@@ -8,7 +7,6 @@ import os
 import pickle
 from _functools import partial
 from collections import OrderedDict
-
 from .Algorithm import *
 from .Test import *
 from .misc import *

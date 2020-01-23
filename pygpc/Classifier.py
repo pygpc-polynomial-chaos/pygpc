@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
+import numpy as np
+import copy
 from sklearn.cluster import KMeans
 from sklearn.cluster import spectral_clustering
 from sklearn.neural_network import MLPClassifier
-import numpy as np
-import copy
 
 
 def Classifier(coords, results, algorithm="learning", options=None):

@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 import scipy.special
 import scipy.stats
 import numpy as np
-from .BasisFunction import *
 import warnings
+from .BasisFunction import *
 
 try:
     import matplotlib.pyplot as plt

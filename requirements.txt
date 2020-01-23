@@ -1,4 +1,5 @@
-numpy>=1.16.4
-cmake>=3.14.7
-setuptools>=40.8.0
-wheel>=0.33.4
+scipy>=1.0.0,
+numpy>=1.16.4,
+fastmat>=0.1.2.post1,
+scikit-learn>=0.19.1,
+h5py>=2.9.0

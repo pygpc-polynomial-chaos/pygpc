@@ -6,7 +6,6 @@ from .misc import mat2ten
 from .misc import ten2mat
 from .ValidationSet import *
 from .Computation import *
-from .pygpc_extensions import create_gpc_matrix_cpu
 import numpy as np
 import fastmat as fm
 import scipy.stats
@@ -17,6 +16,7 @@ import time
 import random
 from sklearn import linear_model
 from scipy.signal import savgol_filter
+from pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp, get_approximation_cpu, ƒgetget_approximation_omp
 
 
 class GPC(object):
@@ -207,27 +207,21 @@ class GPC(object):
             else:
                 gpc_matrix = np.empty([x.shape[0], len(b), self.problem.dim])
                 create_gpc_matrix_cpu(x, self.basis.b_array_grad, gpc_matrix)
+
+        elif self.backend == "omp":
+            if not gradient:
+                # the third dimension is important and should not be removed
+                # otherwise the code could produce undefined behaviour
+                gpc_matrix = np.empty([x.shape[0], len(b), 1])
+                create_gpc_matrix_cpu(x, self.basis.b_array, gpc_matrix)
+                gpc_matrix = np.squeeze(gpc_matrix)
+            else:
+                gpc_matrix = np.empty([x.shape[0], len(b), self.problem.dim])
+                create_gpc_matrix_omp(x, self.basis.b_array_grad, gpc_matrix)
         else:
             raise NotImplementedError
 
         return gpc_matrix
-
-        # if not self.gpu:
-        #
-        #     if not gradient:
-        #         gpc_matrix = np.ones([x.shape[0], len(b)])
-        #         calc_gpc_matrix_cpu(b, x, gpc_matrix, gradient=-1)
-        #     else:
-        #         gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
-        #         new_gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
-        #         for i_dim_gradient in range(self.problem.dim):
-        #             _gpc_matrix = np.ones((x.shape[0], len(b)))
-        #             calc_gpc_matrix_cpu(b, x, _gpc_matrix, gradient=i_dim_gradient)
-        #             gpc_matrix[:, :, i_dim_gradient] = _gpc_matrix
-        # else:
-        #     raise NotImplementedError
-        #
-        # return gpc_matrix
 
     # TODO: @Lucas: Please add GPU support
     def get_loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
@@ -543,23 +537,18 @@ class GPC(object):
             # crop coeffs array if output index is specified
             coeffs = coeffs[:, output_idx]
 
-        if self.backend == "python":
+        if coeffs.ndim == 1:
+            coeffs = coeffs[:, np.newaxis]
 
-            if coeffs.ndim == 1:
-                coeffs = coeffs[:, np.newaxis]
+        # transform variables from xi to eta space if gpc model is reduced
+        if self.p_matrix is not None:
+            x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
-            # transform variables from xi to eta space if gpc model is reduced
-            if self.p_matrix is not None:
-                x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
+        # determine gPC matrix at coordinates x
+        gpc_matrix = self.create_gpc_matrix(self.basis.b, x, gradient=False)
 
-            # determine gPC matrix at coordinates x
-            gpc_matrix = self.create_gpc_matrix(self.basis.b, x, gradient=False)
-
-            # multiply with gPC coeffs
-            pce = np.matmul(gpc_matrix, coeffs)
-
-        else:
-            raise NotImplementedError
+        # multiply with gPC coeffs
+        pce = np.matmul(gpc_matrix, coeffs)
 
         return pce
 

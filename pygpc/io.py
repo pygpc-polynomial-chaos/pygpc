@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
-# from .Grid import *
 import numpy as np
 import os
 import pickle
 import h5py
 import copy
 import logging
+# from .Grid import *
 
 
 def write_gpc_pkl(obj, fname):

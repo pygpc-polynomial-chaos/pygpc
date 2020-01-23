@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pygpc.GPC
 import pygpc.SGPC
 import pygpc.testfunctions
