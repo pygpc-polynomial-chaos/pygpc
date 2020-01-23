@@ -2,13 +2,8 @@
 #include <numpy/arrayobject.h>
 
 
-#if sizeof(void *) <= sizeof(int)
-    typedef int npy_intp;
-#elif sizeof(void *) <= sizeof(long)
-    typedef long npy_intp;
-#else
-    typedef long long npy_intp;
-#endif
+// int type compatibility
+typedef long npy_intp;
 
 
 #include "pygpc_extensions/create_gpc_matrix.hpp"
