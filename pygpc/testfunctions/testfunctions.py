@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import copy
 import inspect
@@ -8,6 +7,7 @@ import scipy.special
 from scipy.integrate import odeint
 from collections import OrderedDict
 from pygpc.AbstractModel import AbstractModel
+
 
 try:
     import matplotlib as mpl

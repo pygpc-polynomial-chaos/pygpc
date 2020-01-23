@@ -24,3 +24,9 @@ pygpc.egg-info
 
 # ignore shared objects (cython extensions)
 pygpc/*.so
+
+# ignore tmp folder for tests
+tests/tmp
+
+# ignore tmp folder
+/tmp

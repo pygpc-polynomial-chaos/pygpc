@@ -1,6 +1,8 @@
 include pygpc/*.txt
 include pygpc/*.hdf5
-recursive-include pckg/extensions/calc_gpc_matrix_cpu *.pyx
+include pygpc/*.so
+include pygpc/*.dll
+include pygpc/*.dylib
 exclude templates/*
 exclude tests/*
 exclude tutorials/*

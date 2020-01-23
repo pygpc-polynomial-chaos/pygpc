@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 import multiprocessing
 import multiprocessing.pool
 import subprocess
-from pygpc import Worker
 import time
 import copy
 import numpy as np
 import dispy
 import os
 import re
+from pygpc import Worker
 from collections import OrderedDict
 from .RandomParameter import *
 from .io import iprint

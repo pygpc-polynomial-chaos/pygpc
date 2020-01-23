@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import h5py
 import numpy as np
 from .io import read_gpc_pkl

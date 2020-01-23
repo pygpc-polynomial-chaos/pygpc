@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from .GPC import *
+import pygpc.GPC
 import pygpc.SGPC
 import pygpc.testfunctions
 import pygpc.AbstractModel

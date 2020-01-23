@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import time
 import numpy as np
 from .misc import list2dict

@@ -1,8 +1,8 @@
 import pygpc
 import os
 import numpy as np
-from collections import OrderedDict
 import matlab.engine
+from collections import OrderedDict
 from templates.MyModel_matlab import MyModel_matlab
 
 fn_results = "/tmp/gpc"

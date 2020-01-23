@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 import os
 import pickle
@@ -6,6 +5,7 @@ import h5py
 import logging
 from collections import OrderedDict
 from .misc import is_instance
+# from .Grid import *
 
 
 def write_gpc_pkl(obj, fname):

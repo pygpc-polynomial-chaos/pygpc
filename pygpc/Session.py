@@ -1,9 +1,9 @@
+import numpy as np
 from .MEGPC import *
 from .SGPC import *
 from .GPC import *
 import pickle
 from .io import write_gpc_pkl
-import numpy as np
 
 
 class Session(object):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import time
 import random
 import numpy as np
@@ -433,7 +432,7 @@ class SGPC(GPC):
             x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
         # construct gPC gradient matrix [n_samples x n_basis x dim(_red)]
-        gpc_matrix_gradient = self.calc_gpc_matrix(b=self.basis.b, x=x, gradient=True)
+        gpc_matrix_gradient = self.create_gpc_matrix(b=self.basis.b, x=x, gradient=True)
 
         local_sens = np.dot(gpc_matrix_gradient.transpose(2, 0, 1), coeffs).transpose(1, 2, 0)
 

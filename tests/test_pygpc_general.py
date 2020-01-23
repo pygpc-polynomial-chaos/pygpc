@@ -1,18 +1,15 @@
-# -*- coding: utf-8 -*-
 import unittest
 import pygpc
-from collections import OrderedDict
 import numpy as np
 import h5py
 import sys
 import os
 import shutil
+from collections import OrderedDict
 
 # test options
-# folder = './tmp '    # output folder
-folder = '/tmp'    # output folder
-plot = True         # plot and save output
-gpu = False          # test GPU functionality
+folder = 'tmp'    # output folder
+plot = False        # plot and save output
 matlab = False       # test Matlab functionality
 
 # temporary folder
@@ -95,7 +92,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_samples_validation"] = 1e3
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
-        options["GPU"] = False
+        options["backend"] = "cpu"
         options["grid"] = pygpc.Random
         options["grid_options"] = None
 
@@ -183,7 +180,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
-        options["GPU"] = False
+        options["backend"] = "cpu"
         options["grid"] = pygpc.Random
         options["grid_options"] = None
 
@@ -733,7 +730,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["adaptive_sampling"] = False
         options["eps"] = 0.75
         options["n_grid_init"] = 20
-        options["GPU"] = False
+        options["backend"] = "cpu"
         options["fn_results"] = os.path.join(folder, test_name)
         options["grid"] = pygpc.Random
         options["grid_options"] = None
@@ -785,55 +782,52 @@ class TestPygpcMethods(unittest.TestCase):
         self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
-    def test_8_GPU(self):
+    def test_8_pygpc_extensions(self):
         """
-        Testing GPU functionalities
+        Testing pygpc extensions
         """
         global folder, gpu
-        test_name = 'pygpc_test_8_GPU'
+        test_name = 'pygpc_test_8_pygpc_extensions'
         print(test_name)
 
-        if gpu:
-            # define model
-            model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
+        # define model
+        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
 
-            # define problem
-            parameters = OrderedDict()
-            parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-            parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-            problem = pygpc.Problem(model, parameters)
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        problem = pygpc.Problem(model, parameters)
 
-            # gPC options
-            options = dict()
-            options["GPU"] = False
+        # gPC options
+        options = dict()
+        options["backend"] = "cpu"
 
-            # define test grid
-            grid = pygpc.Random(parameters_random=problem.parameters_random,
-                                n_grid=100,
-                                seed=1)
+        # define test grid
+        grid = pygpc.Random(parameters_random=problem.parameters_random,
+                            n_grid=100,
+                            seed=1)
 
-            # setup gPC
-            gpc = pygpc.Reg(problem=problem,
-                            order=[8, 8],
-                            order_max=8,
-                            order_max_norm=0.8,
-                            interaction_order=2,
-                            interaction_order_current=2,
-                            options=options,
-                            validation=None)
+        # setup gPC
+        gpc = pygpc.Reg(problem=problem,
+                        order=[8, 8],
+                        order_max=8,
+                        order_max_norm=0.8,
+                        interaction_order=2,
+                        interaction_order_current=2,
+                        options=options,
+                        validation=None)
 
-            # init gPC matrices
-            gpc.init_gpc_matrix()
+        # init gPC matrices
+        gpc.init_gpc_matrix()
 
-            # set some coeffs
-            coeffs = np.random.rand(gpc.basis.n_basis, 2)
+        # set some coeffs
+        coeffs = np.random.rand(gpc.basis.n_basis, 2)
 
-            # get approximation
-            gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
+        # get approximation
+        gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
 
-            print("done!\n")
-        else:
-            print("Skipping GPU test...\n")
+        print("done!\n")
 
     def test_9_testfunctions(self):
         """
@@ -903,6 +897,8 @@ class TestPygpcMethods(unittest.TestCase):
 
             com.close()
 
+            print("done!\n")
+
     def test_10_RandomParameters(self):
         """
         Testing RandomParameters
@@ -930,6 +926,8 @@ class TestPygpcMethods(unittest.TestCase):
             ax = parameters["x6"].plot_pdf()
             ax.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
             ax.savefig(os.path.join(folder, test_name) + ".png")
+
+            print("done!\n")
 
     def test_11_Grids(self):
         """
@@ -964,6 +962,8 @@ class TestPygpcMethods(unittest.TestCase):
         if plot:
             for i, g in enumerate(grids):
                 pygpc.plot_2d_grid(coords=g.coords_norm, weights=g.weights, fn_plot=os.path.join(folder, fn_out[i]))
+
+        print("done!\n")
 
     def test_12_Matlab_gpc(self):
         """
@@ -1097,7 +1097,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
-        options["GPU"] = False
+        options["backend"] = "cpu"
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
@@ -1226,7 +1226,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["adaptive_sampling"] = False
         options["eps"] = 0.01
         options["n_grid_init"] = 50
-        options["GPU"] = False
+        options["backend"] = "cpu"
         options["fn_results"] = os.path.join(folder, test_name)
         options["grid"] = pygpc.Random
         options["grid_options"] = None
@@ -1283,6 +1283,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
         # TODO: implement unittest
         pass
+
 
 if __name__ == '__main__':
     unittest.main()

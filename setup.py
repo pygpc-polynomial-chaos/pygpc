@@ -1,16 +1,14 @@
-import sys
-import subprocess
-from setuptools import setup, find_packages
-from distutils.extension import Extension
-# from Cython.Build import cythonize
-# import numpy as np
+import argparse
+import os
+import numpy as np
+from setuptools import setup, find_packages, Extension
 
 
 # pygpc software framework for uncertainty and sensitivity
 # analysis of complex systems. See also:
 # https://github.com/konstantinweise/pygpc
 #
-# Copyright (C) 2017-2019 the original author (Konstantin Weise),
+# Copyright (C) 2017-2020 the original author (Konstantin Weise),
 # the Max-Planck-Institute for Human Cognitive Brain Sciences ("MPI CBS")
 # and contributors
 #
@@ -28,48 +26,55 @@ from distutils.extension import Extension
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
-# try to import build dependencies, if not installed, pip them
-try:
-    import numpy as np
-except (ImportError, ModuleNotFoundError):
-    command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
-    if 'user' in str(sys.argv):
-        raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
-    subprocess.run(command)
-    import numpy as np
-
-try:
-    from Cython.Build import cythonize
-except (ImportError, ModuleNotFoundError):
-    command = [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
-    if 'user' in str(sys.argv):
-        raise SystemError('Please install Cython and Numpy at first or run without \"--user\"-flag')
-    subprocess.run(command)
-    from Cython.Build import cythonize
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--enable-openmp', action='store_true')
+#
+# args = parser.parse_args()
+#
+# pygpc_extensions_src_file_path=os.path.join('pckg', 'pygpc_extensions',
+#                                             'src', 'pygpc_extensions.cpp')
+# pygpc_extensions_include_path=os.path.join('pckg', 'pygpc_extensions',
+#                                            'include')
+#
+# if args.enable_openmp:
+#     openmp_compile_args = ['-fopenmp']
+#     openmp_link_args = ['-lgomp']
+# else:
+#     openmp_compile_args = []
+#     openmp_link_args = []
 
 
-ext_modules = [
-    Extension(
-        name="pygpc.calc_gpc_matrix_cpu",
-        sources=['./pckg/extensions/calc_gpc_matrix_cpu/calc_gpc_matrix_cpu.pyx'],
-        include_dirs=[np.get_include()]
-    )
-]
+openmp_compile_args = ['-fopenmp']
+openmp_link_args = ['-lgomp']
+pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
+                                               'src', 'pygpc_extensions.cpp')]
+pygpc_extensions_include_path = [os.path.join('pckg', 'pygpc_extensions',
+                                              'include'), np.get_include()]
+
+extensions = [Extension('pygpc_extensions',
+                        sources=pygpc_extensions_src_file_path,
+                        include_dirs=pygpc_extensions_include_path,
+                        extra_compile_args=openmp_compile_args,
+                        extra_link_args=openmp_link_args)]
 
 
 setup(name='pygpc',
-      version='0.2.6.post1',
+      version='0.2.6.post2',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
       license='GPL3',
-      packages=find_packages(exclude=['tests', 'tests.*', 'templates', 'templates.*', 'tutorials', 'tutorials.*']),
+      packages=find_packages(exclude=['tests', 'tests.*', 'templates',
+                                      'templates.*', 'tutorials',
+                                      'tutorials.*']),
       install_requires=['scipy>=1.0.0',
+                        'numpy>=1.16.4',
                         'fastmat>=0.1.2.post1',
                         'scikit-learn>=0.19.1',
-                        'h5py>=2.9.0',
-                        'dispy>=4.9.0',
-                        ],
+                        'h5py>=2.9.0'],
+      ext_modules=extensions,
+      project_urls={
+        "Documentation": "https://pygpc.readthedocs.io/en/latest/",
+        "Source Code": "https://github.com/pygpc-polynomial-chaos/pygpc"},
       zip_safe=False,
-      include_package_data=True,
-      ext_modules=cythonize(ext_modules))
+      include_package_data=True)
