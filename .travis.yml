@@ -3,7 +3,7 @@ sudo: required
 
 env:
   global:
-    - CIBW_BEFORE_BUILD="{pip} install numpy" 
+    - CIBW_BEFORE_BUILD="pip install numpy" 
  
 matrix:
   include:
@@ -26,24 +26,52 @@ matrix:
       dist: xenial
       env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
     - os: osx
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - openmp
       language: generic
       env:
         - PYTHON=3.8
+        - CC=gcc-9
+        - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
     - os: osx
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - openmp
       language: generic
       env:
         - PYTHON=3.7
+        - CC=gcc-9
+        - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
     - os: osx
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - openmp
       language: generic
       env:
         - PYTHON=3.6
+        - CC=gcc-9
+        - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: osx
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - openmp
       language: generic
       env:
         - PYTHON=3.5
+        - CC=gcc-9
+        - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
 
 install:
