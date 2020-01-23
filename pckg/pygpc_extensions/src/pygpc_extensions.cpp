@@ -2,10 +2,6 @@
 #include <numpy/arrayobject.h>
 
 
-// int type compatibility
-typedef long npy_intp;
-
-
 #include "pygpc_extensions/create_gpc_matrix.hpp"
 //#include "pygpc_extensions/get_approximation.hpp"
 
@@ -32,14 +28,14 @@ static PyObject* create_gpc_matrix_cpu(PyObject* self, PyObject* args)
     result = PyArray_FROM_OTF(py_result, NPY_DOUBLE,
         NPY_ARRAY_OUT_ARRAY);
 
-    long int* ptr_dim_arguments = PyArray_DIMS(arguments);
-    long int n_arguments = ptr_dim_arguments[0];
-    long int n_dim = ptr_dim_arguments[1];
+    npy_intp* ptr_dim_arguments = PyArray_DIMS(arguments);
+    npy_intp n_arguments = ptr_dim_arguments[0];
+    npy_intp n_dim = ptr_dim_arguments[1];
     double* ptr_arguments = (double*)PyArray_DATA(arguments);
 
-    long int* ptr_dim_result = PyArray_DIMS(result);
-    long int n_basis= ptr_dim_result[1];
-    long int n_grad = ptr_dim_result[2];
+    npy_intp* ptr_dim_result = PyArray_DIMS(result);
+    npy_intp n_basis= ptr_dim_result[1];
+    npy_intp n_grad = ptr_dim_result[2];
     double* ptr_result = (double*)PyArray_DATA(result);
 
     double* ptr_coeffs = (double*)PyArray_DATA(coeffs);
@@ -74,14 +70,14 @@ static PyObject* create_gpc_matrix_omp(PyObject* self, PyObject* args)
     result = PyArray_FROM_OTF(py_result, NPY_DOUBLE,
         NPY_ARRAY_OUT_ARRAY);
 
-    long int* ptr_dim_arguments = PyArray_DIMS(arguments);
-    long int n_arguments = ptr_dim_arguments[0];
-    long int n_dim = ptr_dim_arguments[1];
+    npy_intp* ptr_dim_arguments = PyArray_DIMS(arguments);
+    npy_intp n_arguments = ptr_dim_arguments[0];
+    npy_intp n_dim = ptr_dim_arguments[1];
     double* ptr_arguments = (double*)PyArray_DATA(arguments);
 
-    long int* ptr_dim_result = PyArray_DIMS(result);
-    long int n_basis= ptr_dim_result[1];
-    long int n_grad = ptr_dim_result[2];
+    npy_intp* ptr_dim_result = PyArray_DIMS(result);
+    npy_intp n_basis= ptr_dim_result[1];
+    npy_intp n_grad = ptr_dim_result[2];
     double* ptr_result = (double*)PyArray_DATA(result);
 
     double* ptr_coeffs = (double*)PyArray_DATA(coeffs);
@@ -122,14 +118,14 @@ static PyObject* get_approximation_cpu(PyObject* self, PyObject* args)
     result = PyArray_FROM_OTF(py_result, NPY_DOUBLE,
         NPY_ARRAY_OUT_ARRAY);
 
-    long int* ptr_dim_arguments = PyArray_DIMS(arguments);
-    long int n_arguments = ptr_dim_arguments[0];
-    long int n_dim = ptr_dim_arguments[1];
+    npy_intp* ptr_dim_arguments = PyArray_DIMS(arguments);
+    npy_intp n_arguments = ptr_dim_arguments[0];
+    npy_intp n_dim = ptr_dim_arguments[1];
     double* ptr_arguments = (double*)PyArray_DATA(arguments);
 
-    long int* ptr_dim_gpc_coeffs = PyArray_DIMS(gpc_coeffs);
-    long int n_basis = ptr_dim_gpc_coeffs[0];
-    long int n_gpc_coeffs = ptr_dim_gpc_coeffs[1];
+    npy_intp* ptr_dim_gpc_coeffs = PyArray_DIMS(gpc_coeffs);
+    npy_intp n_basis = ptr_dim_gpc_coeffs[0];
+    npy_intp n_gpc_coeffs = ptr_dim_gpc_coeffs[1];
     double* ptr_gpc_coeffs = (double*)PyArray_DATA(gpc_coeffs);
 
     double* ptr_poly_coeffs = (double*)PyArray_DATA(poly_coeffs);
@@ -172,14 +168,14 @@ static PyObject* get_approximation_omp(PyObject* self, PyObject* args)
     result = PyArray_FROM_OTF(py_result, NPY_DOUBLE,
         NPY_ARRAY_OUT_ARRAY);
 
-    long int* ptr_dim_arguments = PyArray_DIMS(arguments);
-    long int n_arguments = ptr_dim_arguments[0];
-    long int n_dim = ptr_dim_arguments[1];
+    npy_intp* ptr_dim_arguments = PyArray_DIMS(arguments);
+    npy_intp n_arguments = ptr_dim_arguments[0];
+    npy_intp n_dim = ptr_dim_arguments[1];
     double* ptr_arguments = (double*)PyArray_DATA(arguments);
 
-    long int* ptr_dim_gpc_coeffs = PyArray_DIMS(gpc_coeffs);
-    long int n_basis = ptr_dim_gpc_coeffs[0];
-    long int n_gpc_coeffs = ptr_dim_gpc_coeffs[1];
+    npy_intp* ptr_dim_gpc_coeffs = PyArray_DIMS(gpc_coeffs);
+    npy_intp n_basis = ptr_dim_gpc_coeffs[0];
+    npy_intp n_gpc_coeffs = ptr_dim_gpc_coeffs[1];
     double* ptr_gpc_coeffs = (double*)PyArray_DATA(gpc_coeffs);
 
     double* ptr_poly_coeffs = (double*)PyArray_DATA(poly_coeffs);
