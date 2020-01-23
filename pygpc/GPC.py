@@ -9,14 +9,13 @@ from .Computation import *
 import numpy as np
 import fastmat as fm
 import scipy.stats
-import ctypes
 import copy
 import h5py
 import time
 import random
 from sklearn import linear_model
 from scipy.signal import savgol_filter
-from pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp, get_approximation_cpu, ƒgetget_approximation_omp
+from pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp
 
 
 class GPC(object):
