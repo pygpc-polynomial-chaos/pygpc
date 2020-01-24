@@ -1,6 +1,6 @@
 import pygpc
 
-gpc_pkl = pygpc.read_gpc_pkl("/home/kporzig/share/Dropbox/_share/gpc_hdf5/pygpc_test_4_MEStaticProjection_gpc.pkl")
+gpc_pkl = pygpc.read_session_pkl("/home/kporzig/share/Dropbox/_share/gpc_hdf5/pygpc_test_4_MEStaticProjection_gpc.pkl")
 
 pygpc.write_session_hdf5(gpc_pkl, "/home/kporzig/share/Dropbox/_share/gpc_hdf5/pygpc_test_4_MEStaticProjection_gpc.hdf5")
 

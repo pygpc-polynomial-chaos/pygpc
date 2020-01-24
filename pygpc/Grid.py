@@ -5,7 +5,7 @@ import scipy.stats
 from .io import iprint
 from .misc import get_multi_indices
 from .misc import get_cartesian_product
-
+from.Quadrature import *
 
 class Grid(object):
     """
@@ -304,25 +304,25 @@ class TensorGrid(Grid):
 
             # Jacobi polynomials
             if self.grid_type[i_p] == 'jacobi':
-                knots, weights = self.get_quadrature_jacobi_1d(self.n_dim[i_p],
-                                                               self.parameters_random[p].pdf_shape[0] - 1,
-                                                               self.parameters_random[p].pdf_shape[1] - 1,)
+                knots, weights = get_quadrature_jacobi_1d(self.n_dim[i_p],
+                                                          self.parameters_random[p].pdf_shape[0] - 1,
+                                                          self.parameters_random[p].pdf_shape[1] - 1,)
 
             # Hermite polynomials
             elif self.grid_type[i_p] == 'hermite':
-                knots, weights = self.get_quadrature_hermite_1d(self.n_dim[i_p])
+                knots, weights = get_quadrature_hermite_1d(self.n_dim[i_p])
 
             # Clenshaw Curtis
             elif self.grid_type[i_p] in ['clenshaw_curtis' or 'cc']:
-                knots, weights = self.get_quadrature_clenshaw_curtis_1d(self.n_dim[i_p])
+                knots, weights = get_quadrature_clenshaw_curtis_1d(self.n_dim[i_p])
 
             # Fejer type 2 (Clenshaw Curtis without boundary nodes)
             elif self.grid_type[i_p] == 'fejer2':
-                knots, weights = self.get_quadrature_fejer2_1d(self.n_dim[i_p])
+                knots, weights = get_quadrature_fejer2_1d(self.n_dim[i_p])
 
             # Gauss-Patterson (Nested Legendre rule)
             elif self.grid_type[i_p] == 'patterson':
-                knots, weights = self.get_quadrature_patterson_1d(self.n_dim[i_p])
+                knots, weights = get_quadrature_patterson_1d(self.n_dim[i_p])
 
             else:
                 knots = []
@@ -562,39 +562,39 @@ class SparseGrid(Grid):
 
                 # Jacobi polynomials
                 if self.grid_type[i_p] == 'jacobi':
-                    knots_l, weights_l = self.get_quadrature_jacobi_1d(self.order_sequence[i_p][i_level],
-                                                                       self.parameters_random[p].pdf_shape[0] - 1,
-                                                                       self.parameters_random[p].pdf_shape[1] - 1)
-                    knots_l_1, weights_l_1 = self.get_quadrature_jacobi_1d(self.order_sequence[i_p][i_level - 1],
-                                                                           self.parameters_random[p].pdf_shape[0] - 1,
-                                                                           self.parameters_random[p].pdf_shape[1] - 1)
+                    knots_l, weights_l = get_quadrature_jacobi_1d(self.order_sequence[i_p][i_level],
+                                                                  self.parameters_random[p].pdf_shape[0] - 1,
+                                                                  self.parameters_random[p].pdf_shape[1] - 1)
+                    knots_l_1, weights_l_1 = get_quadrature_jacobi_1d(self.order_sequence[i_p][i_level - 1],
+                                                                      self.parameters_random[p].pdf_shape[0] - 1,
+                                                                      self.parameters_random[p].pdf_shape[1] - 1)
 
                 # Hermite polynomials
                 if self.grid_type[i_p] == 'hermite':
-                    knots_l, weights_l = self.get_quadrature_hermite_1d(
+                    knots_l, weights_l = get_quadrature_hermite_1d(
                         self.order_sequence[i_p][i_level])
-                    knots_l_1, weights_l_1 = self.get_quadrature_hermite_1d(
+                    knots_l_1, weights_l_1 = get_quadrature_hermite_1d(
                         self.order_sequence[i_p][i_level - 1])
 
                 # Gauss-Patterson
                 if self.grid_type[i_p] == 'patterson':
-                    knots_l, weights_l = self.get_quadrature_patterson_1d(
+                    knots_l, weights_l = get_quadrature_patterson_1d(
                         self.order_sequence[i_p][i_level])
-                    knots_l_1, weights_l_1 = self.get_quadrature_patterson_1d(
+                    knots_l_1, weights_l_1 = get_quadrature_patterson_1d(
                         self.order_sequence[i_p][i_level - 1])
 
                 # Clenshaw Curtis
                 if self.grid_type[i_p] == 'clenshaw_curtis':
-                    knots_l, weights_l = self.get_quadrature_clenshaw_curtis_1d(
+                    knots_l, weights_l = get_quadrature_clenshaw_curtis_1d(
                         self.order_sequence[i_p][i_level])
-                    knots_l_1, weights_l_1 = self.get_quadrature_clenshaw_curtis_1d(
+                    knots_l_1, weights_l_1 = get_quadrature_clenshaw_curtis_1d(
                         self.order_sequence[i_p][i_level - 1])
 
                 # Fejer type 2
                 if self.grid_type[i_p] == 'fejer2':
-                    knots_l, weights_l = self.get_quadrature_fejer2_1d(
+                    knots_l, weights_l = get_quadrature_fejer2_1d(
                         self.order_sequence[i_p][i_level - 1])
-                    knots_l_1, weights_l_1 = self.get_quadrature_fejer2_1d(
+                    knots_l_1, weights_l_1 = get_quadrature_fejer2_1d(
                         self.order_sequence[i_p][i_level - 2])
 
                 if (i_level == 0 and not self.grid_type[i_p] == 'fejer2') or \
