@@ -73,9 +73,30 @@ matrix:
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.8.0
+        - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.7.0
+        - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.6.0
+        - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.5.0
+        - export PATH="/c/Python35:/c/Python35/Scripts:$PATH"
 
 install:
     - python3 -m pip install cibuildwheel
 
 script:
     - python3 -m cibuildwheel --output-dir wheelhouse
+    - ls wheelhouse/
