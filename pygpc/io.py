@@ -7,8 +7,39 @@ from collections import OrderedDict
 from .misc import is_instance
 # from .Grid import *
 
+def write_session(obj, fname, overwrite=True):
+    """
+    Saves a gpc session in pickle or hdf5 file formal depending on the
+    file extension in fname (.pkl or .hdf5)
 
-def write_gpc_pkl(obj, fname):
+    Parameters
+    ----------
+    obj: Session object
+        Session class instance containing the gPC information
+    fname: str
+        Path to output file
+    overwrite: bool, optional, default: True
+        Overwrite existing file
+
+    Returns
+    -------
+    <file>: .hdf5 or .pkl file
+        .hdf5 or .pkl file containing the gpc session
+    """
+
+    file_format = os.path.splitext(fname)[1]
+
+    if file_format == ".pkl":
+        write_session_pkl(obj, fname, overwrite=overwrite)
+
+    elif file_format == ".hdf5":
+        write_session_hdf5(obj, fname, overwrite=overwrite)
+
+    else:
+        raise IOError("Session can only be saved in .pkl or .hdf5 format.")
+
+
+def write_session_pkl(obj, fname, overwrite=True):
     """
     Write Session object including information about the Basis, Problem and Model as pickle file.
 
@@ -24,10 +55,11 @@ def write_gpc_pkl(obj, fname):
     <file>: .pkl file
         File containing the GPC object
     """
-
-    # write .gpc object
-    with open(fname, 'wb') as f:
-        pickle.dump(obj, f, -1)
+    if not overwrite and os.path.exists(fname):
+        Warning("File already exists.")
+    else:
+        with open(fname, 'wb') as f:
+            pickle.dump(obj, f, -1)
 
 
 def write_session_hdf5(obj, fname, overwrite=True):
@@ -60,6 +92,78 @@ def write_session_hdf5(obj, fname, overwrite=True):
         os.remove(fname)
 
     _ = write_dict_to_hdf5(fn_hdf5=fname, data=obj.__dict__, folder="")
+
+
+def read_session(fname):
+    """
+    Reads a gpc session in pickle or hdf5 file formal depending on the
+    file extension in fname (.pkl or .hdf5)
+
+    Parameters
+    ----------
+    fname: str
+        path to input file
+
+    Returns
+    -------
+    obj: Session Object
+        Session object containing instances of Basis, Problem and Model etc.
+    """
+
+    file_format = os.path.splitext(fname)[1]
+
+    if file_format == ".pkl":
+        obj = read_session_pkl(fname)
+
+    elif file_format == ".hdf5":
+        obj = read_session_hdf5(fname)
+
+    else:
+        raise IOError("Session can only be read from .pkl or .hdf5 files.")
+
+    return obj
+
+
+def read_session_pkl(fname):
+    """
+    Read Session object in pickle format.
+
+    Parameters
+    ----------
+    fname: str
+        path to input file
+
+    Returns
+    -------
+    obj: Session Object
+        Session object containing instances of Basis, Problem and Model etc.
+    """
+
+    with open(fname, 'rb') as f:
+        obj = pickle.load(f)
+
+    return obj
+
+
+# TODO: implement method to read session from .hdf5 file
+def read_session_hdf5(fname):
+    """
+    Read gPC object including information about input pdfs, polynomials, grid etc.
+
+    object = read_gpc_obj(fname)
+
+    Parameters
+    ----------
+    fname: str
+        path to input file
+
+    Returns
+    -------
+    obj: GPC Object
+        GPC object containing instances of Basis, Problem and Model.
+    """
+
+    return None
 
 
 def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
@@ -239,29 +343,6 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
         f.create_dataset(arr_name, data=data)
 
     return
-
-
-def read_gpc_pkl(fname):
-    """
-    Read gPC object including information about input pdfs, polynomials, grid etc.
-
-    object = read_gpc_obj(fname)
-
-    Parameters
-    ----------
-    fname: str
-        path to input file
-
-    Returns
-    -------
-    obj: GPC Object
-        GPC object containing instances of Basis, Problem and Model.
-    """
-
-    with open(fname, 'rb') as f:
-        obj = pickle.load(f)
-
-    return obj
 
 
 def write_data_txt(data, fname):

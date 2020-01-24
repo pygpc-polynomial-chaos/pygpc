@@ -1,6 +1,6 @@
 import h5py
 import numpy as np
-from .io import read_gpc_pkl
+from .io import read_session_pkl
 from .Grid import *
 from .MEGPC import *
 
@@ -70,7 +70,7 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
 
         print("> Loading gpc session object: {}".format(fn_gpc_pkl))
 
-        session = read_gpc_pkl(fn_gpc_pkl)
+        session = read_session_pkl(fn_gpc_pkl)
 
         # check if we have qoi specific gPCs here
         try:

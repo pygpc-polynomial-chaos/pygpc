@@ -45,11 +45,12 @@ for i_n_gpc_coeffs in n_gpc_coeffs_lst:
                 options["matlab_model"] = False
 
                 # define test grid
-                grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                        options={"n_grid": 100, "seed": 1})
+                grid = pygpc.Random(parameters_random=problem.parameters_random,
+                                    n_grid=100)
 
                 # run benchmark for python implementation
                 options["backend"] = "python"
+
                 # setup gPC
                 gpc = pygpc.Reg(problem=problem,
                                 order=[i_order]*i_dimensions,

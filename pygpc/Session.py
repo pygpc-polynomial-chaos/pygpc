@@ -3,7 +3,7 @@ from .MEGPC import *
 from .SGPC import *
 from .GPC import *
 import pickle
-from .io import write_gpc_pkl
+from .io import write_session_pkl
 
 
 class Session(object):
@@ -89,7 +89,7 @@ class Session(object):
         if self.gpc[0].validation:
             self.validation = self.gpc[0].validation
 
-        write_gpc_pkl(self, self.fn_results + ".pkl")
+        write_session_pkl(self, self.fn_results + ".pkl")
 
         return self, coeffs, results
 

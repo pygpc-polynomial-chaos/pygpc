@@ -1,6 +1,6 @@
 import numpy as np
 import h5py
-from .io import read_gpc_pkl
+from .io import read_session_pkl
 from .MEGPC import *
 
 
@@ -41,7 +41,7 @@ def check_file_consistency(fn_hdf5):
     ###########################
     for fn in fn_gpc_pkl:
         try:
-            session = read_gpc_pkl(fn_gpc_pkl)
+            session = read_session_pkl(fn_gpc_pkl)
         except FileNotFoundError:
             error_msg.append("gPC session object file not found: {}".format(fn))
             file_status = False

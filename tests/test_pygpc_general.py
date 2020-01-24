@@ -1,16 +1,18 @@
-import unittest
-import pygpc
+from collections import OrderedDict
+
 import numpy as np
+import unittest
+import shutil
+import pygpc
+import time
 import h5py
 import sys
 import os
-import shutil
-from collections import OrderedDict
 
 # test options
-folder = 'tmp'    # output folder
+folder = 'tmp'      # output folder
 plot = False        # plot and save output
-matlab = False       # test Matlab functionality
+matlab = False      # test Matlab functionality
 
 # temporary folder
 try:
@@ -43,7 +45,7 @@ class TestPygpcMethods(unittest.TestCase):
         if rtol is None:
             rtol = 1.e-5
 
-        if np.isclose(a, b, atol=atol, rtol=rtol).all():
+        if not np.isclose(a, b, atol=atol, rtol=rtol).all():
             msg = '({}) Expected {} to be close {}. '.format(self._num_expectations, a, b) + msg
             self._fail(self.failureException(msg))
         self._num_expectations += 1
@@ -92,7 +94,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_samples_validation"] = 1e3
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
-        options["backend"] = "cpu"
+        options["backend"] = "omp"
         options["grid"] = pygpc.Random
         options["grid_options"] = None
 
@@ -180,7 +182,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
-        options["backend"] = "cpu"
+        options["backend"] = "omp"
         options["grid"] = pygpc.Random
         options["grid_options"] = None
 
@@ -730,7 +732,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["adaptive_sampling"] = False
         options["eps"] = 0.75
         options["n_grid_init"] = 20
-        options["backend"] = "cpu"
+        options["backend"] = "omp"
         options["fn_results"] = os.path.join(folder, test_name)
         options["grid"] = pygpc.Random
         options["grid_options"] = None
@@ -782,54 +784,7 @@ class TestPygpcMethods(unittest.TestCase):
         self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
-    def test_8_pygpc_extensions(self):
-        """
-        Testing pygpc extensions
-        """
-        global folder, gpu
-        test_name = 'pygpc_test_8_pygpc_extensions'
-        print(test_name)
-
-        # define model
-        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
-
-        # define problem
-        parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-        problem = pygpc.Problem(model, parameters)
-
-        # gPC options
-        options = dict()
-        options["backend"] = "cpu"
-
-        # define test grid
-        grid = pygpc.Random(parameters_random=problem.parameters_random,
-                            n_grid=100,
-                            seed=1)
-
-        # setup gPC
-        gpc = pygpc.Reg(problem=problem,
-                        order=[8, 8],
-                        order_max=8,
-                        order_max_norm=0.8,
-                        interaction_order=2,
-                        interaction_order_current=2,
-                        options=options,
-                        validation=None)
-
-        # init gPC matrices
-        gpc.init_gpc_matrix()
-
-        # set some coeffs
-        coeffs = np.random.rand(gpc.basis.n_basis, 2)
-
-        # get approximation
-        gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
-
-        print("done!\n")
-
-    def test_9_testfunctions(self):
+    def test_8_testfunctions(self):
         """
         Testing testfunctions (multi-threading and inherited parallelization)
         """
@@ -899,7 +854,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    def test_10_RandomParameters(self):
+    def test_9_RandomParameters(self):
         """
         Testing RandomParameters
         """
@@ -929,7 +884,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    def test_11_Grids(self):
+    def test_10_Grids(self):
         """
         Testing Grids
         """
@@ -965,7 +920,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_12_Matlab_gpc(self):
+    def test_11_Matlab_gpc(self):
         """
         Algorithm: RegAdaptive
         Method: Regression
@@ -1057,7 +1012,7 @@ class TestPygpcMethods(unittest.TestCase):
         else:
             print("Skipping Matlab test...")
 
-    def test_13_random_vars_postprocessing(self):
+    def test_12_random_vars_postprocessing(self):
         """
         Algorithm: Static
         Method: Regression
@@ -1097,7 +1052,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
-        options["backend"] = "cpu"
+        options["backend"] = "omp"
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
@@ -1181,7 +1136,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_14_clustering_3_domains(self):
+    def test_13_clustering_3_domains(self):
         """
         Algorithm: MERegAdaptiveprojection
         Method: Regression
@@ -1226,7 +1181,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["adaptive_sampling"] = False
         options["eps"] = 0.01
         options["n_grid_init"] = 50
-        options["backend"] = "cpu"
+        options["backend"] = "omp"
         options["fn_results"] = os.path.join(folder, test_name)
         options["grid"] = pygpc.Random
         options["grid_options"] = None
@@ -1277,13 +1232,147 @@ class TestPygpcMethods(unittest.TestCase):
         self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
+
+    def test_14_backends(self):
+        """
+        Test the different backends ["python", "cpu", "omp", "gpu"]
+        """
+
+        global folder, gpu
+        test_name = 'pygpc_test_14_backends'
+        print(test_name)
+
+        backends = ["python", "cpu", "omp"]
+
+        # define model
+        model = pygpc.testfunctions.Peaks()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+        parameters["x2"] = 1.25
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        problem = pygpc.Problem(model, parameters)
+
+        # define test grid
+        grid = pygpc.Random(parameters_random=problem.parameters_random,
+                            n_grid=100,
+                            seed=1)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "Moore-Penrose"
+        options["settings"] = None
+        options["order"] = [9, 9]
+        options["order_max"] = 9
+        options["interaction_order"] = 2
+        options["matrix_ratio"] = 2
+        options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e3
+        options["n_cpu"] = 0
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["gradient_enhanced"] = True
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
+
+        gpc_matrix = dict()
+        gpc_matrix_gradient = dict()
+
+        print("Constructing gPC matrices with different backends:")
+        for b in backends:
+            options["backend"] = b
+
+            # setup gPC
+            gpc = pygpc.Reg(problem=problem,
+                            order=[8, 8],
+                            order_max=8,
+                            order_max_norm=0.8,
+                            interaction_order=2,
+                            interaction_order_current=2,
+                            options=options,
+                            validation=None)
+
+            gpc.grid = grid
+
+            # init gPC matrices
+            start = time.time()
+            gpc.init_gpc_matrix()
+            stop = time.time()
+
+            print(f"{b}: {(stop-start):.4f} s")
+
+            gpc_matrix[b] = gpc.gpc_matrix
+            gpc_matrix_gradient[b] = gpc.gpc_matrix_gradient
+
+        for b_ref in backends:
+            for b_compare in backends:
+                if b_compare != b_ref:
+                    self.expect_isclose(gpc_matrix[b_ref], gpc_matrix[b_compare], atol=1e-6,
+                                          msg=f"gpc matrices between {b_ref} and {b_compare} are not equal")
+
+                    self.expect_isclose(gpc_matrix_gradient[b_ref], gpc_matrix_gradient[b_compare], atol=1e-6,
+                                        msg=f"gpc matrices between {b_ref} and {b_compare} are not equal")
+
+        print("done!\n")
+
+
     def test_15_save_and_load_session(self):
         """
         Save and load a gPC Session
         """
-        # TODO: implement unittest
-        pass
+        global folder, plot
+        test_name = 'pygpc_test_15_save_and_load_session'
+        print(test_name)
 
+        # define model
+        model = pygpc.testfunctions.Peaks()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+        parameters["x2"] = 1.25
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "quad"
+        options["solver"] = "NumInt"
+        options["settings"] = None
+        options["order"] = [9, 9]
+        options["order_max"] = 9
+        options["interaction_order"] = 2
+        options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e3
+        options["n_cpu"] = 0
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["backend"] = "omp"
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
+
+        # generate grid
+        grid = pygpc.TensorGrid(parameters_random=problem.parameters_random,
+                                options={"grid_type": ["jacobi", "jacobi"], "n_dim": [9, 9]})
+
+        # define algorithm
+        algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC algorithm
+        session, coeffs, results = session.run()
+
+        # save session
+        pygpc.write_session_hdf5(obj=session,
+                                 fname=options["fn_results"] + "_session.hdf5")
+
+        # load session
+        # session_hdf5 = pygpc.read_gpc_hdf5(fname=options["fn_results"] + "_session.hdf5")
+
+        # compare session
+        pass
 
 if __name__ == '__main__':
     unittest.main()

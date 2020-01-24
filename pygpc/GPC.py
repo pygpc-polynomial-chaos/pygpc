@@ -117,12 +117,23 @@ class GPC(object):
 
         # options
         if options is not None:
-            self.gradient = options["gradient_enhanced"]
+            if "gradient_enhanced" not in options.keys():
+                options["gradient_enhanced"] = False
+
             if "fn_results" not in options.keys():
                 options["fn_results"] = None
+
+            if "matlab_model" not in options.keys():
+                options["matlab_model"] = False
+
+            if "backend" not in options.keys():
+                options["backend"] = "python"
+
+            self.gradient = options["gradient_enhanced"]
             self.fn_results = options["fn_results"]
             self.matlab_model = options["matlab_model"]
             self.backend = options["backend"]
+
         else:
             self.gradient = None
             self.fn_results = None
