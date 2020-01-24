@@ -95,8 +95,8 @@ matrix:
         - export PATH="/c/Python35:/c/Python35/Scripts:$PATH"
 
 install:
-    - python3 -m pip install cibuildwheel
+    - pip install cibuildwheel
 
 script:
-    - python3 -m cibuildwheel --output-dir wheelhouse
+    - python -m cibuildwheel --output-dir wheelhouse
     - ls wheelhouse/
