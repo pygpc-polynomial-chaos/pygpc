@@ -1,6 +1,10 @@
 import scipy.special
+import scipy.stats
 import numpy as np
-from .Grid import Grid
+from .Grid import *
+from .Quadrature import get_quadrature_jacobi_1d
+from .Quadrature import get_quadrature_hermite_1d
+from .Quadrature import get_quadrature_laguerre_1d
 
 
 class BasisFunction(object):
@@ -86,7 +90,7 @@ class Jacobi(BasisFunction):
         self.fun_der = np.polyder(self.fun)
 
         # integral of fun and fun_der w.r.t. pdf (numerical integration with corresponding weights)
-        knots, weights = Grid([0]).get_quadrature_jacobi_1d(n=10 * self.p["i"], p=self.p["p"] - 1, q=self.p["q"] - 1)
+        knots, weights = get_quadrature_jacobi_1d(n=10 * self.p["i"], p=self.p["p"] - 1, q=self.p["q"] - 1)
         self.fun_int = np.dot(self.fun(knots), weights)
         self.fun_der_int = np.dot(self.fun_der(knots), weights)
 
@@ -123,7 +127,58 @@ class Hermite(BasisFunction):
             self.fun_int = 1.0
             self.fun_der_int = 0.0
         else:
-            knots, weights = Grid([0]).get_quadrature_hermite_1d(n=10 * self.p["i"])
+            knots, weights = get_quadrature_hermite_1d(n=10 * self.p["i"])
+            self.fun_int = np.dot(self.fun(knots), weights)
+            self.fun_der_int = np.dot(self.fun_der(knots), weights)
+
+
+class Laguerre(BasisFunction):
+    """
+    Laguerre basis function used in the orthogonal gPC to model gamma distributed random variables.
+    It is defined in the gpc space from [0, inf]
+    """
+
+    def __init__(self, p):
+        """
+        Constructor; initializes a Laguerre basis function
+
+        Parameters
+        ----------
+        p : dict
+            Parameters of the Laguerre polynomial
+            - p["i"] ... order
+            - p["alpha"] ... shape parameter (alpha_poly = alpha_pdf - 1)
+            - p["beta"] ... rate parameter (   )
+        """
+
+        super(Laguerre, self).__init__(p)
+
+        # normalization factor of polynomial (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
+        # self.fun_norm = scipy.special.gamma(p["i"]+p["alpha"]+2
+        #                                     ) / (scipy.special.factorial(p["i"]) * scipy.special.gamma(p["alpha"] + 2))
+
+        self.fun_norm = (scipy.special.factorial(p["i"]+p["alpha"]) / scipy.special.factorial(p["i"])) / scipy.special.gamma(p["alpha"] + 1)
+
+        # xmax = scipy.stats.gamma.ppf(0.99999999999, a=p["alpha"]+1, loc=0., scale=1.)
+        # x = np.linspace(0, xmax, int(5e5))
+        # poly = scipy.special.genlaguerre(n=p["i"], alpha=p["alpha"], monic=False)
+        # y_pdf = scipy.stats.gamma.pdf(x, a=p["alpha"]+1, loc=0., scale=1.)
+        # y_poly = poly(x) * poly(x)
+        # y = y_pdf * y_poly
+        # self.fun_norm = np.trapz(x=x, y=y)
+
+        # define basis function
+        self.fun = scipy.special.genlaguerre(p["i"], alpha=p["alpha"], monic=False) / np.sqrt(self.fun_norm)
+
+        # derivative of polynomial
+        self.fun_der = np.polyder(self.fun)
+
+        # integral of fun and fun_der w.r.t. pdf (numerical integration with corresponding weights)
+        if self.p["i"] == 0:
+            self.fun_int = 1.0
+            self.fun_der_int = 0.0
+        else:
+            knots, weights = get_quadrature_laguerre_1d(n=10 * self.p["i"], alpha=p["alpha"])
             self.fun_int = np.dot(self.fun(knots), weights)
             self.fun_der_int = np.dot(self.fun_der(knots), weights)
 

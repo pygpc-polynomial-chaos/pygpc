@@ -73,7 +73,7 @@ class PyRates_CNS_Model(AbstractModel):
         pass
 
     def simulate(self, process_id, matlab_engine=None):
-        T = 10.
+        T = 500.
         dt = 1e-3
         dts = 1e-2
         ext_input = np.random.uniform(3., 5., (int(T / dt), 1))

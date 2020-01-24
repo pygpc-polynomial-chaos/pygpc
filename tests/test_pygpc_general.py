@@ -8,9 +8,8 @@ import shutil
 from collections import OrderedDict
 
 # test options
-folder = './tmp'     # output folder
-plot = False         # plot and save output
-gpu = False          # test GPU functionality
+folder = 'tmp'    # output folder
+plot = False        # plot and save output
 matlab = False       # test Matlab functionality
 
 # temporary folder
@@ -93,7 +92,9 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_samples_validation"] = 1e3
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
-        options["GPU"] = False
+        options["backend"] = "cpu"
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # generate grid
         grid = pygpc.TensorGrid(parameters_random=problem.parameters_random,
@@ -149,7 +150,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: Static
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_1_Static_gpc'
@@ -179,7 +180,9 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
-        options["GPU"] = False
+        options["backend"] = "cpu"
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
@@ -187,8 +190,9 @@ class TestPygpcMethods(unittest.TestCase):
                                                order_inter_max=options["interaction_order"],
                                                dim=problem.dim)
 
-        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
+        grid = pygpc.Random(parameters_random=problem.parameters_random,
+                            n_grid=options["matrix_ratio"] * n_coeffs,
+                            seed=1)
 
         # define algorithm
         algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
@@ -240,7 +244,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: MEStatic
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_2_MEStatic_gpc'
@@ -277,10 +281,13 @@ class TestPygpcMethods(unittest.TestCase):
                                          "classifier": "MLPClassifier",
                                          "classifier_solver": "lbfgs"}
         options["fn_results"] = os.path.join(folder, test_name)
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # generate grid
-        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                options={"n_grid": 200, "seed": 1})  # options["matrix_ratio"] * n_coeffs
+        grid = pygpc.Random(parameters_random=problem.parameters_random,
+                            n_grid=200,  # options["matrix_ratio"] * n_coeffs
+                            seed=1)
 
         # define algorithm
         algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
@@ -333,7 +340,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: StaticProjection
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_3_StaticProjection_gpc'
@@ -365,6 +372,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_grid_gradient"] = 50
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # define algorithm
         algorithm = pygpc.StaticProjection(problem=problem, options=options)
@@ -417,7 +426,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: MEStaticProjection
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_4_MEStaticProjection_gpc'
@@ -454,6 +463,8 @@ class TestPygpcMethods(unittest.TestCase):
                                          "classifier": "MLPClassifier",
                                          "classifier_solver": "lbfgs"}
         options["fn_results"] = os.path.join(folder, test_name)
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # define algorithm
         algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
@@ -506,7 +517,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: RegAdaptive
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_5_RegAdaptive_gpc'
@@ -537,6 +548,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["gradient_enhanced"] = True
         options["fn_results"] = os.path.join(folder, test_name)
         options["eps"] = 0.0075
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # define algorithm
         algorithm = pygpc.RegAdaptive(problem=problem, options=options)
@@ -589,7 +602,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: RegAdaptiveProjection
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_6_RegAdaptiveProjection_gpc'
@@ -623,6 +636,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["eps_lambda_gradient"] = 0.95
         options["gradient_enhanced"] = True
         options["adaptive_sampling"] = False
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # define algorithm
         algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
@@ -675,7 +690,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: MERegAdaptiveProjection
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_7_MERegAdaptiveProjection_gpc'
@@ -715,8 +730,10 @@ class TestPygpcMethods(unittest.TestCase):
         options["adaptive_sampling"] = False
         options["eps"] = 0.75
         options["n_grid_init"] = 20
-        options["GPU"] = False
+        options["backend"] = "cpu"
         options["fn_results"] = os.path.join(folder, test_name)
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # define algorithm
         algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
@@ -765,54 +782,52 @@ class TestPygpcMethods(unittest.TestCase):
         self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
-    def test_8_GPU(self):
+    def test_8_pygpc_extensions(self):
         """
-        Testing GPU functionalities
+        Testing pygpc extensions
         """
         global folder, gpu
-        test_name = 'pygpc_test_8_GPU'
+        test_name = 'pygpc_test_8_pygpc_extensions'
         print(test_name)
 
-        if gpu:
-            # define model
-            model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
+        # define model
+        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay()
 
-            # define problem
-            parameters = OrderedDict()
-            parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-            parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-            problem = pygpc.Problem(model, parameters)
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        problem = pygpc.Problem(model, parameters)
 
-            # gPC options
-            options = dict()
-            options["GPU"] = False
+        # gPC options
+        options = dict()
+        options["backend"] = "cpu"
 
-            # define test grid
-            grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                    options={"n_grid": 100, "seed": 1})
+        # define test grid
+        grid = pygpc.Random(parameters_random=problem.parameters_random,
+                            n_grid=100,
+                            seed=1)
 
-            # setup gPC
-            gpc = pygpc.Reg(problem=problem,
-                            order=[8, 8],
-                            order_max=8,
-                            order_max_norm=0.8,
-                            interaction_order=2,
-                            interaction_order_current=2,
-                            options=options,
-                            validation=None)
+        # setup gPC
+        gpc = pygpc.Reg(problem=problem,
+                        order=[8, 8],
+                        order_max=8,
+                        order_max_norm=0.8,
+                        interaction_order=2,
+                        interaction_order_current=2,
+                        options=options,
+                        validation=None)
 
-            # init gPC matrices
-            gpc.init_gpc_matrix()
+        # init gPC matrices
+        gpc.init_gpc_matrix()
 
-            # set some coeffs
-            coeffs = np.random.rand(gpc.basis.n_basis, 2)
+        # set some coeffs
+        coeffs = np.random.rand(gpc.basis.n_basis, 2)
 
-            # get approximation
-            gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
+        # get approximation
+        gpc.get_approximation(coeffs=coeffs, x=grid.coords_norm)
 
-            print("done!\n")
-        else:
-            print("Skipping GPU test...\n")
+        print("done!\n")
 
     def test_9_testfunctions(self):
         """
@@ -867,8 +882,10 @@ class TestPygpcMethods(unittest.TestCase):
             com = pygpc.Computation(n_cpu=n_cpu)
 
             for t in tests:
-                grid = pygpc.RandomGrid(parameters_random=t.problem.parameters_random,
-                                        options={"n_grid": 10, "seed": 1})
+                grid = pygpc.Random(parameters_random=t.problem.parameters_random,
+                                    n_grid=10,
+                                    seed=1)
+
                 res = com.run(model=t.problem.model,
                               problem=t.problem,
                               coords=grid.coords,
@@ -879,6 +896,8 @@ class TestPygpcMethods(unittest.TestCase):
                               print_func_time=False)
 
             com.close()
+
+            print("done!\n")
 
     def test_10_RandomParameters(self):
         """
@@ -908,6 +927,8 @@ class TestPygpcMethods(unittest.TestCase):
             ax.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
             ax.savefig(os.path.join(folder, test_name) + ".png")
 
+            print("done!\n")
+
     def test_11_Grids(self):
         """
         Testing Grids
@@ -920,9 +941,10 @@ class TestPygpcMethods(unittest.TestCase):
 
         grids = []
         fn_out = []
-        grids.append(pygpc.RandomGrid(parameters_random=test.problem.parameters_random,
-                                      options={"n_grid": 100, "seed": 1}))
-        fn_out.append(test_name + "_RandomGrid")
+        grids.append(pygpc.Random(parameters_random=test.problem.parameters_random,
+                                  n_grid=100,
+                                  seed=1))
+        fn_out.append(test_name + "_Random")
         grids.append(pygpc.TensorGrid(parameters_random=test.problem.parameters_random,
                                       options={"grid_type": ["hermite", "jacobi"], "n_dim": [5, 10]}))
         fn_out.append(test_name + "_TensorGrid_1")
@@ -941,12 +963,14 @@ class TestPygpcMethods(unittest.TestCase):
             for i, g in enumerate(grids):
                 pygpc.plot_2d_grid(coords=g.coords_norm, weights=g.weights, fn_plot=os.path.join(folder, fn_out[i]))
 
+        print("done!\n")
+
     def test_12_Matlab_gpc(self):
         """
         Algorithm: RegAdaptive
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot, matlab
         test_name = 'pygpc_test_12_Matlab_gpc'
@@ -981,16 +1005,21 @@ class TestPygpcMethods(unittest.TestCase):
             options["fn_results"] = os.path.join(folder, test_name)
             options["eps"] = 0.0075
             options["matlab_model"] = True
+            options["grid"] = pygpc.Random
+            options["grid_options"] = None
 
             # define algorithm
             algorithm = pygpc.RegAdaptive(problem=problem, options=options)
 
-            # run gPC algorithm
-            gpc, coeffs, results = algorithm.run()
+            # Initialize gPC Session
+            session = pygpc.Session(algorithm=algorithm)
+
+            # run gPC session
+            session, coeffs, results = session.run()
 
             if plot:
                 # Validate gPC vs original model function (2D-surface)
-                pygpc.validate_gpc_plot(gpc=gpc,
+                pygpc.validate_gpc_plot(session=session,
                                         coeffs=coeffs,
                                         random_vars=list(problem.parameters_random.keys()),
                                         n_grid=[51, 51],
@@ -1008,7 +1037,7 @@ class TestPygpcMethods(unittest.TestCase):
                                          n_samples=1e3)
 
             # Validate gPC vs original model function (Monte Carlo)
-            nrmsd = pygpc.validate_gpc_mc(gpc=gpc,
+            nrmsd = pygpc.validate_gpc_mc(session=session,
                                           coeffs=coeffs,
                                           n_samples=int(1e4),
                                           output_idx=0,
@@ -1033,7 +1062,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: Static
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_13_random_vars_postprocessing_sobol'
@@ -1045,9 +1074,13 @@ class TestPygpcMethods(unittest.TestCase):
         # define problem
 
         parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
-        parameters["x2"] = pygpc.Norm(pdf_shape=[1, 0.25])
-        parameters["x3"] = pygpc.Beta(pdf_shape=[3, 5], pdf_limits=[0, 0.6])
+        # parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[1.25, 1.72])
+        parameters["x1"] = pygpc.Gamma(pdf_shape=[3., 10., 1.25], p_perc=0.98)
+        parameters["x2"] = pygpc.Norm(pdf_shape=[1, 1], p_perc=0.98)
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0.6, 1.4])
+        # parameters["x3"] = pygpc.Norm(pdf_shape=[1., 0.25], p_perc=0.95)
+        # parameters["x2"] = 1.
+
         problem = pygpc.Problem(model, parameters)
 
         # gPC options
@@ -1055,16 +1088,16 @@ class TestPygpcMethods(unittest.TestCase):
         options["method"] = "reg"
         options["solver"] = "Moore-Penrose"
         options["settings"] = None
-        options["order"] = [9, 9, 9]
-        options["order_max"] = 9
+        options["order"] = [4, 4, 4]
+        options["order_max"] = 4
         options["interaction_order"] = 2
         options["matrix_ratio"] = 2
-        options["error_type"] = "nrmsd"
+        options["error_type"] = "loocv"
         options["n_samples_validation"] = 1e3
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
-        options["GPU"] = False
+        options["backend"] = "cpu"
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
@@ -1072,8 +1105,9 @@ class TestPygpcMethods(unittest.TestCase):
                                                order_inter_max=options["interaction_order"],
                                                dim=problem.dim)
 
-        grid = pygpc.RandomGrid(parameters_random=problem.parameters_random,
-                                options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": 1})
+        grid = pygpc.Random(parameters_random=problem.parameters_random,
+                            n_grid=options["matrix_ratio"] * n_coeffs,
+                            seed=1)
 
         # define algorithm
         algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
@@ -1084,13 +1118,45 @@ class TestPygpcMethods(unittest.TestCase):
         # run gPC algorithm
         session, coeffs, results = session.run()
 
+        # Determine Sobol indices using standard approach (gPC coefficients)
+        sobol_standard, sobol_idx_standard, sobol_idx_bool_standard = session.gpc[0].get_sobol_indices(coeffs=coeffs,
+                                                                                                       algorithm="standard")
+
+        sobol_sampling, sobol_idx_sampling, sobol_idx_bool_sampling = session.gpc[0].get_sobol_indices(coeffs=coeffs,
+                                                                                                       algorithm="sampling",
+                                                                                                       n_samples=3e4)
+
+        # grid = pygpc.Random(parameters_random=session.parameters_random,
+        #                     n_grid=int(5e5),
+        #                     seed=None)
+        #
+        # com = pygpc.Computation(n_cpu=0, matlab_model=session.matlab_model)
+        # y_orig = com.run(model=session.model,
+        #                  problem=session.problem,
+        #                  coords=grid.coords,
+        #                  coords_norm=grid.coords_norm,
+        #                  i_iter=None,
+        #                  i_subiter=None,
+        #                  fn_results=None,
+        #                  print_func_time=False)
+        # y_gpc = session.gpc[0].get_approximation(coeffs=coeffs, x=grid.coords_norm)
+        #
+        # mean_gpc_coeffs = session.gpc[0].get_mean(coeffs=coeffs)
+        # mean_gpc_sampling = session.gpc[0].get_mean(samples=y_gpc)
+        # mean_orig = np.mean(y_orig, axis=0)
+        #
+        # std_gpc_coeffs = session.gpc[0].get_std(coeffs=coeffs)
+        # std_gpc_sampling = session.gpc[0].get_std(samples=y_gpc)
+        # std_orig = np.std(y_orig, axis=0)
+
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
                                       fn_out=options["fn_results"] + "_pdf",
-                                      plot=plot)
+                                      plot=plot,
+                                      n_cpu=session.n_cpu)
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
 
@@ -1099,23 +1165,15 @@ class TestPygpcMethods(unittest.TestCase):
         print("> Checking file consistency...")
         self.expect_true(files_consistent, error_msg)
 
-        # Determine Sobol indices using standard approach (gPC coefficients)
-        sobol_standard, sobol_idx_standard, sobol_idx_bool_standard = session.gpc[0].get_sobol_indices(coeffs=coeffs,
-                                                                                                       algorithm="standard")
-
-        sobol_sampling, sobol_idx_sampling, sobol_idx_bool_sampling = session.gpc[0].get_sobol_indices(coeffs=coeffs,
-                                                                                                       algorithm="sampling",
-                                                                                                       n_samples=1e5)
-
         for i in range(sobol_standard.shape[0]):
-            self.expect_true(np.max(np.abs(sobol_standard[i, :]-sobol_sampling[i, :])) < 0.001,
+            self.expect_true(np.max(np.abs(sobol_standard[i, :]-sobol_sampling[i, :])) < 0.1,
                              msg="Sobol index: {}".format(str(sobol_idx_sampling[3])))
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
             pygpc.validate_gpc_plot(session=session,
                                     coeffs=coeffs,
-                                    random_vars=["x1", "x2"],
+                                    random_vars=["x2", "x3"],
                                     n_grid=[51, 51],
                                     output_idx=0,
                                     fn_out=options["fn_results"] + "_val",
@@ -1128,7 +1186,7 @@ class TestPygpcMethods(unittest.TestCase):
         Algorithm: MERegAdaptiveprojection
         Method: Regression
         Solver: Moore-Penrose
-        Grid: RandomGrid
+        Grid: Random
         """
         global folder, plot
         test_name = 'pygpc_test_14_clustering_3_domains'
@@ -1168,8 +1226,10 @@ class TestPygpcMethods(unittest.TestCase):
         options["adaptive_sampling"] = False
         options["eps"] = 0.01
         options["n_grid_init"] = 50
-        options["GPU"] = False
+        options["backend"] = "cpu"
         options["fn_results"] = os.path.join(folder, test_name)
+        options["grid"] = pygpc.Random
+        options["grid_options"] = None
 
         # define algorithm
         algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
@@ -1216,6 +1276,13 @@ class TestPygpcMethods(unittest.TestCase):
         print("> Checking file consistency...")
         self.expect_true(files_consistent, error_msg)
         print("done!\n")
+
+    def test_15_save_and_load_session(self):
+        """
+        Save and load a gPC Session
+        """
+        # TODO: implement unittest
+        pass
 
 
 if __name__ == '__main__':

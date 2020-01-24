@@ -20,7 +20,7 @@ except ModuleNotFoundError:
     pass
 
 
-def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pdf=[51, 5], fn_out=None, plot=True):
+def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pdf=[51, 5], bins=100, hist=False, fn_out=None, plot=True):
     """
     Compares gPC approximation with original model function. Evaluates both at "n_samples" sampling points and
     evaluates the root mean square deviation. It also computes the pdf at the output quantity with output_idx
@@ -32,14 +32,22 @@ def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smoot
         GPC session object containing all information i.e., gPC, Problem, Model, Grid, Basis, RandomParameter instances
     coeffs : ndarray of float [n_coeffs x n_out]
         GPC coefficients
+    coords : ndarray of float [n_coords x n_dim]
+        Parameter combinations for the random_vars the comparison is conducted with
+    data_original: ndarray of float [n_coords x n_out], optional, default: None
+        If available, data of original model function at grid, containing all QOIs
     n_samples : int
-        Number of samples to validate the gPC approximation
+        Number of samples to validate the gPC approximation (ignored if coords and data_original is provided)
     output_idx : ndarray or list, optional, default=None [1 x n_out]
         Index of output quantities to consider (if output_idx=None, all output quantities are considered)
     n_cpu : int, optional, default=1
         Number of CPU cores to use (parallel function evaluations) to evaluate original model function
     smooth_pdf : bool, optional, default: True
-        Smooth probability density functions using a Savgol filter
+        Smooth probability density functions using a Savgol filter [polylength, order]
+    bins : int, optional, default: 100
+        Number of bins to estimate pdf
+    hist : bool, optional, default: False
+        Plot histogram instead of pdf
     fn_out : str or None
         Filename of validation results and plot comparing original vs gPC model (w/o file extension)
     plot : boolean, optional, default: True
@@ -61,10 +69,12 @@ def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smoot
     if type(output_idx) is int:
         output_idx = [output_idx]
 
-    if session.validation is None:
+    if data_original is None or coords is None:
         # Create sampling points
-        grid_mc = RandomGrid(parameters_random=session.parameters_random,
-                             options={"n_grid": n_samples, "seed": None})
+        grid_mc = Random(parameters_random=session.parameters_random,
+                         n_grid=n_samples,
+                         seed=None,
+                         options=None)
 
         coords_norm = grid_mc.coords_norm
         coords = grid_mc.coords
@@ -82,9 +92,18 @@ def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smoot
                          print_func_time=False)[:, output_idx]
 
     else:
-        y_orig = session.validation.results[:, output_idx]
-        coords_norm = session.validation.grid.coords_norm
-        coords = session.validation.grid.coords
+
+        grid_mc = Random(parameters_random=session.parameters_random,
+                         n_grid=0,
+                         seed=None,
+                         options=None)
+        grid_mc.coords = coords
+        coords_norm = grid_mc.get_normalized_coordinates(coords)
+        y_orig = data_original
+
+        # y_orig = session.validation.results[:, output_idx]
+        # coords_norm = session.validation.grid.coords_norm
+        # coords = session.validation.grid.coords
 
     if y_orig.ndim == 1:
         y_orig = y_orig[:, np.newaxis]
@@ -114,10 +133,10 @@ def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smoot
             f.create_dataset('grid/coords_norm', data=coords_norm)
 
     for i, o_idx in enumerate(output_idx):
-        pdf_y_gpc, tmp = np.histogram(y_gpc[:, i].flatten(), bins=100, density=True)
+        pdf_y_gpc, tmp = np.histogram(y_gpc[:, i].flatten(), bins=bins, density=True)
         pdf_x_gpc = (tmp[1:] + tmp[0:-1]) / 2.
 
-        pdf_y_orig, tmp = np.histogram(y_orig[:, i].flatten(), bins=100, density=True)
+        pdf_y_orig, tmp = np.histogram(y_orig[:, i].flatten(), bins=bins, density=True)
         pdf_x_orig = (tmp[1:] + tmp[0:-1]) / 2.
 
         if smooth_pdf is not None:
@@ -133,24 +152,35 @@ def validate_gpc_mc(session, coeffs, n_samples=1e4, output_idx=0, n_cpu=1, smoot
 
             fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
 
-            ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
+            if hist is None:
+                ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
+            else:
+                import seaborn as sns
+                sns.distplot(y_gpc[:, i].flatten(), bins=bins, ax=ax1)
+                sns.distplot(y_orig[:, i].flatten(), bins=bins, label=r'original', ax=ax1)
+                # ax1.hist((y_gpc[:, i].flatten(), y_orig[:, i].flatten()), bins=bins, density=True)
+
             ax1.legend([r'gpc', r'original'], fontsize=14)
             ax1.grid()
             ax1.set_xlabel(r'$y$', fontsize=16)
             ax1.set_ylabel(r'$p(y)$', fontsize=16)
-            ax1.text(0.05, 0.95, r'$error=%.2f$' % (relative_error_nrmsd[0],) + "%",
+            ax1.text(0.05, 0.95, r'$error=%.2f$' % (100 * relative_error_nrmsd[0],) + "%",
                      transform=ax1.transAxes, fontsize=12, verticalalignment='top',
                      bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
 
         if fn_out:
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.pdf')
-            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.png', dpi=600)
+            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.png', dpi=1200)
 
             # save results in .hdf5 file
             with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
                 f.create_dataset('error/qoi_{}/nrmsd'.format(o_idx), data=relative_error_nrmsd[i])
                 f.create_dataset('pdf/qoi_{}/original'.format(o_idx), data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
                 f.create_dataset('pdf/qoi_{}/gpc'.format(o_idx), data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
+                f.create_dataset('grid/coords', data=coords)
+                f.create_dataset('grid/coords_norm', data=coords_norm)
+                f.create_dataset('model_evaluations/results/gpc', data=y_gpc)
+                f.create_dataset('model_evaluations/results/orig', data=y_orig)
 
     return relative_error_nrmsd
 
@@ -208,6 +238,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
         grid = np.zeros((coords.shape[0], len(session.parameters_random)))
 
     idx = []
+    idx_global = []
 
     # sort random_vars according to gpc.parameters
     for i_p, p in enumerate(session.parameters_random.keys()):
@@ -216,6 +247,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
 
         else:
             idx.append(random_vars.index(p))
+            idx_global.append(i_p)
 
     random_vars = [random_vars[i] for i in idx]
     x = []
@@ -234,7 +266,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
         for i_p, p in enumerate(random_vars):
             x.append(np.unique(coords[:, i_p]))
 
-    grid[:, idx] = coords
+    grid[:, idx_global] = coords
 
     # Normalize grid
     grid_norm = Grid(parameters_random=session.parameters_random).get_normalized_coordinates(grid)
@@ -360,7 +392,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
             plt.tight_layout()
 
         if fn_out is not None:
-            # plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=600)
+            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=1200)
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
 
 

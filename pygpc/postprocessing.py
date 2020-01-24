@@ -1,7 +1,7 @@
 import h5py
 import numpy as np
 from .io import read_gpc_pkl
-from .Grid import RandomGrid
+from .Grid import *
 from .MEGPC import *
 
 
@@ -128,8 +128,10 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
 
     # generate samples in case of sampling approach
     if algorithm == "sampling":
-        grid = RandomGrid(parameters_random=session.parameters_random,
-                          options={"n_grid": n_samples, "seed": None})
+        grid = Random(parameters_random=session.parameters_random,
+                      n_grid=n_samples,
+                      seed=None,
+                      options=None)
 
     # start prostprocessing depending on gPC type
     if not session.qoi_specific and not session.gpc_type == "megpc":

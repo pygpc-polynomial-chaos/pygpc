@@ -371,11 +371,15 @@ class SGPC(GPC):
         elif algorithm == "sampling":
             # generate sample coordinates (original parameter space)
             if self.p_matrix is not None:
-                grid = RandomGrid(parameters_random=self.problem_original.parameters_random,
-                                  options={"n_grid": n_samples, "seed": None})
+                grid = Random(parameters_random=self.problem_original.parameters_random,
+                              n_grid=n_samples,
+                              seed=None,
+                              options=None)
             else:
-                grid = RandomGrid(parameters_random=self.problem.parameters_random,
-                                  options={"n_grid": n_samples, "seed": None})
+                grid = Random(parameters_random=self.problem.parameters_random,
+                              n_grid=n_samples,
+                              seed=None,
+                              options=None)
 
             local_sens = self.get_local_sens(coeffs, grid.coords_norm)
 

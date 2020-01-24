@@ -188,6 +188,10 @@ class Algorithm(object):
         if "verbose" not in self.options.keys():
             self.options["verbose"] = True
 
+        if "grid" not in self.options.keys():
+            self.options["grid"] = Random
+            self.options["grid_options"] = None
+
         if "backend" not in self.options.keys():
             self.options["backend"] = "python"
 
@@ -296,7 +300,7 @@ class Static(Algorithm):
             Number of random variables, which can interact with each other.
             All polynomials are ignored, which have an interaction order greater than the specified
         grid: Grid object instance
-            Grid object to use for static gPC (RandomGrid, SparseGrid, TensorGrid)
+            Grid object to use for static gPC (Random, SparseGrid, TensorGrid)
 
         Notes
         -----
@@ -515,7 +519,7 @@ class MEStatic(Algorithm):
         options["classifier_options"] : dict, optional, default: default settings
             Options of classifier
         grid: Grid object instance
-            Grid object to use for static gPC (RandomGrid, SparseGrid, TensorGrid)
+            Grid object to use for static gPC (Random, SparseGrid, TensorGrid)
 
         Notes
         -----
@@ -869,6 +873,7 @@ class StaticProjection(Algorithm):
             Simulation results at n_grid points of the n_out output variables
         """
 
+        grid = self.options["grid"]
         fn_results = os.path.splitext(self.options["fn_results"])[0]
 
         if os.path.exists(fn_results + ".hdf5"):
@@ -877,8 +882,10 @@ class StaticProjection(Algorithm):
         grad_res_3D = None
 
         # make initial random grid to determine gradients and projection matrix
-        grid_original = RandomGrid(parameters_random=self.problem.parameters_random,
-                                   options={"n_grid": self.options["n_grid_gradient"]})
+        grid_original = grid(parameters_random=self.problem.parameters_random,
+                             n_grid=self.options["n_grid_gradient"],
+                             seed=self.options["seed"],
+                             options=self.options["grid_options"])
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -1229,14 +1236,17 @@ class MEStaticProjection(Algorithm):
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
+        grid = self.options["grid"]
         fn_results = os.path.splitext(self.options["fn_results"])[0]
 
         if os.path.exists(fn_results + ".hdf5"):
             os.remove(fn_results + ".hdf5")
 
         # make initial random grid to determine gradients and projection matrix
-        grid = RandomGrid(parameters_random=self.problem.parameters_random,
-                          options={"n_grid": self.options["n_grid_gradient"]})
+        grid = grid(parameters_random=self.problem.parameters_random,
+                    n_grid=self.options["n_grid_gradient"],
+                    seed=self.options["seed"],
+                    options=self.options["grid_options"])
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -1610,6 +1620,8 @@ class RegAdaptive(Algorithm):
             Simulation results at n_grid points of the n_out output variables
         """
 
+        grid = self.options["grid"]
+
         fn_results = os.path.splitext(self.options["fn_results"])[0]
 
         if os.path.exists(fn_results + ".hdf5"):
@@ -1650,8 +1662,10 @@ class RegAdaptive(Algorithm):
         else:
             n_grid_init = gpc.basis.n_basis
 
-        gpc.grid = RandomGrid(parameters_random=self.problem.parameters_random,
-                              options={"n_grid": n_grid_init, "seed": self.options["seed"]})
+        gpc.grid = grid(parameters_random=self.problem.parameters_random,
+                        n_grid=n_grid_init,
+                        seed=self.options["seed"],
+                        options=self.options["grid_options"])
 
         gpc.solver = self.options["solver"]
         gpc.settings = self.options["settings"]
@@ -1975,7 +1989,7 @@ class MERegAdaptiveProjection(Algorithm):
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
-
+        grid = self.options["grid"]
         fn_results = os.path.splitext(self.options["fn_results"])[0]
         problem_original = copy.deepcopy(self.problem)
 
@@ -1990,8 +2004,10 @@ class MERegAdaptiveProjection(Algorithm):
         n_grid_init = self.options["n_grid_init"]
 
         # make initial random grid to determine number of output variables and to estimate projection
-        grid = RandomGrid(parameters_random=self.problem.parameters_random,
-                          options={"n_grid": n_grid_init})
+        grid = grid(parameters_random=self.problem.parameters_random,
+                    n_grid=n_grid_init,
+                    seed=self.options["seed"],
+                    options=self.options["grid"])
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -2231,6 +2247,11 @@ class MERegAdaptiveProjection(Algorithm):
                                  i in range(megpc[i_qoi].n_gpc)]
                 stop_by_error = eps < self.options["eps"]
 
+                # print("stop_by_order: {}".format(stop_by_order))
+                # print("stop_by_error: {}".format(stop_by_error))
+                # print("eps: {}".format(eps))
+
+                # TODO: ValueError: operands could not be broadcast together with shapes (2,) (3,)
                 if np.logical_or(stop_by_order, stop_by_error).all():
                     break
 
@@ -2321,7 +2342,8 @@ class MERegAdaptiveProjection(Algorithm):
                     basis_order["poly_dom_{}".format(d)][0] = self.options["order_start"]
                     basis_order["poly_dom_{}".format(d)][1] = self.options["interaction_order"]
 
-                    eps = np.hstack((eps, np.array(self.options["eps"] + 1)))
+                    # eps = np.hstack((eps, np.array(self.options["eps"] + 1)))
+                    eps = np.array([self.options["eps"] + 1.0 for _ in range(len(np.unique(megpc[i_qoi].domains)))])
 
                     for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
                         megpc[i_qoi].add_sub_gpc(problem=problem_original,
@@ -2958,6 +2980,7 @@ class RegAdaptiveProjection(Algorithm):
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
+        grid = self.options["grid"]
         fn_results = os.path.splitext(self.options["fn_results"])[0]
 
         if os.path.exists(fn_results + ".hdf5"):
@@ -2976,8 +2999,10 @@ class RegAdaptiveProjection(Algorithm):
         loocv = []
 
         # make initial random grid to determine gradients and projection matrix
-        grid_original = RandomGrid(parameters_random=self.problem.parameters_random,
-                                   options={"n_grid": self.options["n_grid_gradient"]})
+        grid_original = grid(parameters_random=self.problem.parameters_random,
+                             n_grid=self.options["n_grid_gradient"],
+                             seed=self.options["seed"],
+                             options=self.options["grid_options"])
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])

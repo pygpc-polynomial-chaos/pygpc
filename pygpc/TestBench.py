@@ -83,6 +83,9 @@ class TestBench(object):
         self.pool = multiprocessing.Pool(n_cpu)
         self.run_test_partial = partial(run_test)
 
+        if "seed" not in list(options.keys()):
+            options["seed"] = None
+
         for key in self.problem_keys:
             for rep in range(repetitions):
 
@@ -98,12 +101,10 @@ class TestBench(object):
                                                      order_glob_max_norm=options["order_max_norm"],
                                                      dim=problem[key].dim)
 
-                    if "seed" in list(options.keys()):
-                        grid = RandomGrid(parameters_random=problem[key].parameters_random,
-                                          options={"n_grid": options["matrix_ratio"] * n_coeffs, "seed": options["seed"]})
-                    else:
-                        grid = RandomGrid(parameters_random=problem[key].parameters_random,
-                                          options={"n_grid": options["matrix_ratio"] * n_coeffs})
+                    grid = options["grid"](parameters_random=problem[key].parameters_random,
+                                           n_grid=options["matrix_ratio"] * n_coeffs,
+                                           seed=options["seed"],
+                                           options=options["grid_options"])
 
                     self.algorithm[self.session_keys[-1]] = algorithm(problem=problem[key],
                                                                       options=copy.deepcopy(options),
@@ -166,17 +167,17 @@ class TestBench(object):
                     # delete individual .hdf5 files
                     os.remove(self.session[key + "_" + str(rep).zfill(4)].fn_results + ".hdf5")
 
-            # # merge validation files
-            # with h5py.File(os.path.join(self.fn_results, key) + "_validation_mc.hdf5", 'w') as f:
-            #     for rep in range(self.repetitions):
-            #         f.create_group(str(rep).zfill(4))
-            #
-            #         with h5py.File(os.path.splitext(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_validation_mc.hdf5", 'r') as g:
-            #             for gkey in list(g.keys()):
-            #                 g.copy(gkey, f[str(rep).zfill(4)])
-            #
-            #         # delete individual .hdf5 files
-            #         os.remove(os.path.splitext(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_validation_mc.hdf5")
+            # merge validation files
+            with h5py.File(os.path.join(self.fn_results, key) + "_val.hdf5", 'w') as f:
+                for rep in range(self.repetitions):
+                    f.create_group(str(rep).zfill(4))
+
+                    with h5py.File(os.path.splitext(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_val.hdf5", 'r') as g:
+                        for gkey in list(g.keys()):
+                            g.copy(gkey, f[str(rep).zfill(4)])
+
+                    # delete individual .hdf5 files
+                    os.remove(os.path.splitext(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_val.hdf5")
 
         # delete .pdf files
         for f in glob.glob(os.path.join(self.fn_results, "*.pdf")):
@@ -214,16 +215,16 @@ class TestBenchContinuous(TestBench):
         # set up test problems
         problem = OrderedDict()
         problem["BohachevskyFunction1"] = BohachevskyFunction1().problem
-        problem["BoothFunction"] = BoothFunction().problem
-        problem["BukinFunctionNumber6"] = BukinFunctionNumber6().problem
-        problem["Franke"] = Franke().problem
-        problem["Ishigami_2D"] = Ishigami(dim=2).problem
-        problem["Ishigami_3D"] = Ishigami(dim=3).problem
-        problem["Lim2002"] = Lim2002().problem
-        problem["MatyasFunction"] = MatyasFunction().problem
+        # problem["BoothFunction"] = BoothFunction().problem
+        # problem["BukinFunctionNumber6"] = BukinFunctionNumber6().problem
+        # problem["Franke"] = Franke().problem
+        # problem["Ishigami_2D"] = Ishigami(dim=2).problem
+        # problem["Ishigami_3D"] = Ishigami(dim=3).problem
+        # problem["Lim2002"] = Lim2002().problem
+        # problem["MatyasFunction"] = MatyasFunction().problem
         problem["McCormickFunction"] = McCormickFunction().problem
-        problem["Peaks"] = Peaks().problem
-        problem["SixHumpCamelFunction"] = SixHumpCamelFunction().problem
+        # problem["Peaks"] = Peaks().problem
+        # problem["SixHumpCamelFunction"] = SixHumpCamelFunction().problem
 
         # create validation sets
         for p in problem:

@@ -232,7 +232,6 @@ class Basis:
         # initialize array of basis coefficients
         self.init_basis_array()
 
-    # TODO: @Lucas adapt this to function objects
     def init_basis_array(self):
         """
         Initialize polynomial basis coefficients for fast processing. Converts list of lists of self.b

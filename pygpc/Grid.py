@@ -1,7 +1,7 @@
 import uuid
 import copy
 import numpy as np
-from scipy.fftpack import ifft
+import scipy.stats
 from .io import iprint
 from .misc import get_multi_indices
 from .misc import get_cartesian_product
@@ -20,13 +20,13 @@ class Grid(object):
     _coords: ndarray of float [n_grid x dim]
         Denormalized coordinates xi
     _coords_norm: ndarray of float [n_grid x dim]
-        Normalized [-1, 1] coordinates xi
+        Normalized coordinates xi
     _domains: ndarray of float [n_grid]
         Domain IDs of grid points for multi-element gPC
     _coords_gradient: ndarray of float [n_grid x dim x dim]
         Denormalized coordinates xi
     _coords_gradient_norm: ndarray of float [n_grid x dim x dim]
-        Normalized [-1, 1] coordinates xi
+        Normalized coordinates xi
     coords_id: list of UUID objects (version 4) [n_grid]
         Unique IDs of grid points
     n_grid: int
@@ -46,27 +46,27 @@ class Grid(object):
         _coords: ndarray of float [n_grid x dim]
             Denormalized coordinates xi
         _coords_norm: ndarray of float [n_grid x dim]
-            Normalized [-1, 1] coordinates xi
+            Normalized coordinates xi
         _domains: ndarray of float [n_grid]
             Domain IDs of grid points for multi-element gPC
         _coords_gradient: ndarray of float [n_grid x dim x dim]
             Denormalized coordinates xi
         _coords_gradient_norm: ndarray of float [n_grid x dim x dim]
-            Normalized [-1, 1] coordinates xi
+            Normalized coordinates xi
         coords_id: list of UUID objects (version 4) [n_grid]
             Unique IDs of grid points
         n_grid: int
             Total number of nodes in grid.
         """
         self._coords = coords                         # Coordinates of gpc model calculation in the system space
-        self._coords_norm = coords_norm               # Coordinates of gpc model calculation in the gpc space [-1,1]
+        self._coords_norm = coords_norm               # Coordinates of gpc model calculation in the gpc space
         self.coords_id = coords_id                    # Unique IDs of grid points
         self.coords_gradient_id = coords_gradient_id  # Unique IDs of grid gradient points
         self._weights = None                          # Weights for numerical integration
         self.parameters_random = parameters_random    # OrderedDict of RandomParameter instances
         self.dim = len(self.parameters_random)        # Number of random variables
         self._coords_gradient = coords_gradient       # Shifted coordinates for gradient calculation in the system space
-        self._coords_gradient_norm = coords_gradient_norm  # Normalized coordinates for gradient calculation [-1,1]
+        self._coords_gradient_norm = coords_gradient_norm  # Normalized coordinates for gradient calculation
 
         if coords is not None:
             self.n_grid = self.coords.shape[0]                    # Total number of grid points
@@ -142,424 +142,16 @@ class Grid(object):
     def weights(self, value):
         self._weights = value
 
-    @staticmethod
-    def get_quadrature_jacobi_1d(n, p, q):
-        """
-        Get knots and weights of Jacobi polynomials.
-
-        knots, weights = Grid.get_quadrature_jacobi_1d(n, p, q)
-
-        Parameters
-        ----------
-        n: int
-            Number of knots
-        p: float
-            First shape parameter
-        q: float
-            Second shape parameter
-
-        Returns
-        -------
-        knots: np.ndarray
-            Knots of the grid
-        weights: np.ndarray
-            Weights of the grid
-        """
-
-        # make array to count N: 0, 1, ..., N-1
-        n_arr = np.arange(1, n)
-
-        # compose diagonals for companion matrix
-        t01 = 1.0 * (p - q) / (2 + q + p)
-        t02 = 1.0 * ((p - q) * (q + p)) / ((2 * n_arr + q + p) * (2 * n_arr + 2 + q + p))
-        t1 = np.append(t01, t02)
-        t2 = np.sqrt((4.0 * n_arr * (n_arr + q) * (n_arr + p) * (n_arr + q + p)) / (
-                (2 * n_arr - 1 + q + p) * (2 * n_arr + q + p) ** 2 * (2 * n_arr + 1 + q + p)))
-
-        # compose companion matrix
-        t = np.diag(t1) + np.diag(t2, 1) + np.diag(t2, -1)
-
-        # evaluate roots of polynomials (the abscissas are the roots of the
-        # characteristic polynomial, i.d. the eigenvalues of the companion matrix)
-        # the weights can be derived from the corresponding eigenvectors.
-        eigvals, eigvecs = np.linalg.eig(t)
-        idx_sorted = np.argsort(eigvals)
-        eigvals_sorted = eigvals[idx_sorted]
-
-        weights = 2.0 * eigvecs[0, idx_sorted] ** 2
-        knots = eigvals_sorted
-
-        return knots, weights
-
-    @staticmethod
-    def get_quadrature_hermite_1d(n):
-        """
-        Get knots and weights of Hermite polynomials (normal distribution).
-
-        knots, weights = Grid.get_quadrature_hermite_1d(n)
-
-        Parameters
-        ----------
-        n: int
-            number of knots
-
-        Returns
-        -------
-        knots: np.ndarray
-            knots of the grid
-        weights: np.ndarray
-            weights of the grid
-        """
-        n = np.int(n)
-        knots, weights = np.polynomial.hermite_e.hermegauss(n)
-        weights = np.array(list(2.0 * weights / np.sum(weights)))
-
-        return knots, weights
-
-    # TODO: review this
-    @staticmethod
-    def get_quadrature_clenshaw_curtis_1d(n):
-        """
-        Get the Clenshaw Curtis nodes and weights.
-
-        knots, weights = Grid.get_quadrature_clenshaw_curtis_1d(n)
-
-        Parameters
-        ----------
-        n: int
-            Number of knots
-
-        Returns
-        -------
-        knots: np.ndarray
-            Knots of the grid
-        weights: np.ndarray
-            Weights of the grid
-        """
-        n = np.int(n)
-
-        if n == 1:
-            knots = 0
-            weights = 2
-        else:
-            n = n - 1
-            c = np.zeros((n, 2))
-            k = 2 * (1 + np.arange(np.floor(n / 2)))
-            c[::2, 0] = 2 / np.hstack((1, 1 - k * k))
-            c[1, 1] = -n
-            v = np.vstack((c, np.flipud(c[1:n, :])))
-            f = np.real(ifft(v, n=None, axis=0))
-            knots = f[0:n, 1]
-            weights = np.hstack((f[0, 0], 2 * f[1:n, 0], f[n, 0]))
-
-        return knots, weights
-
-    @staticmethod
-    def get_quadrature_fejer1_1d(n):
-        """
-        Computes the Fejer type 1 nodes and weights.
-
-        This method uses a direct approach after Davis and Rabinowitz (2007) [1] and Gautschi (1967) [2].
-        The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fourier transforms.
-
-        knots, weights = Grid.get_quadrature_fejer1_1d(n)
-
-        Parameters
-        ----------
-        n: int
-            Number of knots
-
-        Returns
-        -------
-        knots: ndarray
-            Knots of the grid
-        weights: ndarray
-            Weights of the grid
-
-        Notes
-        -----
-        .. [1] Davis, P. J., Rabinowitz, P. (2007). Methods of numerical integration.
-           Courier Corporation, second edition, ISBN: 0486453391.
-
-        .. [2] Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
-           SIAM Journal on Numerical Analysis, 4(3), 357-362.
-
-        .. [3] Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
-           BIT Numerical Mathematics, 46(1), 195-202.
-        """
-        n = np.int(n)
-
-        theta = np.zeros(n)
-
-        for i in range(0, n):
-            theta[i] = float(2 * n - 1 - 2 * i) * np.pi / float(2 * n)
-
-        knots = np.zeros(n)
-
-        for i in range(0, n):
-            knots[i] = np.cos(theta[i])
-
-        weights = np.zeros(n)
-
-        for i in range(0, n):
-            weights[i] = 1.0
-            jhi = (n // 2)
-            for j in range(0, jhi):
-                angle = 2.0 * float(j + 1) * theta[i]
-                weights[i] = weights[i] - 2.0 * np.cos(angle) / float(4 * (j + 1) ** 2 - 1)
-
-        for i in range(0, n):
-            weights[i] = 2.0 * weights[i] / float(n)
-
-        return knots, weights
-
-    @staticmethod
-    def get_quadrature_fejer2_1d(n):
-        """
-        Computes the Fejer type 2 nodes and weights (Clenshaw Curtis without boundary nodes).
-
-        This method uses a direct approach after Davis and Rabinowitz (2007) [1] and Gautschi (1967) [2].
-        The paper by Waldvogel (2006) [3] exhibits a more efficient approach using Fourier transforms.
-
-        knots, weights = Grid.get_quadrature_fejer2_1d(n)
-
-        Parameters
-        ----------
-        n: int
-            Number of knots
-
-        Returns
-        -------
-        knots: np.ndarray
-            Knots of the grid
-        weights: np.ndarray
-            Weights of the grid
-
-        Notes
-        -----
-        .. [1] Davis, P. J., Rabinowitz, P. (2007). Methods of numerical integration.
-           Courier Corporation, second edition, ISBN: 0486453391.
-
-        .. [2] Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
-           SIAM Journal on Numerical Analysis, 4(3), 357-362.
-
-        .. [3] Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
-           BIT Numerical Mathematics, 46(1), 195-202.
-        """
-        n = np.int(n)
-
-        if n == 1:
-            knots = np.array([0.0])
-            weights = np.array([2.0])
-
-        elif n == 2:
-            knots = np.array([-0.5, +0.5])
-            weights = np.array([1.0, 1.0])
-
-        else:
-            theta = np.zeros(n)
-            p = 1
-
-            for i in range(0, n):
-                theta[i] = float(n - i) * np.pi / float(n + 1)
-
-            knots = np.zeros(n)
-
-            for i in range(0, n):
-                knots[i] = np.cos(theta[i])
-
-            weights = np.zeros(n)
-
-            for i in range(0, n):
-                weights[i] = 1.0
-                jhi = ((n - 1) // 2)
-
-                for j in range(0, jhi):
-                    angle = 2.0 * float(j + 1) * theta[i]
-                    weights[i] = weights[i] - 2.0 * np.cos(angle) / float(4 * (j + 1) ** 2 - 1)
-                    p = 2 * ((n + 1) // 2) - 1
-
-                weights[i] = weights[i] - np.cos(float(p + 1) * theta[i]) / float(p)
-
-            for i in range(0, n):
-                weights[i] = 2.0 * weights[i] / float(n + 1)
-
-        return knots, weights
-
-    @staticmethod
-    def get_quadrature_patterson_1d(n):
-        """
-        Computes the nested Gauss-Patterson nodes and weights for n = 1,3,7,15,31 nodes.
-
-        knots, weights = Grid.get_quadrature_patterson_1d(n)
-
-        Parameters
-        ----------
-        n: int
-            Number of knots (possible values: 1, 3, 7, 15, 31)
-
-        Returns
-        -------
-        knots: np.ndarray
-            Knots of the grid
-        weights: np.ndarray
-            Weights of the grid
-        """
-        x = np.zeros(n)
-        w = np.zeros(n)
-
-        if n == 1:
-
-            x = 0.0
-
-            w = 2.0
-
-        elif n == 3:
-
-            x[0] = -0.77459666924148337704
-            x[1] = 0.0
-            x[2] = 0.77459666924148337704
-
-            w[0] = 0.555555555555555555556
-            w[1] = 0.888888888888888888889
-            w[2] = 0.555555555555555555556
-
-        elif n == 7:
-
-            x[0] = -0.96049126870802028342
-            x[1] = -0.77459666924148337704
-            x[2] = -0.43424374934680255800
-            x[3] = 0.0
-            x[4] = 0.43424374934680255800
-            x[5] = 0.77459666924148337704
-            x[6] = 0.96049126870802028342
-
-            w[0] = 0.104656226026467265194
-            w[1] = 0.268488089868333440729
-            w[2] = 0.401397414775962222905
-            w[3] = 0.450916538658474142345
-            w[4] = 0.401397414775962222905
-            w[5] = 0.268488089868333440729
-            w[6] = 0.104656226026467265194
-
-        elif n == 15:
-
-            x[0] = -0.99383196321275502221
-            x[1] = -0.96049126870802028342
-            x[2] = -0.88845923287225699889
-            x[3] = -0.77459666924148337704
-            x[4] = -0.62110294673722640294
-            x[5] = -0.43424374934680255800
-            x[6] = -0.22338668642896688163
-            x[7] = 0.0
-            x[8] = 0.22338668642896688163
-            x[9] = 0.43424374934680255800
-            x[10] = 0.62110294673722640294
-            x[11] = 0.77459666924148337704
-            x[12] = 0.88845923287225699889
-            x[13] = 0.96049126870802028342
-            x[14] = 0.99383196321275502221
-
-            w[0] = 0.0170017196299402603390
-            w[1] = 0.0516032829970797396969
-            w[2] = 0.0929271953151245376859
-            w[3] = 0.134415255243784220360
-            w[4] = 0.171511909136391380787
-            w[5] = 0.200628529376989021034
-            w[6] = 0.219156858401587496404
-            w[7] = 0.225510499798206687386
-            w[8] = 0.219156858401587496404
-            w[9] = 0.200628529376989021034
-            w[10] = 0.171511909136391380787
-            w[11] = 0.134415255243784220360
-            w[12] = 0.0929271953151245376859
-            w[13] = 0.0516032829970797396969
-            w[14] = 0.0170017196299402603390
-
-        elif n == 31:
-
-            x[0] = -0.99909812496766759766
-            x[1] = -0.99383196321275502221
-            x[2] = -0.98153114955374010687
-            x[3] = -0.96049126870802028342
-            x[4] = -0.92965485742974005667
-            x[5] = -0.88845923287225699889
-            x[6] = -0.83672593816886873550
-            x[7] = -0.77459666924148337704
-            x[8] = -0.70249620649152707861
-            x[9] = -0.62110294673722640294
-            x[10] = -0.53131974364437562397
-            x[11] = -0.43424374934680255800
-            x[12] = -0.33113539325797683309
-            x[13] = -0.22338668642896688163
-            x[14] = -0.11248894313318662575
-            x[15] = 0.0
-            x[16] = 0.11248894313318662575
-            x[17] = 0.22338668642896688163
-            x[18] = 0.33113539325797683309
-            x[19] = 0.43424374934680255800
-            x[20] = 0.53131974364437562397
-            x[21] = 0.62110294673722640294
-            x[22] = 0.70249620649152707861
-            x[23] = 0.77459666924148337704
-            x[24] = 0.83672593816886873550
-            x[25] = 0.88845923287225699889
-            x[26] = 0.92965485742974005667
-            x[27] = 0.96049126870802028342
-            x[28] = 0.98153114955374010687
-            x[29] = 0.99383196321275502221
-            x[30] = 0.99909812496766759766
-
-            w[0] = 0.00254478079156187441540
-            w[1] = 0.00843456573932110624631
-            w[2] = 0.0164460498543878109338
-            w[3] = 0.0258075980961766535646
-            w[4] = 0.0359571033071293220968
-            w[5] = 0.0464628932617579865414
-            w[6] = 0.0569795094941233574122
-            w[7] = 0.0672077542959907035404
-            w[8] = 0.0768796204990035310427
-            w[9] = 0.0857559200499903511542
-            w[10] = 0.0936271099812644736167
-            w[11] = 0.100314278611795578771
-            w[12] = 0.105669893580234809744
-            w[13] = 0.109578421055924638237
-            w[14] = 0.111956873020953456880
-            w[15] = 0.112755256720768691607
-            w[16] = 0.111956873020953456880
-            w[17] = 0.109578421055924638237
-            w[18] = 0.105669893580234809744
-            w[19] = 0.100314278611795578771
-            w[20] = 0.0936271099812644736167
-            w[21] = 0.0857559200499903511542
-            w[22] = 0.0768796204990035310427
-            w[23] = 0.0672077542959907035404
-            w[24] = 0.0569795094941233574122
-            w[25] = 0.0464628932617579865414
-            w[26] = 0.0359571033071293220968
-            w[27] = 0.0258075980961766535646
-            w[28] = 0.0164460498543878109338
-            w[29] = 0.00843456573932110624631
-            w[30] = 0.00254478079156187441540
-        else:
-            print("Number of points does not match Gauss-Patterson quadrature rule.")
-            raise NotImplementedError
-
-        knots = x
-        weights = w
-
-        return knots, weights
-
     def get_denormalized_coordinates(self, coords_norm):
         """
-        Denormalize grid from standardized ([-1, 1] except hermite) to original parameter space for simulations.
+        Denormalize grid from normalized to original parameter space for simulations.
 
         coords = Grid.get_denormalized_coordinates(coords_norm)
 
         Parameters
         ----------
         coords_norm: [N_samples x dim] np.ndarray
-            normalized [-1, 1] coordinates xi
+            Normalized coordinates xi
 
         Returns
         -------
@@ -580,11 +172,15 @@ class Grid(object):
                 coords[:, i_p, ] = coords_norm[:, i_p, ] * self.parameters_random[p].pdf_shape[1] + \
                                  self.parameters_random[p].pdf_shape[0]
 
+            if self.parameters_random[p].pdf_type in ["gamma"]:
+                coords[:, i_p, ] = coords_norm[:, i_p, ] / self.parameters_random[p].pdf_shape[1] + \
+                                   self.parameters_random[p].pdf_shape[2]
+
         return coords
 
     def get_normalized_coordinates(self, coords):
         """
-        Normalize grid from original parameter (except hermite) to standardized ([-1, 1] space for simulations.
+        Normalize grid from original parameter to normalized space for simulations.
 
         coords_norm = Grid.get_normalized_coordinates(coords)
 
@@ -596,7 +192,7 @@ class Grid(object):
         Returns
         -------
         coords_norm : [N_samples x dim] np.ndarray
-            Normalized [-1, 1] coordinates xi
+            Normalized coordinates xi
         """
         coords_norm = np.zeros(coords.shape)
 
@@ -613,6 +209,10 @@ class Grid(object):
                 coords_norm[:, i_p] = (coords[:, i_p] - self.parameters_random[p].pdf_shape[0]) / \
                                       self.parameters_random[p].pdf_shape[1]
 
+            if self.parameters_random[p].pdf_type in ["gamma"]:
+                coords_norm[:, i_p] = (coords[:, i_p] - self.parameters_random[p].pdf_shape[2]) * \
+                                      self.parameters_random[p].pdf_shape[1]
+
         return coords_norm
 
     def create_gradient_grid(self, delta=1e-3):
@@ -623,9 +223,9 @@ class Grid(object):
         Parameters
         ----------
         delta : float, optional, default: 1e-3
-            Shift of grid-points along axes in normalized parameter space [-1, 1]
+            Shift of grid-points along axes in normalized parameter space
         """
-        # shift of gradient grid in normalized space [-1, 1]
+        # shift of gradient grid in normalized space
         delta = delta * np.eye(self.dim)
 
         # Create or update the gradient grid [n_grid x dim x dim]
@@ -1116,7 +716,7 @@ class RandomGrid(Grid):
         Seeding point to replicate random grids
     """
 
-    def __init__(self, parameters_random, options):
+    def __init__(self, parameters_random, n_grid, seed=None, options=None):
         """
         Constructor; Initializes RandomGrid instance; Generates grid
 
@@ -1124,61 +724,26 @@ class RandomGrid(Grid):
         ----------
         parameters_random : OrderedDict of RandomParameter instances
             OrderedDict containing the RandomParameter instances the grids are generated for
-        options: dict
-            Grid parameters
-            - n_grid (int) ... Number of random samples in grid
-            - seed (float) optional, default=None ... Seeding point to replicate random grid
+        n_grid: int
+            Number of random samples in grid
+        seed : float, optional, default=None
+            Seeding point to replicate random grid
+        options : dict, optional, default=None
+            RandomGrid options depending on the grid type
 
         Examples
         --------
         >>> import pygpc
-        >>> grid = pygpc.RandomGrid(parameters_random=parameters_random,
-        >>>                         options={"n_grid": 100, "seed": 1})
+        >>> grid = pygpc.RandomGrid(parameters_random=parameters_random, n_grid=100, seed=1, options=None)
         """
         super(RandomGrid, self).__init__(parameters_random)
 
-        self.n_grid = int(options["n_grid"])     # Number of random samples
-
-        if "seed" in options.keys():
-            self.seed = options["seed"]              # Seed of random grid (if necessary to reproduce random grid)
-            np.random.seed(self.seed)
-        else:
-            self.seed = None
-
-        # Generate random samples for each random input variable [n_grid x dim]
-        self.coords_norm = np.zeros([self.n_grid, self.dim])
-
-        # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
-        if self.seed:
-            for i_grid in range(self.n_grid):
-                for i_p, p in enumerate(self.parameters_random):
-
-                    if self.parameters_random[p].pdf_type == "beta":
-                        self.coords_norm[i_grid, i_p] = np.random.beta(self.parameters_random[p].pdf_shape[0],
-                                                                       self.parameters_random[p].pdf_shape[1],
-                                                                       1) * 2.0 - 1
-
-                    if self.parameters_random[p].pdf_type in ["norm", "normal"]:
-                        self.coords_norm[i_grid, i_p] = np.random.normal(0, 1, 1)
-
-        else:
-            for i_p, p in enumerate(self.parameters_random):
-                if self.parameters_random[p].pdf_type == "beta":
-                    self.coords_norm[:, i_p] = (np.random.beta(self.parameters_random[p].pdf_shape[0],
-                                                               self.parameters_random[p].pdf_shape[1],
-                                                               [self.n_grid, 1]) * 2.0 - 1)[:, 0]
-
-                if self.parameters_random[p].pdf_type in ["norm", "normal"]:
-                    self.coords_norm[:, i_p] = (np.random.normal(0, 1, [self.n_grid, 1]))[:, 0]
-
-        # Denormalize grid to original parameter space
-        self.coords = self.get_denormalized_coordinates(self.coords_norm)
-
-        # Generate unique IDs of grid points
-        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+        self.n_grid = int(n_grid)
+        self.seed = seed
+        self.options = options
 
     def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, seed=None,
-                           classifier=None, domain=None, gradient=False):
+                           classifier=None, domain=None, gradient=False, grid=None):
         """
         Add sample points according to input pdfs to grid (old points are kept). Define either the new total number of
         grid points with "n_grid_new" or add grid-points manually by providing "coords" and "coords_norm".
@@ -1193,16 +758,43 @@ class RandomGrid(Grid):
         coords : ndarray of float [n_grid_add x dim]
             Grid points to add (model space)
         coords_norm : ndarray of float [n_grid_add x dim]
-            Grid points to add (normalized space [-1, 1])
+            Grid points to add (normalized space)
         seed : float, optional, default=None
-            Random seeding point
+            Seeding point to replicate random grid
         classifier : Classifier object, optional, default: None
             Classifier
         domain : int, optional, default: None
             Adds grid points only in specified domain (needs Classifier object including a predict() method)
         gradient : bool, optional, default: False
             Add corresponding gradient grid points
+        grid : RandomGrid Object, optional, default=None
+            Optional initial grid, which gets extended
         """
+
+        def lhs_extend(array, n_extend):
+            dim = np.shape(array)[1]
+            n_old = np.shape(array)[0]
+            n_new = n_old + n_extend
+            a_new = np.zeros([n_extend, np.shape(array)[1]])
+            u = np.random.rand(n_new, np.shape(array)[1])
+            # array = np.insert(array, n_old, np.zeros([n_extend ,np.shape(array)[1]]), axis=0)
+            for d in range(dim):
+                k = 0
+                s = 0
+                for j in range(n_new - 1):
+                    if not float(j / n_new) < float(np.sort(array[:, d])[min((j + s), len(array) - 1)]) < float(
+                            (j + 1) / n_new):
+                        if float((j + 1) / n_new) <= float(np.sort(array[:, d])[min((j + s), len(array) - 1)]):
+                            s = s - 1
+                        else:
+                            j = j - 1
+                            s = s + 1
+                        k = k + 1
+                        if k is np.shape(a_new)[0] + 1:
+                            k = 1
+                        a_new[k - 1, d] = float((j + u[j, d]) / n_new)
+                np.random.shuffle(a_new[:, d])
+            return np.insert(array, n_old, a_new, axis=0)
 
         if n_grid_new is not None:
             # Number of new grid points
@@ -1211,12 +803,21 @@ class RandomGrid(Grid):
             if n_grid_add > 0:
                 # Generate new grid points
                 if classifier is None:
-                    new_grid = RandomGrid(parameters_random=self.parameters_random,
-                                          options={"n_grid": n_grid_add, "seed": seed})
+                    if isinstance(self, Random):
+                        new_grid = Random(parameters_random=self.parameters_random,
+                                          n_grid=n_grid_add,
+                                          seed=seed,
+                                          options=self.options)
 
-                    # append points to existing grid
-                    self.coords = np.vstack([self.coords, new_grid.coords])
-                    self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+
+                        # append points to existing grid
+                        self.coords = np.vstack([self.coords, new_grid.coords])
+                        self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+
+                    elif isinstance(self, LHS):
+                        # append points to existing grid
+                        self.coords = lhs_extend(self.coords_reservoir, n_grid_new)
+                        self.coords_norm = np.vstack([self.coords_norm, self.coords_norm_reservoir[self.n_grid:n_grid_new]])
 
                 else:
                     coords = np.zeros((n_grid_add, len(self.parameters_random)))
@@ -1225,15 +826,37 @@ class RandomGrid(Grid):
                     # add grid points one by one because we are looking for samples in the right domain
                     for i in range(n_grid_add):
                         resample = True
-
                         while resample:
-                            new_grid = RandomGrid(parameters_random=self.parameters_random,
-                                                  options={"n_grid": 1, "seed": seed})
+                            if isinstance(self, Random):
+                                new_grid = Random(parameters_random=self.parameters_random,
+                                                  n_grid=1,
+                                                  seed=seed,
+                                                  options=self.options)
 
-                            if classifier.predict(new_grid.coords_norm)[0] == domain:
-                                coords[i, :] = new_grid.coords
-                                coords_norm[i, :] = new_grid.coords_norm
-                                resample = False
+                                # test if grid point lies in right domain
+                                if classifier.predict(new_grid.coords_norm)[0] == domain:
+                                    coords[i, :] = new_grid.coords
+                                    coords_norm[i, :] = new_grid.coords_norm
+                                    resample = False
+
+                            elif isinstance(self, LHS):
+                                # check if gridpoint exceeds sampling reservoir
+                                # if self.n_grid > max(10000, self.n_grid_lhs * 10)
+                                # coords.np.append(pygpc.LSH( seed=seed+1))
+                                coords_norm_test = lhs_extend(self.coords_norm_reservoir, 1)
+                                # test if next grid point lies in right domain
+                                if classifier.predict(coords_norm_test[len(coords_norm_test) - 1]) == domain:
+                                    self.coords_norm_reservoir = coords_norm_test
+                                    coords[i, :] = self.coords_reservoir[self.n_grid]
+                                    coords_norm[i, :] = self.coords_norm_reservoir[self.n_grid]
+                                    self.n_grid += 1
+                                    resample = False
+
+                                #else:
+                                    # delete tested point
+                                    # self.coords_norm_reservoir = np.delete(self.coords_norm_reservoir, self.n_grid, 0)
+                                    # self.coords_reservoir = np.delete(self.coords_reservoir, self.n_grid, 0)
+                                    # self.lhs_reservoir = np.delete(self.lhs_reservoir, self.n_grid, 0)
 
                     # append points to existing grid
                     self.coords = np.vstack([self.coords, coords])
@@ -1262,3 +885,441 @@ class RandomGrid(Grid):
 
         if gradient:
             self.create_gradient_grid()
+
+
+class Random(RandomGrid):
+    """
+    Random grid object
+
+    Random(parameters_random, options)
+
+    Attributes
+    ----------
+    n_grid: int
+        Number of random samples to generate
+    seed: float
+        Seeding point to replicate random grids
+    """
+
+    def __init__(self, parameters_random, n_grid, seed=None, options=None):
+        """
+        Constructor; Initializes RandomGrid instance; Generates grid
+
+        Parameters
+        ----------
+        parameters_random : OrderedDict of RandomParameter instances
+            OrderedDict containing the RandomParameter instances the grids are generated for
+        n_grid : int or float
+            Number of random samples in grid
+        seed : float, optional, default=None
+            Seeding point to replicate random grid
+        options : dict, optional, default=None
+            RandomGrid options depending on the grid type
+
+        Examples
+        --------
+        >>> import pygpc
+        >>> grid = pygpc.RandomGrid(parameters_random=parameters_random, n_grid=100, seed=1)
+        """
+
+        super(Random, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=None)
+
+        # Seed of random grid (if necessary to reproduce random grid)
+        if self.seed is not None:
+            np.random.seed(self.seed)
+
+        # Generate random samples for each random input variable [n_grid x dim]
+        self.coords_norm = np.zeros([self.n_grid, self.dim])
+
+        # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
+        if self.seed:
+            for i_grid in range(self.n_grid):
+                for i_p, p in enumerate(self.parameters_random):
+
+                    if self.parameters_random[p].pdf_type == "beta":
+                        self.coords_norm[i_grid, i_p] = np.random.beta(self.parameters_random[p].pdf_shape[0],
+                                                                       self.parameters_random[p].pdf_shape[1],
+                                                                       1) * 2.0 - 1
+
+                    if self.parameters_random[p].pdf_type in ["norm", "normal"]:
+
+                        resample = True
+
+                        while resample:
+                            self.coords_norm[i_grid, i_p] = np.random.normal(loc=0,
+                                                                             scale=1,
+                                                                             size=1)
+                            resample = self.coords_norm[i_grid, i_p] < self.parameters_random[p].x_perc_norm[0] or \
+                                       self.coords_norm[i_grid, i_p] > self.parameters_random[p].x_perc_norm[1]
+
+                    if self.parameters_random[p].pdf_type in ["gamma"]:
+
+                        resample = True
+
+                        while resample:
+                            self.coords_norm[i_grid, i_p] = np.random.gamma(
+                                shape=self.parameters_random[p].pdf_shape[0],
+                                scale=1.0,
+                                size=1)
+                            resample = self.coords_norm[i_grid, i_p] > self.parameters_random[p].x_perc_norm
+
+        else:
+            for i_p, p in enumerate(self.parameters_random):
+                if self.parameters_random[p].pdf_type == "beta":
+                    self.coords_norm[:, i_p] = (np.random.beta(self.parameters_random[p].pdf_shape[0],
+                                                               self.parameters_random[p].pdf_shape[1],
+                                                               [self.n_grid, 1]) * 2.0 - 1)[:, 0]
+
+                if self.parameters_random[p].pdf_type in ["norm", "normal"]:
+                    resample = True
+                    outlier_mask = np.ones(self.n_grid, dtype=bool)
+                    j = 0
+                    while resample:
+                        # print("Iteration: {}".format(j+1))
+                        self.coords_norm[outlier_mask, i_p] = (np.random.normal(loc=0,
+                                                                                scale=1,
+                                                                                size=[np.sum(outlier_mask), 1]))[:, 0]
+
+                        outlier_mask = np.logical_or(
+                            self.coords_norm[:, i_p] < self.parameters_random[p].x_perc_norm[0],
+                            self.coords_norm[:, i_p] > self.parameters_random[p].x_perc_norm[1])
+
+                        resample = outlier_mask.any()
+
+                        j += 1
+
+                if self.parameters_random[p].pdf_type in ["gamma"]:
+                    resample = True
+                    outlier_mask = np.ones(self.n_grid, dtype=bool)
+                    j = 0
+                    while resample:
+                        # print("Iteration: {}".format(j + 1))
+                        self.coords_norm[outlier_mask, i_p] = (np.random.gamma(
+                            shape=self.parameters_random[p].pdf_shape[0],
+                            scale=1.0,
+                            size=[np.sum(outlier_mask), 1]))[:, 0]
+
+                        outlier_mask = np.array(self.coords_norm[:, i_p] > self.parameters_random[p].x_perc_norm)
+
+                        resample = outlier_mask.any()
+
+                        j += 1
+
+        # Denormalize grid to original parameter space
+        self.coords = self.get_denormalized_coordinates(self.coords_norm)
+
+        # Generate unique IDs of grid points
+        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+
+class LHS(RandomGrid):
+    """
+    LHS grid object
+
+    LHS(parameters_random, options)
+
+    Attributes
+    ----------
+    n_grid: int
+        Number of random samples to generate
+    seed: float
+        Seeding point to replicate random grids
+    """
+
+    def __init__(self, parameters_random, n_grid, seed=None, options=None):
+        """
+        Constructor; Initializes RandomGrid instance; Generates grid
+
+        Parameters
+        ----------
+        parameters_random : OrderedDict of RandomParameter instances
+            OrderedDict containing the RandomParameter instances the grids are generated for
+        n_grid: int
+            Number of random samples to generate
+        seed: float
+            Seeding point to replicate random grids
+        options: dict, optional, default=None
+            Grid options:
+            - 'corr'            : optimizes design points in their spearman correlation coefficients
+            - 'maximin' or 'm'  : optimizes design points in their maximum minimal distance using the Phi-P criterion
+            - 'ese'             :  uses an enhanced evolutionary algorithm to optimize the Phi-P criterion
+            
+        Examples
+        --------
+        >>> import pygpc
+        >>> grid = pygpc.LHS(parameters_random=parameters_random, n_grid=100, seed=1, options=options)
+        """
+
+        super(LHS, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=options)
+
+        lh_option = None
+
+        if self.options is 'maximin':
+            lh_option = 'm'
+        elif self.options is 'corr':
+            lh_option = 'corr'
+        elif self.options is 'ese':
+            lh_option = None
+
+        def CL2(array):
+            '''
+            Calculate the L2 discrepancy of the design
+            The discrepancy is a measure of the difference between the empirical cumulative distribution function
+            of an experimental design and the uniform cumulative distribution function.
+            A generalized discrepancy and quadrature error bound
+            Math. Comput., 67 (1998), pp. 299-322
+            :param array: nd array m x n with n rows of samples and m columns of variables/dimensions
+            :return: CL criterion for centered L2 discrepancy
+            '''
+            subtract = np.ones([np.shape(array)[0], np.shape(array)[1]])
+            array = array - 0.5 * subtract
+            prod_array_1 = np.zeros(np.shape(array)[0])
+            for n in range(0, np.shape(array)[0]):
+                prod_array_1[n] = (np.ones(np.shape(array)[1]) + (1 / 2 * (np.abs(array[n, :]))) - (
+                        1 / 2 * ((array[n, :]) ** 2))).prod()
+            prod_array_2 = np.zeros([np.shape(array)[0], np.shape(array)[0]])
+            for i in range(0, np.shape(array)[0]):
+                for j in range(0, np.shape(array)[0]):
+                    prod_array_2[i, j] = (np.ones(np.shape(array)[1]) + (1 / 2 * (np.abs(array[i, :]))) - (
+                            1 / 2 * np.abs(array[j, :]) - 1 / 2 * np.abs(array[i, :] - array[j, :]))).prod()
+            cl2d_crit = ((13 / 12) ** 2) - (2 / (np.shape(array)[0]) * prod_array_1.sum()) + (1 / (
+                    np.shape(array)[0] ** 2) * prod_array_2.sum())
+            # centered L2 discrepancy criteria
+            return cl2d_crit
+
+        def log_R(array):
+            """
+            currently only 2 dimensional
+            :param array: nd array
+            :return: Log(R) Entropy Criterion
+            """
+            # R will only ever be 2D
+            R = np.corrcoef(array[:, 0], array[:, 1])
+            for i in range(0, np.shape(array)[1]):
+                for j in range(0, np.shape(array)[1]):
+                    R[i, j] = np.exp((R[i, :] * np.abs(array[i, :] - array[j, :]) ** 2).sum())
+            log_R = np.log(np.linalg.norm(R))
+            return log_R
+
+        def PhiP(x, p=10):
+            """
+            Calculates the Phi-p criterion of the design x with power p.
+            M.D. Morris, T.J. Mitchell:
+            Exploratory designs for computational experiments
+            J. Statist. Plann. Inference, 43 (1995), pp. 381-402
+            x : array_like
+            The design where to calculate Phi-p
+            p : integer
+            The power used for the calculation of PhiP (default to 10)
+
+            """
+
+            return ((scipy.spatial.distance.pdist(x) ** (-p)).sum()) ** (1.0 / p)
+
+        def get_lhs_grid(dim, n, crit=None, random_state=None):
+            """
+            Create samples in an m*n matrix using Latin Hypercube Sampling,
+            M.D. McKay, R.J. Beckman, W.J. Conover: A comparison of three methods for selecting values
+            of input variables in the analysis of output from a computer code
+            dim : integer
+            Number of random variables
+            n : integer
+            Number of rows/ samples drawn for each variable
+            crit: 'corr' - optimizes design points in their spearman correlation coefficients
+                  'maximin' or 'm' - optimizes design points in their maximum minimal distance using the Phi-P criterion
+                  'ese' -  uses an enhanced evolutionary algorithm to optimize the Phi-P criterion
+
+            """
+            if random_state is None:
+                random_state = np.random.RandomState()
+            elif not isinstance(random_state, np.random.RandomState):
+                random_state = np.random.RandomState(random_state)
+
+            def lhs_initial(dim, n):
+                pi = np.zeros([n, dim])
+                # u = matrix of uniform (0,1) that vary in n subareas
+                u = np.random.rand(n, dim)
+                # if crit is 'norm':
+                #     u = np.zeros([n, dim ])
+                for i in range(0, dim):
+                    for j in range(0, n):
+                        pi[j, i] = j + 1
+                    np.random.shuffle(pi[:, i])
+
+                for i in range(0, dim):
+                    for j in range(0, n):
+                        pi[j, i] = (pi[j, i] - u[j, i]) / n
+                return pi
+
+            def lhs_corr(dim, n, iterations):
+                mincorr = np.inf
+                # Minimize the components correlation coefficients
+                for i in range(iterations):
+                    # Generate a random LHS
+                    test = lhs_initial(dim, n)
+                    R = scipy.stats.spearmanr(test)[0]
+                    if dim < 3:
+                        E = np.eye(np.shape(R)[0])
+                    else:
+                        E = 0
+                    if np.max(np.abs(R - E)) < mincorr:
+                        mincorr = np.max(np.abs(R - E))
+                        out = test.copy()
+                return out
+
+            def lhs_maximin(dim, n, iterations):
+                phi_best = max(1000, n * 100)
+                # Maximize the minimum distance between points
+                for i in range(iterations):
+                    test = lhs_initial(dim, n)
+                    phi = PhiP(test)
+                    if phi_best > phi:
+                        phi_best = phi
+                        out = test.copy()
+                return out
+
+            def lhs_ese(dim, n, T0=None):
+                '''
+
+                Enhanced Evelutionary Algorithm (For PhiP Maximin Criterion from SMT),
+                see R. Jin, W. Chen and A. Sudjianto (2005):
+                An efficient algorithm for constructing optimal design of computer
+                experiments. Journal of Statistical Planning and Inference, 134:268-287.
+                :param dim: Dimensions
+                :param n: number of samples
+                :param T0:  Threshold
+                :return: P_best: ESE optimized Design
+
+                '''
+
+                # Parameters
+                P0 = lhs_initial(dim, n)
+                J = 25
+                tol = 1e-3
+                p = 10
+                outer_loop = min(int(1.5 * dim), 30)
+                inner_loop = min(20 * dim, 100)
+                fixed_index = []
+                if T0 is None:
+                    T0 = 0.005 * PhiP(P0, p=p)
+
+                T = T0
+                P_ = P0[:]  # copy of initial design
+                P_best = P_[:]
+                Phi = PhiP(P_best, p=p)
+                Phi_best = Phi
+
+                # Outer loop
+                for z in range(outer_loop):
+                    Phi_oldbest = Phi_best
+                    n_acpt = 0
+                    n_imp = 0
+
+                    # Inner loop
+                    for i in range(inner_loop):
+                        modulo = (i + 1) % dim
+                        l_P = list()
+                        l_Phi = list()
+
+                        # Build J different designs with a single exchanged rows
+                        # See PhiP_exchange
+                        for j in range(J):
+                            l_P.append(P_.copy())
+                            l_Phi.append(PhiP_exchange(l_P[j], k=modulo, Phi=Phi, p=p, fixed_index=fixed_index))
+
+                        l_Phi = np.asarray(l_Phi)
+                        k = np.argmin(l_Phi)
+                        Phi_try = l_Phi[k]
+
+                        # Threshold of acceptance
+                        if Phi_try - Phi <= T * np.random.rand(1)[0]:
+                            Phi = Phi_try
+                            n_acpt = n_acpt + 1
+                            P_ = l_P[k]
+
+                            # Best design retained
+                            if Phi < Phi_best:
+                                P_best = P_
+                                Phi_best = Phi
+                                n_imp = n_imp + 1
+
+                    p_accpt = float(n_acpt) / inner_loop  # probability of acceptance
+                    p_imp = float(n_imp) / inner_loop  # probability of improvement
+
+                    if Phi_best - Phi_oldbest < tol:
+                        # flag_imp = 1
+                        if p_accpt >= 0.1 and p_imp < p_accpt:
+                            T = 0.8 * T
+                        elif p_accpt >= 0.1 and p_imp == p_accpt:
+                            pass
+                        else:
+                            T = T / 0.8
+                    else:
+                        # flag_imp = 0
+                        if p_accpt <= 0.1:
+                            T = T / 0.7
+                        else:
+                            T = 0.9 * T
+                return P_best
+
+            def PhiP_exchange(P, k, Phi, p, fixed_index):
+                # Choose two (different) random rows to perform the exchange
+                i1 = np.random.randint(P.shape[0])
+                while i1 in fixed_index:
+                    i1 = np.random.randint(P.shape[0])
+
+                i2 = np.random.randint(P.shape[0])
+                while i2 == i1 or i2 in fixed_index:
+                    i2 = np.random.randint(P.shape[0])
+
+                P_ = np.delete(P, [i1, i2], axis=0)
+
+                dist1 = scipy.spatial.distance.cdist([P[i1, :]], P_)
+                dist2 = scipy.spatial.distance.cdist([P[i2, :]], P_)
+                d1 = np.sqrt(dist1 ** 2 + (P[i2, k] - P_[:, k]) ** 2 - (P[i1, k] - P_[:, k]) ** 2)
+                d2 = np.sqrt(dist2 ** 2 - (P[i2, k] - P_[:, k]) ** 2 + (P[i1, k] - P_[:, k]) ** 2)
+
+                res = (Phi ** p + (d1 ** (-p) - dist1 ** (-p) + d2 ** (-p) - dist2 ** (-p)).sum()) ** (1.0 / p)
+
+                P[i1, k], P[i2, k] = P[i2, k], P[i1, k]
+                return res
+
+            if crit is 'corr':
+                return lhs_corr(dim, n, 100)
+            elif crit is 'maximin' or crit is 'm':
+                return lhs_maximin(dim, n, 100)
+            elif crit is 'ese':
+                return lhs_ese(dim, n)
+            else:
+                return lhs_initial(dim, n)
+
+
+        n_grid_lhs = self.n_grid
+        self.coords_reservoir = np.zeros((n_grid_lhs, self.dim))
+        self.coords_norm_reservoir = np.zeros((n_grid_lhs, self.dim))
+        self.perc_mask = np.zeros((n_grid_lhs, self.dim)).astype(bool)
+
+        # Generate random samples for each random input variable [n_grid x dim]
+        self.coords_norm = np.zeros([self.n_grid, self.dim])
+
+        # generate LHS grid in icdf space (seed of random grid (if necessary to reproduce random grid)
+        self.lhs_reservoir = get_lhs_grid(dim=self.dim, n=n_grid_lhs, crit=lh_option, random_state=self.seed)
+
+        # transform sample points from icdf to pdf space
+        for i_p, p in enumerate(self.parameters_random):
+            self.coords_norm_reservoir[:, i_p] = self.parameters_random[p].icdf(self.lhs_reservoir[:, i_p])
+            self.perc_mask[:, i_p] = np.logical_and(self.parameters_random[p].pdf_limits_norm[0] < self.coords_norm_reservoir[:, i_p],
+                                                    self.coords_norm_reservoir[:, i_p] < self.parameters_random[p].pdf_limits_norm[1])
+
+        # get points all satisfying perc constraints
+        self.perc_mask = self.perc_mask.all(axis=1)
+        self.coords_norm_reservoir = self.coords_norm_reservoir[self.perc_mask, :]
+
+        self.coords_norm = self.coords_norm_reservoir[0:self.n_grid, :]
+
+        # Denormalize grid to original parameter space
+        self.coords = self.get_denormalized_coordinates(self.coords_norm)
+        self.coords_reservoir = self.get_denormalized_coordinates(self.coords_norm_reservoir)
+
+        # Generate unique IDs of grid points
+        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]

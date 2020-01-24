@@ -35,17 +35,19 @@ for g_e in gradient_enhanced:
             options["gradient_calculation"] = "standard_forward"
             options["adaptive_sampling"] = a_s
             options["gradient_enhanced"] = g_e
+            options["grid"] = pygpc.Random
+            options["grid_options"] = None
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuous = pygpc.TestBenchContinuous(algorithm=algorithm,
                                                             options=copy.deepcopy(options),
                                                             repetitions=repetitions,
                                                             n_cpu=n_cpu)
             TestBenchContinuous.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuousND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuousND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuousND = pygpc.TestBenchContinuousND(algorithm=algorithm,
                                                                 options=copy.deepcopy(options),
                                                                 repetitions=repetitions,
@@ -53,16 +55,16 @@ for g_e in gradient_enhanced:
                                                                 n_cpu=n_cpu)
             TestBenchContinuousND.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuous/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuous/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchDiscontinuous = pygpc.TestBenchDiscontinuous(algorithm=algorithm,
                                                                   options=copy.deepcopy(options),
                                                                   repetitions=repetitions,
                                                                   n_cpu=n_cpu)
             TestBenchDiscontinuous.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuousND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuousND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchDiscontinuousND = pygpc.TestBenchDiscontinuousND(algorithm=algorithm,
                                                                       options=copy.deepcopy(options),
                                                                       repetitions=repetitions,
@@ -70,24 +72,24 @@ for g_e in gradient_enhanced:
                                                                       n_cpu=n_cpu)
             TestBenchDiscontinuousND.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuousHD/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuousHD/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuousHD = pygpc.TestBenchContinuousHD(algorithm=algorithm,
                                                                 options=copy.deepcopy(options),
                                                                 repetitions=repetitions,
                                                                 n_cpu=n_cpu)
             TestBenchContinuousHD.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchNoisy/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchNoisy/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchNoisy = pygpc.TestBenchNoisy(algorithm=algorithm,
                                                   options=copy.deepcopy(options),
                                                   repetitions=repetitions,
                                                   n_cpu=n_cpu)
             TestBenchNoisy.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchNoisyND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchNoisyND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchNoisyND = pygpc.TestBenchNoisyND(algorithm=algorithm,
                                                       options=copy.deepcopy(options),
                                                       repetitions=repetitions,
@@ -123,17 +125,19 @@ for a_s in adaptive_sampling:
             options["n_grid_gradient"] = 25
             options["gradient_calculation"] = "standard_forward"
             options["adaptive_sampling"] = a_s
+            options["grid"] = pygpc.Random
+            options["grid_options"] = None
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuous = pygpc.TestBenchContinuous(algorithm=algorithm,
                                                             options=copy.deepcopy(options),
                                                             repetitions=repetitions,
                                                             n_cpu=n_cpu)
             TestBenchContinuous.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuousND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuousND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuousND = pygpc.TestBenchContinuousND(algorithm=algorithm,
                                                                 options=copy.deepcopy(options),
                                                                 repetitions=repetitions,
@@ -141,16 +145,16 @@ for a_s in adaptive_sampling:
                                                                 n_cpu=n_cpu)
             TestBenchContinuousND.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuous/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuous/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchDiscontinuous = pygpc.TestBenchDiscontinuous(algorithm=algorithm,
                                                                   options=copy.deepcopy(options),
                                                                   repetitions=repetitions,
                                                                   n_cpu=n_cpu)
             TestBenchDiscontinuous.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuousND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuousND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchDiscontinuousND = pygpc.TestBenchDiscontinuousND(algorithm=algorithm,
                                                                       options=copy.deepcopy(options),
                                                                       repetitions=repetitions,
@@ -158,24 +162,24 @@ for a_s in adaptive_sampling:
                                                                       n_cpu=n_cpu)
             TestBenchDiscontinuousND.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuousHD/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuousHD/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuousHD = pygpc.TestBenchContinuousHD(algorithm=algorithm,
                                                                 options=copy.deepcopy(options),
                                                                 repetitions=repetitions,
                                                                 n_cpu=n_cpu)
             TestBenchContinuousHD.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchNoisy/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchNoisy/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchNoisy = pygpc.TestBenchNoisy(algorithm=algorithm,
                                                   options=copy.deepcopy(options),
                                                   repetitions=repetitions,
                                                   n_cpu=n_cpu)
             TestBenchNoisy.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchNoisyND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchNoisyND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchNoisyND = pygpc.TestBenchNoisyND(algorithm=algorithm,
                                                       options=copy.deepcopy(options),
                                                       repetitions=repetitions,
@@ -212,17 +216,19 @@ for g_e in gradient_enhanced:
             options["gradient_calculation"] = "standard_forward"
             options["adaptive_sampling"] = a_s
             options["gradient_enhanced"] = g_e
+            options["grid"] = pygpc.Random
+            options["grid_options"] = None
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuous = pygpc.TestBenchContinuous(algorithm=algorithm,
                                                             options=copy.deepcopy(options),
                                                             repetitions=repetitions,
                                                             n_cpu=n_cpu)
             TestBenchContinuous.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuousND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuousND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuousND = pygpc.TestBenchContinuousND(algorithm=algorithm,
                                                                 options=copy.deepcopy(options),
                                                                 repetitions=repetitions,
@@ -230,16 +236,16 @@ for g_e in gradient_enhanced:
                                                                 n_cpu=n_cpu)
             TestBenchContinuousND.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuous/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuous/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchDiscontinuous = pygpc.TestBenchDiscontinuous(algorithm=algorithm,
                                                                   options=copy.deepcopy(options),
                                                                   repetitions=repetitions,
                                                                   n_cpu=n_cpu)
             TestBenchDiscontinuous.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuousND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchDiscontinuousND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchDiscontinuousND = pygpc.TestBenchDiscontinuousND(algorithm=algorithm,
                                                                       options=copy.deepcopy(options),
                                                                       repetitions=repetitions,
@@ -247,24 +253,24 @@ for g_e in gradient_enhanced:
                                                                       n_cpu=n_cpu)
             TestBenchDiscontinuousND.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchContinuousHD/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchContinuousHD/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchContinuousHD = pygpc.TestBenchContinuousHD(algorithm=algorithm,
                                                                 options=copy.deepcopy(options),
                                                                 repetitions=repetitions,
                                                                 n_cpu=n_cpu)
             TestBenchContinuousHD.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchNoisy/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchNoisy/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchNoisy = pygpc.TestBenchNoisy(algorithm=algorithm,
                                                   options=copy.deepcopy(options),
                                                   repetitions=repetitions,
                                                   n_cpu=n_cpu)
             TestBenchNoisy.run()
 
-            options["fn_results"] = os.path.join(folder, "TestBenchNoisyND/{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["order_max_norm"], int(g_e)))
+            options["fn_results"] = os.path.join(folder, "TestBenchNoisyND/{}_{}_{}_q_{}_ge_{}".format(
+                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
             TestBenchNoisyND = pygpc.TestBenchNoisyND(algorithm=algorithm,
                                                       options=copy.deepcopy(options),
                                                       repetitions=repetitions,

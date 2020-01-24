@@ -1,7 +1,6 @@
 import pygpc.GPC
 import pygpc.SGPC
 import pygpc.testfunctions
-import pygpc.Visualization
 import pygpc.AbstractModel
 import pygpc.Basis
 import pygpc.BasisFunction
@@ -20,5 +19,3 @@ from .postprocessing import *
 from .RandomParameter import *
 from .test_utils import *
 from .Session import *
-
-
