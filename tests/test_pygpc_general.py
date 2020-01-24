@@ -10,9 +10,9 @@ import sys
 import os
 
 # test options
-folder = '/home/kporzig/tmp'    # output folder
+folder = 'tmp'      # output folder
 plot = False        # plot and save output
-matlab = False       # test Matlab functionality
+matlab = False      # test Matlab functionality
 
 # temporary folder
 try:
