@@ -78,21 +78,29 @@ matrix:
       before_install:
         - choco install python --version 3.8.0
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+      env:
+        - CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
     - os: windows
       language: shell
       before_install:
         - choco install python --version 3.7.0
         - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+      env:
+        - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
     - os: windows
       language: shell
       before_install:
         - choco install python --version 3.6.0
         - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
+      env:
+        - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: windows
       language: shell
       before_install:
         - choco install python --version 3.5.0
         - export PATH="/c/Python35:/c/Python35/Scripts:$PATH"
+      env:
+        - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
 
 install:
     - pip install cibuildwheel
