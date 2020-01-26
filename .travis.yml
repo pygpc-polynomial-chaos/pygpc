@@ -29,11 +29,11 @@ matrix:
         homebrew:
           packages:
             - gcc
-            - openmp
+            - libomp
             - pyenv
       language: generic
       env:
-        - PYTHON=3.8
+        - PYTHON=3.8.1
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
@@ -45,10 +45,11 @@ matrix:
         homebrew:
           packages:
             - gcc
-            - openmp
+            - libomp
+            - pyenv
       language: generic
       env:
-        - PYTHON=3.7
+        - PYTHON=3.7.6
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
@@ -60,10 +61,11 @@ matrix:
         homebrew:
           packages:
             - gcc
-            - openmp
+            - libomp
+            - pyenv
       language: generic
       env:
-        - PYTHON=3.6
+        - PYTHON=3.6.8
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
@@ -75,10 +77,11 @@ matrix:
         homebrew:
           packages:
             - gcc
-            - openmp
+            - libomp
+            - pyenv
       language: generic
       env:
-        - PYTHON=3.5
+        - PYTHON=3.5.4
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
