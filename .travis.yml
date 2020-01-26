@@ -105,7 +105,6 @@ matrix:
 
 install:
     - pip install cibuildwheel pytest
-    - cd pygpc
     - pip install .
 
 script:
