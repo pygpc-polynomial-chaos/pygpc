@@ -4,31 +4,25 @@ env:
  
 matrix:
   include:
-    - language: python
-      sudo: required
+    - os: linux
+      dist: bionic
+      language: python
       python: '3.8'
-      os: linux
-      dist: xenial
-      sudo: true
       env: CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
-    - language: python
-      sudo: required
+    - os: linux
+      dist: bionic
+      language: python
       python: '3.7'
-      os: linux
-      dist: xenial
-      sudo: true
       env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
-    - language: python
-      sudo: required
+    - os : linux
+      dist: bionic
+      language: python
       python: '3.6'
-      os: linux
-      dist: xenial
       env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
-    - language: python
-      sudo: required
+    - os: linux
+      dist: bionic
+      language: python
       python: '3.5'
-      os: linux
-      dist: xenial
       env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
     - os: osx
       addons:
@@ -36,6 +30,7 @@ matrix:
           packages:
             - gcc
             - openmp
+            - pyenv
       language: generic
       env:
         - PYTHON=3.8
@@ -43,7 +38,8 @@ matrix:
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
       before_install:
-        - alias python=python3
+          - pyenv install $PYTHON
+          - pyenv gobal $PYTHON
     - os: osx
       addons:
         homebrew:
@@ -57,7 +53,8 @@ matrix:
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
       before_install:
-        - alias python=python3
+          - pyenv install $PYTHON
+          - pyenv gobal $PYTHON
     - os: osx
       addons:
         homebrew:
@@ -71,7 +68,8 @@ matrix:
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
       before_install:
-        - alias python=python3
+          - pyenv install $PYTHON
+          - pyenv gobal $PYTHON
     - os: osx
       addons:
         homebrew:
@@ -85,7 +83,8 @@ matrix:
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
       before_install:
-        - alias python=python3
+          - pyenv install $PYTHON
+          - pyenv gobal $PYTHON
     - os: windows
       language: shell
       before_install:
@@ -112,10 +111,10 @@ matrix:
         - export CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
 
 install:
-    - python -m pip install cibuildwheel pytest Cython
+    - python -m pip install cibuildwheel Cython numpy
     - python -m pip install .
 
 script:
-    - python -m pytest 
+    - python -m unittest 
     - python -m cibuildwheel --output-dir wheelhouse
     - ls wheelhouse/

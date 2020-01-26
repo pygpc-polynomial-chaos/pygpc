@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 import numpy as np
 import unittest
 import shutil
@@ -8,6 +6,12 @@ import time
 import h5py
 import sys
 import os
+from collections import OrderedDict
+
+# disable numpy warnings
+import warnings
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 # test options
 folder = 'tmp'      # output folder
