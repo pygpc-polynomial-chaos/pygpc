@@ -26,24 +26,6 @@ from setuptools import setup, find_packages, Extension
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--enable-openmp', action='store_true')
-#
-# args = parser.parse_args()
-#
-# pygpc_extensions_src_file_path=os.path.join('pckg', 'pygpc_extensions',
-#                                             'src', 'pygpc_extensions.cpp')
-# pygpc_extensions_include_path=os.path.join('pckg', 'pygpc_extensions',
-#                                            'include')
-#
-# if args.enable_openmp:
-#     openmp_compile_args = ['-fopenmp']
-#     openmp_link_args = ['-lgomp']
-# else:
-#     openmp_compile_args = []
-#     openmp_link_args = []
-
-
 openmp_compile_args = ['-fopenmp']
 openmp_link_args = ['-lgomp']
 pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
@@ -71,7 +53,8 @@ setup(name='pygpc',
                         'numpy>=1.16.4',
                         'fastmat>=0.1.2.post1',
                         'scikit-learn>=0.19.1',
-                        'h5py>=2.9.0'],
+                        'h5py>=2.9.0',
+                        'seaborn>=0.9.'],
       ext_modules=extensions,
       project_urls={
         "Documentation": "https://pygpc.readthedocs.io/en/latest/",
