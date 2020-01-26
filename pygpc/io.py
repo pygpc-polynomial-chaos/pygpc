@@ -7,6 +7,7 @@ from collections import OrderedDict
 from .misc import is_instance
 # from .Grid import *
 
+
 def write_session(obj, fname, overwrite=True):
     """
     Saves a gpc session in pickle or hdf5 file formal depending on the
@@ -91,7 +92,7 @@ def write_session_hdf5(obj, fname, overwrite=True):
     if overwrite and os.path.exists(fname):
         os.remove(fname)
 
-    _ = write_dict_to_hdf5(fn_hdf5=fname, data=obj.__dict__, folder="")
+    write_dict_to_hdf5(fn_hdf5=fname, data=obj.__dict__, folder="")
 
 
 def read_session(fname):
@@ -225,7 +226,7 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
                 data[key] = "None"
 
             write_arr_to_hdf5(fn_hdf5=fn_hdf5,
-                              arr_name=folder+"/"+key,
+                              arr_name=folder+"/"+str(key),
                               data=data[key],
                               verbose=verbose)
 
@@ -271,7 +272,7 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
             else:
                 write_dict_to_hdf5(fn_hdf5=fn_hdf5,
                                    data=lst,
-                                   folder=arr_name+"/"+idx,
+                                   folder=arr_name+"/"+str(idx),
                                    verbose=verbose)
                 return
 

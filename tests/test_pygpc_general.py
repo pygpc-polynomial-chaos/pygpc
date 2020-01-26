@@ -1308,10 +1308,10 @@ class TestPygpcMethods(unittest.TestCase):
             for b_compare in backends:
                 if b_compare != b_ref:
                     self.expect_isclose(gpc_matrix[b_ref], gpc_matrix[b_compare], atol=1e-6,
-                                          msg=f"gpc matrices between {b_ref} and {b_compare} are not equal")
+                                        msg="gpc matrices between "+b_ref+" and "+b_compare+" are not equal")
 
                     self.expect_isclose(gpc_matrix_gradient[b_ref], gpc_matrix_gradient[b_compare], atol=1e-6,
-                                        msg=f"gpc matrices between {b_ref} and {b_compare} are not equal")
+                                        msg="gpc matrices between "+b_ref+" and "+b_compare+" are not equal")
 
         print("done!\n")
 
