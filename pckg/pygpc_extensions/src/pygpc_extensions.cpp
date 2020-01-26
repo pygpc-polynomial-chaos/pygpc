@@ -40,7 +40,7 @@ static PyObject* create_gpc_matrix_cpu(PyObject* self, PyObject* args)
 
     double* ptr_coeffs = (double*)PyArray_DATA(coeffs);
 
-    create_gpc_matrix_cpu_t<double>(ptr_arguments,
+    create_gpc_matrix_cpu_t<double, npy_intp>(ptr_arguments,
         ptr_coeffs, ptr_result, n_arguments, n_dim, n_basis, n_grad);
 
     Py_DECREF(arguments);
@@ -82,7 +82,7 @@ static PyObject* create_gpc_matrix_omp(PyObject* self, PyObject* args)
 
     double* ptr_coeffs = (double*)PyArray_DATA(coeffs);
 
-    create_gpc_matrix_omp_t<double>(ptr_arguments,
+    create_gpc_matrix_omp_t<double, npy_intp>(ptr_arguments,
         ptr_coeffs, ptr_result, n_arguments, n_dim, n_basis, n_grad);
 
     Py_DECREF(arguments);
@@ -92,107 +92,6 @@ static PyObject* create_gpc_matrix_omp(PyObject* self, PyObject* args)
     return Py_None;
 }
 
-/*
-static PyObject* get_approximation_cpu(PyObject* self, PyObject* args)
-{
-    PyObject* py_arguments = NULL;
-    PyObject* py_result = NULL;
-    PyObject* py_poly_coeffs = NULL;
-    PyObject* py_gpc_coeffs = NULL;
-    PyObject* arguments = NULL;
-    PyObject* result = NULL;
-    PyObject* poly_coeffs = NULL;
-    PyObject* gpc_coeffs = NULL;
-
-    if (!PyArg_ParseTuple(args, "O!O!O!O!", &PyArray_Type, &py_arguments,
-        &PyArray_Type, &py_poly_coeffs, &PyArray_Type, &py_gpc_coeffs, 
-        &PyArray_Type, &py_result))
-        return NULL;
-    
-    arguments = PyArray_FROM_OTF(py_arguments, NPY_DOUBLE,
-        NPY_ARRAY_IN_ARRAY);
-    poly_coeffs = PyArray_FROM_OTF(py_poly_coeffs, NPY_DOUBLE,
-        NPY_ARRAY_IN_ARRAY);
-    gpc_coeffs = PyArray_FROM_OTF(py_gpc_coeffs, NPY_DOUBLE,
-        NPY_ARRAY_IN_ARRAY);
-    result = PyArray_FROM_OTF(py_result, NPY_DOUBLE,
-        NPY_ARRAY_OUT_ARRAY);
-
-    npy_intp* ptr_dim_arguments = PyArray_DIMS(arguments);
-    npy_intp n_arguments = ptr_dim_arguments[0];
-    npy_intp n_dim = ptr_dim_arguments[1];
-    double* ptr_arguments = (double*)PyArray_DATA(arguments);
-
-    npy_intp* ptr_dim_gpc_coeffs = PyArray_DIMS(gpc_coeffs);
-    npy_intp n_basis = ptr_dim_gpc_coeffs[0];
-    npy_intp n_gpc_coeffs = ptr_dim_gpc_coeffs[1];
-    double* ptr_gpc_coeffs = (double*)PyArray_DATA(gpc_coeffs);
-
-    double* ptr_poly_coeffs = (double*)PyArray_DATA(poly_coeffs);
-    double* ptr_result = (double*)PyArray_DATA(result);
-
-    get_approximation_cpu_t<double>(ptr_arguments, ptr_poly_coeffs,
-        ptr_gpc_coeffs, ptr_result, n_arguments, n_dim, n_basis,
-        n_gpc_coeffs);
-
-    Py_DECREF(arguments);
-    Py_DECREF(poly_coeffs);
-    Py_DECREF(gpc_coeffs);
-    Py_DECREF(result);
-
-    return Py_None;
-}
-
-static PyObject* get_approximation_omp(PyObject* self, PyObject* args)
-{
-    PyObject* py_arguments = NULL;
-    PyObject* py_result = NULL;
-    PyObject* py_poly_coeffs = NULL;
-    PyObject* py_gpc_coeffs = NULL;
-    PyObject* arguments = NULL;
-    PyObject* result = NULL;
-    PyObject* poly_coeffs = NULL;
-    PyObject* gpc_coeffs = NULL;
-
-    if (!PyArg_ParseTuple(args, "O!O!O!O!", &PyArray_Type, &py_arguments,
-        &PyArray_Type, &py_poly_coeffs, &PyArray_Type, &py_gpc_coeffs, 
-        &PyArray_Type, &py_result))
-        return NULL;
-    
-    arguments = PyArray_FROM_OTF(py_arguments, NPY_DOUBLE,
-        NPY_ARRAY_IN_ARRAY);
-    poly_coeffs = PyArray_FROM_OTF(py_poly_coeffs, NPY_DOUBLE,
-        NPY_ARRAY_IN_ARRAY);
-    gpc_coeffs = PyArray_FROM_OTF(py_gpc_coeffs, NPY_DOUBLE,
-        NPY_ARRAY_IN_ARRAY);
-    result = PyArray_FROM_OTF(py_result, NPY_DOUBLE,
-        NPY_ARRAY_OUT_ARRAY);
-
-    npy_intp* ptr_dim_arguments = PyArray_DIMS(arguments);
-    npy_intp n_arguments = ptr_dim_arguments[0];
-    npy_intp n_dim = ptr_dim_arguments[1];
-    double* ptr_arguments = (double*)PyArray_DATA(arguments);
-
-    npy_intp* ptr_dim_gpc_coeffs = PyArray_DIMS(gpc_coeffs);
-    npy_intp n_basis = ptr_dim_gpc_coeffs[0];
-    npy_intp n_gpc_coeffs = ptr_dim_gpc_coeffs[1];
-    double* ptr_gpc_coeffs = (double*)PyArray_DATA(gpc_coeffs);
-
-    double* ptr_poly_coeffs = (double*)PyArray_DATA(poly_coeffs);
-    double* ptr_result = (double*)PyArray_DATA(result);
-
-    get_approximation_omp_t<double>(ptr_arguments, ptr_poly_coeffs,
-        ptr_gpc_coeffs, ptr_result, n_arguments, n_dim, n_basis,
-        n_gpc_coeffs);
-
-    Py_DECREF(arguments);
-    Py_DECREF(poly_coeffs);
-    Py_DECREF(gpc_coeffs);
-    Py_DECREF(result);
-
-    return Py_None;
-}
-*/
 
 static PyMethodDef methods[] =
 {

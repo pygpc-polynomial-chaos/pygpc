@@ -103,8 +103,13 @@ before_install: |
   fi
 
 install:
+  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    - python3 -m pip install cibuildwheel twine Cython numpy
+    - python3 -m pip install .
+  else
     - python -m pip install cibuildwheel twine Cython numpy
     - python -m pip install .
+  fi
 
 script:
     - python -m unittest 
