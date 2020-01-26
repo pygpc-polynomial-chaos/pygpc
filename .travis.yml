@@ -1,117 +1,27 @@
+language: python
+
+jobs:
+  include:
+    # perform a linux build
+    - services: docker
+    # and a mac build
+    - os: osx
+      language: shell
+    # and a windows build
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.8.0
+        - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+
 env:
   global:
-    - CIBW_BEFORE_BUILD="pip install numpy" 
- 
-matrix:
-  include:
-    - os: linux
-      dist: bionic
-      language: python
-      python: '3.8'
-      env: CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
-    - os: linux
-      dist: bionic
-      language: python
-      python: '3.7'
-      env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
-    - os : linux
-      dist: bionic
-      language: python
-      python: '3.6'
-      env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
-    - os: linux
-      dist: bionic
-      language: python
-      python: '3.5'
-      env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
-    - os: osx
-      language: generic
-      env:
-        - PYTHON=3.8.1
-        - CC=gcc-9
-        - CXX=g++-9
-        - CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
-    - os: osx
-      language: generic
-      env:
-        - PYTHON=3.7.6
-        - CC=gcc-9
-        - CXX=g++-9
-        - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
-    - os: osx
-      language: generic
-      env:
-        - PYTHON=3.6.8
-        - CC=gcc-9
-        - CXX=g++-9
-        - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
-    - os: osx
-      language: generic
-      env:
-        - PYTHON=3.5.4
-        - CC=gcc-9
-        - CXX=g++-9
-        - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
-    - os: windows
-      language: shell
-      before_install:
-        - choco install python --version 3.8.1
-        - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
-        - export CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
-    - os: windows
-      language: shell
-      before_install:
-        - choco install python --version 3.7.6
-        - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
-        - export CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
-    - os: windows
-      language: shell
-      before_install:
-        - choco install python --version 3.6.8
-        - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
-    - os: windows
-      language: shell
-      before_install:
-        - choco install python --version 3.5.4
-        - export PATH="/c/Python35:/c/Python35/Scripts:$PATH"
-        - export CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
-
-before_install: |
-  # macOSX CI environment configuration: https://pythonhosted.org/CodeChat/.travis.yml.html
-  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    brew update
-    # Per the `pyenv homebrew recommendations <https://github.com/yyuu/pyenv/wiki#suggested-build-environment>`_.
-    brew install openssl readline gcc libomp
-    brew upgrade numpy
-    # See https://docs.travis-ci.com/user/osx-ci-environment/#A-note-on-upgrading-packages.
-    # I didn't do this above because it works and I'm lazy.
-    brew outdated pyenv || brew upgrade pyenv
-    # virtualenv doesn't work without pyenv knowledge. venv in Python 3.3
-    # doesn't provide Pip by default. So, use `pyenv-virtualenv <https://github.com/yyuu/pyenv-virtualenv/blob/master/README.md>`_.
-    brew install pyenv-virtualenv
-    pyenv install $PYTHON
-    # I would expect something like ``pyenv init; pyenv local $PYTHON`` or
-    # ``pyenv shell $PYTHON`` would work, but ``pyenv init`` doesn't seem to
-    # modify the Bash environment. ??? So, I hand-set the variables instead.
-    export PYENV_VERSION=$PYTHON
-    export PATH="/Users/travis/.pyenv/shims:${PATH}"
-    pyenv-virtualenv venv
-    source venv/bin/activate
-    # A manual check that the correct version of Python is running.
-    python --version
-  fi
+    - CIBW_TEST_REQUIRES=nose
+    - CIBW_TEST_COMMAND="nosetests {project}/tests"
 
 install:
-  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-        python3 -m pip install cibuildwheel twine Cython numpy;
-        python3 -m pip install .;
-    else
-        python -m pip install cibuildwheel twine Cython numpy;
-        python -m pip install .;
-    fi
+  - python -m pip install twine cibuildwheel==1.1.0
 
 script:
-    - python -m unittest 
-    - python -m cibuildwheel --output-dir wheelhouse
-    - ls wheelhouse/
+  - python -m cibuildwheel --output-dir wheelhouse
+  - ls wheelhouse/
