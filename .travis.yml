@@ -1,27 +1,104 @@
-language: python
-
-jobs:
+env:
+  global:
+    - CIBW_BEFORE_BUILD="pip install numpy" 
+    - CIBW_TEST_REQUIRES=pytest
+    - CIBW_TEST_COMMAND="pytest" 
+ 
+matrix:
   include:
-    # perform a linux build
-    - services: docker
-    # and a mac build
+    - os: linux
+      dist: bionic
+      language: python
+      python: '3.8'
+      env: CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+    - os: linux
+      dist: bionic
+      language: python
+      python: '3.7'
+      env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+    - os : linux
+      dist: bionic
+      language: python
+      python: '3.6'
+      env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+    - os: linux
+      dist: bionic
+      language: python
+      python: '3.5'
+      env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
     - os: osx
-      language: shell
-    # and a windows build
+      language: generic
+      env:
+        - PYTHON=3.8.1
+        - CC=gcc-9
+        - CXX=g++-9
+        - CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - libomp
+    - os: osx
+      language: generic
+      env:
+        - PYTHON=3.7.6
+        - CC=gcc-9
+        - CXX=g++-9
+        - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - libomp
+    - os: osx
+      language: generic
+      env:
+        - PYTHON=3.6.8
+        - CC=gcc-9
+        - CXX=g++-9
+        - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - libomp
+    - os: osx
+      language: generic
+      env:
+        - PYTHON=3.5.4
+        - CC=gcc-9
+        - CXX=g++-9
+        - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - libomp
     - os: windows
       language: shell
       before_install:
-        - choco install python --version 3.8.0
+        - choco install python --version 3.8.1
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
-
-env:
-  global:
-    - CIBW_TEST_REQUIRES=nose
-    - CIBW_TEST_COMMAND="nosetests {project}/tests"
-
-install:
-  - python -m pip install twine cibuildwheel==1.1.0
+        - export CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.7.6
+        - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+        - export CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.6.8
+        - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.5.4
+        - export PATH="/c/Python35:/c/Python35/Scripts:$PATH"
+        - export CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
 
 script:
-  - python -m cibuildwheel --output-dir wheelhouse
-  - ls wheelhouse/
+    - python -m cibuildwheel --output-dir wheelhouse
+    - ls wheelhouse/
