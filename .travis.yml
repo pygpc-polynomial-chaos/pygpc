@@ -104,8 +104,8 @@ matrix:
         - export CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
 
 install:
-    - pip install cibuildwheel pytest
-    - pip install .
+    - python -m pip install cibuildwheel pytest Cython
+    - python -m pip install .
 
 script:
     - python -m pytest 

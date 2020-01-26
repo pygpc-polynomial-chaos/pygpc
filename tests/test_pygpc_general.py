@@ -1232,7 +1232,6 @@ class TestPygpcMethods(unittest.TestCase):
         self.expect_true(files_consistent, error_msg)
         print("done!\n")
 
-
     def test_14_backends(self):
         """
         Test the different backends ["python", "cpu", "omp", "gpu"]
@@ -1300,7 +1299,7 @@ class TestPygpcMethods(unittest.TestCase):
             gpc.init_gpc_matrix()
             stop = time.time()
 
-            print(f"{b}: {(stop-start):.4f} s")
+            print(b, ": ", stop-start)
 
             gpc_matrix[b] = gpc.gpc_matrix
             gpc_matrix_gradient[b] = gpc.gpc_matrix_gradient
@@ -1315,7 +1314,6 @@ class TestPygpcMethods(unittest.TestCase):
                                         msg=f"gpc matrices between {b_ref} and {b_compare} are not equal")
 
         print("done!\n")
-
 
     def test_15_save_and_load_session(self):
         """
@@ -1373,6 +1371,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         # compare session
         pass
+
 
 if __name__ == '__main__':
     unittest.main()

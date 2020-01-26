@@ -195,7 +195,7 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
                 data.__dict__[key] = "None"
 
             write_arr_to_hdf5(fn_hdf5=fn_hdf5,
-                              arr_name=f"{folder}/{key}",
+                              arr_name=folder+"/"+key,
                               data=data.__dict__[key],
                               verbose=verbose)
 
@@ -214,7 +214,7 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
                 lst = "None"
 
             write_arr_to_hdf5(fn_hdf5=fn_hdf5,
-                              arr_name=f"{folder}/{idx}",
+                              arr_name=folder+"/"+idx,
                               data=lst,
                               verbose=verbose)
 
@@ -225,7 +225,7 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
                 data[key] = "None"
 
             write_arr_to_hdf5(fn_hdf5=fn_hdf5,
-                              arr_name=f"{folder}/{key}",
+                              arr_name=folder+"/"+key,
                               data=data[key],
                               verbose=verbose)
 
@@ -271,7 +271,7 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
             else:
                 write_dict_to_hdf5(fn_hdf5=fn_hdf5,
                                    data=lst,
-                                   folder=f"{arr_name}/{idx}",
+                                   folder=arr_name+"/"+idx,
                                    verbose=verbose)
                 return
 
@@ -330,7 +330,7 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
         data = data.astype('|S')
 
         if verbose:
-            print(f"Converting array '{arr_name}'' to string")
+            print("Converting array " + arr_name + " to string")
 
     with h5py.File(fn_hdf5, 'a') as f:
         # create data_set
