@@ -214,7 +214,7 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
                 lst = "None"
 
             write_arr_to_hdf5(fn_hdf5=fn_hdf5,
-                              arr_name=folder+"/"+idx,
+                              arr_name=folder+"/"+str(idx),
                               data=lst,
                               verbose=verbose)
 

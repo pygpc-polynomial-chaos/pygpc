@@ -42,6 +42,8 @@ matrix:
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+      before_install:
+        - alias python=python3
     - os: osx
       addons:
         homebrew:
@@ -54,6 +56,8 @@ matrix:
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+      before_install:
+        - alias python=python3
     - os: osx
       addons:
         homebrew:
@@ -66,6 +70,8 @@ matrix:
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+      before_install:
+        - alias python=python3
     - os: osx
       addons:
         homebrew:
@@ -78,6 +84,8 @@ matrix:
         - CC=gcc-9
         - CXX=g++-9
         - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
+      before_install:
+        - alias python=python3
     - os: windows
       language: shell
       before_install:
