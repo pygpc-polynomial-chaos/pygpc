@@ -1,8 +1,8 @@
 env:
   global:
     - CIBW_BEFORE_BUILD="pip install numpy" 
-    - CIBW_TEST_REQUIRES=pytest
-    - CIBW_TEST_COMMAND="pytest {project}/tests"
+      # - CIBW_TEST_REQUIRES=pytest
+      # - CIBW_TEST_COMMAND="pytest {project}/tests"
  
 matrix:
   include:
@@ -11,41 +11,21 @@ matrix:
       language: python
       python: '3.8'
       env: CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
-      addons:
-        apt:
-          packages:
-          - python3-matplotlib
-          - python3-h5py
     - os: linux
       dist: bionic
       language: python
       python: '3.7'
       env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
-      addons:
-        apt:
-          packages:
-          - python3-matplotlib
-          - python3-h5py
     - os : linux
       dist: bionic
       language: python
       python: '3.6'
       env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
-      addons:
-        apt:
-          packages:
-          - python3-matplotlib
-          - python3-h5py
     - os: linux
       dist: bionic
       language: python
       python: '3.5'
       env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
-      addons:
-        apt:
-          packages:
-          - python3-matplotlib
-          - python3-h5py
     - os: osx
       language: generic
       env:
