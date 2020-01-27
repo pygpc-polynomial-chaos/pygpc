@@ -1,11 +1,12 @@
-import numpy as np
 import os
-import pickle
+import re
 import h5py
+import pickle
 import logging
+import numpy as np
 from collections import OrderedDict
 from .misc import is_instance
-# from .Grid import *
+
 
 
 def write_session(obj, fname, overwrite=True):
@@ -191,6 +192,16 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
 
     # object (dict)
     if is_instance(data) and not isinstance(data, OrderedDict):
+
+        t, dt = get_dtype(data)
+
+        # create group and set type and dtype attributes
+        with h5py.File(fn_hdf5, "a") as f:
+            f.create_group(f"{folder}")
+            f[f"{folder}"].attrs.__setitem__("type", t)
+            f[f"{folder}"].attrs.__setitem__("dtype", dt)
+
+        # write content
         for key in data.__dict__:
             if len(folder.split("/")) >= max_recursion_depth:
                 data.__dict__[key] = "None"
@@ -210,6 +221,14 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
 
     # list or tuple
     elif type(data) is list or type(data) is tuple:
+        t, dt = get_dtype(data)
+
+        # create group and set type and dtype attributes
+        with h5py.File(fn_hdf5, "a") as f:
+            f.create_group(f"{folder}")
+            f[f"{folder}"].attrs.__setitem__("type", t)
+            f[f"{folder}"].attrs.__setitem__("dtype", dt)
+
         for idx, lst in enumerate(data):
             if len(folder.split("/")) >= max_recursion_depth:
                 lst = "None"
@@ -221,6 +240,17 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
 
     # dict or OrderedDict
     else:
+        t, dt = get_dtype(data)
+
+        # create group and set type and dtype attributes
+        with h5py.File(fn_hdf5, "a") as f:
+            try:
+                f.create_group(f"{folder}")
+                f[f"{folder}"].attrs.__setitem__("type", t)
+                f[f"{folder}"].attrs.__setitem__("dtype", dt)
+            except ValueError:
+                pass
+
         for key in list(data.keys()):
             if len(folder.split("/")) >= max_recursion_depth:
                 data[key] = "None"
@@ -266,6 +296,14 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
 
     # list of dictionaries:
     elif isinstance(data, list) and len(data) > 0 and (isinstance(data[0], dict) or is_instance(data[0])):
+        t, dt = get_dtype(data)
+
+        # create group and set type and dtype attributes
+        with h5py.File(fn_hdf5, "a") as f:
+            f.create_group(f"{arr_name}")
+            f[f"{arr_name}"].attrs.__setitem__("type", t)
+            f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
         for idx, lst in enumerate(data):
             if len(arr_name.split("/")) >= max_recursion_depth:
                 data = np.array("None")
@@ -281,6 +319,14 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
         if len(arr_name.split("/")) >= max_recursion_depth:
             data = np.array("None")
         else:
+            t, dt = get_dtype(data)
+
+            # create group and set type and dtype attributes
+            with h5py.File(fn_hdf5, "a") as f:
+                f.create_group(f"{arr_name}")
+                f[f"{arr_name}"].attrs.__setitem__("type", t)
+                f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
             write_dict_to_hdf5(fn_hdf5=fn_hdf5,
                                data=data.__dict__,
                                folder=arr_name,
@@ -292,6 +338,14 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
         if len(arr_name.split("/")) >= max_recursion_depth:
             data = np.array("None")
         else:
+            t, dt = get_dtype(data)
+
+            # create group and set type and dtype attributes
+            with h5py.File(fn_hdf5, "a") as f:
+                f.create_group(f"{arr_name}")
+                f[f"{arr_name}"].attrs.__setitem__("type", t)
+                f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
             data_dict = dict()
             for idx, lst in enumerate(data):
                 data_dict[idx] = lst
@@ -314,6 +368,14 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
         if len(arr_name.split("/")) >= max_recursion_depth:
             return
         else:
+            t, dt = get_dtype(data)
+
+            # create group and set type and dtype attributes
+            with h5py.File(fn_hdf5, "a") as f:
+                f.create_group(f"{arr_name}")
+                f[f"{arr_name}"].attrs.__setitem__("type", t)
+                f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
             data = data.tolist()
             write_dict_to_hdf5(fn_hdf5=fn_hdf5,
                                data=data,
@@ -333,6 +395,8 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
         if verbose:
             print("Converting array " + arr_name + " to string")
 
+    t, dt = get_dtype(data)
+
     with h5py.File(fn_hdf5, 'a') as f:
         # create data_set
         if overwrite_arr:
@@ -342,9 +406,32 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
                 pass
 
         f.create_dataset(arr_name, data=data)
+        f[f"{arr_name}"].attrs.__setitem__("type", t)
+        f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
 
     return
 
+def get_dtype(obj):
+    """
+    Get type and datatype of object
+
+    Parameters
+    ----------
+    obj : Object
+        Input object (any)
+
+    Returns
+    -------
+    type : str
+        Type of object (e.g. 'class')
+    dtype : str
+        Datatype of object (e.g. 'numpy.ndarray')
+    """
+    type_str = str(type(obj))
+    type_attr = re.match(pattern=r"\<(.*?)\ '", string=type_str).group(1)
+    dtype_attr = re.findall(pattern=r"'(.*?)'", string=type_str)[0]
+
+    return type_attr, dtype_attr
 
 def write_data_txt(data, fname):
     """
