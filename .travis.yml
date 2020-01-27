@@ -2,7 +2,7 @@ env:
   global:
     - CIBW_BEFORE_BUILD="pip install numpy" 
     - CIBW_TEST_REQUIRES=pytest
-    - CIBW_TEST_COMMAND="pytest" 
+    - CIBW_TEST_COMMAND="pytest {project}/tests"
  
 matrix:
   include:
