@@ -20,7 +20,8 @@ except ModuleNotFoundError:
     pass
 
 
-def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=1e4, output_idx=0, n_cpu=1, smooth_pdf=[51, 5], bins=100, hist=False, fn_out=None, plot=True):
+def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=1e4, output_idx=0, n_cpu=1,
+                    smooth_pdf=[51, 5], bins=100, hist=False, fn_out=None, plot=True):
     """
     Compares gPC approximation with original model function. Evaluates both at "n_samples" sampling points and
     evaluates the root mean square deviation. It also computes the pdf at the output quantity with output_idx
@@ -168,9 +169,9 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
                      transform=ax1.transAxes, fontsize=12, verticalalignment='top',
                      bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
 
-        if fn_out:
-            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.pdf')
-            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.png', dpi=1200)
+            if fn_out:
+                plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.pdf')
+                plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.png', dpi=1200)
 
             # save results in .hdf5 file
             with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
