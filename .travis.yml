@@ -14,7 +14,8 @@ matrix:
       addons:
         apt:
           packages:
-          - libfreetype6-dev 
+          - python3-matplotlib
+          - python3-h5py
     - os: linux
       dist: bionic
       language: python
@@ -23,7 +24,8 @@ matrix:
       addons:
         apt:
           packages:
-          - libfreetype6-dev
+          - python3-matplotlib
+          - python3-h5py
     - os : linux
       dist: bionic
       language: python
@@ -32,7 +34,8 @@ matrix:
       addons:
         apt:
           packages:
-          - libfreetype6-dev
+          - python3-matplotlib
+          - python3-h5py
     - os: linux
       dist: bionic
       language: python
@@ -41,7 +44,8 @@ matrix:
       addons:
         apt:
           packages:
-          - libfreetype6-dev
+          - python3-matplotlib
+          - python3-h5py
     - os: osx
       language: generic
       env:
