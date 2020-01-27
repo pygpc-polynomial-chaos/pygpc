@@ -155,10 +155,10 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
             if hist is None:
                 ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
             else:
-                import seaborn as sns
-                sns.distplot(y_gpc[:, i].flatten(), bins=bins, ax=ax1)
-                sns.distplot(y_orig[:, i].flatten(), bins=bins, label=r'original', ax=ax1)
-                # ax1.hist((y_gpc[:, i].flatten(), y_orig[:, i].flatten()), bins=bins, density=True)
+                # import seaborn as sns
+                # sns.distplot(y_gpc[:, i].flatten(), bins=bins, ax=ax1)
+                # sns.distplot(y_orig[:, i].flatten(), bins=bins, label=r'original', ax=ax1)
+                ax1.hist((y_gpc[:, i].flatten(), y_orig[:, i].flatten()), bins=bins, density=True)
 
             ax1.legend([r'gpc', r'original'], fontsize=14)
             ax1.grid()

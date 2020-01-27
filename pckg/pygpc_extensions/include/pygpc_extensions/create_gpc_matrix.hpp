@@ -4,7 +4,8 @@
 
 template<typename T, typename U>
 int create_gpc_matrix_omp_t(T* ptr_arguments, T* ptr_coeffs, T* ptr_result,
-    U n_arguments, U n_dim, U n_basis, U n_grad) {
+    U n_arguments, U n_dim, U n_basis, U n_grad)
+{
     
     #pragma omp parallel for schedule(static)
     for(U i_arguments = 0; i_arguments < n_arguments; ++i_arguments) {
@@ -47,7 +48,8 @@ int create_gpc_matrix_omp_t(T* ptr_arguments, T* ptr_coeffs, T* ptr_result,
 
 template<typename T, typename U>
 int create_gpc_matrix_cpu_t(T* ptr_arguments, T* ptr_coeffs, T* ptr_result,
-    U n_arguments, U n_dim, U n_basis, U n_grad) {
+    U n_arguments, U n_dim, U n_basis, U n_grad)
+{
     
     for(U i_arguments = 0; i_arguments < n_arguments; ++i_arguments) {
         U i_basis = 0;
