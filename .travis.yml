@@ -100,5 +100,6 @@ matrix:
         - export CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
 
 script:
+    - python -m pip install cibuildwheel twine
     - python -m cibuildwheel --output-dir wheelhouse
     - ls wheelhouse/
