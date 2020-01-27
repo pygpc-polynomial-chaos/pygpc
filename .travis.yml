@@ -11,21 +11,37 @@ matrix:
       language: python
       python: '3.8'
       env: CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+      addons:
+        apt:
+          packages:
+          - libfreetype6-dev 
     - os: linux
       dist: bionic
       language: python
       python: '3.7'
       env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+      addons:
+        apt:
+          packages:
+          - libfreetype6-dev
     - os : linux
       dist: bionic
       language: python
       python: '3.6'
       env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+      addons:
+        apt:
+          packages:
+          - libfreetype6-dev
     - os: linux
       dist: bionic
       language: python
       python: '3.5'
       env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
+      addons:
+        apt:
+          packages:
+          - libfreetype6-dev
     - os: osx
       language: generic
       env:
