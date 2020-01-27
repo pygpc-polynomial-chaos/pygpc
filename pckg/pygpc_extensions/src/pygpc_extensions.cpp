@@ -34,7 +34,7 @@ static PyObject* create_gpc_matrix_cpu(PyObject* self, PyObject* args)
     double* ptr_arguments = (double*)PyArray_DATA(arguments);
 
     npy_intp* ptr_dim_result = PyArray_DIMS(result);
-    npy_intp n_basis= ptr_dim_result[1];
+    npy_intp n_basis = ptr_dim_result[1];
     npy_intp n_grad = ptr_dim_result[2];
     double* ptr_result = (double*)PyArray_DATA(result);
 
@@ -76,7 +76,7 @@ static PyObject* create_gpc_matrix_omp(PyObject* self, PyObject* args)
     double* ptr_arguments = (double*)PyArray_DATA(arguments);
 
     npy_intp* ptr_dim_result = PyArray_DIMS(result);
-    npy_intp n_basis= ptr_dim_result[1];
+    npy_intp n_basis = ptr_dim_result[1];
     npy_intp n_grad = ptr_dim_result[2];
     double* ptr_result = (double*)PyArray_DATA(result);
 
