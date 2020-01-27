@@ -1,9 +1,9 @@
 env:
   global:
     - CIBW_BEFORE_BUILD="pip install numpy" 
-      - CIBW_TEST_REQUIRES=pytest
+      - CIBW_TEST_REQUIRES="pytest"
       - CIBW_TEST_COMMAND="pytest {project}/tests"
-      - CIBW_TEST_EXTRAS=matplotlib,seaborn
+      - CIBW_TEST_EXTRAS="matplotlib,seaborn"
  
 matrix:
   include:
