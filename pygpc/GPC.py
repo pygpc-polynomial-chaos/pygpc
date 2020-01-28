@@ -240,7 +240,7 @@ class GPC(object):
         elif self.backend == "cuda":
             try:
                 from .pygpc_extensions_cuda import create_gpc_matrix_cuda
-            except NotImplementedError:
+            except ModuleNotFoundError:
                 raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
             else:
                 if not gradient:
