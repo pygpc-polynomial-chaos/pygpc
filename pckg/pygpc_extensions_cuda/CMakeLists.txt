@@ -8,7 +8,7 @@ find_package(CUDA REQUIRED)
 set(SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT_PATH})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT_PATH}/pygpc)
 
 # set(CMAKE_POSITION_INDEPENDENT_CODE ON) 
 set(CUDA_SEPARABLE_COMPILATION ON)
@@ -23,5 +23,5 @@ include_directories(${INCLUDE_PATH})
 
 CUDA_ADD_LIBRARY(create_gpc_matrix_wrapper STATIC src/create_gpc_matrix_wrapper.cu) 
 
-Python3_add_library("pygpc_extensions_cuda.${EXT_PREFIX}" MODULE src/pygpc_extensions_cuda.cpp)
-target_link_libraries("pygpc_extensions_cuda.${EXT_PREFIX}" PRIVATE create_gpc_matrix_wrapper)
+Python3_add_library(pygpc_extensions_cuda.${EXT_PREFIX} MODULE src/pygpc_extensions_cuda.cpp)
+target_link_libraries(pygpc_extensions_cuda.${EXT_PREFIX} PRIVATE create_gpc_matrix_wrapper)

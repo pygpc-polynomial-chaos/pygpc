@@ -5,15 +5,17 @@ import time
 from collections import OrderedDict
 
 dimensions_lst = [4]
-# order_lst = np.linspace(1, 12, 12)
-order_lst = np.array([1, 5, 10, 12])
-n_samples_validation_lst = np.logspace(1, 6, 10)
-# order_lst = [10]
-# n_samples_validation_lst = [10]
+
+# order_lst = np.array([1, 5, 10, 12])
+# n_samples_validation_lst = np.logspace(1, 6, 10)
+
+order_lst = [2]
+n_samples_validation_lst = [10]
 
 time_python_lst = []
 time_cpu_lst = []
 time_omp_lst = []
+time_cuda_lst = []
 n_basis_lst = []
 grid = []
 gpc = []
@@ -37,7 +39,8 @@ for dimensions in dimensions_lst:
 
         start = time.time()
 
-        grid.append(pygpc.RandomGrid(parameters_random=problem.parameters_random,
+        grid.append(pygpc.Random(parameters_random=problem.parameters_random,
+                                     n_grid=n_samples_validation,
                                      options={"n_grid": n_samples_validation, "seed": 1}))
 
         time_grid = time.time() - start
@@ -88,6 +91,7 @@ for dimensions in dimensions_lst:
         local_time_python_lst = []
         local_time_cpu_lst = []
         local_time_omp_lst = []
+        local_time_cuda_lst = []
         for i_n_s, n_samples_validation in enumerate(n_samples_validation_lst):
             print("n_samples: ", n_samples_validation)
             n_basis = pygpc.get_num_coeffs_sparse([order]*dimensions, order, dimensions, dimensions, dimensions, 1)
@@ -131,21 +135,41 @@ for dimensions in dimensions_lst:
             time_omp = time.time() - start
             print("OMP: ", time_omp)
             local_time_omp_lst.append(time_omp)
+
+            try:
+                # run benchmark for cuda implementation
+                gpc[i_o].backend = "cuda"
+                gpc[i_o].grid = grid[i_n_s]
+
+                start = time.time()
+
+                # run function
+                gpc[i_o].create_gpc_matrix(b=gpc[i_o].basis.b, x=gpc[i_o].grid.coords_norm)
+
+                time_cuda = time.time() - start
+                print("CUDA: ", time_cuda)
+                local_time_cuda_lst.append(time_cuda)
+            except NotImplementedError:
+                pass
+
             print("-----------")
 
         # outer lists
         time_python_lst.append(local_time_python_lst)
         time_cpu_lst.append(local_time_cpu_lst)
         time_omp_lst.append(local_time_omp_lst)
+        time_cuda_lst.append(local_time_cuda_lst)
 
 time_python_array = np.array(time_python_lst)
 time_cpu_array = np.array(time_cpu_lst)
 time_omp_array = np.array(time_omp_lst)
+time_cuda_array = np.array(time_cuda_lst)
 n_samples_validation_array = np.array(n_samples_validation_lst)
 n_basis_array = np.array(n_basis_lst)
 
 np.save('time_python_array_dim_' + str(dimensions), time_python_array)
 np.save('time_cpu_array_dim_' + str(dimensions), time_cpu_array)
 np.save('time_omp_array_dim_' + str(dimensions), time_omp_array)
+np.save('time_cuda_array_dim_' + str(dimensions), time_cuda_array)
 np.save('n_samples_validation_array_dim_' + str(dimensions), n_samples_validation_array)
 np.save('n_basis_array_dim_' + str(dimensions), n_basis_array)

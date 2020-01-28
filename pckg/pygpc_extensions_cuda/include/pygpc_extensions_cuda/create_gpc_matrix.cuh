@@ -53,28 +53,28 @@ template<typename T, typename U>
 int create_gpc_matrix_cuda_t(T* ptr_arguments, T* ptr_coeffs,
     T* ptr_result, U n_arguments, U n_dim, U n_basis, U n_grad, U n_coeffs)
 {
-    constexpr U n_blocks = 512;
+    constexpr U n_threads = 512;
 
-    dim3 block_dim(n_blocks);
-    dim3 grid_dim((n_arguments/n_blocks)+1);
+    dim3 block_dim(n_threads);
+    dim3 grid_dim((n_arguments/n_threads)+1);
 
     T* dptr_arguments = NULL;
     T* dptr_coeffs = NULL;
     T* dptr_result = NULL;
 
-    cudaMalloc((T**) &dptr_arguments, n_arguments*sizeof(T));
+    cudaMalloc((T**) &dptr_arguments, n_arguments*n_dim*sizeof(T));
     cudaMalloc((T**) &dptr_coeffs, n_coeffs*sizeof(T));
-    cudaMalloc((T**) &dptr_result, n_basis*n_arguments*sizeof(T));
+    cudaMalloc((T**) &dptr_result, n_basis*n_arguments*n_grad*sizeof(T));
 
-    cudaMemcpy(dptr_arguments, ptr_arguments, n_arguments*sizeof(T),
+    cudaMemcpy(dptr_arguments, ptr_arguments, n_arguments*n_dim*sizeof(T),
         cudaMemcpyHostToDevice);
-    cudaMemcpy(dptr_arguments, ptr_arguments, n_arguments*sizeof(T),
+    cudaMemcpy(dptr_coeffs, ptr_coeffs, n_coeffs*sizeof(T),
         cudaMemcpyHostToDevice);
     
     create_gpc_matrix_cuda_tk<T,U><<<grid_dim,block_dim>>>(dptr_arguments,
         dptr_coeffs, dptr_result, n_arguments, n_dim, n_basis, n_grad);
 
-    cudaMemcpy(ptr_result, dptr_result, n_basis*n_arguments*sizeof(T),
+    cudaMemcpy(ptr_result, dptr_result, n_basis*n_arguments*n_grad*sizeof(T),
         cudaMemcpyDeviceToHost);
 
     cudaFree(dptr_arguments);

@@ -3,6 +3,9 @@ include pygpc/*.hdf5
 include pygpc/*.so
 include pygpc/*.dll
 include pygpc/*.dylib
+include *.so
+include *.dll
+include *.dylib
 exclude templates/*
 exclude tests/*
 exclude tutorials/*

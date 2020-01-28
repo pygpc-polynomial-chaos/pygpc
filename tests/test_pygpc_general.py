@@ -751,7 +751,7 @@ class TestPygpcMethods(unittest.TestCase):
         session, coeffs, results = session.run()
 
         # Validate gPC vs original model function (Monte Carlo)
-        plot = True
+        # plot = True
         nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
@@ -1245,7 +1245,7 @@ class TestPygpcMethods(unittest.TestCase):
         test_name = 'pygpc_test_14_backends'
         print(test_name)
 
-        backends = ["python", "cpu", "omp"]
+        backends = ["python", "cpu", "omp", "cuda"]
 
         # define model
         model = pygpc.testfunctions.Peaks()
@@ -1284,29 +1284,33 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("Constructing gPC matrices with different backends:")
         for b in backends:
-            options["backend"] = b
+            try:
+                options["backend"] = b
 
-            # setup gPC
-            gpc = pygpc.Reg(problem=problem,
-                            order=[8, 8],
-                            order_max=8,
-                            order_max_norm=0.8,
-                            interaction_order=2,
-                            interaction_order_current=2,
-                            options=options,
-                            validation=None)
+                # setup gPC
+                gpc = pygpc.Reg(problem=problem,
+                                order=[8, 8],
+                                order_max=8,
+                                order_max_norm=0.8,
+                                interaction_order=2,
+                                interaction_order_current=2,
+                                options=options,
+                                validation=None)
 
-            gpc.grid = grid
+                gpc.grid = grid
 
-            # init gPC matrices
-            start = time.time()
-            gpc.init_gpc_matrix()
-            stop = time.time()
+                # init gPC matrices
+                start = time.time()
+                gpc.init_gpc_matrix()
+                stop = time.time()
 
-            print(b, ": ", stop-start)
+                print(b, ": ", stop-start)
 
-            gpc_matrix[b] = gpc.gpc_matrix
-            gpc_matrix_gradient[b] = gpc.gpc_matrix_gradient
+                gpc_matrix[b] = gpc.gpc_matrix
+                gpc_matrix_gradient[b] = gpc.gpc_matrix_gradient
+
+            except NotImplementedError:
+                backends.remove(b)
 
         for b_ref in backends:
             for b_compare in backends:
