@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-from pygpc.AbstractModel import AbstractModel
 import numpy as np
+from pygpc.AbstractModel import AbstractModel
 
 
 class MyModel(AbstractModel):

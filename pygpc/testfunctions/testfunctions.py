@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
 import os
 import copy
+import inspect
 import warnings
 import numpy as np
 import scipy.special
 from scipy.integrate import odeint
 from collections import OrderedDict
 from pygpc.AbstractModel import AbstractModel
+
 
 try:
     import matplotlib as mpl
@@ -2876,7 +2877,8 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        super(DiscontinuousRidgeManufactureDecay, self).__init__()
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass

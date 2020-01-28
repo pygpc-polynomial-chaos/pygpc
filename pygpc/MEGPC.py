@@ -1,8 +1,11 @@
-# -*- coding: utf-8 -*-
+import numpy as np
+import fastmat as fm
+import scipy.stats
 import copy
 import h5py
 import time
 import random
+from sklearn import linear_model
 from .Grid import *
 from .SGPC import *
 from .misc import get_cartesian_product
@@ -14,10 +17,6 @@ from .misc import increment_basis
 from .ValidationSet import *
 from .Computation import *
 from .Classifier import *
-import numpy as np
-import fastmat as fm
-import scipy.stats
-from sklearn import linear_model
 
 
 class MEGPC(object):
@@ -43,8 +42,6 @@ class MEGPC(object):
         - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
         - 'LarsLasso' ... {"alpha": float 0...1} Regularization parameter
         - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
-    gpu: bool
-        Flag to execute the calculation on the gpu
     verbose: bool
         boolean value to determine if to print out the progress into the standard output
     fn_results : string, optional, default=None
@@ -93,7 +90,6 @@ class MEGPC(object):
         self.gradient = options["gradient_enhanced"]
         self.solver = None
         self.settings = None
-        self.gpu = None
         self.verbose = True
         if "fn_results" not in options.keys():
             options["fn_results"] = None
@@ -881,7 +877,7 @@ class MEGPC(object):
                 x_passed = x[domains == d, :]
 
             # construct gPC gradient matrix [n_samples x n_basis x dim(_red)]
-            gpc_matrix_gradient = self.gpc[d].calc_gpc_matrix(b=self.gpc[d].basis.b,
+            gpc_matrix_gradient = self.gpc[d].create_gpc_matrix(b=self.gpc[d].basis.b,
                                                               x=x_passed,
                                                               gradient=True)
 

@@ -1,7 +1,8 @@
 import numpy as np
 import h5py
-from .io import read_gpc_pkl
+from .io import read_session_pkl
 from .MEGPC import *
+
 
 def check_file_consistency(fn_hdf5):
     """
@@ -40,7 +41,7 @@ def check_file_consistency(fn_hdf5):
     ###########################
     for fn in fn_gpc_pkl:
         try:
-            session = read_gpc_pkl(fn_gpc_pkl)
+            session = read_session_pkl(fn_gpc_pkl)
         except FileNotFoundError:
             error_msg.append("gPC session object file not found: {}".format(fn))
             file_status = False
@@ -56,7 +57,8 @@ def check_file_consistency(fn_hdf5):
                 if np.array(["qoi" in s for s in list(f["coeffs/"].keys())]).any():
                     qoi_keys = list(f["coeffs"].keys())
                     qoi_idx = [int(key.split("qoi_")[1]) for key in qoi_keys]
-
+            else:
+                qoi_keys = [""]
         except KeyError:
             pass
 

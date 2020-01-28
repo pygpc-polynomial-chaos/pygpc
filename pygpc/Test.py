@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
+from collections import OrderedDict
 from .testfunctions import *
 from .RandomParameter import *
 from .Problem import *
-from collections import OrderedDict
 
 
 class Test(object):

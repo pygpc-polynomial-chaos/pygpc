@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 import scipy.special
 import scipy.stats
@@ -8,6 +7,28 @@ import math
 import itertools
 import random
 from .Visualization import plot_beta_pdf_fit
+
+
+def is_instance(obj):
+    """
+    Tests if obj is a class instance of any type.
+
+    Parameters
+    ----------
+    obj : any
+        Input object
+
+    Returns
+    -------
+    out : bool
+        Flag if obj is class instance or not
+    """
+    try:
+        _ = obj.__dict__
+        return True
+
+    except AttributeError:
+        return False
 
 
 def display_fancy_bar(text, i, n_i, more_text=None):

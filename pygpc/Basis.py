@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
-from .BasisFunction import *
-from .misc import get_multi_indices
 import uuid
 import numpy as np
 import warnings
+from .BasisFunction import *
+from .misc import get_multi_indices
+
 
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
 except ModuleNotFoundError:
-    warnings.warn("If you want to use plot functionality from pygpc, "
-                  "please install matplotlib (pip install matplotlib).")
+    warnings.warn("If you would like to use plot functionality of pygpc, "
+                  "please install matplotlib (python3 -m pip install matplotlib).")
     pass
 
 
@@ -23,13 +23,13 @@ class Basis:
     b: list of BasisFunction object instances [n_basis x n_dim]
         Parameter wise basis function objects used in gPC.
         Multiplying all elements in a row at location xi = (x1, x2, ..., x_dim) yields the global basis function.
-    b_gpu: ???
+    b_array:
         ???
     b_id: list of UUID objects (version 4) [n_basis]
         Unique IDs of global basis functions
-    b_norm: ndarray [n_basis x dim]
+    b_norm: [n_basis x dim] ndarray of float
         Normalization factor of individual basis functions
-    b_norm_basis: ndarray [n_basis x 1]
+    b_norm_basis: [n_basis x 1] ndarray of float
         Normalization factor of global basis functions
     dim:
         Number of variables
@@ -41,8 +41,8 @@ class Basis:
         Constructor; initializes the Basis class
         """
         self.b = None
-        self.b_gpu = np.array(())
-        self.b_gpu_grad = []
+        self.b_array = None
+        self.b_array_grad = None
         self.b_id = None
         self.b_norm = None
         self.b_norm_basis = None
@@ -115,7 +115,7 @@ class Basis:
         # get total number of basis functions
         self.n_basis = multi_indices.shape[0]
 
-        # construct 2D list with BasisFunction objects
+        # construct 2D list with BasisFunction objects and array with coefficients
         self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
 
         for i_basis in range(self.n_basis):
@@ -126,13 +126,13 @@ class Basis:
         # Generate unique IDs of basis functions
         self.b_id = [uuid.uuid4() for _ in range(self.n_basis)]
 
+        # initialize array of basis coefficients
+        self.init_basis_array()
+
         # initialize normalization factor (self.b_norm and self.b_norm_basis)
-        self.init_b_norm()
+        self.init_basis_norm()
 
-        # initialize gpu coefficient array
-        self.init_polynomial_basis_gpu()
-
-    def init_b_norm(self):
+    def init_basis_norm(self):
         """
         Construct array of scaling factors self.b_norm [n_basis x dim] and self.b_norm_basis [n_basis x 1]
         to normalize basis functions <psi^2> = int(psi^2*p)dx
@@ -227,38 +227,33 @@ class Basis:
         self.n_basis = len(self.b)
 
         # update normalization factors
-        self.init_b_norm()
+        self.init_basis_norm()
 
-        # initialize gpu coefficient array
-        self.init_polynomial_basis_gpu()
+        # initialize array of basis coefficients
+        self.init_basis_array()
 
-    # TODO: @Lucas (GPU) adapt this to function objects
-    def init_polynomial_basis_gpu(self):
+    def init_basis_array(self):
         """
-        Initialize polynomial basis coefficients for GPU. Converts list of lists of self.b
-        into np.ndarray that can be processed on a GPU.
+        Initialize polynomial basis coefficients for fast processing. Converts list of lists of self.b
+        into np.ndarray that can be processed on multi core systems.
         """
-        for i_basis in range(len(self.b)):
-            for i_dim in range(self.dim):
-                polynomial_order = self.b[i_basis][i_dim].fun.order
-                self.b_gpu = np.append(self.b_gpu, polynomial_order)
-                self.b_gpu = np.append(self.b_gpu, np.flip(self.b[i_basis][i_dim].fun.c))
-
-        for i_dim_gradient in range(self.dim):
-            _b_gpu_grad = np.array(())
-            for i_basis in range(len(self.b)):
-                for i_dim in range(self.dim):
-                    if i_dim == i_dim_gradient:
-                        polynomial = self.b[i_basis][i_dim].fun.deriv()
-                        polynomial_order = polynomial.order
-                        _b_gpu_grad = np.append(_b_gpu_grad, polynomial_order)
-                        _b_gpu_grad = np.append(_b_gpu_grad, np.flip(polynomial.c))
+        _b_array = []
+        _b_array_grad = []
+        for i_basis in range(self.n_basis):
+            for i_dim_outer in range(self.dim):
+                for i_dim_inner in range(self.dim):
+                    if i_dim_outer == 0:
+                        _b_array = _b_array + [np.array([self.b[i_basis][i_dim_inner].fun.order]),
+                                               self.b[i_basis][i_dim_inner].fun.c]
+                    if i_dim_outer == i_dim_inner:
+                        _b_array_grad = _b_array_grad + [np.array([self.b[i_basis][i_dim_inner].fun.deriv().order]),
+                                                         self.b[i_basis][i_dim_inner].fun.deriv().c]
                     else:
-                        polynomial_order = self.b[i_basis][i_dim].fun.order
-                        _b_gpu_grad = np.append(_b_gpu_grad, polynomial_order)
-                        _b_gpu_grad = np.append(_b_gpu_grad, np.flip(self.b[i_basis][i_dim].fun.c))
+                        _b_array_grad = _b_array_grad + [np.array([self.b[i_basis][i_dim_inner].fun.order]),
+                                                         self.b[i_basis][i_dim_inner].fun.c]
 
-            self.b_gpu_grad.append(_b_gpu_grad)
+        self.b_array = np.concatenate(_b_array)
+        self.b_array_grad = np.concatenate(_b_array_grad)
 
     def plot_basis(self, dims, fn_plot=None, dynamic_plot_update=False):
         """

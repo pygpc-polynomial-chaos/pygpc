@@ -1,18 +1,48 @@
-# -*- coding: utf-8 -*-
-# from .Grid import *
-import numpy as np
 import os
-import pickle
+import re
 import h5py
-import copy
+import pickle
 import logging
+import numpy as np
+from collections import OrderedDict
+from .misc import is_instance
 
 
-def write_gpc_pkl(obj, fname):
+def write_session(obj, fname, overwrite=True):
     """
-    Write gPC object including information about the Basis, Problem and Model as pickle file.
+    Saves a gpc session in pickle or hdf5 file formal depending on the
+    file extension in fname (.pkl or .hdf5)
 
-    write_gpc_obj(obj, fname)
+    Parameters
+    ----------
+    obj: Session object
+        Session class instance containing the gPC information
+    fname: str
+        Path to output file
+    overwrite: bool, optional, default: True
+        Overwrite existing file
+
+    Returns
+    -------
+    <file>: .hdf5 or .pkl file
+        .hdf5 or .pkl file containing the gpc session
+    """
+
+    file_format = os.path.splitext(fname)[1]
+
+    if file_format == ".pkl":
+        write_session_pkl(obj, fname, overwrite=overwrite)
+
+    elif file_format == ".hdf5":
+        write_session_hdf5(obj, fname, overwrite=overwrite)
+
+    else:
+        raise IOError("Session can only be saved in .pkl or .hdf5 format.")
+
+
+def write_session_pkl(obj, fname, overwrite=True):
+    """
+    Write Session object including information about the Basis, Problem and Model as pickle file.
 
     Parameters
     ----------
@@ -26,13 +56,98 @@ def write_gpc_pkl(obj, fname):
     <file>: .pkl file
         File containing the GPC object
     """
+    if not overwrite and os.path.exists(fname):
+        Warning("File already exists.")
+    else:
+        with open(fname, 'wb') as f:
+            pickle.dump(obj, f, -1)
 
-    # write .gpc object
-    with open(fname, 'wb') as f:
-        pickle.dump(obj, f, -1)
+
+def write_session_hdf5(obj, fname, overwrite=True):
+    """
+    Write Session object including information about the Basis, Problem and Model as .hdf5 file.
+
+    Parameters
+    ----------
+    obj: Session object
+        Session class instance containing the gPC information
+    fname: str
+        Path to output file
+    overwrite: bool, optional, default: True
+        Overwrite existing file
+
+    Returns
+    -------
+    <file>: .hdf5 file
+        .hdf5 file containing the gpc session
+    """
+    from .Algorithm import Algorithm
+    from .AbstractModel import AbstractModel
+    from .GPC import GPC
+    from .MEGPC import MEGPC
+
+    if not overwrite and os.path.exists(fname):
+        raise FileExistsError
+
+    if overwrite and os.path.exists(fname):
+        os.remove(fname)
+
+    _ = write_dict_to_hdf5(fn_hdf5=fname, data=obj.__dict__, folder="")
 
 
-def read_gpc_pkl(fname):
+def read_session(fname):
+    """
+    Reads a gpc session in pickle or hdf5 file formal depending on the
+    file extension in fname (.pkl or .hdf5)
+
+    Parameters
+    ----------
+    fname: str
+        path to input file
+
+    Returns
+    -------
+    obj: Session Object
+        Session object containing instances of Basis, Problem and Model etc.
+    """
+
+    file_format = os.path.splitext(fname)[1]
+
+    if file_format == ".pkl":
+        obj = read_session_pkl(fname)
+
+    elif file_format == ".hdf5":
+        obj = read_session_hdf5(fname)
+
+    else:
+        raise IOError("Session can only be read from .pkl or .hdf5 files.")
+
+    return obj
+
+
+def read_session_pkl(fname):
+    """
+    Read Session object in pickle format.
+
+    Parameters
+    ----------
+    fname: str
+        path to input file
+
+    Returns
+    -------
+    obj: Session Object
+        Session object containing instances of Basis, Problem and Model etc.
+    """
+
+    with open(fname, 'rb') as f:
+        obj = pickle.load(f)
+
+    return obj
+
+
+# TODO: implement method to read session from .hdf5 file
+def read_session_hdf5(fname):
     """
     Read gPC object including information about input pdfs, polynomials, grid etc.
 
@@ -49,11 +164,273 @@ def read_gpc_pkl(fname):
         GPC object containing instances of Basis, Problem and Model.
     """
 
-    with open(fname, 'rb') as f:
-        obj = pickle.load(f)
+    return None
 
-    return obj
 
+def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
+    """
+    Takes dict and passes its keys to write_arr_to_hdf5()
+
+    fn_hdf5:folder/
+                  |--key1
+                  |--key2
+                  |...
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    data : dict
+        Dictionary to save in .hdf5 file
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+    """
+    max_recursion_depth = 6
+
+    # object (dict)
+    if is_instance(data) and not isinstance(data, OrderedDict):
+
+        t, dt = get_dtype(data)
+
+        # create group and set type and dtype attributes
+        with h5py.File(fn_hdf5, "a") as f:
+            f.create_group(f"{folder}")
+            f[f"{folder}"].attrs.__setitem__("type", t)
+            f[f"{folder}"].attrs.__setitem__("dtype", dt)
+
+        # write content
+        for key in data.__dict__:
+            if len(folder.split("/")) >= max_recursion_depth:
+                data.__dict__[key] = "None"
+
+            write_arr_to_hdf5(fn_hdf5=fn_hdf5,
+                              arr_name=f"{folder}/{key}",
+                              data=data.__dict__[key],
+                              verbose=verbose)
+
+    # mappingproxy (can not be saved)
+    elif str(type(data)) == "<class 'mappingproxy'>":
+        data = "mappingproxy"
+        write_arr_to_hdf5(fn_hdf5=fn_hdf5,
+                          arr_name="mappingproxy",
+                          data=data,
+                          verbose=verbose)
+
+    # list or tuple
+    elif type(data) is list or type(data) is tuple:
+        t, dt = get_dtype(data)
+
+        # create group and set type and dtype attributes
+        with h5py.File(fn_hdf5, "a") as f:
+            f.create_group(f"{folder}")
+            f[f"{folder}"].attrs.__setitem__("type", t)
+            f[f"{folder}"].attrs.__setitem__("dtype", dt)
+
+        for idx, lst in enumerate(data):
+            if len(folder.split("/")) >= max_recursion_depth:
+                lst = "None"
+
+            write_arr_to_hdf5(fn_hdf5=fn_hdf5,
+                              arr_name=f"{folder}/{idx}",
+                              data=lst,
+                              verbose=verbose)
+
+    # dict or OrderedDict
+    else:
+        t, dt = get_dtype(data)
+
+        # create group and set type and dtype attributes
+        with h5py.File(fn_hdf5, "a") as f:
+            try:
+                f.create_group(f"{folder}")
+                f[f"{folder}"].attrs.__setitem__("type", t)
+                f[f"{folder}"].attrs.__setitem__("dtype", dt)
+            except ValueError:
+                pass
+
+        for key in list(data.keys()):
+            if len(folder.split("/")) >= max_recursion_depth:
+                data[key] = "None"
+
+            write_arr_to_hdf5(fn_hdf5=fn_hdf5,
+                              arr_name=f"{folder}/{key}",
+                              data=data[key],
+                              verbose=verbose)
+
+
+def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False):
+    """
+    Takes an array and adds it to an .hdf5 file
+
+    If data is list of dict, write_dict_to_hdf5() is called for each dict with adapted hdf5-folder name
+    Otherwise, data is casted to np.ndarray and dtype of unicode data casted to '|S'.
+
+    Parameters:
+    -----------
+    fn_hdf5 : str
+        Filename of .hdf5 file
+    arr_name : str
+        Complete path in .hdf5 file with array name
+    data : ndarray, list or dict
+        Data to write
+    overwrite_arr : bool, optional, default: True
+        Overwrite existing array
+    verbose : bool, optional, default: False
+        Print information
+    """
+    max_recursion_depth = 6
+
+    # dict or OrderedDict
+    if isinstance(data, dict) or isinstance(data, OrderedDict):
+        if len(arr_name.split("/")) >= max_recursion_depth:
+            data = np.array("None")
+        else:
+            write_dict_to_hdf5(fn_hdf5=fn_hdf5,
+                               data=data,
+                               folder=arr_name,
+                               verbose=verbose)
+            return
+
+    # list of dictionaries:
+    elif isinstance(data, list) and len(data) > 0 and (isinstance(data[0], dict) or is_instance(data[0])):
+        t, dt = get_dtype(data)
+
+        # create group and set type and dtype attributes
+        with h5py.File(fn_hdf5, "a") as f:
+            f.create_group(f"{arr_name}")
+            f[f"{arr_name}"].attrs.__setitem__("type", t)
+            f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
+        for idx, lst in enumerate(data):
+            if len(arr_name.split("/")) >= max_recursion_depth:
+                data = np.array("None")
+            else:
+                write_dict_to_hdf5(fn_hdf5=fn_hdf5,
+                                   data=lst,
+                                   folder=f"{arr_name}/{idx}",
+                                   verbose=verbose)
+                return
+
+    # object
+    elif is_instance(data):
+        if len(arr_name.split("/")) >= max_recursion_depth:
+            data = np.array("None")
+        else:
+            t, dt = get_dtype(data)
+
+            # create group and set type and dtype attributes
+            with h5py.File(fn_hdf5, "a") as f:
+                f.create_group(f"{arr_name}")
+                f[f"{arr_name}"].attrs.__setitem__("type", t)
+                f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
+            write_dict_to_hdf5(fn_hdf5=fn_hdf5,
+                               data=data.__dict__,
+                               folder=arr_name,
+                               verbose=verbose)
+            return
+
+    # list or tuple
+    elif type(data) is list or type(data) is tuple:
+        if len(arr_name.split("/")) >= max_recursion_depth:
+            data = np.array("None")
+        else:
+            t, dt = get_dtype(data)
+
+            # create group and set type and dtype attributes
+            with h5py.File(fn_hdf5, "a") as f:
+                f.create_group(f"{arr_name}")
+                f[f"{arr_name}"].attrs.__setitem__("type", t)
+                f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
+            data_dict = dict()
+            for idx, lst in enumerate(data):
+                data_dict[idx] = lst
+
+            write_dict_to_hdf5(fn_hdf5=fn_hdf5,
+                               data=data_dict,
+                               folder=arr_name,
+                               verbose=verbose)
+
+        return
+
+    elif not isinstance(data, np.ndarray):
+        if len(arr_name.split("/")) >= max_recursion_depth:
+            data = np.array("None")
+        else:
+            data = np.array(data)
+
+    # np.arrays of np.arrays
+    elif data.dtype == 'O' and len(data) > 1:
+        if len(arr_name.split("/")) >= max_recursion_depth:
+            return
+        else:
+            t, dt = get_dtype(data)
+
+            # create group and set type and dtype attributes
+            with h5py.File(fn_hdf5, "a") as f:
+                f.create_group(f"{arr_name}")
+                f[f"{arr_name}"].attrs.__setitem__("type", t)
+                f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
+            data = data.tolist()
+            write_dict_to_hdf5(fn_hdf5=fn_hdf5,
+                               data=data,
+                               folder=arr_name,
+                               verbose=verbose)
+            return
+
+
+    # do some type casting from numpy/pd -> h5py
+    # date column from experiment.csv is O
+    # plotsetting["view"] is O list of list of different length
+    # coil1 and coil2 columns names from experiment.csv is <U8
+    # coil_mean column name from experiment.csv is <U12
+    if data.dtype == 'O' or data.dtype.kind == 'U':
+        data = data.astype('|S')
+
+        if verbose:
+            print(f"Converting array '{arr_name}'' to string")
+
+    t, dt = get_dtype(data)
+
+    with h5py.File(fn_hdf5, 'a') as f:
+        # create data_set
+        if overwrite_arr:
+            try:
+                del f[arr_name]
+            except KeyError:
+                pass
+
+        f.create_dataset(arr_name, data=data)
+        f[f"{arr_name}"].attrs.__setitem__("type", t)
+        f[f"{arr_name}"].attrs.__setitem__("dtype", dt)
+
+    return
+
+def get_dtype(obj):
+    """
+    Get type and datatype of object
+
+    Parameters
+    ----------
+    obj : Object
+        Input object (any)
+
+    Returns
+    -------
+    type : str
+        Type of object (e.g. 'class')
+    dtype : str
+        Datatype of object (e.g. 'numpy.ndarray')
+    """
+    type_str = str(type(obj))
+    type_attr = re.match(pattern=r"\<(.*?)\ '", string=type_str).group(1)
+    dtype_attr = re.findall(pattern=r"'(.*?)'", string=type_str)[0]
+
+    return type_attr, dtype_attr
 
 def write_data_txt(data, fname):
     """

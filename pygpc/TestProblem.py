@@ -5,6 +5,7 @@ class TestProblem(object):
     def __init__(self):
         pass
 
+
 class ContinuousTestProblems(TestProblem):
     """
     Continuous Test problems

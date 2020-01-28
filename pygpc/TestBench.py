@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import copy
 import glob
 import h5py
@@ -8,7 +7,6 @@ import os
 import pickle
 from _functools import partial
 from collections import OrderedDict
-
 from .Algorithm import *
 from .Test import *
 from .misc import *
@@ -189,7 +187,7 @@ class TestBench(object):
 
         # save TestBench object
         print("Saving testbench.pkl object ...")
-        write_gpc_pkl(self, os.path.join(self.fn_results, "testbench.pkl"))
+        write_session_pkl(self, os.path.join(self.fn_results, "testbench.pkl"))
 
 
 class TestBenchContinuous(TestBench):
