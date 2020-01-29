@@ -23,5 +23,9 @@ include_directories(${INCLUDE_PATH})
 
 CUDA_ADD_LIBRARY(create_gpc_matrix_wrapper STATIC src/create_gpc_matrix_wrapper.cu) 
 
+CUDA_ADD_LIBRARY(get_approximation_wrapper STATIC src/get_approximation_wrapper.cu) 
+CUDA_ADD_CUBLAS_TO_TARGET(get_approximation_wrapper)
+
 Python3_add_library(pygpc_extensions_cuda.${EXT_PREFIX} MODULE src/pygpc_extensions_cuda.cpp)
 target_link_libraries(pygpc_extensions_cuda.${EXT_PREFIX} PRIVATE create_gpc_matrix_wrapper)
+target_link_libraries(pygpc_extensions_cuda.${EXT_PREFIX} PRIVATE get_approximation_wrapper)

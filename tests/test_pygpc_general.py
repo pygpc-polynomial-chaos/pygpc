@@ -99,6 +99,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
         options["backend"] = "omp"
+        # options["backend"] = "cuda"
         options["grid"] = pygpc.Random
         options["grid_options"] = None
 
@@ -187,6 +188,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
         options["backend"] = "omp"
+        # options["backend"] = "cuda"
         options["grid"] = pygpc.Random
         options["grid_options"] = None
 
@@ -737,6 +739,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["eps"] = 0.75
         options["n_grid_init"] = 20
         options["backend"] = "omp"
+        # options["backend"] = "cuda"
         options["fn_results"] = os.path.join(folder, test_name)
         options["grid"] = pygpc.Random
         options["grid_options"] = None
@@ -1057,6 +1060,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["fn_results"] = os.path.join(folder, test_name)
         options["gradient_enhanced"] = True
         options["backend"] = "omp"
+        # options["backend"] = "cuda"
 
         # generate grid
         n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
@@ -1186,6 +1190,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["eps"] = 0.01
         options["n_grid_init"] = 50
         options["backend"] = "omp"
+        # options["backend"] = "cuda"
         options["fn_results"] = os.path.join(folder, test_name)
         options["grid"] = pygpc.Random
         options["grid_options"] = None
@@ -1281,6 +1286,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         gpc_matrix = dict()
         gpc_matrix_gradient = dict()
+        pce_matrix = dict()
 
         print("Constructing gPC matrices with different backends:")
         for b in backends:
@@ -1304,10 +1310,19 @@ class TestPygpcMethods(unittest.TestCase):
                 gpc.init_gpc_matrix()
                 stop = time.time()
 
-                print(b, ": ", stop-start)
+                print(b, "create gpc matrix: ", stop-start)
+
+                # perform polynomial chaos expansion
+                coeffs = np.ones([len(gpc.basis.b), 2])
+                start = time.time()
+                pce = gpc.get_approximation(coeffs, gpc.grid.coords_norm)
+                stop = time.time()
+
+                print(b, "polynomial chaos expansion: ", stop-start)
 
                 gpc_matrix[b] = gpc.gpc_matrix
                 gpc_matrix_gradient[b] = gpc.gpc_matrix_gradient
+                pce_matrix[b] = pce
 
             except NotImplementedError:
                 backends.remove(b)
@@ -1320,6 +1335,9 @@ class TestPygpcMethods(unittest.TestCase):
 
                     self.expect_isclose(gpc_matrix_gradient[b_ref], gpc_matrix_gradient[b_compare], atol=1e-6,
                                         msg="gpc matrices between "+b_ref+" and "+b_compare+" are not equal")
+
+                    self.expect_isclose(pce_matrix[b_ref], pce_matrix[b_compare], atol=1e-6,
+                                        msg="pce matrices between "+b_ref+" and "+b_compare+" are not equal")
 
         print("done!\n")
 

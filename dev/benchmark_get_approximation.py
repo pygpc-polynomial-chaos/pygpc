@@ -6,11 +6,11 @@ from collections import OrderedDict
 
 dimensions_lst = [4]
 
-# order_lst = np.array([1, 5, 10, 12])
-# n_samples_validation_lst = np.logspace(1, 6, 10)
+order_lst = np.array([1, 5, 10, 11])
+n_samples_validation_lst = np.logspace(1, 6, 10)
 
-order_lst = [2]
-n_samples_validation_lst = [10]
+# order_lst = [2]
+# n_samples_validation_lst = [10]
 
 time_python_lst = []
 time_cpu_lst = []
@@ -98,13 +98,15 @@ for dimensions in dimensions_lst:
             n_basis_lst.append(n_basis)
             print("n_basis: ", n_basis)
 
+            coeffs = np.ones([len(gpc[i_o].basis.b), 2])
+
             gpc[i_o].backend = "python"
             gpc[i_o].grid = grid[i_n_s]
 
             start = time.time()
 
             # run function
-            gpc[i_o].create_gpc_matrix(b=gpc[i_o].basis.b, x=gpc[i_o].grid.coords_norm)
+            gpc[i_o].get_approximation(coeffs, x=gpc[i_o].grid.coords_norm)
 
             time_python = time.time() - start
             print("Python: ", time_python)
@@ -117,7 +119,7 @@ for dimensions in dimensions_lst:
             start = time.time()
 
             # run function
-            gpc[i_o].create_gpc_matrix(b=gpc[i_o].basis.b, x=gpc[i_o].grid.coords_norm)
+            gpc[i_o].get_approximation(coeffs, x=gpc[i_o].grid.coords_norm)
 
             time_cpu = time.time() - start
             print("CPU: ", time_cpu)
@@ -130,7 +132,7 @@ for dimensions in dimensions_lst:
             start = time.time()
 
             # run function
-            gpc[i_o].create_gpc_matrix(b=gpc[i_o].basis.b, x=gpc[i_o].grid.coords_norm)
+            gpc[i_o].get_approximation(coeffs, x=gpc[i_o].grid.coords_norm)
 
             time_omp = time.time() - start
             print("OMP: ", time_omp)
@@ -144,7 +146,7 @@ for dimensions in dimensions_lst:
                 start = time.time()
 
                 # run function
-                gpc[i_o].create_gpc_matrix(b=gpc[i_o].basis.b, x=gpc[i_o].grid.coords_norm)
+                gpc[i_o].get_approximation(coeffs, x=gpc[i_o].grid.coords_norm)
 
                 time_cuda = time.time() - start
                 print("CUDA: ", time_cuda)
@@ -167,9 +169,9 @@ time_cuda_array = np.array(time_cuda_lst)
 n_samples_validation_array = np.array(n_samples_validation_lst)
 n_basis_array = np.array(n_basis_lst)
 
-np.save('time_python_array_dim_' + str(dimensions), time_python_array)
-np.save('time_cpu_array_dim_' + str(dimensions), time_cpu_array)
-np.save('time_omp_array_dim_' + str(dimensions), time_omp_array)
-np.save('time_cuda_array_dim_' + str(dimensions), time_cuda_array)
-np.save('n_samples_validation_array_dim_' + str(dimensions), n_samples_validation_array)
-np.save('n_basis_array_dim_' + str(dimensions), n_basis_array)
+np.save('time_python_array_get_approximation_dim_' + str(dimensions), time_python_array)
+np.save('time_cpu_array_get_approximation_dim_' + str(dimensions), time_cpu_array)
+np.save('time_omp_array_get_approximation_dim_' + str(dimensions), time_omp_array)
+np.save('time_cuda_array_get_approximation_dim_' + str(dimensions), time_cuda_array)
+np.save('n_samples_validation_array_get_approximation_dim_' + str(dimensions), n_samples_validation_array)
+np.save('n_basis_array_get_approximation_dim_' + str(dimensions), n_basis_array)

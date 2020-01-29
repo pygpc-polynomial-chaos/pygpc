@@ -8,7 +8,7 @@ from .misc import get_multi_indices
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
-except ModuleNotFoundError:
+except ImportError:
     warnings.warn("If you would like to use plot functionality of pygpc, "
                   "please install matplotlib (python3 -m pip install matplotlib).")
     pass

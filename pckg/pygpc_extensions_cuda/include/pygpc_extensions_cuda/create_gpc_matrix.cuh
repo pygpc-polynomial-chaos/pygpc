@@ -7,7 +7,7 @@
 
 
 template<typename T, typename U>
-__global__ void create_gpc_matrix_cuda_tk(T* ptr_arguments, T* ptr_coeffs,
+__global__ void create_gpc_matrix_tk(T* ptr_arguments, T* ptr_coeffs,
     T* ptr_result, U n_arguments, U n_dim, U n_basis, U n_grad)
 {
     
@@ -50,7 +50,7 @@ __global__ void create_gpc_matrix_cuda_tk(T* ptr_arguments, T* ptr_coeffs,
 }
 
 template<typename T, typename U>
-int create_gpc_matrix_cuda_t(T* ptr_arguments, T* ptr_coeffs,
+U create_gpc_matrix_t(T* ptr_arguments, T* ptr_coeffs,
     T* ptr_result, U n_arguments, U n_dim, U n_basis, U n_grad, U n_coeffs)
 {
     constexpr U n_threads = 512;
@@ -71,7 +71,7 @@ int create_gpc_matrix_cuda_t(T* ptr_arguments, T* ptr_coeffs,
     cudaMemcpy(dptr_coeffs, ptr_coeffs, n_coeffs*sizeof(T),
         cudaMemcpyHostToDevice);
     
-    create_gpc_matrix_cuda_tk<T,U><<<grid_dim,block_dim>>>(dptr_arguments,
+    create_gpc_matrix_tk<T,U><<<grid_dim,block_dim>>>(dptr_arguments,
         dptr_coeffs, dptr_result, n_arguments, n_dim, n_basis, n_grad);
 
     cudaMemcpy(ptr_result, dptr_result, n_basis*n_arguments*n_grad*sizeof(T),

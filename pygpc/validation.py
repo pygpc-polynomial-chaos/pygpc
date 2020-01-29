@@ -15,7 +15,7 @@ try:
     import matplotlib
     import matplotlib.pyplot as plt
     import seaborn as sns
-except ModuleNotFoundError:
+except ImportError:
     warnings.warn("If you want to use the plot functionality, install matplotlib and seaborn")
     pass
 
