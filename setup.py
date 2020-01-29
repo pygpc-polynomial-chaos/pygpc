@@ -4,9 +4,9 @@ import numpy as np
 from setuptools import setup, find_packages, Extension
 
 
-# pygpc software framework for uncertainty and sensitivity
+# Pygpc software framework for uncertainty and sensitivity
 # analysis of complex systems. See also:
-# https://github.com/konstantinweise/pygpc
+# https://github.com/pygpc-polynomial-chaos/pygpc
 #
 # Copyright (C) 2017-2020 the original author (Konstantin Weise),
 # the Max-Planck-Institute for Human Cognitive Brain Sciences ("MPI CBS")
@@ -53,8 +53,7 @@ setup(name='pygpc',
                         'numpy>=1.16.4',
                         'fastmat>=0.1.2.post1',
                         'scikit-learn>=0.19.1',
-                        'h5py>=2.9.0',
-                        'dispy>=4.11.0'],
+                        'h5py>=2.9.0'],
       ext_modules=extensions,
       package_data={'pygpc': ['*.so', '*.dll', '*.dylib']},
       project_urls={
