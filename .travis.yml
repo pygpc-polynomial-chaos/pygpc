@@ -13,9 +13,10 @@ matrix:
       script:
         - python -m pip install cibuildwheel twine
         - python -m pip install .
-        - python -m unittest discover -s tests 
+        - cd tests
+        - python -m unittest
         - python -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: linux
       dist: bionic
       language: python
@@ -24,9 +25,10 @@ matrix:
       script:
         - python -m pip install cibuildwheel twine
         - python -m pip install .
-        - python -m unittest discover -s tests 
+        - cd tests
+        - python -m unittest
         - python -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os : linux
       dist: bionic
       language: python
@@ -35,9 +37,10 @@ matrix:
       script:
         - python -m pip install cibuildwheel twine
         - python -m pip install .
-        - python -m unittest discover -s tests 
+        - cd tests
+        - python -m unittest
         - python -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: linux
       dist: bionic
       language: python
@@ -46,9 +49,10 @@ matrix:
       script:
         - python -m pip install cibuildwheel twine
         - python -m pip install .
-        - python -m unittest discover -s tests 
+        - cd tests
+        - python -m unittest
         - python -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: osx
       language: generic
       env:
@@ -64,9 +68,10 @@ matrix:
       script:
         - python3 -m pip install cibuildwheel twine
         - python3 -m pip install .
-        - python3 -m unittest discover -s tests 
+        - cd tests
+        - python3 -m unittest
         - python3 -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: osx
       language: generic
       env:
@@ -82,9 +87,10 @@ matrix:
       script:
         - python3 -m pip install cibuildwheel twine
         - python3 -m pip install .
-        - python3 -m unittest discover -s tests 
+        - cd tests
+        - python3 -m unittest
         - python3 -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: osx
       language: generic
       env:
@@ -100,9 +106,10 @@ matrix:
       script:
         - python3 -m pip install cibuildwheel twine
         - python3 -m pip install .
+        - cd tests
+        - python3 -m unittest
         - python3 -m cibuildwheel --output-dir wheelhouse
-        - python3 -m unittest discover -s tests 
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: osx
       language: generic
       env:
@@ -118,9 +125,10 @@ matrix:
       script:
         - python3 -m pip install cibuildwheel twine
         - python3 -m pip install .
-        - python3 -m unittest discover -s tests 
+        - cd tests
+        - python3 -m unittest
         - python3 -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: windows
       language: shell
       before_install:
@@ -130,9 +138,10 @@ matrix:
       script:
         - python -m pip install cibuildwheel twine
         - python -m pip install .
-        - python -m unittest discover -s tests 
+        - cd tests
+        - python -m unittest
         - python -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: windows
       language: shell
       before_install:
@@ -142,20 +151,23 @@ matrix:
       script:
         - python -m pip install cibuildwheel twine
         - python -m pip install .
-        - python -m unittest discover -s tests 
+        - cd tests
+        - python -m unittest
         - python -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: windows
       language: shell
       before_install:
         - choco install python --version 3.6.8
         - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
       script:
         - python -m pip install cibuildwheel twine
         - python -m pip install .
-        - python -m unittest discover -s tests 
+        - cd tests
+        - python -m unittest
         - python -m cibuildwheel --output-dir wheelhouse
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - ls wheelhouse/
     - os: windows
       language: shell
       before_install:
@@ -165,6 +177,6 @@ matrix:
       script:
         - python -m pip install cibuildwheel twine
         - python -m pip install .
-        - python -m unittest discover -s tests 
+        - cd tests
+        - python -m unittest
         - python -m cibuildwheel --output-dir wheelhouse
-        - ls wheelhouse/
