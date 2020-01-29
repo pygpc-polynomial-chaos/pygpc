@@ -1,7 +1,7 @@
 env:
   global:
     - CIBW_BEFORE_BUILD="pip install numpy" 
-    - CIBW_TEST_COMMAND="python -m unittest discover -s {project}/tests"
+    # - CIBW_TEST_COMMAND="python -m unittest discover -s {project}/tests"
  
 matrix:
   include:
@@ -10,21 +10,41 @@ matrix:
       language: python
       python: '3.8'
       env: CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+      script:
+        - python -m pip install cibuildwheel twine
+        - python -m unittest discover -s tests 
+        - python -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: linux
       dist: bionic
       language: python
       python: '3.7'
       env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+      script:
+        - python -m pip install cibuildwheel twine
+        - python -m unittest discover -s tests 
+        - python -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os : linux
       dist: bionic
       language: python
       python: '3.6'
       env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+      script:
+        - python -m pip install cibuildwheel twine
+        - python -m unittest discover -s tests 
+        - python -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: linux
       dist: bionic
       language: python
       python: '3.5'
       env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
+      script:
+        - python -m pip install cibuildwheel twine
+        - python -m unittest discover -s tests 
+        - python -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: osx
       language: generic
       env:
@@ -37,6 +57,11 @@ matrix:
           packages:
             - gcc
             - libomp
+      script:
+        - python3 -m pip install cibuildwheel twine
+        - python3 -m unittest discover -s tests 
+        - python3 -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: osx
       language: generic
       env:
@@ -49,6 +74,11 @@ matrix:
           packages:
             - gcc
             - libomp
+      script:
+        - python3 -m pip install cibuildwheel twine
+        - python3 -m unittest discover -s tests 
+        - python3 -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: osx
       language: generic
       env:
@@ -61,6 +91,11 @@ matrix:
           packages:
             - gcc
             - libomp
+      script:
+        - python3 -m pip install cibuildwheel twine
+        - python3 -m cibuildwheel --output-dir wheelhouse
+        - python3 -m unittest discover -s tests 
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: osx
       language: generic
       env:
@@ -73,23 +108,42 @@ matrix:
           packages:
             - gcc
             - libomp
+      script:
+        - python3 -m pip install cibuildwheel twine
+        - python3 -m unittest discover -s tests 
+        - python3 -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: windows
       language: shell
       before_install:
         - choco install python --version 3.8.1
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
         - export CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+      script:
+        - python -m pip install cibuildwheel twine
+        - python -m unittest discover -s tests 
+        - python -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: windows
       language: shell
       before_install:
         - choco install python --version 3.7.6
         - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
         - export CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+      script:
+        - python -m pip install cibuildwheel twine
+        - python -m unittest discover -s tests 
+        - python -m cibuildwheel --output-dir wheelhouse
+        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: windows
       language: shell
       before_install:
         - choco install python --version 3.6.8
         - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
+      script:
+        - python -m pip install cibuildwheel twine
+        - python -m unittest discover -s tests 
+        - python -m cibuildwheel --output-dir wheelhouse
         - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
     - os: windows
       language: shell
@@ -97,8 +151,8 @@ matrix:
         - choco install python --version 3.5.4
         - export PATH="/c/Python35:/c/Python35/Scripts:$PATH"
         - export CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
-
-script:
-    - python -m pip install cibuildwheel twine
-    - python -m cibuildwheel --output-dir wheelhouse
-    - ls wheelhouse/
+      script:
+        - python -m pip install cibuildwheel twine
+        - python -m unittest discover -s tests 
+        - python -m cibuildwheel --output-dir wheelhouse
+        - ls wheelhouse/
