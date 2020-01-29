@@ -587,11 +587,23 @@ class GPC(object):
         if self.p_matrix is not None:
             x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
-        # determine gPC matrix at coordinates x
-        gpc_matrix = self.create_gpc_matrix(self.basis.b, x, gradient=False)
+        if self.backend == 'python' or self.backend == 'cpu' or self.backend == 'omp':
+            # determine gPC matrix at coordinates x
+            gpc_matrix = self.create_gpc_matrix(self.basis.b, x, gradient=False)
 
-        # multiply with gPC coeffs
-        pce = np.matmul(gpc_matrix, coeffs)
+            # multiply with gPC coeffs
+            pce = np.matmul(gpc_matrix, coeffs)
+
+        elif self.backend == "cuda":
+            try:
+                from .pygpc_extensions_cuda import get_approximation_cuda
+            except ModuleNotFoundError:
+                raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
+            else:
+                pce = np.empty([x.shape[0], coeffs.shape[1]])
+                get_approximation_cuda(x, self.basis.b_array, coeffs, pce)
+        else:
+            raise NotImplementedError
 
         return pce
 
