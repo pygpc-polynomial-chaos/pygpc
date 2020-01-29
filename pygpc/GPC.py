@@ -21,7 +21,7 @@ from .pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp
 
 try:
     from .pygpc_extensions_cuda import create_gpc_matrix_cuda
-except ModuleNotFoundError:
+except ImportError:
     pass
 
 
@@ -240,7 +240,7 @@ class GPC(object):
         elif self.backend == "cuda":
             try:
                 from .pygpc_extensions_cuda import create_gpc_matrix_cuda
-            except ModuleNotFoundError:
+            except ImportError:
                 raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
             else:
                 if not gradient:
@@ -597,7 +597,7 @@ class GPC(object):
         elif self.backend == "cuda":
             try:
                 from .pygpc_extensions_cuda import get_approximation_cuda
-            except ModuleNotFoundError:
+            except ImportError:
                 raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
             else:
                 pce = np.empty([x.shape[0], coeffs.shape[1]])

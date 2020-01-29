@@ -6,11 +6,11 @@ from collections import OrderedDict
 
 dimensions_lst = [4]
 
-# order_lst = np.array([1, 5, 10, 12])
-# n_samples_validation_lst = np.logspace(1, 6, 10)
+order_lst = np.array([1, 5, 10, 11])
+n_samples_validation_lst = np.logspace(1, 6, 10)
 
-order_lst = [2]
-n_samples_validation_lst = [10]
+# order_lst = [2]
+# n_samples_validation_lst = [10]
 
 time_python_lst = []
 time_cpu_lst = []

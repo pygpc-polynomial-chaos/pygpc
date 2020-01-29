@@ -1,7 +1,6 @@
 env:
   global:
     - CIBW_BEFORE_BUILD="pip install numpy" 
-    # - CIBW_TEST_COMMAND="python -m unittest discover -s {project}/tests"
  
 matrix:
   include:
@@ -193,3 +192,12 @@ matrix:
         - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+
+  # sometimes python3.8 gets stuck
+  allow_failures: 
+    - os: linux
+      dist: bionic
+      language: python
+      python: '3.8'
+      env: CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+ 
