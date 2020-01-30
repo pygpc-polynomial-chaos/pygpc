@@ -279,7 +279,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["matrix_ratio"] = 2
         options["n_cpu"] = 0
         options["gradient_enhanced"] = True
-        options["gradient_calculation"] = "standard_forward"
+        options["gradient_calculation"] = "FD_fwd"
         options["error_type"] = "loocv"
         options["qoi"] = "all"
         options["n_grid_gradient"] = 5
@@ -460,7 +460,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["matrix_ratio"] = 2
         options["n_cpu"] = 0
         options["gradient_enhanced"] = True
-        options["gradient_calculation"] = "standard_forward"
+        options["gradient_calculation"] = "FD_fwd"
         options["n_grid_gradient"] = 200
         options["error_type"] = "nrmsd"
         options["n_samples_validation"] = 1e3
@@ -636,7 +636,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["matrix_ratio"] = 2
         options["n_cpu"] = 0
         options["fn_results"] = os.path.join(folder, test_name)
-        options["gradient_calculation"] = "standard_forward"
+        options["gradient_calculation"] = "FD_fwd"
         options["n_grid_gradient"] = 5
         options["qoi"] = 0
         options["error_type"] = "loocv"
@@ -725,7 +725,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["projection"] = False
         options["n_cpu"] = 0
         options["gradient_enhanced"] = False
-        options["gradient_calculation"] = "standard_forward"
+        options["gradient_calculation"] = "FD_fwd"
         options["error_type"] = "loocv"
         options["error_norm"] = "absolute" # "relative"
         options["qoi"] = 0 # "all"
@@ -1176,7 +1176,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["projection"] = False
         options["n_cpu"] = 0
         options["gradient_enhanced"] = False
-        options["gradient_calculation"] = "standard_forward"
+        options["gradient_calculation"] = "FD_fwd"
         options["error_type"] = "loocv"
         options["error_norm"] = "absolute" # "relative"
         options["qoi"] = 0 # "all"

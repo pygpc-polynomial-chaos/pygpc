@@ -70,7 +70,7 @@ class Algorithm(object):
             Use gradient information to determine the gPC coefficients.
         options["gradient_calculation"] : str, optional, default="standard_forward"
             Type of the calculation scheme to determine the gradient in the grid points
-            - "standard_forward" ... Forward approximation (creates additional dim*n_grid grid-points in the axis
+            - "FD_fwd" ... Forward approximation (creates additional dim*n_grid grid-points in the axis
             directions)
             - "???" ... ???
         options["backend"] : str, optional, default: "python"
@@ -130,7 +130,7 @@ class Algorithm(object):
             self.options["gradient_enhanced"] = False
 
         if "gradient_calculation" not in self.options.keys():
-            self.options["gradient_calculation"] = "standard_forward"
+            self.options["gradient_calculation"] = "FD_fwd"
 
         if "backend" not in self.options.keys():
             self.options["backend"] = "python"

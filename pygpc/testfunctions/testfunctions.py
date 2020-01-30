@@ -1507,12 +1507,14 @@ class Peaks(AbstractModel):
                            "additional_data/single_int": 2,
                            "additional_data/single_str": "test"}
 
-        # two output variables for testing
-        if y.size > 1:
-            y_out = np.array([y, 2 * y]).transpose()
-            additional_data = y.size * [additional_data]
-        else:
-            y_out = np.array([y, 2 * y])
+        # # two output variables for testing
+        # if y.size > 1:
+        #     y_out = np.array([y, 2 * y]).transpose()
+        #     additional_data = y.size * [additional_data]
+        # else:
+        #     y_out = np.array([y, 2 * y])
+        if y.ndim == 1:
+            y_out = y[:, np.newaxis]
 
         return y_out, additional_data
 
