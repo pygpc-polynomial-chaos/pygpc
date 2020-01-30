@@ -6,7 +6,7 @@ from .BasisFunction import *
 
 try:
     import matplotlib.pyplot as plt
-except ModuleNotFoundError:
+except ImportError:
     warnings.warn("If you want to use plot functionality from pygpc, "
                   "please install matplotlib (pip install matplotlib).")
     pass
