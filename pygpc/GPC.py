@@ -16,7 +16,7 @@ import time
 import random
 from sklearn import linear_model
 from scipy.signal import savgol_filter
-from pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp
+# from pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp
 
 
 class GPC(object):
