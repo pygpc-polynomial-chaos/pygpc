@@ -15,6 +15,7 @@ from .misc import get_num_coeffs_sparse
 from .Grid import *
 from .MEGPC import *
 from .Classifier import Classifier
+from .Gradient import get_gradient
 
 
 class Algorithm(object):
@@ -195,79 +196,6 @@ class Algorithm(object):
         if "backend" not in self.options.keys():
             self.options["backend"] = "python"
 
-    def get_gradient(self, grid, results, com, gradient_results=None, i_iter=None, i_subiter=None):
-        """
-        Determines the gradient of the model function in the grid points (self.grid.coords).
-        The method to determine the gradient can be specified in self.options["gradient_calculation"] to be either:
-
-        - "standard_forward" ... Forward approximation of the gradient using n_grid x dim additional sampling points
-          stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x dim x dim].
-        - "???" ... ???
-
-        Parameters
-        ----------
-        grid : Grid object
-            Grid object
-        results : ndarray of float [n_grid x n_out]
-            Results of model function in grid points
-        com : Computation class instance
-            Computation class instance to run the computations
-        gradient_results : ndarray of float [n_grid_old x n_out x dim], optional, default: None
-            Gradient of model function in grid points, already determined in previous calculations.
-        i_iter : int (optional, default: None)
-            Current iteration
-        i_subiter : int (optional, default: None)
-            Current sub-iteration
-
-        Returns
-        -------
-        gradient_results : ndarray of float [n_grid x n_out x dim]
-            Gradient of model function in grid points
-        """
-        if gradient_results is not None:
-            n_gradient_results = gradient_results.shape[0]
-        else:
-            n_gradient_results = 0
-
-        if n_gradient_results < results.shape[0]:
-            #########################################
-            # Standard forward gradient calculation #
-            #########################################
-            if self.options["gradient_calculation"] == "standard_forward":
-                # add new grid points for gradient calculation in grid.coords_gradient and grid.coords_gradient_norm
-                grid.create_gradient_grid(delta=1e-3)
-
-                results_gradient_tmp = com.run(model=self.problem.model,
-                                               problem=self.problem,
-                                               coords=ten2mat(grid.coords_gradient[n_gradient_results:, :, :]),
-                                               coords_norm=ten2mat(grid.coords_gradient_norm[n_gradient_results:, :, :]),
-                                               i_iter=i_iter,
-                                               i_subiter=i_subiter,
-                                               fn_results=None,
-                                               print_func_time=self.options["print_func_time"],
-                                               increment_grid=False)
-
-                delta = np.repeat(np.linalg.norm(
-                    ten2mat(grid.coords_gradient_norm[n_gradient_results:, :, :]) - \
-                    ten2mat(np.repeat(grid.coords_norm[n_gradient_results:, :, np.newaxis], self.problem.dim, axis=2)),
-                    axis=1)[:, np.newaxis], results_gradient_tmp.shape[1], axis=1)
-
-                gradient_results_new = (ten2mat(np.repeat(results[n_gradient_results:, :, np.newaxis], self.problem.dim, axis=2)) - results_gradient_tmp) / delta
-
-                gradient_results_new = mat2ten(mat=gradient_results_new, incr=self.problem.dim)
-
-                if gradient_results is not None:
-                    gradient_results = np.vstack((gradient_results, gradient_results_new))
-                else:
-                    gradient_results = gradient_results_new
-
-            ##############################
-            # Gradient approximation ... #
-            ##############################
-            # TODO: implement gradient approximation schemes using neighbouring grid points
-
-        return gradient_results
-
 
 class Static(Algorithm):
     """
@@ -395,8 +323,8 @@ class Static(Algorithm):
 
         start_time = time.time()
 
-        res = com.run(model=gpc.problem.model,
-                      problem=gpc.problem,
+        res = com.run(model=self.problem.model,
+                      problem=self.problem,
                       coords=gpc.grid.coords,
                       coords_norm=gpc.grid.coords_norm,
                       i_iter=gpc.order_max,
@@ -410,11 +338,18 @@ class Static(Algorithm):
         # Determine gradient [n_grid x n_out x dim]
         if self.options["gradient_enhanced"]:
             start_time = time.time()
-            grad_res_3D = self.get_gradient(grid=gpc.grid,
-                                            results=res,
-                                            com=com,
-                                            i_iter=gpc.order_max,
-                                            i_subiter=gpc.interaction_order)
+
+            grad_res_3D = get_gradient(model=self.problem.model,
+                                       problem=self.problem,
+                                       grid=gpc.grid,
+                                       results=res,
+                                       com=com,
+                                       method=self.options["gradient_calculation"],
+                                       gradient_results=None,
+                                       i_iter=gpc.order_max,
+                                       i_subiter=gpc.interaction_order,
+                                       print_func_time=self.options["print_func_time"])
+
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
 
@@ -614,11 +549,18 @@ class MEStatic(Algorithm):
         # Determine gradient [n_grid x n_out x dim]
         if self.options["gradient_enhanced"]:
             start_time = time.time()
-            grad_res_3D_all = self.get_gradient(grid=grid,
-                                                results=res_all,
-                                                com=com,
-                                                i_iter=self.options["order_max"],
-                                                i_subiter=self.options["interaction_order"])
+
+            grad_res_3D_all = get_gradient(model=self.problem.model,
+                                           problem=self.problem,
+                                           grid=grid,
+                                           results=res_all,
+                                           com=com,
+                                           method=self.options["gradient_calculation"],
+                                           gradient_results=None,
+                                           i_iter=self.options["order_max"],
+                                           i_subiter=self.options["interaction_order"],
+                                           print_func_time=self.options["print_func_time"])
+
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
 
@@ -910,11 +852,18 @@ class StaticProjection(Algorithm):
 
         # Determine gradient
         start_time = time.time()
-        grad_res_3D_all = self.get_gradient(grid=grid_original,
-                                            results=res_all,
-                                            com=com,
-                                            i_iter=self.options["order_max"],
-                                            i_subiter=self.options["interaction_order"])
+
+        grad_res_3D_all = get_gradient(model=self.problem.model,
+                                       problem=self.problem,
+                                       grid=grid_original,
+                                       results=res_all,
+                                       com=com,
+                                       method=self.options["gradient_calculation"],
+                                       gradient_results=None,
+                                       i_iter=self.options["order_max"],
+                                       i_subiter=self.options["interaction_order"],
+                                       print_func_time=self.options["print_func_time"])
+
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
@@ -1012,12 +961,18 @@ class StaticProjection(Algorithm):
                 # Determine gradient [n_grid x n_out x dim]
                 if self.options["gradient_enhanced"]:
                     start_time = time.time()
-                    grad_res_3D_all = self.get_gradient(grid=grid_original,
-                                                        results=res_all,
-                                                        com=com,
-                                                        gradient_results=grad_res_3D_all,
-                                                        i_iter=self.options["order_max"],
-                                                        i_subiter=self.options["interaction_order"])
+
+                    grad_res_3D_all = get_gradient(model=self.problem.model,
+                                                   problem=self.problem,
+                                                   grid=grid_original,
+                                                   results=res_all,
+                                                   com=com,
+                                                   method=self.options["gradient_calculation"],
+                                                   gradient_results=grad_res_3D_all,
+                                                   i_iter=self.options["order_max"],
+                                                   i_subiter=self.options["interaction_order"],
+                                                   print_func_time=self.options["print_func_time"])
+
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
@@ -1271,11 +1226,18 @@ class MEStaticProjection(Algorithm):
 
         # Determine gradient
         start_time = time.time()
-        grad_res_3D_all = self.get_gradient(grid=grid,
-                                            results=res_all,
-                                            com=com,
-                                            i_iter=self.options["order_max"],
-                                            i_subiter=self.options["interaction_order"])
+
+        grad_res_3D_all = get_gradient(model=self.problem.model,
+                                       problem=self.problem,
+                                       grid=grid,
+                                       results=res_all,
+                                       com=com,
+                                       method=self.options["gradient_calculation"],
+                                       gradient_results=None,
+                                       i_iter=self.options["order_max"],
+                                       i_subiter=self.options["interaction_order"],
+                                       print_func_time=self.options["print_func_time"])
+
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
@@ -1397,12 +1359,18 @@ class MEStaticProjection(Algorithm):
                 # Determine gradient [n_grid x n_out x dim]
                 if self.options["gradient_enhanced"]:
                     start_time = time.time()
-                    grad_res_3D_all = self.get_gradient(grid=grid,
-                                                        results=res,
-                                                        com=com,
-                                                        gradient_results=grad_res_3D_all,
-                                                        i_iter=self.options["order_max"],
-                                                        i_subiter=self.options["interaction_order"])
+
+                    grad_res_3D_all = get_gradient(model=self.problem.model,
+                                                   problem=self.problem,
+                                                   grid=grid,
+                                                   results=res,
+                                                   com=com,
+                                                   method=self.options["gradient_calculation"],
+                                                   gradient_results=grad_res_3D_all,
+                                                   i_iter=self.options["order_max"],
+                                                   i_subiter=self.options["interaction_order"],
+                                                   print_func_time=self.options["print_func_time"])
+
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
@@ -1772,12 +1740,18 @@ class RegAdaptive(Algorithm):
 
                         if self.options["gradient_enhanced"]:
                             start_time = time.time()
-                            grad_res_3D = self.get_gradient(grid=gpc.grid,
-                                                            results=res,
-                                                            com=com,
-                                                            gradient_results=grad_res_3D,
-                                                            i_iter=basis_order[0],
-                                                            i_subiter=basis_order[1])
+
+                            grad_res_3D = get_gradient(model=self.problem.model,
+                                                       problem=self.problem,
+                                                       grid=gpc.grid,
+                                                       results=res,
+                                                       com=com,
+                                                       method=self.options["gradient_calculation"],
+                                                       gradient_results=grad_res_3D,
+                                                       i_iter=basis_order[0],
+                                                       i_subiter=basis_order[1],
+                                                       print_func_time=self.options["print_func_time"])
+
                             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                    tab=0, verbose=self.options["verbose"])
 
@@ -2044,11 +2018,18 @@ class MERegAdaptiveProjection(Algorithm):
         # Determine gradient [n_grid x n_out x dim]
         if self.options["gradient_enhanced"] or self.options["projection"]:
             start_time = time.time()
-            grad_res_3D_all = self.get_gradient(grid=grid,
-                                                results=res_all,
-                                                com=com,
-                                                i_iter=self.options["order_start"],
-                                                i_subiter=self.options["interaction_order"])
+
+            grad_res_3D_all = get_gradient(model=self.problem.model,
+                                           problem=self.problem,
+                                           grid=grid,
+                                           results=res_all,
+                                           com=com,
+                                           method=self.options["gradient_calculation"],
+                                           gradient_results=None,
+                                           i_iter=self.options["order_start"],
+                                           i_subiter=self.options["interaction_order"],
+                                           print_func_time=self.options["print_func_time"])
+
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
 
@@ -2202,12 +2183,18 @@ class MERegAdaptiveProjection(Algorithm):
                 # Determine gradient [n_grid x n_out x dim]
                 if self.options["gradient_enhanced"] or self.options["projection"]:
                     start_time = time.time()
-                    grad_res_3D_all = self.get_gradient(grid=grid,
-                                                        results=res_all,
-                                                        com=com,
-                                                        gradient_results=grad_res_3D_all,
-                                                        i_iter=None,
-                                                        i_subiter=None)
+
+                    grad_res_3D_all = get_gradient(model=self.problem.model,
+                                                   problem=self.problem,
+                                                   grid=grid,
+                                                   results=res_all,
+                                                   com=com,
+                                                   method=self.options["gradient_calculation"],
+                                                   gradient_results=grad_res_3D_all,
+                                                   i_iter=None,
+                                                   i_subiter=None,
+                                                   print_func_time=self.options["print_func_time"])
+
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
@@ -2295,12 +2282,18 @@ class MERegAdaptiveProjection(Algorithm):
                 # Determine gradient [n_grid x n_out x dim]
                 if self.options["gradient_enhanced"] or self.options["projection"]:
                     start_time = time.time()
-                    grad_res_3D_all = self.get_gradient(grid=grid,
-                                                        results=res_all,
-                                                        com=com,
-                                                        gradient_results=grad_res_3D_all,
-                                                        i_iter="Domain boundary",
-                                                        i_subiter=None)
+
+                    grad_res_3D_all = get_gradient(model=self.problem.model,
+                                                   problem=self.problem,
+                                                   grid=grid,
+                                                   results=res_all,
+                                                   com=com,
+                                                   method=self.options["gradient_calculation"],
+                                                   gradient_results=grad_res_3D_all,
+                                                   i_iter="Domain boundary",
+                                                   i_subiter=None,
+                                                   print_func_time=self.options["print_func_time"])
+
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
@@ -2577,12 +2570,18 @@ class MERegAdaptiveProjection(Algorithm):
 
                                     if self.options["gradient_enhanced"] or self.options["projection"]:
                                         start_time = time.time()
-                                        grad_res_3D_all = self.get_gradient(grid=grid,
-                                                                            results=res_all,
-                                                                            com=com,
-                                                                            gradient_results=grad_res_3D_all,
-                                                                            i_iter=basis_order["poly_dom_{}".format(d)][0],
-                                                                            i_subiter=basis_order["poly_dom_{}".format(d)][1])
+
+                                        grad_res_3D_all = get_gradient(model=self.problem.model,
+                                                                       problem=self.problem,
+                                                                       grid=grid,
+                                                                       results=res_all,
+                                                                       com=com,
+                                                                       method=self.options["gradient_calculation"],
+                                                                       gradient_results=grad_res_3D_all,
+                                                                       i_iter=basis_order["poly_dom_{}".format(d)][0],
+                                                                       i_subiter=basis_order["poly_dom_{}".format(d)][1],
+                                                                       print_func_time=self.options["print_func_time"])
+
                                         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                                tab=0, verbose=self.options["verbose"])
 
@@ -3029,12 +3028,18 @@ class RegAdaptiveProjection(Algorithm):
 
         # Determine gradient
         start_time = time.time()
-        grad_res_3D_all = self.get_gradient(grid=grid_original,
-                                            results=res_all,
-                                            com=com,
-                                            gradient_results=None,
-                                            i_iter=self.options["order_start"],
-                                            i_subiter=self.options["interaction_order"])
+
+        grad_res_3D_all = get_gradient(model=self.problem.model,
+                                       problem=self.problem,
+                                       grid=grid_original,
+                                       results=res_all,
+                                       com=com,
+                                       method=self.options["gradient_calculation"],
+                                       gradient_results=None,
+                                       i_iter=self.options["order_start"],
+                                       i_subiter=self.options["interaction_order"],
+                                       print_func_time=self.options["print_func_time"])
+
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
@@ -3229,12 +3234,18 @@ class RegAdaptiveProjection(Algorithm):
 
                             # Determine gradient
                             start_time = time.time()
-                            grad_res_3D_all = self.get_gradient(grid=grid_original,
-                                                                results=res_all,
-                                                                com=com,
-                                                                gradient_results=grad_res_3D_all,
-                                                                i_iter=basis_order[0],
-                                                                i_subiter=basis_order[1])
+
+                            grad_res_3D_all = get_gradient(model=self.problem.model,
+                                                           problem=self.problem,
+                                                           grid=grid_original,
+                                                           results=res_all,
+                                                           com=com,
+                                                           method=self.options["gradient_calculation"],
+                                                           gradient_results=grad_res_3D_all,
+                                                           i_iter=basis_order[0],
+                                                           i_subiter=basis_order[1],
+                                                           print_func_time=self.options["print_func_time"])
+
                             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                    tab=0, verbose=self.options["verbose"])
 

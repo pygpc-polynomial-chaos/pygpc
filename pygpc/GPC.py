@@ -174,8 +174,6 @@ class GPC(object):
         """
         Construct the gPC matrix or its derivative.
 
-        gpc_matrix = calc_gpc_matrix_cpu(b, x, gradient=False)
-
         Parameters
         ----------
         b : list of BasisFunction object instances [n_basis][n_dim]
