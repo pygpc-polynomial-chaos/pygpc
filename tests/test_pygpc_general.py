@@ -60,7 +60,7 @@ class TestPygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def expect_true(self, a, msg):
+    def expect_true(self, a, msg=''):
         if not a:
             self._fail(self.failureException(msg))
         self._num_expectations += 1
@@ -1396,7 +1396,69 @@ class TestPygpcMethods(unittest.TestCase):
         # session_hdf5 = pygpc.read_gpc_hdf5(fname=options["fn_results"] + "_session.hdf5")
 
         # compare session
-        pass
+        print("done!\n")
+
+    def test_16_gradient_estimation_methods(self):
+        """
+        Test gradient estimation methods
+        """
+        methods = ["FD_fwd", "FD_1st", "FD_2nd"]
+
+        # define model
+        model = pygpc.testfunctions.Peaks()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+        parameters["x2"] = 0.5
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        problem = pygpc.Problem(model, parameters)
+
+        # define grid
+        n_grid = 1000
+        grid = pygpc.Random(parameters_random=problem.parameters_random,
+                            n_grid=n_grid,
+                            seed=1)
+
+        # create grid points for finite difference approximation
+        grid.create_gradient_grid(delta=1e-3)
+
+        # evaluate model function
+        com = pygpc.Computation(n_cpu=0, matlab_model=False)
+
+        # [n_grid x n_out]
+        res = com.run(model=model,
+                      problem=problem,
+                      coords=grid.coords,
+                      coords_norm=grid.coords_norm,
+                      i_iter=None,
+                      i_subiter=None,
+                      fn_results=None,
+                      print_func_time=False)
+
+        grad_res = dict()
+        for m in methods:
+            # [n_grid x n_out x dim]
+            grad_res[m] = pygpc.get_gradient(model=model,
+                                             problem=problem,
+                                             grid=grid,
+                                             results=res,
+                                             com=com,
+                                             method=m,
+                                             gradient_results=None,
+                                             i_iter=None,
+                                             i_subiter=None,
+                                             print_func_time=False,
+                                             dx=0.1,
+                                             distance_weight=-2)
+
+        nrmsd_1st_vs_ref = pygpc.nrmsd(grad_res["FD_1st"][:, 0, :], grad_res["FD_fwd"][:, 0, :])
+        nrmsd_2nd_vs_ref = pygpc.nrmsd(grad_res["FD_2nd"][:, 0, :], grad_res["FD_fwd"][:, 0, :])
+
+        self.expect_true((nrmsd_1st_vs_ref < 0.05).all(),
+                         msg="gPC test failed during gradient estimation: FD_1st error too large")
+        self.expect_true((nrmsd_2nd_vs_ref < 0.01).all(),
+                         msg="gPC test failed during gradient estimation: FD_2nd error too large")
 
 
 if __name__ == '__main__':

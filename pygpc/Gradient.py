@@ -1,6 +1,7 @@
 import numpy as np
 from .misc import ten2mat
 from .misc import mat2ten
+from .misc import get_all_combinations
 
 
 def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
@@ -138,9 +139,18 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
                     D = coords_norm_selected-x0
 
                     # distance matrix (2nd order)
-                    M = np.hstack((0.5 * (coords_norm_selected[:, 0]-x0[0])[:, np.newaxis]**2,
-                                   (coords_norm_selected[:, 0]-x0[0])[:, np.newaxis] * (coords_norm_selected[:, 1]-x0[1])[:, np.newaxis],
-                                   0.5 * (coords_norm_selected[:, 1]-x0[1])[:, np.newaxis]**2))
+                    M = np.zeros((coords_norm_selected.shape[0], np.sum(np.arange(problem.dim+1))))
+
+                    # quadratic terms
+                    for i_dim in range(problem.dim):
+                        M[:, i_dim] = 0.5 * (coords_norm_selected[:, i_dim]-x0[i_dim])**2
+
+                    # mixed linear terms
+                    idx = get_all_combinations(np.arange(problem.dim), 2)
+
+                    for j, idx_row in enumerate(idx):
+                        M[:, j+problem.dim] = (coords_norm_selected[:, idx_row[0]] - x0[idx_row[0]]) * \
+                                              (coords_norm_selected[:, idx_row[1]] - x0[idx_row[1]])
 
                     # rhs
                     df = results[mask, ]-results[i, ]

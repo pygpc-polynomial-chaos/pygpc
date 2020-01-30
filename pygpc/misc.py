@@ -2,6 +2,7 @@ import numpy as np
 import scipy.special
 import scipy.stats
 import scipy.spatial
+import warnings
 import sys
 import math
 import itertools
@@ -268,6 +269,22 @@ def nrmsd(array, array_ref, error_norm="relative", x_axis=False):
         #     delta[max_min_idx] = max(data_ref[max_min_idx])
     else:
         delta = 1
+
+    # filter nan
+    row_idx_data, col_idx_data = np.where(np.isnan(data))
+    row_idx_data_ref, col_idx_data_ref = np.where(np.isnan(data_ref))
+    row_idx = np.hstack((row_idx_data, row_idx_data_ref))
+    col_idx = np.hstack((col_idx_data, col_idx_data_ref))
+
+    if row_idx_data.size > 0:
+        warnings.warn(f"nan in input dataset found at rows={row_idx_data} cols={col_idx_data} (ignored)")
+
+    if row_idx_data_ref.size > 0:
+        warnings.warn(f"nan in reference dataset found at rows={row_idx_data_ref} cols={col_idx_data_ref} (ignored)")
+
+    if row_idx.size > 0:
+        data = np.delete(data, np.unique(row_idx), axis=0)
+        data_ref = np.delete(data_ref, np.unique(row_idx), axis=0)
 
     # determine normalized rms deviation and return
     normalized_rms = np.sqrt(1.0/n_points * np.sum((data - data_ref)**2, axis=0)) / delta

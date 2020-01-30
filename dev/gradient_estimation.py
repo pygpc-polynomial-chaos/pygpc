@@ -12,7 +12,7 @@ model = pygpc.testfunctions.Peaks()
 # define problem
 parameters = OrderedDict()
 parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
-parameters["x2"] = 1.25
+parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
 parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
 problem = pygpc.Problem(model, parameters)
 
