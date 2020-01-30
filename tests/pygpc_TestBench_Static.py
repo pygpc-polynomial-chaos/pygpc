@@ -40,7 +40,7 @@ for g_e in gradient_enhanced:
             options["grid_options"] = None
 
             options["fn_results"] = os.path.join(folder, "TestBenchContinuous/{}_{}_{}_q_{}_ge_{}".format(
-                algorithm.__name__, options["solver"], options["grid"].__name__, options["order_max_norm"], int(g_e)))
+                algorithm.__name__, options["solver"], options["grid"].__name__,options["grid_options"], options["order_max_norm"], int(g_e)))
             TestBenchContinuous = pygpc.TestBenchContinuous(algorithm=algorithm,
                                                             options=copy.deepcopy(options),
                                                             repetitions=repetitions,

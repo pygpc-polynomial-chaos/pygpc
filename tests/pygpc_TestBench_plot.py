@@ -23,6 +23,7 @@ n_basis = dict()
 n_grid = dict()
 nrmsd = dict()
 loocv = dict()
+std = dict()
 
 for testbench in testbench_objs:
 
@@ -32,6 +33,7 @@ for testbench in testbench_objs:
         n_basis[os.path.split(testbench.fn_results)[1]] = dict()
         nrmsd[os.path.split(testbench.fn_results)[1]] = dict()
         loocv[os.path.split(testbench.fn_results)[1]] = dict()
+        std[os.path.split(testbench.fn_results)[1]] = dict()
 
         # ["algorithm"]["testfunction"][repetitions x order]
         for pkey in testbench.problem_keys:
@@ -39,10 +41,11 @@ for testbench in testbench_objs:
             n_basis[os.path.split(testbench.fn_results)[1]][pkey] = [[] for _ in range(testbench.repetitions)]
             nrmsd[os.path.split(testbench.fn_results)[1]][pkey] = [[] for _ in range(testbench.repetitions)]
             loocv[os.path.split(testbench.fn_results)[1]][pkey] = [[] for _ in range(testbench.repetitions)]
+            std[os.path.split(testbench.fn_results)[1]][pkey] = [[] for _, o in enumerate(order)]
 
-            for rep in range(testbench.repetitions):
+            for i_o, o in enumerate(order):
 
-                for i_o, o in enumerate(order):
+                for rep in range(testbench.repetitions):
                     fn = os.path.join(testbench.fn_results, pkey + "_p_" + str(o) + "_" + str(rep).zfill(4) + ".pkl")
                     session = pygpc.read_session_pkl(fn)
                     n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep].append(session.gpc[0].n_grid[0])
@@ -50,12 +53,14 @@ for testbench in testbench_objs:
                     nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep].append(session.gpc[0].relative_error_nrmsd[0])
                     if session.gpc[0].relative_error_loocv:
                         loocv[os.path.split(testbench.fn_results)[1]][pkey][rep].append(session.gpc[0].relative_error_loocv[0])
+                std_over_reps = np.std([nrmsd[os.path.split(testbench.fn_results)[1]][pkey][i][i_o] for i in range(testbench.repetitions)])
+                std[os.path.split(testbench.fn_results)[1]][pkey][i_o] = std_over_reps
 
-                n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep])
-                n_basis[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(n_basis[os.path.split(testbench.fn_results)[1]][pkey][rep])
-                nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep])
-                if session.gpc[0].relative_error_loocv:
-                    loocv[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(loocv[os.path.split(testbench.fn_results)[1]][pkey][rep])
+            n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep])
+            n_basis[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(n_basis[os.path.split(testbench.fn_results)[1]][pkey][rep])
+            nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep])
+            if session.gpc[0].relative_error_loocv:
+                loocv[os.path.split(testbench.fn_results)[1]][pkey][rep] = np.array(loocv[os.path.split(testbench.fn_results)[1]][pkey][rep])
     else:
         n_grid[os.path.split(testbench.fn_results)[1]] = dict()
         n_basis[os.path.split(testbench.fn_results)[1]] = dict()
@@ -133,6 +138,7 @@ for i_pkey, pkey in enumerate(testbench.problem_keys):
 
         n_grid_line = np.array([])
         nrmsd_line = np.array([])
+        std_line = np.array([])
 
         for rep in range(testbench.repetitions):
 
@@ -147,20 +153,26 @@ for i_pkey, pkey in enumerate(testbench.problem_keys):
             else:
                 n_grid_line = np.append(n_grid_line, n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep])
                 nrmsd_line = np.append(nrmsd_line, nrmsd[os.path.split(testbench.fn_results)[1]][pkey][rep])
+                std_line = np.append(std_line, std[os.path.split(testbench.fn_results)[1]][pkey])
 
-            n_grid_max.append(np.max(n_grid[os.path.split(testbench.fn_results)[1]][pkey][rep]))
+            n_grid_max.append(np.max(n_grid[os.path.split(testbench.fn_results)[1]][pkey]))
 
         if plot_lines:
             sort_idx = np.argsort(n_grid_line)
             n_grid_line = n_grid_line[sort_idx]
             nrmsd_line = nrmsd_line[sort_idx]
+            std_line = std_line[sort_idx]
 
             for i in n_grid_line:
                 nrmsd_line[n_grid_line == i] = np.mean(nrmsd_line[n_grid_line == i])
+                std_line[n_grid_line == i] = std_line[n_grid_line == i]
 
-            ax[i_dim, i_fun].plot(n_grid_line,
-                                  nrmsd_line,
-                                  color=cmap(float(i_alg) / len(testbench_objs)))
+            ax[i_dim, i_fun].errorbar(n_grid_line,
+                                      nrmsd_line,
+                                      yerr=std_line,
+                                      # ecolor='g',
+                                      elinewidth=0.1,
+                                      color=cmap(float(i_alg) / len(testbench_objs)))
 
             # ,
             # marker = markersequence[i_alg],
@@ -177,7 +189,7 @@ for i_pkey, pkey in enumerate(testbench.problem_keys):
     ax[i_dim, i_fun].set_xlim([0, n_grid_max*1.1])
     # ax[i_dim, i_fun].set_ylim([0.00001, 5])
     ax[i_dim, i_fun].grid(True)
-    ax[i_dim, i_fun].plot([0, n_grid_max * 1.1], [1e-2, 1e-2], 'r', linewidth=0.5)
+    # ax[i_dim, i_fun].errorbar([0, n_grid_max * 1.1], [1e-2, 1e-2], 'r', xerr=0, yerr=0, linewidth=0.5)
 
     i_fun += 1
 

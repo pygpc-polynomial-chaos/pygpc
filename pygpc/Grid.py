@@ -1052,36 +1052,48 @@ class LHS(RandomGrid):
         super(LHS, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=options)
 
 
-        n_grid_lhs = self.n_grid
-        self.coords_reservoir = np.zeros((n_grid_lhs, self.dim))
-        self.coords_norm_reservoir = np.zeros((n_grid_lhs, self.dim))
-        self.perc_mask = np.zeros((n_grid_lhs, self.dim)).astype(bool)
 
-        # Generate random samples for each random input variable [n_grid x dim]
-        self.coords_norm = np.zeros([self.n_grid, self.dim])
+    def sample_init(self, parameters_random, n_grid, options, seed):
 
-        # generate LHS grid in icdf space (seed of random grid (if necessary to reproduce random grid)
-        self.lhs_reservoir = self.get_lhs_grid(dim=self.dim, n=n_grid_lhs, crit=self.options, random_state=self.seed)
+        if n_grid > 0:
+            n_grid_lhs = self.n_grid
+            self.coords_reservoir = np.zeros((n_grid_lhs, self.dim))
+            self.coords_norm_reservoir = np.zeros((n_grid_lhs, self.dim))
+            self.perc_mask = np.zeros((n_grid_lhs, self.dim)).astype(bool)
 
-        # transform sample points from icdf to pdf space
-        for i_p, p in enumerate(self.parameters_random):
-            self.coords_norm_reservoir[:, i_p] = self.parameters_random[p].icdf(self.lhs_reservoir[:, i_p])
-            self.perc_mask[:, i_p] = np.logical_and(
-                self.parameters_random[p].pdf_limits_norm[0] < self.coords_norm_reservoir[:, i_p],
-                self.coords_norm_reservoir[:, i_p] < self.parameters_random[p].pdf_limits_norm[1])
+            if n_grid < 2:
+                if self.options is 'ese':
+                    self.options = 'maximin'
 
-        # get points all satisfying perc constraints
-        self.perc_mask = self.perc_mask.all(axis=1)
-        self.coords_norm_reservoir = self.coords_norm_reservoir[self.perc_mask, :]
+            # Generate random samples for each random input variable [n_grid x dim]
+            self.coords_norm = np.zeros([self.n_grid, self.dim])
 
-        self.coords_norm = self.coords_norm_reservoir[0:self.n_grid, :]
+            # generate LHS grid in icdf space (seed of random grid (if necessary to reproduce random grid)
+            self.lhs_reservoir = self.get_lhs_grid(dim=self.dim, n=n_grid_lhs, crit=self.options, random_state=self.seed)
 
-        # Denormalize grid to original parameter space
-        self.coords = self.get_denormalized_coordinates(self.coords_norm)
-        self.coords_reservoir = self.get_denormalized_coordinates(self.coords_norm_reservoir)
+            # transform sample points from icdf to pdf space
+            for i_p, p in enumerate(self.parameters_random):
+                self.coords_norm_reservoir[:, i_p] = self.parameters_random[p].icdf(self.lhs_reservoir[:, i_p])
+                self.perc_mask[:, i_p] = np.logical_and(
+                    self.parameters_random[p].pdf_limits_norm[0] < self.coords_norm_reservoir[:, i_p],
+                    self.coords_norm_reservoir[:, i_p] < self.parameters_random[p].pdf_limits_norm[1])
 
-        # Generate unique IDs of grid points
-        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+            # get points all satisfying perc constraints
+            self.perc_mask = self.perc_mask.all(axis=1)
+            self.coords_norm_reservoir = self.coords_norm_reservoir[self.perc_mask, :]
+
+            self.coords_norm = self.coords_norm_reservoir[0:self.n_grid, :]
+
+            # Denormalize grid to original parameter space
+            self.coords = self.get_denormalized_coordinates(self.coords_norm)
+            self.coords_reservoir = self.get_denormalized_coordinates(self.coords_norm_reservoir)
+
+            # Generate unique IDs of grid points
+            self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+        else:
+            pass
+
 
     def CL2(self, array):
         """
@@ -1141,6 +1153,7 @@ class LHS(RandomGrid):
 
     def PhiP_exchange(self, P, k, Phi, p, fixed_index):
         # Choose two (different) random rows to perform the exchange
+        er= P.shape
         i1 = np.random.randint(P.shape[0])
         while i1 in fixed_index:
             i1 = np.random.randint(P.shape[0])
@@ -1212,12 +1225,8 @@ class LHS(RandomGrid):
             # Generate a random LHS
             test = self.lhs_initial(dim, n)
             R = scipy.stats.spearmanr(test)[0]
-            if dim < 3:
-                E = np.eye(np.shape(R)[0])
-            else:
-                E = 0
-            if np.max(np.abs(R - E)) < mincorr:
-                mincorr = np.max(np.abs(R - E))
+            if np.max(np.abs(R)) < mincorr:
+                mincorr = np.max(np.abs(R))
                 out = test.copy()
         return out
 
