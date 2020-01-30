@@ -19,3 +19,4 @@ from .postprocessing import *
 from .RandomParameter import *
 from .test_utils import *
 from .Session import *
+from .Gradient import *

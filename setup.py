@@ -4,9 +4,9 @@ import numpy as np
 from setuptools import setup, find_packages, Extension
 
 
-# pygpc software framework for uncertainty and sensitivity
+# Pygpc software framework for uncertainty and sensitivity
 # analysis of complex systems. See also:
-# https://github.com/konstantinweise/pygpc
+# https://github.com/pygpc-polynomial-chaos/pygpc
 #
 # Copyright (C) 2017-2020 the original author (Konstantin Weise),
 # the Max-Planck-Institute for Human Cognitive Brain Sciences ("MPI CBS")
@@ -26,24 +26,6 @@ from setuptools import setup, find_packages, Extension
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--enable-openmp', action='store_true')
-#
-# args = parser.parse_args()
-#
-# pygpc_extensions_src_file_path=os.path.join('pckg', 'pygpc_extensions',
-#                                             'src', 'pygpc_extensions.cpp')
-# pygpc_extensions_include_path=os.path.join('pckg', 'pygpc_extensions',
-#                                            'include')
-#
-# if args.enable_openmp:
-#     openmp_compile_args = ['-fopenmp']
-#     openmp_link_args = ['-lgomp']
-# else:
-#     openmp_compile_args = []
-#     openmp_link_args = []
-
-
 openmp_compile_args = ['-fopenmp']
 openmp_link_args = ['-lgomp']
 pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
@@ -51,7 +33,7 @@ pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
 pygpc_extensions_include_path = [os.path.join('pckg', 'pygpc_extensions',
                                               'include'), np.get_include()]
 
-extensions = [Extension('pygpc_extensions',
+extensions = [Extension('pygpc.pygpc_extensions',
                         sources=pygpc_extensions_src_file_path,
                         include_dirs=pygpc_extensions_include_path,
                         extra_compile_args=openmp_compile_args,
@@ -59,7 +41,7 @@ extensions = [Extension('pygpc_extensions',
 
 
 setup(name='pygpc',
-      version='0.2.6.post2',
+      version='0.2.7',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
@@ -73,6 +55,7 @@ setup(name='pygpc',
                         'scikit-learn>=0.19.1',
                         'h5py>=2.9.0'],
       ext_modules=extensions,
+      package_data={'pygpc': ['*.so', '*.dll', '*.dylib']},
       project_urls={
         "Documentation": "https://pygpc.readthedocs.io/en/latest/",
         "Source Code": "https://github.com/pygpc-polynomial-chaos/pygpc"},

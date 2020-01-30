@@ -1,5 +1,7 @@
-scipy>=1.0.0,
-numpy>=1.16.4,
-fastmat>=0.1.2.post1,
-scikit-learn>=0.19.1,
-h5py>=2.9.0
+fastmat==0.1.2.post1
+h5py==2.10.0
+joblib==0.14.1
+numpy==1.18.1
+scikit-learn==0.22.1
+scipy==1.4.1
+six==1.14.0

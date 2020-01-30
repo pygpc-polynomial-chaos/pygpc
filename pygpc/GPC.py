@@ -9,14 +9,20 @@ from .Computation import *
 import numpy as np
 import fastmat as fm
 import scipy.stats
-import ctypes
 import copy
 import h5py
 import time
 import random
+import sys
 from sklearn import linear_model
 from scipy.signal import savgol_filter
-# from pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp
+from .pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp
+
+
+try:
+    from .pygpc_extensions_cuda import create_gpc_matrix_cuda
+except ImportError:
+    pass
 
 
 class GPC(object):
@@ -168,8 +174,6 @@ class GPC(object):
         """
         Construct the gPC matrix or its derivative.
 
-        gpc_matrix = calc_gpc_matrix_cpu(b, x, gradient=False)
-
         Parameters
         ----------
         b : list of BasisFunction object instances [n_basis][n_dim]
@@ -208,6 +212,7 @@ class GPC(object):
                                 derivative = False
                             gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[:, i_dim],
                                                                                         derivative=derivative)
+
         elif self.backend == "cpu":
             if not gradient:
                 # the third dimension is important and should not be removed
@@ -224,11 +229,28 @@ class GPC(object):
                 # the third dimension is important and should not be removed
                 # otherwise the code could produce undefined behaviour
                 gpc_matrix = np.empty([x.shape[0], len(b), 1])
-                create_gpc_matrix_cpu(x, self.basis.b_array, gpc_matrix)
+                create_gpc_matrix_omp(x, self.basis.b_array, gpc_matrix)
                 gpc_matrix = np.squeeze(gpc_matrix)
             else:
                 gpc_matrix = np.empty([x.shape[0], len(b), self.problem.dim])
                 create_gpc_matrix_omp(x, self.basis.b_array_grad, gpc_matrix)
+
+        elif self.backend == "cuda":
+            try:
+                from .pygpc_extensions_cuda import create_gpc_matrix_cuda
+            except ImportError:
+                raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
+            else:
+                if not gradient:
+                    # the third dimension is important and should not be removed
+                    # otherwise the code could produce undefined behaviour
+                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
+                    create_gpc_matrix_cuda(x, self.basis.b_array, gpc_matrix)
+                    gpc_matrix = np.squeeze(gpc_matrix)
+                else:
+                    gpc_matrix = np.empty([x.shape[0], len(b), self.problem.dim])
+                    create_gpc_matrix_cuda(x, self.basis.b_array_grad, gpc_matrix)
+
         else:
             raise NotImplementedError
 
@@ -563,11 +585,23 @@ class GPC(object):
         if self.p_matrix is not None:
             x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
-        # determine gPC matrix at coordinates x
-        gpc_matrix = self.create_gpc_matrix(self.basis.b, x, gradient=False)
+        if self.backend == 'python' or self.backend == 'cpu' or self.backend == 'omp':
+            # determine gPC matrix at coordinates x
+            gpc_matrix = self.create_gpc_matrix(self.basis.b, x, gradient=False)
 
-        # multiply with gPC coeffs
-        pce = np.matmul(gpc_matrix, coeffs)
+            # multiply with gPC coeffs
+            pce = np.matmul(gpc_matrix, coeffs)
+
+        elif self.backend == "cuda":
+            try:
+                from .pygpc_extensions_cuda import get_approximation_cuda
+            except ImportError:
+                raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
+            else:
+                pce = np.empty([x.shape[0], coeffs.shape[1]])
+                get_approximation_cuda(x, self.basis.b_array, coeffs, pce)
+        else:
+            raise NotImplementedError
 
         return pce
 
