@@ -277,10 +277,11 @@ def nrmsd(array, array_ref, error_norm="relative", x_axis=False):
     col_idx = np.hstack((col_idx_data, col_idx_data_ref))
 
     if row_idx_data.size > 0:
-        warnings.warn(f"nan in input dataset found at rows={row_idx_data} cols={col_idx_data} (ignored)")
+        warnings.warn("nan in input dataset found at rows={} cols={} (ignored)".format(row_idx, col_idx))
 
     if row_idx_data_ref.size > 0:
-        warnings.warn(f"nan in reference dataset found at rows={row_idx_data_ref} cols={col_idx_data_ref} (ignored)")
+        warnings.warn("nan in reference dataset found at rows={} cols={} (ignored)".format(row_idx_data_ref,
+                                                                                            col_idx_data_ref))
 
     if row_idx.size > 0:
         data = np.delete(data, np.unique(row_idx), axis=0)
