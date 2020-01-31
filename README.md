@@ -2,9 +2,7 @@
 [![](https://img.shields.io/pypi/wheel/pygpc.svg)](https://pypi.org/project/pygpc/)
 [![](https://img.shields.io/travis/pygpc-polynomial-chaos/pygpc.svg)](https://travis-ci.com/pygpc-polynomial-chaos/pygpc)
 [![](https://img.shields.io/readthedocs/pygpc.svg)](https://pygpc.readthedocs.io/en/latest/)
-![Twitter Follow](https://img.shields.io/twitter/follow/brainnetleipzig?style=social)
-![GitHub stars](https://img.shields.io/github/stars/pygpc-polynomial-chaos/pygpc?style=social)
-![GitHub forks](https://img.shields.io/github/forks/pygpc-polynomial-chaos/pygpc?style=social)
+[![](https://img.shields.io/twitter/follow/brainnetleipzig?style=social)](https://twitter.com/intent/follow?screen_name=brainnetleipzig)
 <img src="https://avatars3.githubusercontent.com/u/52486646?s=200&v=4" width="20%" heigth="20%" align="right">
 
 # pygpc

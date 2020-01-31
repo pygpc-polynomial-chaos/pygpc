@@ -22,6 +22,7 @@ matrix:
         # - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python -m twine upload wheelhouse/*.whl 
     - os: linux
       dist: bionic
       language: python
@@ -35,6 +36,7 @@ matrix:
         - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python -m twine upload wheelhouse/*.whl 
     - os : linux
       dist: bionic
       language: python
@@ -48,6 +50,7 @@ matrix:
         - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python -m twine upload wheelhouse/*.whl 
     - os: linux
       dist: bionic
       language: python
@@ -61,6 +64,7 @@ matrix:
         - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python -m twine upload wheelhouse/*.whl 
     - os: osx
       language: generic
       env:
@@ -81,6 +85,7 @@ matrix:
         - cd ..
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python3 -m twine upload wheelhouse/*.whl 
     - os: osx
       language: generic
       env:
@@ -101,6 +106,7 @@ matrix:
         - cd ..
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python3 -m twine upload wheelhouse/*.whl 
     - os: osx
       language: generic
       env:
@@ -121,6 +127,7 @@ matrix:
         - cd ..
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python3 -m twine upload wheelhouse/*.whl 
     - os: osx
       language: generic
       env:
@@ -141,6 +148,7 @@ matrix:
         - cd ..
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python3 -m twine upload wheelhouse/*.whl 
     - os: windows
       language: shell
       before_install:
@@ -155,6 +163,7 @@ matrix:
         - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python -m twine upload wheelhouse/*.whl 
     - os: windows
       language: shell
       before_install:
@@ -169,6 +178,7 @@ matrix:
         - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python -m twine upload wheelhouse/*.whl 
     - os: windows
       language: shell
       before_install:
@@ -183,6 +193,7 @@ matrix:
         - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
+        - python -m twine upload wheelhouse/*.whl 
     - os: windows
       language: shell
       before_install:
@@ -197,4 +208,4 @@ matrix:
         - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
-
+        - python -m twine upload wheelhouse/*.whl 
