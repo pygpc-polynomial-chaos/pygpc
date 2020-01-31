@@ -270,8 +270,7 @@ class CrossinTrayFunction(AbstractModel):
     so that its characteristic "cross" will be visible.
 
     .. math::
-    y = -0.0001\\left(\\mid\\sin(x_1)\\sin(x_2)\\exp\\left(\\mid 100-\\frac{\\left\\sqrt{x_1^2 + x_2^2}\\right}
-    {pi}\\right) + 1\\right)^0.1
+      y = -0.0001\\left(\\mid\\sin(x_1)\\sin(x_2)\\exp\\left(\\mid 100-\\frac{\\sqrt{x_1^2 + x_2^2}}{\\pi}\\mid\\right)\\mid + 1\\right)^{0.1}
 
     Parameters
     ----------

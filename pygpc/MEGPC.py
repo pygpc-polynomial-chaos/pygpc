@@ -379,10 +379,10 @@ class MEGPC(object):
             if gpc_results.ndim == 1:
                 gpc_results = gpc_results[:, np.newaxis]
 
-            if len(output_idx) == 1:
-                validation_results_passed = self.validation.results[np.argwhere(mask_domain), output_idx][:, np.newaxis]
-            else:
-                validation_results_passed = self.validation.results[np.argwhere(mask_domain), output_idx]
+            validation_results_passed = self.validation.results[np.argwhere(mask_domain), output_idx]
+
+            if validation_results_passed.ndim == 1:
+                validation_results_passed = validation_results_passed[:, np.newaxis]
 
             error_nrmsd = float(np.mean(nrmsd(gpc_results,
                                               validation_results_passed,

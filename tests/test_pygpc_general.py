@@ -139,7 +139,8 @@ class TestPygpcMethods(unittest.TestCase):
         nrmsd = pygpc.validate_gpc_mc(session=session,
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
-                                      output_idx=[0, 1],
+                                      n_cpu=session.n_cpu,
+                                      output_idx=[0],
                                       fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
@@ -235,6 +236,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       coeffs=coeffs,
                                       n_samples=int(1e4),
                                       output_idx=0,
+                                      n_cpu=session.n_cpu,
                                       fn_out=options["fn_results"] + "_pdf",
                                       plot=plot)
 
@@ -1243,7 +1245,7 @@ class TestPygpcMethods(unittest.TestCase):
 
     def test_14_backends(self):
         """
-        Test the different backends ["python", "cpu", "omp", "gpu"]
+        Test the different backends ["python", "cpu", "omp", "cuda"]
         """
 
         global folder, gpu
@@ -1326,6 +1328,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             except NotImplementedError:
                 backends.remove(b)
+                warnings.warn("Skipping to test backend: {} (not installed)".format(b))
 
         for b_ref in backends:
             for b_compare in backends:
