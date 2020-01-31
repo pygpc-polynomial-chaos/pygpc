@@ -1328,7 +1328,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             except NotImplementedError:
                 backends.remove(b)
-                warnings.warn(f"Skipping to test backend: {b} (not installed)")
+                warnings.warn("Skipping to test backend: {} (not installed)".format(b))
 
         for b_ref in backends:
             for b_compare in backends:
