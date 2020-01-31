@@ -66,6 +66,7 @@ CMake can be installd via the `pip` command.  Simply run the following command i
 ```
 pip install cmake 
 ```
+For the installation of the CUDA-toolkit refer to the [Nvidia website](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html).
 If you have CMake and the CUDA-toolkit installed you can build the extension with:  
 ```
 python build_pygpc_extensions_cuda.py 
