@@ -1051,9 +1051,10 @@ class LHS(RandomGrid):
 
         super(LHS, self).__init__(parameters_random, n_grid=n_grid, seed=seed, options=options)
 
+        if self.n_grid > 0:
+            self.sample_init(self.n_grid)
 
-
-    def sample_init(self, parameters_random, n_grid, options, seed):
+    def sample_init(self, n_grid):
 
         if n_grid > 0:
             n_grid_lhs = self.n_grid
@@ -1093,7 +1094,6 @@ class LHS(RandomGrid):
 
         else:
             pass
-
 
     def CL2(self, array):
         """
