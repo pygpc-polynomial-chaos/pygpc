@@ -6,8 +6,8 @@ from collections import OrderedDict
 
 dimensions_lst = [4]
 
-order_lst = np.array([1, 5, 10, 11])
-n_samples_validation_lst = np.logspace(1, 6, 10)
+order_lst = np.array([5])
+n_samples_validation_lst = np.logspace(1, 2, 2)
 
 # order_lst = [2]
 # n_samples_validation_lst = [10]
@@ -40,8 +40,8 @@ for dimensions in dimensions_lst:
         start = time.time()
 
         grid.append(pygpc.Random(parameters_random=problem.parameters_random,
-                                     n_grid=n_samples_validation,
-                                     options={"n_grid": n_samples_validation, "seed": 1}))
+                                 n_grid=n_samples_validation,
+                                 options={"n_grid": n_samples_validation, "seed": 1}))
 
         time_grid = time.time() - start
         print(f"Grid (N={n_samples_validation}): {time_grid}")
