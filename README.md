@@ -1,8 +1,10 @@
 [![](https://img.shields.io/pypi/dm/pygpc.svg)](https://pypi.org/project/pygpc/)
 [![](https://img.shields.io/pypi/wheel/pygpc.svg)](https://pypi.org/project/pygpc/)
-[![](https://img.shields.io/appveyor/ci/pygpc/pygpc.svg)](https://ci.appveyor.com/project/pygpc/pygpc)
 [![](https://img.shields.io/travis/pygpc-polynomial-chaos/pygpc.svg)](https://travis-ci.com/pygpc-polynomial-chaos/pygpc)
 [![](https://img.shields.io/readthedocs/pygpc.svg)](https://pygpc.readthedocs.io/en/latest/)
+![Twitter Follow](https://img.shields.io/twitter/follow/brainnetleipzig?style=social)
+![GitHub stars](https://img.shields.io/github/stars/pygpc-polynomial-chaos/pygpc?style=social)
+![GitHub forks](https://img.shields.io/github/forks/pygpc-polynomial-chaos/pygpc?style=social)
 <img src="https://avatars3.githubusercontent.com/u/52486646?s=200&v=4" width="20%" heigth="20%" align="right">
 
 # pygpc
@@ -35,20 +37,21 @@ If you use pygpc in your studies, please contact [Konstantin Weise](https://www.
 Installation
 ------------
 **Installation using pip:**
-pygpc can be installed via the `pip` command with Python >= 3.6 and then simply run the following line from a terminal:
+Pygpc can be installed via the `pip` command with Python >= 3.5. Simply run the following command in your terminal:
 ```
 pip install pygpc
 ```
 
-If you want to use the plot functionalities from pygpc, please also install matplotlib:
+If you want to use the plot functionalities of pygpc, please also install matplotlib and seaborn:
 ```
-pip install matplotlib
+pip install matplotlib seaborn
 ```
 
 **Installation using the GitHub repository:**
-Alternatively, it is possible to clone this repository and run the setup manually. This requires Cython to compile the C-extensions and Numpy for some headers. You can get Cython and Numpy by running the following command:
+Alternatively, it is possible to clone this repository and run the setup manually.
+This requires a compiler that supports OpenMP which is used by the C-extensions and NumPy for some headers. You can install NumPy by running the following command:
 ```
-pip install cython numpy
+pip install numpy
 ```
 Alternatively you can install the build dependencies with the following command:
 ```
@@ -57,6 +60,27 @@ pip install -r requirements.txt
 Afterwards, pygpc can be installed by running the following line from the directory in which the repository was cloned:
 ```
 python setup.py install
+```
+
+**Installation of the CUDA backend:**
+Pygpc also provides a CUDA-backend to speed up some computations. To use the backend you need to build it manually. This requires the CUDA-toolkit and CMake.
+CMake can be installd via the `pip` command.  Simply run the following command in your terminal:
+```
+pip install cmake 
+```
+If you have CMake and the CUDA-toolkit installed you can build the extension with:  
+```
+python build_pygpc_extensions_cuda.py 
+```
+
+**Troubleshooting for OSX:**
+On a mac you need GCC to install pygpc. If you are using the `brew` package manager you can simply run:
+```
+brew install gcc libomp 
+```
+Then install pygpc with:
+```
+CC=gcc-9 CXX=g++-9 python setup.py install 
 ```
 
 Documentation
