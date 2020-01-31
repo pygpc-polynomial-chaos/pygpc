@@ -23,7 +23,7 @@ matrix:
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            python -m twine upload wheelhouse/*.whl 
+            python -m twine upload wheelhouse/*.whl; 
           fi
     - os: linux
       dist: bionic
@@ -39,7 +39,7 @@ matrix:
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            python -m twine upload wheelhouse/*.whl 
+            python -m twine upload wheelhouse/*.whl; 
           fi
     - os : linux
       dist: bionic
@@ -55,7 +55,7 @@ matrix:
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            python -m twine upload wheelhouse/*.whl 
+            python -m twine upload wheelhouse/*.whl; 
           fi
     - os: linux
       dist: bionic
@@ -71,7 +71,7 @@ matrix:
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            python -m twine upload wheelhouse/*.whl 
+            python -m twine upload wheelhouse/*.whl; 
           fi
     - os: osx
       language: generic
@@ -94,7 +94,7 @@ matrix:
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            twine upload wheelhouse/*.whl 
+            twine upload wheelhouse/*.whl; 
           fi
     - os: osx
       language: generic
@@ -117,7 +117,7 @@ matrix:
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            twine upload wheelhouse/*.whl 
+            twine upload wheelhouse/*.whl; 
           fi
     - os: osx
       language: generic
@@ -140,7 +140,7 @@ matrix:
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            twine upload wheelhouse/*.whl 
+            twine upload wheelhouse/*.whl;
           fi
     - os: osx
       language: generic
@@ -163,7 +163,7 @@ matrix:
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            twine upload wheelhouse/*.whl 
+            twine upload wheelhouse/*.whl; 
           fi
     - os: windows
       language: shell
@@ -180,7 +180,7 @@ matrix:
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            python -m twine upload wheelhouse/*.whl 
+            python -m twine upload wheelhouse/*.whl; 
           fi
     - os: windows
       language: shell
@@ -197,7 +197,7 @@ matrix:
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            python -m twine upload wheelhouse/*.whl 
+            python -m twine upload wheelhouse/*.whl; 
           fi
     - os: windows
       language: shell
@@ -214,7 +214,7 @@ matrix:
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            python -m twine upload wheelhouse/*.whl 
+            python -m twine upload wheelhouse/*.whl; 
           fi
     - os: windows
       language: shell
@@ -231,5 +231,5 @@ matrix:
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [$TRAVIS_BRANCH == "master"]; then
-            python -m twine upload wheelhouse/*.whl 
+            python -m twine upload wheelhouse/*.whl; 
           fi
