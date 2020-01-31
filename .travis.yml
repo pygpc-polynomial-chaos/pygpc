@@ -87,10 +87,10 @@ matrix:
             - libomp
       script:
         - python3 -m pip install cibuildwheel twine numpy Cython
-        # - python3 -m pip install .
-        # - cd tests
-        # - python3 -m unittest
-        # - cd ..
+        - python3 -m pip install .
+        - cd tests
+        - python3 -m unittest
+        - cd ..
         - python3 -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [ $TRAVIS_BRANCH == "master" ]; then
