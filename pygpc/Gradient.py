@@ -129,17 +129,22 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
             gradient_results = np.zeros((grid.coords.shape[0], results.shape[1], problem.dim))*np.nan
             delta = dx
 
+            # number of sampling points to sacrifice for 2nd order accuracy
+            n_2nd_order = np.sum(np.arange(problem.dim+1))
+
             for i, x0 in enumerate(grid.coords_norm):
+
+                # determine neighbors within radius delta
                 mask = np.linalg.norm(grid.coords_norm-x0, axis=1) < np.sqrt(delta)
 
-                if np.sum(mask) > 1:
+                if np.sum(mask) > n_2nd_order:
                     coords_norm_selected = grid.coords_norm[mask, ]
 
                     # distance matrix (1st order)
                     D = coords_norm_selected-x0
 
                     # distance matrix (2nd order)
-                    M = np.zeros((coords_norm_selected.shape[0], np.sum(np.arange(problem.dim+1))))
+                    M = np.zeros((coords_norm_selected.shape[0], n_2nd_order))
 
                     # quadratic terms
                     for i_dim in range(problem.dim):
@@ -169,9 +174,9 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
                     Q, T = np.linalg.qr(M, mode="complete")
 
                     # gradient [n_grid x n_out x dim]
-                    QtD_inv = np.linalg.pinv(np.matmul(Q.transpose(), D)[3:, ])
+                    QtD_inv = np.linalg.pinv(np.matmul(Q.transpose(), D)[n_2nd_order:, ])
 
-                    rhs = np.matmul(Q.transpose(), df)[3:, ]
+                    rhs = np.matmul(Q.transpose(), df)[n_2nd_order:, ]
 
                     gradient_results[i, :, :] = np.matmul(QtD_inv, rhs).transpose()
 
