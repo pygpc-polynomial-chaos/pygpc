@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 methods = ["FD_fwd", "FD_1st", "FD_2nd"]
-
+dx = [1e-3, 0.1, 0.1]
 # define model
 model = pygpc.testfunctions.Peaks()
 
@@ -39,7 +39,7 @@ res = com.run(model=model,
               print_func_time=False)
 
 grad_res = dict()
-for m in methods:
+for i_m, m in enumerate(methods):
     # [n_grid x n_out x dim]
     grad_res[m] = pygpc.get_gradient(model=model,
                                      problem=problem,
@@ -51,7 +51,7 @@ for m in methods:
                                      i_iter=None,
                                      i_subiter=None,
                                      print_func_time=False,
-                                     dx=0.1,
+                                     dx=dx[i_m],
                                      distance_weight=-2)
 
 nrmsd_1st_vs_ref = pygpc.nrmsd(grad_res["FD_1st"][:, 0, :], grad_res["FD_fwd"][:, 0, :])
