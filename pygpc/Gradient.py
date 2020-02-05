@@ -26,8 +26,8 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
         Gradient calculation method:
         - "FD_fwd": Finite difference forward approximation of the gradient using n_grid x dim additional sampling
         points stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x dim x dim].
-        - "FD_1st": Finite difference approximation of 1st order accuracy using only the available samples
-        - "FD_2nd": Finite difference approximation of 2nd order accuracy using only the available samples
+        - "FD_1st": Finite difference approximation of 1st order accuracy using only the available samples [1]
+        - "FD_2nd": Finite difference approximation of 2nd order accuracy using only the available samples [1]
     gradient_results : ndarray of float [n_grid_old x n_out x dim], optional, default: None
         Gradient of model function in grid points, already determined in previous calculations.
     i_iter : int (optional, default: None)
@@ -38,6 +38,7 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
         Distance parameter, depending on applied method:
         - "FW_fwd": Distance of new grid-points in each dim from orig. grid points to compute forward approximation
         - "FW_1st": Radius around grid points to include adjacent grid-points in 1st order gradient approximation
+        - "FW_2nd": Radius around grid points to include adjacent grid-points in 1st order gradient approximation
     distance_weight : float, optional, default: 1
         Distance weight factor (exponent) for methods "FD_1st" and "FD_2nd".
         Defines the importance of the adjacent grid points to estimate the gradient by their distance.
@@ -46,6 +47,11 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
     -------
     gradient_results : ndarray of float [n_grid x n_out x dim]
         Gradient of model function in grid points
+
+    Notes
+    -----
+    .. [1] Belward J, Turner IW, Ilic M, On derivative estimation and the solution of least squares problems,
+       Journal of Computational and Applied Mathematics 2008, vol. 222, pp. 511-523.
     """
     if gradient_results is not None:
         n_gradient_results = gradient_results.shape[0]
@@ -129,17 +135,22 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
             gradient_results = np.zeros((grid.coords.shape[0], results.shape[1], problem.dim))*np.nan
             delta = dx
 
+            # number of sampling points to sacrifice for 2nd order accuracy
+            n_2nd_order = np.sum(np.arange(problem.dim+1))
+
             for i, x0 in enumerate(grid.coords_norm):
+
+                # determine neighbors within radius delta
                 mask = np.linalg.norm(grid.coords_norm-x0, axis=1) < np.sqrt(delta)
 
-                if np.sum(mask) > 1:
+                if np.sum(mask) > n_2nd_order:
                     coords_norm_selected = grid.coords_norm[mask, ]
 
                     # distance matrix (1st order)
                     D = coords_norm_selected-x0
 
                     # distance matrix (2nd order)
-                    M = np.zeros((coords_norm_selected.shape[0], np.sum(np.arange(problem.dim+1))))
+                    M = np.zeros((coords_norm_selected.shape[0], n_2nd_order))
 
                     # quadratic terms
                     for i_dim in range(problem.dim):
@@ -169,9 +180,9 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
                     Q, T = np.linalg.qr(M, mode="complete")
 
                     # gradient [n_grid x n_out x dim]
-                    QtD_inv = np.linalg.pinv(np.matmul(Q.transpose(), D)[3:, ])
+                    QtD_inv = np.linalg.pinv(np.matmul(Q.transpose(), D)[n_2nd_order:, ])
 
-                    rhs = np.matmul(Q.transpose(), df)[3:, ]
+                    rhs = np.matmul(Q.transpose(), df)[n_2nd_order:, ]
 
                     gradient_results[i, :, :] = np.matmul(QtD_inv, rhs).transpose()
 
