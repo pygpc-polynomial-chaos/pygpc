@@ -80,7 +80,7 @@ def check_file_consistency(fn_hdf5):
                 error_msg.append(target + " not found in results file: {}".format(fn_hdf5))
                 file_status = False
 
-        if session.gradient or session.projection:
+        if session.projection or (session.gradient and session.algorithm.options["gradient_calculation"] == "FD_fwd"):
             for target in ["grid/coords_gradient", "grid/coords_gradient_norm", "model_evaluations/gradient_results"]:
                 try:
                     if type(f[target][()]) is not np.ndarray:
@@ -147,7 +147,7 @@ def check_file_consistency(fn_hdf5):
                         error_msg.append(h5_path + " not found in results file: {}".format(fn_hdf5))
                         file_status = False
 
-                if session.gradient or session.projection:
+                if session.gradient and session.algorithm.options["gradient_calculation"] == "FD_fwd":
                     for target in ["gpc_matrix_gradient"]:
                         try:
                             h5_path = target + "/" + q_idx + "/" + d_idx

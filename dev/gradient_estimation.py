@@ -2,17 +2,18 @@ import pygpc
 import numpy as np
 from collections import OrderedDict
 import matplotlib.pyplot as plt
+import pandas as pd
 
+methods = ["FD_fwd", "FD_1st", "FD_2nd", "FD_1st2nd"]
+dx = [1e-3, 0.02, 0.02, 0.02]
 
-methods = ["FD_fwd", "FD_1st", "FD_2nd"]
-dx = [1e-3, 0.1, 0.1]
 # define model
 model = pygpc.testfunctions.Peaks()
 
 # define problem
 parameters = OrderedDict()
 parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
-parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+parameters["x2"] = 1.
 parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
 problem = pygpc.Problem(model, parameters)
 
@@ -38,7 +39,9 @@ res = com.run(model=model,
               fn_results=None,
               print_func_time=False)
 
+df = pd.DataFrame(columns=["method", "nrmsd", "coverage"])
 grad_res = dict()
+
 for i_m, m in enumerate(methods):
     # [n_grid x n_out x dim]
     grad_res[m] = pygpc.get_gradient(model=model,
@@ -54,8 +57,10 @@ for i_m, m in enumerate(methods):
                                      dx=dx[i_m],
                                      distance_weight=-2)
 
-nrmsd_1st_vs_ref = pygpc.nrmsd(grad_res["FD_1st"][:, 0, :], grad_res["FD_fwd"][:, 0, :])
-nrmsd_2nd_vs_ref = pygpc.nrmsd(grad_res["FD_2nd"][:, 0, :], grad_res["FD_fwd"][:, 0, :])
+    if m != "FD_fwd":
+        df.loc[i_m, "method"] = m
+        df.loc[i_m, "coverage"] = 1-(np.sum(np.isnan(grad_res[m][:, 0, 0]))/n_grid)
+        df.loc[i_m, "nrmsd"] = pygpc.nrmsd(grad_res[m][:, 0, :], grad_res["FD_fwd"][:, 0, :])
 
 for i in range(problem.dim):
     plt.figure()

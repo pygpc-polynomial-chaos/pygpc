@@ -9,6 +9,7 @@ from .misc import determine_projection_matrix
 from .misc import get_num_coeffs_sparse
 from .misc import ten2mat
 from .misc import mat2ten
+from .misc import get_gradient_idx_domain
 from .misc import get_coords_discontinuity
 from .misc import increment_basis
 from .misc import get_num_coeffs_sparse
@@ -70,9 +71,13 @@ class Algorithm(object):
             Use gradient information to determine the gPC coefficients.
         options["gradient_calculation"] : str, optional, default="standard_forward"
             Type of the calculation scheme to determine the gradient in the grid points
-            - "FD_fwd" ... Forward approximation (creates additional dim*n_grid grid-points in the axis
-            directions)
-            - "???" ... ???
+            - "FD_fwd": Finite difference forward approximation of the gradient using n_grid x dim additional sampling
+            points stored in self.grid.coords_gradient and self.grid.coords_gradient_norm [n_grid x dim x dim].
+            - "FD_1st": Finite difference approximation of 1st order accuracy using only the available samples [1]
+            - "FD_2nd": Finite difference approximation of 2nd order accuracy using only the available samples [1]
+            - "FD_1st2nd": Finite difference approximation of 1st and (where possible) 2nd order accuracy
+        options["gradient_calculation_options"] : dict, optional, default: {"dx": 0.01, "distance_weight": -2}
+            Options for gradient calculation (details in get_gradient() function in Gradient.py)
         options["backend"] : str, optional, default: "python"
             Default computing backend, certain functions can be computed with Multicore-CPU or GPU acceleration
         options["lambda_eps_gradient"] : float, optional, default: 0.95
@@ -131,6 +136,9 @@ class Algorithm(object):
 
         if "gradient_calculation" not in self.options.keys():
             self.options["gradient_calculation"] = "FD_fwd"
+
+        if "gradient_calculation_options" not in self.options.keys():
+            self.options["gradient_calculation_options"] = {"dx": 0.01, "distance_weight": -2}
 
         if "backend" not in self.options.keys():
             self.options["backend"] = "python"
@@ -276,6 +284,7 @@ class Static(Algorithm):
             Simulation results at n_grid points of the n_out output variables
         """
         grad_res_3D = None
+        gradient_idx = None
         fn_results = os.path.splitext(self.options["fn_results"])[0]
 
         if os.path.exists(fn_results + ".hdf5"):
@@ -311,9 +320,6 @@ class Static(Algorithm):
         gpc.grid = copy.deepcopy(self.grid)
         gpc.interaction_order_current = copy.deepcopy(self.options["interaction_order"])
 
-        # Initialize gpc matrix
-        gpc.init_gpc_matrix()
-
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
 
@@ -339,19 +345,25 @@ class Static(Algorithm):
         if self.options["gradient_enhanced"]:
             start_time = time.time()
 
-            grad_res_3D = get_gradient(model=self.problem.model,
-                                       problem=self.problem,
-                                       grid=gpc.grid,
-                                       results=res,
-                                       com=com,
-                                       method=self.options["gradient_calculation"],
-                                       gradient_results=None,
-                                       i_iter=gpc.order_max,
-                                       i_subiter=gpc.interaction_order,
-                                       print_func_time=self.options["print_func_time"])
+            grad_res_3D, gradient_idx = get_gradient(model=self.problem.model,
+                                                     problem=self.problem,
+                                                     grid=gpc.grid,
+                                                     results=res,
+                                                     com=com,
+                                                     method=self.options["gradient_calculation"],
+                                                     gradient_results_present=None,
+                                                     gradient_idx_skip=None,
+                                                     i_iter=gpc.order_max,
+                                                     i_subiter=gpc.interaction_order,
+                                                     print_func_time=self.options["print_func_time"],
+                                                     dx=self.options["gradient_calculation_options"]["dx"],
+                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
 
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
+
+        # Initialize gpc matrix
+        gpc.init_gpc_matrix(gradient_idx=gradient_idx)
 
         # Compute gpc coefficients
         coeffs = gpc.solve(results=res,
@@ -400,7 +412,10 @@ class Static(Algorithm):
                 f.create_dataset("model_evaluations/results", data=res, maxshape=None, dtype="float64")
 
                 if grad_res_3D is not None:
-                    f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D), maxshape=None, dtype="float64")
+                    f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D),
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("model_evaluations/gradient_results_idx", data=gpc.gradient_idx,
+                                     maxshape=None, dtype="int64")
 
                 if gpc.validation is not None:
                     f.create_dataset("validation/results", data=gpc.validation.results,
@@ -516,6 +531,8 @@ class MEStatic(Algorithm):
             os.remove(fn_results + ".hdf5")
 
         grad_res_3D = None
+        grad_res_3D_all = None
+        gradient_idx = None
         grid = self.grid
 
         # Initialize parallel Computation class
@@ -550,16 +567,19 @@ class MEStatic(Algorithm):
         if self.options["gradient_enhanced"]:
             start_time = time.time()
 
-            grad_res_3D_all = get_gradient(model=self.problem.model,
-                                           problem=self.problem,
-                                           grid=grid,
-                                           results=res_all,
-                                           com=com,
-                                           method=self.options["gradient_calculation"],
-                                           gradient_results=None,
-                                           i_iter=self.options["order_max"],
-                                           i_subiter=self.options["interaction_order"],
-                                           print_func_time=self.options["print_func_time"])
+            grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                         problem=self.problem,
+                                                         grid=grid,
+                                                         results=res_all,
+                                                         com=com,
+                                                         method=self.options["gradient_calculation"],
+                                                         gradient_results_present=None,
+                                                         gradient_idx_skip=None,
+                                                         i_iter=self.options["order_max"],
+                                                         i_subiter=self.options["interaction_order"],
+                                                         print_func_time=self.options["print_func_time"],
+                                                         dx=self.options["gradient_calculation_options"]["dx"],
+                                                         distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
 
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
@@ -611,7 +631,7 @@ class MEStatic(Algorithm):
                                          validation=None)
 
             # assign grids to sub-gPCs (rotate sub-grids in case of projection)
-            megpc[i_qoi].assign_grids()
+            megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
 
             # Initialize gpc matrices
             megpc[i_qoi].init_gpc_matrices()
@@ -712,6 +732,8 @@ class MEStatic(Algorithm):
                 if grad_res_3D is not None:
                     f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D),
                                      maxshape=None, dtype="float64")
+                    f.create_dataset("model_evaluations/gradient_results_idx", data=megpc[-1].gradient_idx,
+                                     maxshape=None, dtype="int64")
 
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
 
@@ -822,6 +844,7 @@ class StaticProjection(Algorithm):
             os.remove(fn_results + ".hdf5")
 
         grad_res_3D = None
+        gradient_idx = None
 
         # make initial random grid to determine gradients and projection matrix
         grid_original = grid(parameters_random=self.problem.parameters_random,
@@ -853,16 +876,19 @@ class StaticProjection(Algorithm):
         # Determine gradient
         start_time = time.time()
 
-        grad_res_3D_all = get_gradient(model=self.problem.model,
-                                       problem=self.problem,
-                                       grid=grid_original,
-                                       results=res_all,
-                                       com=com,
-                                       method=self.options["gradient_calculation"],
-                                       gradient_results=None,
-                                       i_iter=self.options["order_max"],
-                                       i_subiter=self.options["interaction_order"],
-                                       print_func_time=self.options["print_func_time"])
+        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                     problem=self.problem,
+                                                     grid=grid_original,
+                                                     results=res_all,
+                                                     com=com,
+                                                     method="FD_fwd",
+                                                     gradient_results_present=None,
+                                                     gradient_idx_skip=None,
+                                                     i_iter=self.options["order_max"],
+                                                     i_subiter=self.options["interaction_order"],
+                                                     print_func_time=self.options["print_func_time"],
+                                                     dx=1e-3,
+                                                     distance_weight=None)
 
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -893,8 +919,7 @@ class StaticProjection(Algorithm):
                 hdf5_subfolder = "/qoi_" + str(q_idx)
 
             # Determine projection matrix
-            p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all,
-                                                   qoi_idx=q_idx,
+            p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
                                                    lambda_eps=self.options["lambda_eps_gradient"])
             p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
 
@@ -962,16 +987,19 @@ class StaticProjection(Algorithm):
                 if self.options["gradient_enhanced"]:
                     start_time = time.time()
 
-                    grad_res_3D_all = get_gradient(model=self.problem.model,
-                                                   problem=self.problem,
-                                                   grid=grid_original,
-                                                   results=res_all,
-                                                   com=com,
-                                                   method=self.options["gradient_calculation"],
-                                                   gradient_results=grad_res_3D_all,
-                                                   i_iter=self.options["order_max"],
-                                                   i_subiter=self.options["interaction_order"],
-                                                   print_func_time=self.options["print_func_time"])
+                    grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                 problem=self.problem,
+                                                                 grid=grid_original,
+                                                                 results=res_all,
+                                                                 com=com,
+                                                                 method=self.options["gradient_calculation"],
+                                                                 gradient_results_present=grad_res_3D_all,
+                                                                 gradient_idx_skip=gradient_idx,
+                                                                 i_iter=self.options["order_max"],
+                                                                 i_subiter=self.options["interaction_order"],
+                                                                 print_func_time=self.options["print_func_time"],
+                                                                 dx=self.options["gradient_calculation_options"]["dx"],
+                                                                 distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
 
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
@@ -990,9 +1018,9 @@ class StaticProjection(Algorithm):
             gpc[i_qoi].grid = copy.deepcopy(grid_original)
 
             # transform variables of original grid to reduced parameter space
-            gpc[i_qoi].grid.coords = np.dot(gpc[i_qoi].grid_original.coords,
+            gpc[i_qoi].grid.coords = np.matmul(gpc[i_qoi].grid_original.coords,
                                             gpc[i_qoi].p_matrix.transpose())
-            gpc[i_qoi].grid.coords_norm = np.dot(gpc[i_qoi].grid_original.coords_norm,
+            gpc[i_qoi].grid.coords_norm = np.matmul(gpc[i_qoi].grid_original.coords_norm,
                                                  gpc[i_qoi].p_matrix.transpose() /
                                                  gpc[i_qoi].p_matrix_norm[np.newaxis, :])
 
@@ -1002,7 +1030,7 @@ class StaticProjection(Algorithm):
             gpc[i_qoi].options = copy.deepcopy(self.options)
 
             # Initialize gpc matrix
-            gpc[i_qoi].init_gpc_matrix()
+            gpc[i_qoi].init_gpc_matrix(gradient_idx=gradient_idx)
 
             # Someone might not use the gradient to determine the gpc coeffs
             if self.options["gradient_enhanced"]:
@@ -1084,6 +1112,8 @@ class StaticProjection(Algorithm):
                 if grad_res_3D is not None:
                     f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D),
                                      maxshape=None, dtype="float64")
+                    f.create_dataset("model_evaluations/gradient_results_idx", data=gpc[-1].gradient_idx,
+                                     maxshape=None, dtype="int64")
 
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
 
@@ -1227,16 +1257,18 @@ class MEStaticProjection(Algorithm):
         # Determine gradient
         start_time = time.time()
 
-        grad_res_3D_all = get_gradient(model=self.problem.model,
-                                       problem=self.problem,
-                                       grid=grid,
-                                       results=res_all,
-                                       com=com,
-                                       method=self.options["gradient_calculation"],
-                                       gradient_results=None,
-                                       i_iter=self.options["order_max"],
-                                       i_subiter=self.options["interaction_order"],
-                                       print_func_time=self.options["print_func_time"])
+        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                     problem=self.problem,
+                                                     grid=grid,
+                                                     results=res_all,
+                                                     com=com,
+                                                     method="FD_fwd",
+                                                     gradient_results_present=None,
+                                                     i_iter=self.options["order_max"],
+                                                     i_subiter=self.options["interaction_order"],
+                                                     print_func_time=self.options["print_func_time"],
+                                                     dx=1e-3,
+                                                     distance_weight=None)
 
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -1289,8 +1321,7 @@ class MEStaticProjection(Algorithm):
 
             # Determine projection matrices for sub gPCs
             for d in np.unique(megpc[i_qoi].domains):
-                p_matrix[d] = determine_projection_matrix(gradient_results=grad_res_3D_all[megpc[i_qoi].domains == d, :, :],
-                                                          qoi_idx=q_idx,
+                p_matrix[d] = determine_projection_matrix(gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == d, q_idx, :],
                                                           lambda_eps=self.options["lambda_eps_gradient"])
 
                 p_matrix_norm[d] = np.sum(np.abs(p_matrix[d]), axis=1)
@@ -1326,68 +1357,83 @@ class MEStaticProjection(Algorithm):
                                                  order_inter_current=self.options["interaction_order"],
                                                  dim=dim_reduced[d])
 
-                n_grid_new[d] = n_coeffs * self.options["matrix_ratio"]
+                n_grid_new = n_coeffs * self.options["matrix_ratio"]
+                n_grid_domain = np.sum(megpc[i_qoi].domains == d)
 
-            # run additional simulations if n_grid_gradient was not sufficient for the selected order
-            if np.max(n_grid_new) > grid.n_grid:
-                iprint("Extending grid from {} to {} grid points ...".format(grid.n_grid, np.max(n_grid_new)),
-                       tab=0, verbose=self.options["verbose"])
-
-                # extend grid
-                grid.extend_random_grid(n_grid_new=np.max(n_grid_new), seed=self.options["seed"])
-
-                # Run simulations
-                iprint("Performing {} additional simulations!".format(grid.coords.shape[0]),
-                       tab=0, verbose=self.options["verbose"])
-
-                start_time = time.time()
-
-                res_new = com.run(model=self.problem.model,
-                                  problem=self.problem,
-                                  coords=grid.coords[self.options["n_grid_gradient"]:, :],
-                                  coords_norm=grid.coords_norm[self.options["n_grid_gradient"]:, :],
-                                  i_iter=self.options["order_max"],
-                                  i_subiter=self.options["interaction_order"],
-                                  fn_results=None,
-                                  print_func_time=self.options["print_func_time"])
-
-                res_all = np.vstack((res_all, res_new))
-
-                iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
-                       tab=0, verbose=self.options["verbose"])
-
-                # Determine gradient [n_grid x n_out x dim]
-                if self.options["gradient_enhanced"]:
-                    start_time = time.time()
-
-                    grad_res_3D_all = get_gradient(model=self.problem.model,
-                                                   problem=self.problem,
-                                                   grid=grid,
-                                                   results=res,
-                                                   com=com,
-                                                   method=self.options["gradient_calculation"],
-                                                   gradient_results=grad_res_3D_all,
-                                                   i_iter=self.options["order_max"],
-                                                   i_subiter=self.options["interaction_order"],
-                                                   print_func_time=self.options["print_func_time"])
-
-                    iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                # run additional simulations if n_grid_gradient was not sufficient for the selected order
+                if n_grid_new > n_grid_domain:
+                    iprint("Extending grid from {} to {} grid points in domain {} ...".format(n_grid_domain,
+                                                                                              n_grid_new,
+                                                                                              d),
                            tab=0, verbose=self.options["verbose"])
 
-                # crop results to considered qoi
-                if self.options["qoi"] != "all":
-                    res = copy.deepcopy(res_all)
-                    grad_res_3D = copy.deepcopy(grad_res_3D_all)
+                    # extend grid
+                    grid.extend_random_grid(n_grid_new=grid.n_grid-n_grid_domain+n_grid_new,
+                                            seed=self.options["seed"],
+                                            classifier=megpc[i_qoi].classifier,
+                                            domain=d)
 
-                else:
-                    res = res_all[:, q_idx][:, np.newaxis]
-                    grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+                    # Run simulations
+                    iprint("Performing {} additional simulations!".format(n_grid_new-n_grid_domain),
+                           tab=0, verbose=self.options["verbose"])
 
-                # update classifier with new grid-points
-                megpc[i_qoi].init_classifier(coords=grid.coords_norm,
-                                             results=np.vstack((res_all, res_new))[:, q_idx][:, np.newaxis],
-                                             algorithm=self.options["classifier"],
-                                             options=self.options["classifier_options"])
+                    start_time = time.time()
+
+                    res_new = com.run(model=self.problem.model,
+                                      problem=self.problem,
+                                      coords=grid.coords[res_all.shape[0]:, :],
+                                      coords_norm=grid.coords_norm[self.options["n_grid_gradient"]:, :],
+                                      i_iter=self.options["order_max"],
+                                      i_subiter=self.options["interaction_order"],
+                                      fn_results=None,
+                                      print_func_time=self.options["print_func_time"])
+
+                    res_all = np.vstack((res_all, res_new))
+
+                    iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
+                           tab=0, verbose=self.options["verbose"])
+
+                    # Determine gradient [n_grid x n_out x dim]
+                    if self.options["gradient_enhanced"]:
+                        start_time = time.time()
+
+                        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                     problem=self.problem,
+                                                                     grid=grid,
+                                                                     results=res_all,
+                                                                     com=com,
+                                                                     method=self.options["gradient_calculation"],
+                                                                     gradient_results_present=grad_res_3D_all,
+                                                                     gradient_idx_skip=gradient_idx,
+                                                                     i_iter=self.options["order_max"],
+                                                                     i_subiter=self.options["interaction_order"],
+                                                                     print_func_time=self.options["print_func_time"],
+                                                                     dx=self.options["gradient_calculation_options"]["dx"],
+                                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
+
+                        iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                               tab=0, verbose=self.options["verbose"])
+
+                    # crop results to considered qoi
+                    if self.options["qoi"] != "all":
+                        res = copy.deepcopy(res_all)
+                        grad_res_3D = copy.deepcopy(grad_res_3D_all)
+
+                    else:
+                        res = res_all[:, q_idx][:, np.newaxis]
+                        grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+
+                    # update classifier with new grid-points
+                    megpc[i_qoi].init_classifier(coords=grid.coords_norm,
+                                                 results=res_all[:, q_idx][:, np.newaxis],
+                                                 algorithm=self.options["classifier"],
+                                                 options=self.options["classifier_options"])
+
+            # update classifier with new grid-points
+            megpc[i_qoi].init_classifier(coords=grid.coords_norm,
+                                         results=res_all[:, q_idx][:, np.newaxis],
+                                         algorithm=self.options["classifier"],
+                                         options=self.options["classifier_options"])
 
             # copy grid to gPC object and initialize transformed grid
             megpc[i_qoi].grid = copy.deepcopy(grid)
@@ -1396,7 +1442,7 @@ class MEStaticProjection(Algorithm):
             megpc[i_qoi].options = copy.deepcopy(self.options)
 
             # assign grids to sub-gPCs (rotate sub-grids in case of projection)
-            megpc[i_qoi].assign_grids()
+            megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
 
             # Initialize gpc matrices
             megpc[i_qoi].init_gpc_matrices()
@@ -1506,6 +1552,8 @@ class MEStaticProjection(Algorithm):
                 if grad_res_3D is not None:
                     f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D),
                                      maxshape=None, dtype="float64")
+                    f.create_dataset("model_evaluations/gradient_results_idx", data=megpc[-1].gradient_idx,
+                                     maxshape=None, dtype="int64")
 
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
 
@@ -1601,6 +1649,9 @@ class RegAdaptive(Algorithm):
         order = self.options["order_start"]
         first_iter = True
         grad_res_3D = None
+        gradient_idx = None
+        gradient_idx_FD_fwd = None
+        grad_res_3D_FD_fwd = None
         basis_order = np.array([self.options["order_start"],
                                 min(self.options["interaction_order"], self.options["order_start"])])
 
@@ -1641,7 +1692,7 @@ class RegAdaptive(Algorithm):
 
         # Initialize gpc matrix
         print("Initializing gPC matrix...")
-        gpc.init_gpc_matrix()
+        gpc.init_gpc_matrix(gradient_idx=gradient_idx)
         gpc.n_grid.pop(0)
         gpc.n_basis.pop(0)
 
@@ -1741,16 +1792,23 @@ class RegAdaptive(Algorithm):
                         if self.options["gradient_enhanced"]:
                             start_time = time.time()
 
-                            grad_res_3D = get_gradient(model=self.problem.model,
-                                                       problem=self.problem,
-                                                       grid=gpc.grid,
-                                                       results=res,
-                                                       com=com,
-                                                       method=self.options["gradient_calculation"],
-                                                       gradient_results=grad_res_3D,
-                                                       i_iter=basis_order[0],
-                                                       i_subiter=basis_order[1],
-                                                       print_func_time=self.options["print_func_time"])
+                            grad_res_3D, gradient_idx = get_gradient(model=self.problem.model,
+                                                                     problem=self.problem,
+                                                                     grid=gpc.grid,
+                                                                     results=res,
+                                                                     com=com,
+                                                                     method=self.options["gradient_calculation"],
+                                                                     gradient_results_present=grad_res_3D_FD_fwd,
+                                                                     gradient_idx_skip=gradient_idx_FD_fwd,
+                                                                     i_iter=basis_order[0],
+                                                                     i_subiter=basis_order[1],
+                                                                     print_func_time=self.options["print_func_time"],
+                                                                     dx=self.options["gradient_calculation_options"]["dx"],
+                                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
+
+                            if self.options["gradient_calculation"] == "FD_fwd":
+                                gradient_idx_FD_fwd = gradient_idx
+                                grad_res_3D_FD_fwd = grad_res_3D
 
                             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                    tab=0, verbose=self.options["verbose"])
@@ -1758,7 +1816,7 @@ class RegAdaptive(Algorithm):
                         i_grid = gpc.grid.coords.shape[0]
 
                     # update gpc matrix
-                    gpc.init_gpc_matrix()
+                    gpc.init_gpc_matrix(gradient_idx=gradient_idx)
 
                     # determine gpc coefficients
                     coeffs = gpc.solve(results=res,
@@ -1805,16 +1863,21 @@ class RegAdaptive(Algorithm):
                     # Append gradient of results
                     if grad_res_3D is not None:
                         grad_res_2D = ten2mat(grad_res_3D)
-                        if "gradient_results" in f["model_evaluations"].keys():
-                            n_rows_old = f["model_evaluations/gradient_results"].shape[0]
-                            f["model_evaluations/gradient_results"].resize(grad_res_2D.shape[0], axis=0)
-                            f["model_evaluations/gradient_results"][n_rows_old:, :] = grad_res_2D[n_rows_old:, :]
-                        else:
-                            f.create_dataset("model_evaluations/gradient_results",
-                                             (grad_res_2D.shape[0], grad_res_2D.shape[1]),
-                                             maxshape=(None, None),
-                                             dtype="float64",
-                                             data=grad_res_2D)
+
+                        try:
+                            del f["model_evaluations/gradient_results"]
+                            del f["model_evaluations/gradient_results_idx"]
+                        except KeyError:
+                            pass
+
+                        f.create_dataset("model_evaluations/gradient_results",
+                                         (grad_res_2D.shape[0], grad_res_2D.shape[1]),
+                                         maxshape=(None, None),
+                                         dtype="float64",
+                                         data=grad_res_2D)
+
+                        f.create_dataset("model_evaluations/gradient_results_idx", data=gpc.gradient_idx,
+                                         maxshape=None, dtype="int64")
 
                     try:
                         del f["gpc_matrix"]
@@ -1952,7 +2015,7 @@ class MERegAdaptiveProjection(Algorithm):
 
     def run(self):
         """
-        Runs Multi-Element adaptive gPC algorithm to solve problem.
+        Runs Multi-Element adaptive gPC algorithm to solve problem (optional projection).
 
         Returns
         -------
@@ -1973,6 +2036,8 @@ class MERegAdaptiveProjection(Algorithm):
         # initialize iterators
         grad_res_3D = None
         grad_res_3D_all = None
+        gradient_idx = None
+        gradient_idx_FD_fwd = None
         basis_increment = 0
 
         n_grid_init = self.options["n_grid_init"]
@@ -2015,20 +2080,39 @@ class MERegAdaptiveProjection(Algorithm):
             n_qoi = 1
             error = [0]
 
-        # Determine gradient [n_grid x n_out x dim]
+        # Determine gradient for projection [n_grid x n_out x dim]
         if self.options["gradient_enhanced"] or self.options["projection"]:
+            if self.options["projection"] or self.options["gradient_calculation"] == "FD_fwd":
+                method = "FD_fwd"
+                dx = 1e-3
+                distance_weight = None
+            else:
+                method = self.options["gradient_calculation"]
+                dx = self.options["gradient_calculation_options"]["dx"]
+                distance_weight = self.options["gradient_calculation_options"]["distance_weight"]
+
             start_time = time.time()
 
-            grad_res_3D_all = get_gradient(model=self.problem.model,
-                                           problem=self.problem,
-                                           grid=grid,
-                                           results=res_all,
-                                           com=com,
-                                           method=self.options["gradient_calculation"],
-                                           gradient_results=None,
-                                           i_iter=self.options["order_start"],
-                                           i_subiter=self.options["interaction_order"],
-                                           print_func_time=self.options["print_func_time"])
+            grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                         problem=self.problem,
+                                                         grid=grid,
+                                                         results=res_all,
+                                                         com=com,
+                                                         method=method,
+                                                         gradient_results_present=None,
+                                                         gradient_idx_skip=None,
+                                                         i_iter=self.options["order_start"],
+                                                         i_subiter=self.options["interaction_order"],
+                                                         print_func_time=self.options["print_func_time"],
+                                                         dx=dx,
+                                                         distance_weight=distance_weight)
+
+            if method == "FD_fwd":
+                gradient_idx_FD_fwd = gradient_idx
+                grad_res_3D_all_FD_fwd = grad_res_3D_all
+            else:
+                gradient_idx_FD_fwd = None
+                grad_res_3D_all_FD_fwd = None
 
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
@@ -2089,8 +2173,7 @@ class MERegAdaptiveProjection(Algorithm):
 
                 if self.options["projection"]:
                     p_matrix[d] = determine_projection_matrix(
-                        gradient_results=grad_res_3D_all[megpc[i_qoi].domains == d, :, :],
-                        qoi_idx=q_idx,
+                        gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == d, q_idx, :],
                         lambda_eps=self.options["lambda_eps_gradient"])
 
                     p_matrix_norm[d] = np.sum(np.abs(p_matrix[d]), axis=1)
@@ -2182,18 +2265,37 @@ class MERegAdaptiveProjection(Algorithm):
 
                 # Determine gradient [n_grid x n_out x dim]
                 if self.options["gradient_enhanced"] or self.options["projection"]:
+                    if self.options["projection"] or self.options["gradient_calculation"] == "FD_fwd":
+                        method = "FD_fwd"
+                        dx = 1e-3
+                        distance_weight = None
+                    else:
+                        method = self.options["gradient_calculation"]
+                        dx = self.options["gradient_calculation_options"]["dx"]
+                        distance_weight = self.options["gradient_calculation_options"]["distance_weight"]
+
                     start_time = time.time()
 
-                    grad_res_3D_all = get_gradient(model=self.problem.model,
-                                                   problem=self.problem,
-                                                   grid=grid,
-                                                   results=res_all,
-                                                   com=com,
-                                                   method=self.options["gradient_calculation"],
-                                                   gradient_results=grad_res_3D_all,
-                                                   i_iter=None,
-                                                   i_subiter=None,
-                                                   print_func_time=self.options["print_func_time"])
+                    grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                 problem=self.problem,
+                                                                 grid=grid,
+                                                                 results=res_all,
+                                                                 com=com,
+                                                                 method=method,
+                                                                 gradient_results_present=grad_res_3D_all_FD_fwd,
+                                                                 gradient_idx_skip=gradient_idx_FD_fwd,
+                                                                 i_iter=None,
+                                                                 i_subiter=None,
+                                                                 print_func_time=self.options["print_func_time"],
+                                                                 dx=dx,
+                                                                 distance_weight=distance_weight)
+
+                    if method == "FD_fwd":
+                        gradient_idx_FD_fwd = gradient_idx
+                        grad_res_3D_all_FD_fwd = grad_res_3D_all
+                    else:
+                        gradient_idx_FD_fwd = None
+                        grad_res_3D_all_FD_fwd = None
 
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
@@ -2283,16 +2385,23 @@ class MERegAdaptiveProjection(Algorithm):
                 if self.options["gradient_enhanced"] or self.options["projection"]:
                     start_time = time.time()
 
-                    grad_res_3D_all = get_gradient(model=self.problem.model,
-                                                   problem=self.problem,
-                                                   grid=grid,
-                                                   results=res_all,
-                                                   com=com,
-                                                   method=self.options["gradient_calculation"],
-                                                   gradient_results=grad_res_3D_all,
-                                                   i_iter="Domain boundary",
-                                                   i_subiter=None,
-                                                   print_func_time=self.options["print_func_time"])
+                    grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                 problem=self.problem,
+                                                                 grid=grid,
+                                                                 results=res_all,
+                                                                 com=com,
+                                                                 method=self.options["gradient_calculation"],
+                                                                 gradient_results_present=grad_res_3D_all_FD_fwd,
+                                                                 gradient_idx_skip=gradient_idx_FD_fwd,
+                                                                 i_iter="Domain boundary",
+                                                                 i_subiter=None,
+                                                                 print_func_time=self.options["print_func_time"],
+                                                                 dx=self.options["gradient_calculation_options"]["dx"],
+                                                                 distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
+
+                    if self.options["gradient_calculation"] == "FD_fwd":
+                        gradient_idx_FD_fwd = gradient_idx
+                        grad_res_3D_all_FD_fwd = grad_res_3D_all
 
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
@@ -2366,10 +2475,8 @@ class MERegAdaptiveProjection(Algorithm):
                     problem = [0 for _ in range(megpc[i_qoi].n_gpc)]
 
                     for d in np.unique(megpc[i_qoi].domains):
-
                         p_matrix[d] = determine_projection_matrix(
-                            gradient_results=grad_res_3D_all[megpc[i_qoi].domains == d, :, :],
-                            qoi_idx=q_idx,
+                            gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == d, q_idx, :],
                             lambda_eps=self.options["lambda_eps_gradient"])
 
                         p_matrix_norm[d] = np.sum(np.abs(p_matrix[d]), axis=1)
@@ -2404,7 +2511,7 @@ class MERegAdaptiveProjection(Algorithm):
 
                 # update gpc approximation with new grid points close to discontinuity
                 # assign grids to sub-gPCs (rotate sub-grids in case of projection)
-                megpc[i_qoi].assign_grids()
+                megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
 
                 # Initialize gpc matrices
                 megpc[i_qoi].init_gpc_matrices()
@@ -2484,7 +2591,11 @@ class MERegAdaptiveProjection(Algorithm):
                             continue
 
                         # update gpc matrix
-                        megpc[i_qoi].gpc[d].init_gpc_matrix()
+                        gradient_idx_gpc = get_gradient_idx_domain(domains=megpc[i_qoi].domains,
+                                                                   d=dd,
+                                                                   gradient_idx=megpc[i_qoi].gradient_idx)
+
+                        megpc[i_qoi].gpc[d].init_gpc_matrix(gradient_idx=gradient_idx_gpc)
 
                         # determine gpc coefficients with new basis but old samples
                         if self.options["gradient_enhanced"]:
@@ -2571,16 +2682,23 @@ class MERegAdaptiveProjection(Algorithm):
                                     if self.options["gradient_enhanced"] or self.options["projection"]:
                                         start_time = time.time()
 
-                                        grad_res_3D_all = get_gradient(model=self.problem.model,
-                                                                       problem=self.problem,
-                                                                       grid=grid,
-                                                                       results=res_all,
-                                                                       com=com,
-                                                                       method=self.options["gradient_calculation"],
-                                                                       gradient_results=grad_res_3D_all,
-                                                                       i_iter=basis_order["poly_dom_{}".format(d)][0],
-                                                                       i_subiter=basis_order["poly_dom_{}".format(d)][1],
-                                                                       print_func_time=self.options["print_func_time"])
+                                        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                                     problem=self.problem,
+                                                                                     grid=grid,
+                                                                                     results=res_all,
+                                                                                     com=com,
+                                                                                     method=self.options["gradient_calculation"],
+                                                                                     gradient_results_present=grad_res_3D_all_FD_fwd,
+                                                                                     gradient_idx_skip=gradient_idx_FD_fwd,
+                                                                                     i_iter=basis_order["poly_dom_{}".format(d)][0],
+                                                                                     i_subiter=basis_order["poly_dom_{}".format(d)][1],
+                                                                                     print_func_time=self.options["print_func_time"],
+                                                                                     dx=self.options["gradient_calculation_options"]["dx"],
+                                                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
+
+                                        if self.options["gradient_calculation"] == "FD_fwd":
+                                            gradient_idx_FD_fwd = gradient_idx
+                                            grad_res_3D_all_FD_fwd = grad_res_3D_all
 
                                         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                                tab=0, verbose=self.options["verbose"])
@@ -2610,8 +2728,7 @@ class MERegAdaptiveProjection(Algorithm):
                                         for dd in np.unique(megpc[i_qoi].domains):
 
                                             p_matrix[dd] = determine_projection_matrix(
-                                                gradient_results=grad_res_3D_all[megpc[i_qoi].domains == dd, :, :],
-                                                qoi_idx=q_idx,
+                                                gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == dd, q_idx, :],
                                                 lambda_eps=self.options["lambda_eps_gradient"])
 
                                             p_matrix_norm[dd] = np.sum(np.abs(p_matrix[dd]), axis=1)
@@ -2652,10 +2769,14 @@ class MERegAdaptiveProjection(Algorithm):
                                     megpc[i_qoi].grid = copy.deepcopy(grid)
 
                                     # assign grids to sub-gPCs (rotate sub-grids in case of projection)
-                                    megpc[i_qoi].assign_grids()
+                                    megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
 
                                     # update gpc matrix
-                                    megpc[i_qoi].gpc[d].init_gpc_matrix()
+                                    gradient_idx_gpc = get_gradient_idx_domain(domains=megpc[i_qoi].domains,
+                                                                               d=dd,
+                                                                               gradient_idx=megpc[i_qoi].gradient_idx)
+
+                                    megpc[i_qoi].gpc[d].init_gpc_matrix(gradient_idx=gradient_idx_gpc)
 
                                     # determine gpc coefficients
                                     if self.options["gradient_enhanced"]:
@@ -2770,6 +2891,7 @@ class MERegAdaptiveProjection(Algorithm):
 
                                 try:
                                     del f["model_evaluations/gradient_results"]
+                                    del f["model_evaluations/gradient_results_idx"]
                                 except KeyError:
                                     pass
 
@@ -2779,6 +2901,10 @@ class MERegAdaptiveProjection(Algorithm):
                                                  maxshape=(None, None),
                                                  dtype="float64",
                                                  data=grad_res_2D_all)
+
+                                f.create_dataset("model_evaluations/gradient_results_idx",
+                                                 dtype="int64",
+                                                 data=gradient_idx)
 
                             try:
                                 del f["error" + hdf5_subfolder + "/dom_" + str(d)]
@@ -2792,13 +2918,27 @@ class MERegAdaptiveProjection(Algorithm):
 
             megpc[i_qoi].update_classifier(coords=megpc[i_qoi].grid.coords_norm,
                                            results=res_all[:, q_idx][:, np.newaxis])
-            megpc[i_qoi].assign_grids()
+
+            megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
             megpc[i_qoi].init_gpc_matrices()
 
             # determine gpc coefficients
-            if self.options["gradient_enhanced"]:
-                grad_res_3D_passed = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+            #
+            #     grad_res_3D_passed = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+            # else:
+            #     grad_res_3D_passed = None
+
+            # crop results to considered qoi
+            if self.options["qoi"] != "all":
+                res = copy.deepcopy(res_all)
+                grad_res_3D_passed = copy.deepcopy(grad_res_3D_all)
+
             else:
+                res = res_all[:, q_idx][:, np.newaxis]
+                if grad_res_3D_all is not None:
+                    grad_res_3D_passed = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+
+            if not self.options["gradient_enhanced"]:
                 grad_res_3D_passed = None
 
             # determine gpc coefficients
@@ -2844,9 +2984,11 @@ class MERegAdaptiveProjection(Algorithm):
                         pass
                     f.create_dataset("model_evaluations/results", data=res_all,
                                      maxshape=None, dtype="float64")
-                    if grad_res_3D is not None:
-                        f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D),
+                    if grad_res_3D_all is not None:
+                        f.create_dataset("model_evaluations/gradient_results", data=ten2mat(grad_res_3D_all),
                                          maxshape=None, dtype="float64")
+                        f.create_dataset("model_evaluations/gradient_results_idx", data=gradient_idx,
+                                         maxshape=None, dtype="int64")
 
                     try:
                         f.create_dataset("misc/error_type", data=self.options["error_type"])
@@ -2989,6 +3131,7 @@ class RegAdaptiveProjection(Algorithm):
             os.remove(fn_results + "_temp.hdf5")
 
         grad_res_3D = None
+        gradient_idx = None
 
         # initialize iterators
         eps = self.options["eps"] + 1.0
@@ -3026,19 +3169,25 @@ class RegAdaptiveProjection(Algorithm):
         iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
-        # Determine gradient
+        # Determine gradient for projection matrix (method: FD_fwd)
         start_time = time.time()
 
-        grad_res_3D_all = get_gradient(model=self.problem.model,
-                                       problem=self.problem,
-                                       grid=grid_original,
-                                       results=res_all,
-                                       com=com,
-                                       method=self.options["gradient_calculation"],
-                                       gradient_results=None,
-                                       i_iter=self.options["order_start"],
-                                       i_subiter=self.options["interaction_order"],
-                                       print_func_time=self.options["print_func_time"])
+        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                     problem=self.problem,
+                                                     grid=grid_original,
+                                                     results=res_all,
+                                                     com=com,
+                                                     method="FD_fwd",
+                                                     gradient_results_present=None,
+                                                     gradient_idx_skip=None,
+                                                     i_iter=self.options["order_start"],
+                                                     i_subiter=self.options["interaction_order"],
+                                                     print_func_time=self.options["print_func_time"],
+                                                     dx=1e-3,
+                                                     distance_weight=None)
+
+        gradient_idx_FD_fwd = gradient_idx
+        grad_res_3D_all_FD_fwd = grad_res_3D_all
 
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -3087,8 +3236,7 @@ class RegAdaptiveProjection(Algorithm):
 
             # Set up initial reduced problem
             # Determine projection matrix
-            p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all,
-                                                   qoi_idx=q_idx,
+            p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
                                                    lambda_eps=self.options["lambda_eps_gradient"])
             p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
 
@@ -3124,9 +3272,9 @@ class RegAdaptiveProjection(Algorithm):
             grid[i_qoi] = copy.deepcopy(grid_original)
 
             # transform variables of original grid to reduced parameter space
-            grid[i_qoi].coords = np.dot(grid_original.coords,
+            grid[i_qoi].coords = np.matmul(grid_original.coords,
                                         gpc[i_qoi].p_matrix.transpose())
-            grid[i_qoi].coords_norm = np.dot(grid_original.coords_norm,
+            grid[i_qoi].coords_norm = np.matmul(grid_original.coords_norm,
                                              gpc[i_qoi].p_matrix.transpose() /
                                              gpc[i_qoi].p_matrix_norm[np.newaxis, :])
 
@@ -3134,7 +3282,7 @@ class RegAdaptiveProjection(Algorithm):
             gpc[i_qoi].grid = copy.deepcopy(grid[i_qoi])
 
             # Initialize gpc matrix
-            gpc[i_qoi].init_gpc_matrix()
+            gpc[i_qoi].init_gpc_matrix(gradient_idx=gradient_idx)
             gpc[i_qoi].n_grid.pop(0)
             gpc[i_qoi].n_basis.pop(0)
 
@@ -3232,109 +3380,109 @@ class RegAdaptiveProjection(Algorithm):
 
                             i_grid = grid_original.coords.shape[0]
 
-                            # Determine gradient
-                            start_time = time.time()
+                            # Determine gradient and update projection matrix in case of gradient enhanced gPC
+                            if self.options["gradient_enhanced"]:
+                                start_time = time.time()
+                                grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                             problem=self.problem,
+                                                                             grid=grid_original,
+                                                                             results=res_all,
+                                                                             com=com,
+                                                                             method=self.options["gradient_calculation"],
+                                                                             gradient_results_present=grad_res_3D_all_FD_fwd,
+                                                                             gradient_idx_skip=gradient_idx_FD_fwd,
+                                                                             i_iter=basis_order[0],
+                                                                             i_subiter=basis_order[1],
+                                                                             print_func_time=self.options["print_func_time"],
+                                                                             dx=self.options["gradient_calculation_options"]["dx"],
+                                                                             distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
 
-                            grad_res_3D_all = get_gradient(model=self.problem.model,
-                                                           problem=self.problem,
-                                                           grid=grid_original,
-                                                           results=res_all,
-                                                           com=com,
-                                                           method=self.options["gradient_calculation"],
-                                                           gradient_results=grad_res_3D_all,
-                                                           i_iter=basis_order[0],
-                                                           i_subiter=basis_order[1],
-                                                           print_func_time=self.options["print_func_time"])
+                                if self.options["gradient_calculation"] == "FD_fwd":
+                                    gradient_idx_FD_fwd = gradient_idx
+                                    grad_res_3D_all_FD_fwd = grad_res_3D_all
 
-                            iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-                                   tab=0, verbose=self.options["verbose"])
+                                iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                                       tab=0, verbose=self.options["verbose"])
 
-                            # crop results to considered qoi
-                            if self.options["qoi"] != "all":
-                                res = copy.deepcopy(res_all)
-                                grad_res_3D = copy.deepcopy(grad_res_3D_all)
-
-                            else:
-                                res = res_all[:, q_idx][:, np.newaxis]
-                                grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
-
-                            # Determine projection matrix
-                            p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all,
-                                                                   qoi_idx=q_idx,
-                                                                   lambda_eps=self.options["lambda_eps_gradient"])
-                            p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
-
-                            # save projection matrix in gPC object
-                            gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
-                            gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
-
-                            # Set up reduced gPC
-                            dim_reduced = p_matrix.shape[0]
-                            iprint("Dimension of reduced problem: {}".format(dim_reduced),
-                                   tab=0, verbose=self.options["verbose"])
-
-                            # Update gPC object if dimension has changed
-                            if dim_reduced != gpc[i_qoi].problem.dim:
-                                parameters_reduced = OrderedDict()
-
-                                for i in range(dim_reduced):
-                                    parameters_reduced["n{}".format(i)] = Beta(pdf_shape=[1., 1.],
-                                                                               pdf_limits=[-1., 1.])
-
-                                self.problem_reduced[i_qoi] = Problem(model=self.problem.model,
-                                                                      parameters=parameters_reduced)
-
-                                # Create reduced gPC object of order - 1 and add rest of basisfunctions
-                                # of this subiteration afterwards
-                                gpc[i_qoi] = Reg(problem=self.problem_reduced[i_qoi],
-                                                 order=basis_order[0] * np.ones(self.problem_reduced[i_qoi].dim),
-                                                 order_max=basis_order[0],
-                                                 order_max_norm=self.options["order_max_norm"],
-                                                 interaction_order=self.options["interaction_order"],
-                                                 interaction_order_current=basis_order[1],
-                                                 options=self.options,
-                                                 validation=self.validation)
+                                # Determine projection matrix
+                                p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
+                                                                       lambda_eps=self.options["lambda_eps_gradient"])
+                                p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
 
                                 # save projection matrix in gPC object
                                 gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
                                 gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
 
-                                # transformed grid
-                                grid[i_qoi] = copy.deepcopy(grid_original)
+                                # Set up reduced gPC
+                                dim_reduced = p_matrix.shape[0]
+                                iprint("Dimension of reduced problem: {}".format(dim_reduced),
+                                       tab=0, verbose=self.options["verbose"])
 
-                                # transform variables of original grid to reduced parameter space
-                                grid[i_qoi].coords = np.dot(grid_original.coords,
-                                                            gpc[i_qoi].p_matrix.transpose())
-                                grid[i_qoi].coords_norm = np.dot(grid_original.coords_norm,
-                                                                 gpc[i_qoi].p_matrix.transpose() /
-                                                                 gpc[i_qoi].p_matrix_norm[np.newaxis, :])
+                                # Update gPC object if dimension has changed
+                                if dim_reduced != gpc[i_qoi].problem.dim:
+                                    parameters_reduced = OrderedDict()
 
-                                # assign transformed grid
-                                gpc[i_qoi].grid = copy.deepcopy(grid[i_qoi])
+                                    for i in range(dim_reduced):
+                                        parameters_reduced["n{}".format(i)] = Beta(pdf_shape=[1., 1.],
+                                                                                   pdf_limits=[-1., 1.])
 
-                                # Save settings and options in gpc object
-                                gpc[i_qoi].interaction_order_current = interaction_order_current
-                                gpc[i_qoi].solver = self.options["solver"]
-                                gpc[i_qoi].settings = self.options["settings"]
-                                gpc[i_qoi].options = copy.deepcopy(self.options)
-                                gpc[i_qoi].error = error
-                                gpc[i_qoi].relative_error_nrmsd = nrmsd
-                                gpc[i_qoi].relative_error_loocv = loocv
+                                    self.problem_reduced[i_qoi] = Problem(model=self.problem.model,
+                                                                          parameters=parameters_reduced)
 
-                            else:
-                                gpc[i_qoi].grid.coords = np.dot(grid_original.coords,
-                                                                gpc[i_qoi].p_matrix.transpose())
-                                gpc[i_qoi].grid.coords_norm = np.dot(grid_original.coords_norm,
-                                                                     gpc[i_qoi].p_matrix.transpose() /
-                                                                     gpc[i_qoi].p_matrix_norm[np.newaxis, :])
+                                    # Create reduced gPC object of order - 1 and add rest of basisfunctions
+                                    # of this subiteration afterwards
+                                    gpc[i_qoi] = Reg(problem=self.problem_reduced[i_qoi],
+                                                     order=basis_order[0] * np.ones(self.problem_reduced[i_qoi].dim),
+                                                     order_max=basis_order[0],
+                                                     order_max_norm=self.options["order_max_norm"],
+                                                     interaction_order=self.options["interaction_order"],
+                                                     interaction_order_current=basis_order[1],
+                                                     options=self.options,
+                                                     validation=self.validation)
 
-                    gpc[i_qoi].init_gpc_matrix()
+                                    # save original problem
+                                    gpc[i_qoi].problem_original = self.problem
+
+                                    # save projection matrix in gPC object
+                                    gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
+                                    gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
+
+                                    # Save settings and options in gpc object
+                                    gpc[i_qoi].solver = self.options["solver"]
+                                    gpc[i_qoi].settings = self.options["settings"]
+                                    gpc[i_qoi].options = copy.deepcopy(self.options)
+                                    gpc[i_qoi].error = error
+                                    gpc[i_qoi].relative_error_nrmsd = nrmsd
+                                    gpc[i_qoi].relative_error_loocv = loocv
+
+                    # transformed grid
+                    grid[i_qoi] = copy.deepcopy(grid_original)
+
+                    # transform variables of original grid to reduced parameter space
+                    grid[i_qoi].coords = np.matmul(grid_original.coords,
+                                                   gpc[i_qoi].p_matrix.transpose())
+                    grid[i_qoi].coords_norm = np.matmul(grid_original.coords_norm,
+                                                        gpc[i_qoi].p_matrix.transpose() /
+                                                        gpc[i_qoi].p_matrix_norm[np.newaxis, :])
+
+                    # assign transformed grid
+                    gpc[i_qoi].grid = copy.deepcopy(grid[i_qoi])
+
+                    # crop results to considered qoi
+                    if self.options["qoi"] != "all":
+                        res = copy.deepcopy(res_all)
+                        grad_res_3D = copy.deepcopy(grad_res_3D_all)
+                    else:
+                        res = res_all[:, q_idx][:, np.newaxis]
+                        grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
 
                     # Someone might not use the gradient to determine the gpc coeffs
                     if gpc[i_qoi].gradient:
                         grad_res_3D_passed = grad_res_3D
+                        gpc[i_qoi].init_gpc_matrix(gradient_idx=gradient_idx)
                     else:
                         grad_res_3D_passed = None
+                        gpc[i_qoi].init_gpc_matrix(gradient_idx=None)
 
                     # determine gpc coefficients
                     coeffs[i_qoi] = gpc[i_qoi].solve(results=res,
@@ -3404,19 +3552,25 @@ class RegAdaptiveProjection(Algorithm):
                             f.create_dataset("p_matrix" + hdf5_subfolder,
                                              data=p_matrix, maxshape=None, dtype="float64")
 
-                        # Append gradient of results (not projected)
-                        grad_res_2D = ten2mat(grad_res_3D)
+                        # save gradient of results
+                        if grad_res_3D is not None:
 
-                        if "gradient_results" in f["model_evaluations"].keys():
-                            n_rows_old = f["model_evaluations/gradient_results"].shape[0]
-                            f["model_evaluations/gradient_results"].resize(grad_res_2D.shape[0], axis=0)
-                            f["model_evaluations/gradient_results"][n_rows_old:, :] = grad_res_2D[n_rows_old:, :]
-                        else:
+                            try:
+                                del f["model_evaluations/gradient_results"]
+                                del f["model_evaluations/gradient_results_idx"]
+                            except KeyError:
+                                pass
+
+                            grad_res_2D_all = ten2mat(grad_res_3D_all)
                             f.create_dataset("model_evaluations/gradient_results",
-                                             (grad_res_2D.shape[0], grad_res_2D.shape[1]),
+                                             (grad_res_2D_all.shape[0], grad_res_2D_all.shape[1]),
                                              maxshape=(None, None),
                                              dtype="float64",
-                                             data=grad_res_2D)
+                                             data=grad_res_2D_all)
+
+                            f.create_dataset("model_evaluations/gradient_results_idx",
+                                             dtype="int64",
+                                             data=gradient_idx)
 
                         try:
                             del f["gpc_matrix" + hdf5_subfolder]
@@ -3476,7 +3630,7 @@ class RegAdaptiveProjection(Algorithm):
 
                     f.create_dataset("misc/error_type", data=self.options["error_type"])
 
-                    if self.options["gradient_enhanced"]:
+                    if self.options["gradient_enhanced"] or gpc[-1].grid.coords_gradient is not None:
                         f.create_dataset("grid/coords_gradient", data=gpc[-1].grid.coords_gradient,
                                          maxshape=None, dtype="float64")
                         f.create_dataset("grid/coords_gradient_norm", data=gpc[-1].grid.coords_gradient_norm,
@@ -3505,3 +3659,18 @@ class RegAdaptiveProjection(Algorithm):
         com.close()
 
         return gpc, coeffs, res
+
+
+        # # Append gradient of results (not projected)
+        # grad_res_2D = ten2mat(grad_res_3D)
+        #
+        # if "gradient_results" in f["model_evaluations"].keys():
+        #     n_rows_old = f["model_evaluations/gradient_results"].shape[0]
+        #     f["model_evaluations/gradient_results"].resize(grad_res_2D.shape[0], axis=0)
+        #     f["model_evaluations/gradient_results"][n_rows_old:, :] = grad_res_2D[n_rows_old:, :]
+        # else:
+        #     f.create_dataset("model_evaluations/gradient_results",
+        #                      (grad_res_2D.shape[0], grad_res_2D.shape[1]),
+        #                      maxshape=(None, None),
+        #                      dtype="float64",
+        #                      data=grad_res_2D)
