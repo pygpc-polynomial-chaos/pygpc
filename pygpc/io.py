@@ -163,8 +163,143 @@ def read_session_hdf5(fname):
     obj: GPC Object
         GPC object containing instances of Basis, Problem and Model.
     """
+    from .Problem import Problem
+    from .Session import Session
+    from .Algorithm import Algorithm
+    from .ValidationSet import ValidationSet
+    import sys
 
-    return None
+    # model
+    model_dict = read_group_from_hdf5(fn_hdf5=fname, folder="problem/model")
+    sys.path.append(os.path.split(model_dict["fname"])[0])
+    from testfunctions import DiscontinuousRidgeManufactureDecay
+    model = DiscontinuousRidgeManufactureDecay()
+
+    # parameters
+    parameters = OrderedDict
+    parameters_dict = read_group_from_hdf5(fn_hdf5=fname, folder="problem/parameters")
+    parameters = None
+
+    # problem(model, parameters)
+    problem = Problem(model, parameters)
+
+    # options
+    options = dict()
+    options_dict = read_group_from_hdf5(fn_hdf5=fname, folder="problem/parameters")
+    options = None
+
+    # validation
+    validation_dict = read_group_from_hdf5(fn_hdf5=fname, folder="validation")
+    validation = ValidationSet(grid=validation_dict["grid"],
+                               results=validation_dict["results"],
+                               gradient_results=validation_dict["gradient_results"])
+
+    # grid
+    grid_dict = read_group_from_hdf5(fn_hdf5=fname, folder="gpc/0/grid")
+    grid = None
+
+    # algorithm(problem, options)
+    algorithm=Algorithm(problem=problem,
+                        options=options,
+                        grid=grid,
+                        validation=validation)
+
+    # session(algorithm)
+    session = Session(algorithm=algorithm)
+
+    # gpc
+    gpc_dict = read_group_from_hdf5(fn_hdf5=fname, folder="gpc")
+    gpc = None
+
+    # set gpc type in session
+    session.set_gpc(gpc)
+
+    return session
+
+def read_group_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    data
+
+    attrs
+
+    """
+    f = h5py.File(fn_hdf5, "r")
+
+    attrs = dict()
+    for a in f[folder].attrs:
+        attrs[a] = f[folder].attrs.__getitem__(a)
+
+    data = dict()
+
+    for key in f[folder].keys():
+        data["attrs"] = attrs
+        data[key] = read_array_from_hdf5(fn_hdf5=fn_hdf5,
+                                         arr_name=folder + "/" + key)
+
+    if data["attrs"]["dtype"] == "list":
+        data = [data[key] for key in data if key != "attrs"]
+
+    elif data["attrs"]["dtype"] == "dict":
+        del data["attrs"]
+
+    elif data["attrs"]["dtype"] == "collections.OrderedDict":
+        data_ordered = OrderedDict()
+
+        for key in data:
+            if key != "attrs":
+                data_ordered[key] = data[key]
+
+        data = data_ordered
+
+    return data
+
+
+def read_array_from_hdf5(fn_hdf5, arr_name, verbose=False):
+    """
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    data
+
+    attrs
+
+    """
+    f = h5py.File(fn_hdf5, "r")
+
+    if isinstance(f[arr_name], h5py.Group):
+        data = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=arr_name)
+
+    else:
+        data = f[arr_name][()]
+
+    if type(data) == np.bytes_:
+        data = str(data.astype(str))
+
+    if type(data) == str and (data == "None" or data == "N/A"):
+        data = None
+
+    return data
 
 
 def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
