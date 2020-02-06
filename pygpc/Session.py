@@ -71,6 +71,8 @@ class Session(object):
                 (self.qoi_specific and not self.gpc_type == "megpc"):
             if str(type(self.gpc[0].p_matrix)) != "<class 'NoneType'>":
                 self.projection = True
+            else:
+                self.projection = False
         else:
             self.projection = False
 

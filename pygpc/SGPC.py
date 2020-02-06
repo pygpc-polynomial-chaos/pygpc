@@ -365,8 +365,8 @@ class SGPC(GPC):
                 # determine global integral expression
                 b_int_global[i_sens, :] = np.prod(tmp, axis=1)
 
-            global_sens = np.dot(b_int_global, coeffs) / (2 ** self.problem.dim)
-            # global_sens = np.dot(b_int_global, coeffs)
+            global_sens = np.matmul(b_int_global, coeffs) / (2 ** self.problem.dim)
+            # global_sens = np.matmul(b_int_global, coeffs)
 
         elif algorithm == "sampling":
             # generate sample coordinates (original parameter space)
@@ -384,16 +384,16 @@ class SGPC(GPC):
             local_sens = self.get_local_sens(coeffs, grid.coords_norm)
 
             # # transform the coordinates to the reduced parameter space
-            # coords_norm = np.dot(coords_norm, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
+            # coords_norm = np.matmul(coords_norm, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
             #
             # # construct gPC gradient matrix [n_samples x n_basis x dim_red]
             # gpc_matrix_gradient = self.calc_gpc_matrix(b=self.basis.b, x=coords_norm, gradient=True)
             #
             # # determine gradient in each sampling point [n_samples x n_out x dim_red]
-            # grad_samples_projected = np.dot(gpc_matrix_gradient.transpose(2, 0, 1), coeffs).transpose(1, 2, 0)
+            # grad_samples_projected = np.matmul(gpc_matrix_gradient.transpose(2, 0, 1), coeffs).transpose(1, 2, 0)
             #
             # # project the gradient back to the original parameter space if necessary [n_samples x n_out x dim]
-            # grad_samples = np.dot(grad_samples_projected, self.p_matrix / self.p_matrix_norm[:, np.newaxis])
+            # grad_samples = np.matmul(grad_samples_projected, self.p_matrix / self.p_matrix_norm[:, np.newaxis])
 
             # average the results and reshape [dim x n_out]
             global_sens = np.mean(local_sens, axis=0).transpose()
@@ -429,16 +429,19 @@ class SGPC(GPC):
 
         # project coordinate to reduced parameter space if necessary
         if self.p_matrix is not None:
-            x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
+            x = np.matmul(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
         # construct gPC gradient matrix [n_samples x n_basis x dim(_red)]
-        gpc_matrix_gradient = self.create_gpc_matrix(b=self.basis.b, x=x, gradient=True)
+        gpc_matrix_gradient = self.create_gpc_matrix(b=self.basis.b,
+                                                     x=x,
+                                                     gradient=True,
+                                                     gradient_idx=np.arange(x.shape[0]))
 
-        local_sens = np.dot(gpc_matrix_gradient.transpose(2, 0, 1), coeffs).transpose(1, 2, 0)
+        local_sens = np.matmul(gpc_matrix_gradient.transpose(2, 0, 1), coeffs).transpose(1, 2, 0)
 
         # project the gradient back to the original space if necessary
         if self.p_matrix is not None:
-            local_sens = np.dot(local_sens, self.p_matrix / self.p_matrix_norm[:, np.newaxis])
+            local_sens = np.matmul(local_sens, self.p_matrix / self.p_matrix_norm[:, np.newaxis])
 
         return local_sens
 

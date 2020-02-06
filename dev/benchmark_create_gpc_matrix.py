@@ -6,8 +6,8 @@ from collections import OrderedDict
 
 dimensions_lst = [4]
 
-order_lst = np.array([5])
-n_samples_validation_lst = np.logspace(1, 2, 2)
+order_lst = np.array([10])
+n_samples_validation_lst = [100000] #np.logspace(1, 2, 2)
 
 # order_lst = [2]
 # n_samples_validation_lst = [10]
