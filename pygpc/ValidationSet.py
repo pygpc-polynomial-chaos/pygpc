@@ -10,7 +10,7 @@ class ValidationSet(object):
     ValidationSet object
     """
 
-    def __init__(self, grid=None, results=None, gradient_results=None):
+    def __init__(self, grid=None, results=None, gradient_results=None, gradient_idx=None):
         """
         Initializes ValidationSet
 
@@ -18,14 +18,17 @@ class ValidationSet(object):
         ----------
         grid : Grid object
             Grid object containing the validation points (grid.coords, grid.coords_norm)
-        results: ndarray [n_grid x n_out]
+        results : ndarray [n_grid x n_out]
             Results of the model evaluation
-        gradient_results: ndarray [n_grid x n_out x dim], optional, default=None
+        gradient_results : ndarray [n_grid x n_out x dim], optional, default=None
             Gradient of results of the model evaluations
+        gradient_idx : ndarray of int [n_grid]
+            Indices of grid points where the gradient was evaluated
         """
         self.grid = grid
         self.results = results
         self.gradient_results = gradient_results
+        self.gradient_idx = gradient_idx
 
     def write(self, fname):
         """ Save Validation set in .hdf5 format
@@ -49,8 +52,10 @@ class ValidationSet(object):
 
             if self.gradient_results is not None:
                 f["model_evaluations/gradient_results"] = ten2mat(self.gradient_results)
+                f["model_evaluations/gradient_results_idx"] = self.gradient_idx
 
-    def read(self, fname, coords_key=None, coords_norm_key=None, results_key=None, gradient_results_key=None):
+    def read(self, fname, coords_key=None, coords_norm_key=None, results_key=None, gradient_results_key=None,
+             gradient_idx_key=None):
         """ Load Validation set from .hdf5 format
 
         Parameters
@@ -64,6 +69,8 @@ class ValidationSet(object):
         results_key : str, optional, default: "model_evaluations/results"
             Path of results in .hdf5 file
         gradient_results_key : str, optional, default: "model_evaluations/gradient_results"
+            Path of gradient_results in .hdf5 file
+        gradient_idx_key : str, optional, default: "model_evaluations/gradient_results_idx"
             Path of gradient_results in .hdf5 file
 
         Returns
@@ -84,8 +91,12 @@ class ValidationSet(object):
         if gradient_results_key is None:
             gradient_results_key = "model_evaluations/gradient_results"
 
+        if gradient_idx_key is None:
+            gradient_idx_key = "model_evaluations/gradient_results_idx"
+
         del self.results
         del self.gradient_results
+        del self.gradient_idx
 
         with h5py.File(os.path.splitext(fname)[0] + ".hdf5", 'r') as f:
             coords = f[coords_key][:]
@@ -94,6 +105,7 @@ class ValidationSet(object):
 
             try:
                 self.gradient_results = mat2ten(f[gradient_results_key][:])
+                self.gradient_idx = f[gradient_idx_key]
             except KeyError:
                 pass
 

@@ -1,11 +1,15 @@
 import os
 import re
+import sys
 import h5py
+import uuid
 import pickle
+import inspect
 import logging
 import numpy as np
-from collections import OrderedDict
 from .misc import is_instance
+from collections import OrderedDict
+from importlib import import_module
 
 
 def write_session(obj, fname, overwrite=True):
@@ -81,10 +85,6 @@ def write_session_hdf5(obj, fname, overwrite=True):
     <file>: .hdf5 file
         .hdf5 file containing the gpc session
     """
-    from .Algorithm import Algorithm
-    from .AbstractModel import AbstractModel
-    from .GPC import GPC
-    from .MEGPC import MEGPC
 
     if not overwrite and os.path.exists(fname):
         raise FileExistsError
@@ -146,8 +146,7 @@ def read_session_pkl(fname):
     return obj
 
 
-# TODO: implement method to read session from .hdf5 file
-def read_session_hdf5(fname):
+def read_session_hdf5(fname, verbose=False):
     """
     Read gPC object including information about input pdfs, polynomials, grid etc.
 
@@ -157,6 +156,8 @@ def read_session_hdf5(fname):
     ----------
     fname: str
         path to input file
+    verbose : bool, optional, default: False
+        Print output info
 
     Returns
     -------
@@ -165,48 +166,41 @@ def read_session_hdf5(fname):
     """
     from .Problem import Problem
     from .Session import Session
-    from .Algorithm import Algorithm
-    from .ValidationSet import ValidationSet
-    import sys
 
     # model
-    model_dict = read_group_from_hdf5(fn_hdf5=fname, folder="problem/model")
-    sys.path.append(os.path.split(model_dict["fname"])[0])
-    from testfunctions import DiscontinuousRidgeManufactureDecay
-    model = DiscontinuousRidgeManufactureDecay()
+    model = read_model_from_hdf5(fn_hdf5=fname, folder="problem/model", verbose=verbose)
 
     # parameters
-    parameters = OrderedDict
-    parameters_dict = read_group_from_hdf5(fn_hdf5=fname, folder="problem/parameters")
-    parameters = None
+    parameters = read_parameters_from_hdf5(fn_hdf5=fname, folder="problem/parameters", verbose=False)
 
     # problem(model, parameters)
     problem = Problem(model, parameters)
 
     # options
-    options = dict()
-    options_dict = read_group_from_hdf5(fn_hdf5=fname, folder="problem/parameters")
-    options = None
+    options = read_group_from_hdf5(fn_hdf5=fname, folder="algorithm/options")
 
     # validation
-    validation_dict = read_group_from_hdf5(fn_hdf5=fname, folder="validation")
-    validation = ValidationSet(grid=validation_dict["grid"],
-                               results=validation_dict["results"],
-                               gradient_results=validation_dict["gradient_results"])
+    validation = read_validation_from_hdf5(fn_hdf5=fname, folder="validation", verbose=verbose)
 
     # grid
-    grid_dict = read_group_from_hdf5(fn_hdf5=fname, folder="gpc/0/grid")
-    grid = None
+    grid = read_grid_from_hdf5(fn_hdf5=fname, folder="grid", verbose=verbose)
 
-    # algorithm(problem, options)
-    algorithm=Algorithm(problem=problem,
-                        options=options,
-                        grid=grid,
-                        validation=validation)
+    # algorithm
+    module = import_module(".Algorithm", package="pygpc")
+    algorithm_dict = read_group_from_hdf5(fn_hdf5=fname, folder="algorithm", verbose=verbose)
+    alg = getattr(module, algorithm_dict["attrs"]["dtype"].split(".")[-1])
+    args = inspect.getargspec(alg).args[1:]
+
+    args_dict = dict()
+    for a in args:
+        args_dict[a] = locals()[a]
+
+    algorithm = alg(**args_dict)
 
     # session(algorithm)
     session = Session(algorithm=algorithm)
 
+    # TODO: implement method to read gpc from .hdf5 file
     # gpc
     gpc_dict = read_group_from_hdf5(fn_hdf5=fname, folder="gpc")
     gpc = None
@@ -216,8 +210,10 @@ def read_session_hdf5(fname):
 
     return session
 
-def read_group_from_hdf5(fn_hdf5, folder, verbose=False):
+
+def read_model_from_hdf5(fn_hdf5, folder, verbose=False):
     """
+    Reads model from hdf5 file
 
     Parameters
     ----------
@@ -230,10 +226,163 @@ def read_group_from_hdf5(fn_hdf5, folder, verbose=False):
 
     Returns
     -------
-    data
+    model : Model object
+        Model
+    """
 
-    attrs
+    model_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
+    sys.path.append(os.path.split(model_dict["fname"])[0])
+    module = import_module(os.path.splitext(os.path.split(model_dict["fname"])[1])[0])
+    model = getattr(module, model_dict["attrs"]["dtype"].rsplit(".", 1)[1])()
 
+    return model
+
+
+def read_parameters_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+    Reads parameters from hdf5 file
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    parameters : OrderedDict
+        OrdererDict containing the parameters (random and deterministic)
+    """
+    parameters = OrderedDict()
+    parameters_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
+    module = import_module(".RandomParameter", package="pygpc")
+
+    for p in parameters_dict:
+        if "RandomParameter" in parameters_dict[p]["attrs"]["dtype"]:
+            rp = getattr(module, parameters_dict[p]["attrs"]["dtype"].split(".")[-1])
+            args = inspect.getargspec(rp).args[1:]
+
+            args_dict = dict()
+            for a in args:
+                args_dict[a] = parameters_dict[p][a]
+
+            parameters[p] = rp(**args_dict)
+
+        else:
+            parameters[p] = parameters_dict[p]
+
+    return parameters
+
+
+def read_grid_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+    Reads and initializes grid from hdf5 file
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    grid : Grid object
+        Grid
+    """
+
+    grid_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
+
+    module = import_module(".RandomParameter", package="pygpc")
+    g = getattr(module, grid_dict["attrs"]["dtype"].split(".")[-1])
+
+    # get arguments of grid function
+    args = inspect.getargspec(g).args[1:]
+
+    # read content of hdf5 and relate to arguments
+    args_dict = dict()
+    for a in args:
+        if a in ["coords", "coords_norm", "coords_gradient", "coords_gradient_norm"]:
+            args_dict[a] = grid_dict["_" + a]
+        elif a == "parameters_random":
+            parameters_random = read_parameters_from_hdf5(fn_hdf5=fn_hdf5,
+                                                          folder=folder + "/parameters_random",
+                                                          verbose=verbose)
+            args_dict[a] = parameters_random
+        else:
+            args_dict[a] = grid_dict[a]
+
+    # regenerate unique grid IDs
+    args_dict["coords_id"] = [uuid.uuid4() for _ in range(args_dict["n_grid"])]
+
+    if args_dict["coords_gradient"] is not None:
+        args_dict["coords_gradient_id"] = args_dict["coords_id"]
+
+    grid = g(**args_dict)
+
+    return grid
+
+
+def read_validation_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+    Reads and initializes ValidatioSet from hdf5 file
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    validation : ValidationSet object
+        ValidationSet
+    """
+    from .ValidationSet import ValidationSet
+    validation_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder)
+
+    if validation_dict is None:
+        validation = None
+    else:
+        args_dict = dict()
+        args = inspect.getargspec(ValidationSet).args[1:]
+
+        for a in args:
+            if a == "grid":
+                args_dict[a] = read_grid_from_hdf5(fn_hdf5=fn_hdf5, folder="validation/grid", verbose=verbose)
+            else:
+                args_dict[a] = validation_dict[a]
+
+        validation = ValidationSet(**args_dict)
+
+    return validation
+
+
+def read_group_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+    Read data from group (folder) in hdf5 file
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    data : dict or list or OrderedDict
+        Folder content
     """
     f = h5py.File(fn_hdf5, "r")
 
@@ -243,25 +392,29 @@ def read_group_from_hdf5(fn_hdf5, folder, verbose=False):
 
     data = dict()
 
-    for key in f[folder].keys():
-        data["attrs"] = attrs
-        data[key] = read_array_from_hdf5(fn_hdf5=fn_hdf5,
-                                         arr_name=folder + "/" + key)
+    if isinstance(f[folder], h5py.Group) and len(f[folder].keys()) > 0:
+        for key in f[folder].keys():
+            data["attrs"] = attrs
+            data[key] = read_array_from_hdf5(fn_hdf5=fn_hdf5,
+                                             arr_name=folder + "/" + key)
 
-    if data["attrs"]["dtype"] == "list":
-        data = [data[key] for key in data if key != "attrs"]
+        if data["attrs"]["dtype"] == "list":
+            data = [data[key] for key in data if key != "attrs"]
 
-    elif data["attrs"]["dtype"] == "dict":
-        del data["attrs"]
+        elif data["attrs"]["dtype"] == "dict":
+            del data["attrs"]
 
-    elif data["attrs"]["dtype"] == "collections.OrderedDict":
-        data_ordered = OrderedDict()
+        elif data["attrs"]["dtype"] == "collections.OrderedDict":
+            data_ordered = OrderedDict()
 
-        for key in data:
-            if key != "attrs":
-                data_ordered[key] = data[key]
+            for key in data:
+                if key != "attrs":
+                    data_ordered[key] = data[key]
 
-        data = data_ordered
+            data = data_ordered
+
+    else:
+        data = None
 
     return data
 

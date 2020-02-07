@@ -302,7 +302,7 @@ class CrossinTrayFunction(AbstractModel):
 
        plot("CrossinTrayFunction", parameters, constants)
 
-    .. [1]Test functions for optimization. In Wikipedia. Retrieved June 2013, from
+    .. [1] Test functions for optimization. In Wikipedia. Retrieved June 2013, from
        https://en.wikipedia.org/wiki/Test_functions_for_optimization.
     .. [2] https://www.sfu.ca/~ssurjano/crossit.html
     """

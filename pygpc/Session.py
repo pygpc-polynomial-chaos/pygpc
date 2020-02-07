@@ -21,18 +21,19 @@ class Session(object):
             Algorithm object containing the Problem object, the Model object
         """
         self.gpc = None
-        self.qoi_specific = None
-        self.gpc_type = None
-        self.problem = None
+        self.grid = None
         self.model = None
-        self.algorithm = algorithm
-        self.model = self.algorithm.problem.model
-        self.matlab_model = self.algorithm.options["matlab_model"]
-        self.fn_results = os.path.splitext(self.algorithm.options["fn_results"])[0]
+        self.problem = None
+        self.gpc_type = None
+        self.gradient = None
         self.validation = None
         self.projection = None
-        self.gradient = None
+        self.qoi_specific = None
+        self.algorithm = algorithm
+        self.model = self.algorithm.problem.model
         self.n_cpu = self.algorithm.options["n_cpu"]
+        self.matlab_model = self.algorithm.options["matlab_model"]
+        self.fn_results = os.path.splitext(self.algorithm.options["fn_results"])[0]
 
         # safe the original problem and random parameters
         self.problem = self.algorithm.problem
@@ -90,6 +91,8 @@ class Session(object):
 
         if self.gpc[0].validation:
             self.validation = self.gpc[0].validation
+
+        self.grid = self.gpc[-1].grid
 
         write_session_pkl(self, self.fn_results + ".pkl")
 

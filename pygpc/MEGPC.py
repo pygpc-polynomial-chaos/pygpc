@@ -681,23 +681,27 @@ class MEGPC(object):
 
         # Determine gradient of results at grid points
         if gradient:
-            gradient_results = get_gradient(model=self.problem.model,
-                                            problem=self.problem,
-                                            grid=grid,
-                                            results=results,
-                                            com=com,
-                                            method="FD_fwd",
-                                            gradient_results_present=None,
-                                            gradient_idx_skip=None,
-                                            i_iter=None,
-                                            i_subiter=None,
-                                            print_func_time=False,
-                                            dx=1e-3,
-                                            distance_weight=None)
+            gradient_results, gradient_idx = get_gradient(model=self.problem.model,
+                                                          problem=self.problem,
+                                                          grid=grid,
+                                                          results=results,
+                                                          com=com,
+                                                          method="FD_fwd",
+                                                          gradient_results_present=None,
+                                                          gradient_idx_skip=None,
+                                                          i_iter=None,
+                                                          i_subiter=None,
+                                                          print_func_time=False,
+                                                          dx=1e-3,
+                                                          distance_weight=None)
         else:
             gradient_results = None
+            gradient_idx = None
 
-        self.validation = ValidationSet(grid=grid, results=results, gradient_results=gradient_results)
+        self.validation = ValidationSet(grid=grid,
+                                        results=results,
+                                        gradient_results=gradient_results,
+                                        gradient_idx=gradient_idx)
 
     @staticmethod
     def get_mean(samples):

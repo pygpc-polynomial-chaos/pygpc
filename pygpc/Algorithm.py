@@ -2592,14 +2592,14 @@ class MERegAdaptiveProjection(Algorithm):
 
                         # update gpc matrix
                         gradient_idx_gpc = get_gradient_idx_domain(domains=megpc[i_qoi].domains,
-                                                                   d=dd,
+                                                                   d=d,
                                                                    gradient_idx=megpc[i_qoi].gradient_idx)
 
                         megpc[i_qoi].gpc[d].init_gpc_matrix(gradient_idx=gradient_idx_gpc)
 
                         # determine gpc coefficients with new basis but old samples
                         if self.options["gradient_enhanced"]:
-                            grad_res_3D_passed = grad_res_3D[megpc[i_qoi].domains == d, :, :]
+                            grad_res_3D_passed = grad_res_3D[megpc[i_qoi].domains[gradient_idx] == d, :, :]
                         else:
                             grad_res_3D_passed = None
 
@@ -2773,14 +2773,14 @@ class MERegAdaptiveProjection(Algorithm):
 
                                     # update gpc matrix
                                     gradient_idx_gpc = get_gradient_idx_domain(domains=megpc[i_qoi].domains,
-                                                                               d=dd,
+                                                                               d=d,
                                                                                gradient_idx=megpc[i_qoi].gradient_idx)
 
                                     megpc[i_qoi].gpc[d].init_gpc_matrix(gradient_idx=gradient_idx_gpc)
 
                                     # determine gpc coefficients
                                     if self.options["gradient_enhanced"]:
-                                        grad_res_3D_passed = grad_res_3D[megpc[i_qoi].domains == d, :, :]
+                                        grad_res_3D_passed = grad_res_3D[megpc[i_qoi].domains[gradient_idx] == d, :, :]
                                     else:
                                         grad_res_3D_passed = None
 
