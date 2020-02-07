@@ -1417,10 +1417,11 @@ class TestPygpcMethods(unittest.TestCase):
         Test gradient estimation methods
         """
         methods_options = dict()
-        methods = ["FD_fwd", "FD_1st", "FD_2nd"]
+        methods = ["FD_fwd", "FD_1st", "FD_2nd", "FD_1st2nd"]
         methods_options["FD_fwd"] = {"dx": 0.001, "distance_weight": -2}
         methods_options["FD_1st"] = {"dx": 0.1, "distance_weight": -2}
         methods_options["FD_2nd"] = {"dx": 0.1, "distance_weight": -2}
+        methods_options["FD_1st2nd"] = {"dx": 0.1, "distance_weight": -2}
 
         # define model
         model = pygpc.testfunctions.Peaks()
@@ -1472,13 +1473,10 @@ class TestPygpcMethods(unittest.TestCase):
                                                               dx=methods_options[m]["dx"],
                                                               distance_weight=methods_options[m]["distance_weight"])
 
-        nrmsd_1st_vs_ref = pygpc.nrmsd(grad_res["FD_1st"][:, 0, :], grad_res["FD_fwd"][gradient_idx["FD_1st"], 0, :])
-        nrmsd_2nd_vs_ref = pygpc.nrmsd(grad_res["FD_2nd"][:, 0, :], grad_res["FD_fwd"][gradient_idx["FD_2nd"], 0, :])
-
-        self.expect_true((nrmsd_1st_vs_ref < 0.05).all(),
-                         msg="gPC test failed during gradient estimation: FD_1st error too large")
-        self.expect_true((nrmsd_2nd_vs_ref < 0.05).all(),
-                         msg="gPC test failed during gradient estimation: FD_2nd error too large")
+            if m != "FD_fwd":
+                nrmsd = pygpc.nrmsd(grad_res[m][:, 0, :], grad_res["FD_fwd"][gradient_idx[m], 0, :])
+                self.expect_true((nrmsd < 0.05).all(),
+                                 msg="gPC test failed during gradient estimation: {} error too large".format(m))
 
 
 if __name__ == '__main__':
