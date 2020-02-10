@@ -3,7 +3,7 @@ from .MEGPC import *
 from .SGPC import *
 from .GPC import *
 import pickle
-from .io import write_session_pkl
+from .io import write_session
 
 
 class Session(object):
@@ -34,13 +34,27 @@ class Session(object):
         self.n_cpu = self.algorithm.options["n_cpu"]
         self.matlab_model = self.algorithm.options["matlab_model"]
         self.fn_results = os.path.splitext(self.algorithm.options["fn_results"])[0]
+        import __main__ as main
+        self.fn_script = main.__file__
 
         # safe the original problem and random parameters
         self.problem = self.algorithm.problem
         self.parameters_random = self.algorithm.problem.parameters_random
 
     def set_gpc(self, gpc):
-        """ Get properties of gPC Object """
+        """
+        Determine and set properties of gPC Object returned from algorithms
+
+        Parameters
+        ----------
+        gpc : MEGPC or SGPC object or list of MEGPC or SGPC objects
+            GPC objects
+        """
+        # if fn_results is not absolute, try if it is relative wrt the path of the executing script
+        if not os.path.isabs(self.fn_results):
+            self.fn_results = os.path.join(os.path.split(self.fn_script)[0], self.fn_results)
+
+        # determine qoi specificity from coeffs structure in results file
         with h5py.File(os.path.splitext(self.fn_results)[0] + ".hdf5", "r") as f:
             try:
                 if type(f["coeffs"][()]) is np.ndarray:
@@ -94,7 +108,7 @@ class Session(object):
 
         self.grid = self.gpc[-1].grid
 
-        write_session_pkl(self, self.fn_results + ".pkl")
+        write_session(self, self.fn_results + "_session.hdf5")
 
         return self, coeffs, results
 

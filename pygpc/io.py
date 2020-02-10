@@ -168,10 +168,13 @@ def read_session_hdf5(fname, verbose=False):
     from .Session import Session
 
     # model
-    model = read_model_from_hdf5(fn_hdf5=fname, folder="problem/model", verbose=verbose)
+    model = read_model_from_hdf5(fn_hdf5=fname, folder="model", verbose=verbose)
 
     # parameters
     parameters = read_parameters_from_hdf5(fn_hdf5=fname, folder="problem/parameters", verbose=False)
+
+    # parameters_random
+    parameters_random = read_parameters_from_hdf5(fn_hdf5=fname, folder="parameters_random", verbose=False)
 
     # problem(model, parameters)
     problem = Problem(model, parameters)
@@ -189,7 +192,7 @@ def read_session_hdf5(fname, verbose=False):
     module = import_module(".Algorithm", package="pygpc")
     algorithm_dict = read_group_from_hdf5(fn_hdf5=fname, folder="algorithm", verbose=verbose)
     alg = getattr(module, algorithm_dict["attrs"]["dtype"].split(".")[-1])
-    args = inspect.getargspec(alg).args[1:]
+    args = inspect.getfullargspec(alg).args[1:]
 
     args_dict = dict()
     for a in args:
@@ -197,18 +200,287 @@ def read_session_hdf5(fname, verbose=False):
 
     algorithm = alg(**args_dict)
 
+    # gpc
+    gpc_raw_list = read_group_from_hdf5(fn_hdf5=fname, folder="gpc", verbose=verbose)
+    module = import_module(".Algorithm", package="pygpc")
+
+    gpc_list = [0 for _ in range(len(gpc_raw_list))]
+    for i_gpc, gpc_raw in enumerate(gpc_raw_list):
+
+        # read and initialize classifier if present
+        if "classifier" in gpc_raw.keys():
+            classifier = read_classifier_from_hdf5(fn_hdf5=fname,
+                                                   folder="gpc/{}/classifier".format(i_gpc),
+                                                   verbose=verbose)
+
+        # read SGPC object if present (sub-gpc)
+        if "gpc" in gpc_raw.keys():
+            gpc = read_sgpc_from_hdf5(fn_hdf5=fname,
+                                      folder="gpc/{}/gpc".format(i_gpc),
+                                      verbose=verbose)
+
+        # get gpc class (SGPC or MEGPC)
+        g = getattr(module, gpc_raw["attrs"]["dtype"].rsplit(".", 1)[1])
+        del gpc_raw["attrs"]
+
+        # get input parameters of gpc
+        args = inspect.getfullargspec(g).args[1:]
+
+        args_dict = dict()
+        for a in args:
+            args_dict[a] = locals()[a]
+
+        # initialize gpc
+        gpc_list[i_gpc] = g(**args_dict)
+
+        # loop over entries and save in self (if we have it in locals() we take this, e.g. gpc, grid, validation etc)
+        for key in gpc_raw:
+            if key in locals():
+                setattr(gpc_list[i_gpc], key, locals()[key])
+            else:
+                setattr(gpc_list[i_gpc], key, gpc_raw[key])
+
     # session(algorithm)
     session = Session(algorithm=algorithm)
 
-    # TODO: implement method to read gpc from .hdf5 file
-    # gpc
-    gpc_dict = read_group_from_hdf5(fn_hdf5=fname, folder="gpc")
-    gpc = None
+    # read session hdf5 content
+    session_dict = read_group_from_hdf5(fn_hdf5=fname, folder="/", verbose=verbose)
+
+    for key in session_dict:
+        if key in locals():
+            setattr(session, key, locals()[key])
+        else:
+            setattr(session, key, session_dict[key])
+
+    # add path of .hdf5 script to python which generated the session (needed in case of relative imports)
+    sys.path.append(os.path.split(session_dict["fn_script"])[0])
 
     # set gpc type in session
-    session.set_gpc(gpc)
+    session.set_gpc(gpc_list)
 
     return session
+
+
+def read_problem_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+    Reads problem from hdf5 file
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    problem : Problem object
+        Problem
+    """
+    from .Problem import Problem
+
+    # model
+    model = read_model_from_hdf5(fn_hdf5=fn_hdf5, folder=folder + "/model", verbose=verbose)
+
+    # parameters
+    parameters = read_parameters_from_hdf5(fn_hdf5=fn_hdf5, folder=folder + "/parameters", verbose=False)
+
+    # initialize problem
+    problem = Problem(model, parameters)
+
+    return problem
+
+
+def read_classifier_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+    Reads classifier from hdf5 file
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    classifier : classifier object
+        Classifier
+    """
+    classifier_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
+    module = import_module(".Classifier", package="pygpc")
+    c = getattr(module, classifier_dict["attrs"]["dtype"].rsplit(".", 1)[1])
+
+    # get input parameters of classifier
+    args = inspect.getfullargspec(c).args[1:]
+
+    args_dict = dict()
+    for a in args:
+        args_dict[a] = classifier_dict[a]
+
+    # initialize classifier
+    classifier = c(**args_dict)
+
+    # ensure that domains are not swapped
+    classifier.domains = classifier_dict["domains"]
+    classifier.update(coords=classifier_dict["coords"],
+                      results=classifier_dict["results"])
+
+    if not (classifier.predict(coords=classifier_dict["coords"]) == classifier_dict["domains"]).all():
+        raise ValueError("Error during classifier initialization! Predicted domains do not fit to saved domains!")
+
+    return classifier
+
+
+def read_basis_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+    Reads Basis from hdf5 file
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    basis : Basis object
+        basis
+    """
+
+    basis_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
+    module_basis = import_module(".Basis", package="pygpc")
+    module_basis_function = import_module(".BasisFunction", package="pygpc")
+    b = getattr(module_basis, basis_dict["attrs"]["dtype"].rsplit(".", 1)[1])
+
+    # get arguments to initialize basis
+    args = inspect.getfullargspec(b).args[1:]
+
+    # collect arguments from hdf5 file content
+    args_dict = dict()
+    for a in args:
+        args_dict[a] = basis_dict[a]
+
+    # initialize basis
+    basis = b(**args_dict)
+
+    # write content in self
+    for key in basis_dict:
+        if key != "b":
+            setattr(basis, key,  basis_dict[key])
+
+    b = [[0 for _ in range(basis_dict["dim"])] for _ in range(basis_dict["n_basis"])]
+    for i_basis, b_lst in enumerate(basis_dict["b"]):
+        for i_dim, b_ in enumerate(b_lst):
+            # get type of basis function
+            bf = getattr(module_basis_function, b_["attrs"]["dtype"].rsplit(".", 1)[1])
+
+            # read content of hdf5
+            bf_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5,
+                                           folder=folder + "/b/{}/{}".format(i_basis, i_dim),
+                                           verbose=verbose)
+
+            # get arguments to initialize basis function
+            args = inspect.getfullargspec(bf).args[1:]
+
+            # collect arguments from hdf5 file content
+            args_dict = dict()
+            for a in args:
+                args_dict[a] = bf_dict[a]
+
+            # initialize basis function
+            b[i_basis][i_dim] = bf(**args_dict)
+
+    # extend basis
+    basis.extend_basis(b)
+
+    return basis
+
+
+def read_sgpc_from_hdf5(fn_hdf5, folder, verbose=False):
+    """
+    Reads SGPC from hdf5 file
+
+    Parameters
+    ----------
+    fn_hdf5 : str
+        Filename of .hdf5 file to write in
+    folder : str
+        Folder inside .hdf5 file where dict is saved
+    verbose : bool, optional, default: False
+        Print output info
+
+    Returns
+    -------
+    sgpc : SGPC object or list of SGPC objects
+        SGPC
+    """
+
+    sgpc_raw_list = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
+    module = import_module(".SGPC", package="pygpc")
+
+    sgpc_list = [0 for _ in range(len(sgpc_raw_list))]
+
+    for i_gpc, sgpc_raw in enumerate(sgpc_raw_list):
+        # get gpc by type
+        g = getattr(module, sgpc_raw["attrs"]["dtype"].rsplit(".", 1)[1])
+
+        # get input parameters of classifier
+        args = inspect.getfullargspec(g).args[1:]
+
+        args_dict = dict()
+        for a in args:
+            if a == "problem":
+                args_dict[a] = read_problem_from_hdf5(fn_hdf5=fn_hdf5,
+                                                      folder=folder + "/{}/".format(i_gpc) + a,
+                                                      verbose=verbose)
+            elif a == "validation":
+                args_dict[a] = read_validation_from_hdf5(fn_hdf5=fn_hdf5,
+                                                         folder=folder + "/{}/".format(i_gpc) + a,
+                                                         verbose=verbose)
+            else:
+                args_dict[a] = sgpc_raw[a]
+
+        # initialize SGPC object
+        sgpc_list[i_gpc] = g(**args_dict)
+
+        # write objects in self
+        for key in sgpc_raw:
+            try:
+                dtype = sgpc_raw[key]["attrs"]["dtype"]
+
+                if "pygpc.Basis" in dtype:
+                    basis = read_basis_from_hdf5(fn_hdf5=fn_hdf5,
+                                                 folder=folder + "/{}/".format(i_gpc) + key,
+                                                 verbose=verbose)
+                    setattr(sgpc_list[i_gpc], key, basis)
+
+                elif "pygpc.Grid" in dtype:
+                    grid = read_grid_from_hdf5(fn_hdf5=fn_hdf5,
+                                               folder=folder + "/{}/".format(i_gpc) + key,
+                                               verbose=verbose)
+                    setattr(sgpc_list[i_gpc], key, grid)
+
+                elif "pygpc.Problem" in dtype:
+                    problem = read_problem_from_hdf5(fn_hdf5=fn_hdf5,
+                                                     folder=folder + "/{}/".format(i_gpc) + key,
+                                                     verbose=verbose)
+                    setattr(sgpc_list[i_gpc], key, problem)
+
+                else:
+                    setattr(sgpc_list[i_gpc], key, sgpc_raw[key])
+
+            except (KeyError, IndexError, TypeError):
+                setattr(sgpc_list[i_gpc], key, sgpc_raw[key])
+
+    return sgpc_list
 
 
 def read_model_from_hdf5(fn_hdf5, folder, verbose=False):
@@ -261,9 +533,10 @@ def read_parameters_from_hdf5(fn_hdf5, folder, verbose=False):
     module = import_module(".RandomParameter", package="pygpc")
 
     for p in parameters_dict:
-        if "RandomParameter" in parameters_dict[p]["attrs"]["dtype"]:
+        if (type(parameters_dict[p]) is dict or type(parameters_dict[p]) is OrderedDict) and \
+            "RandomParameter" in parameters_dict[p]["attrs"]["dtype"]:
             rp = getattr(module, parameters_dict[p]["attrs"]["dtype"].split(".")[-1])
-            args = inspect.getargspec(rp).args[1:]
+            args = inspect.getfullargspec(rp).args[1:]
 
             args_dict = dict()
             for a in args:
@@ -298,16 +571,16 @@ def read_grid_from_hdf5(fn_hdf5, folder, verbose=False):
 
     grid_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
 
-    module = import_module(".RandomParameter", package="pygpc")
+    module = import_module(".Grid", package="pygpc")
     g = getattr(module, grid_dict["attrs"]["dtype"].split(".")[-1])
 
     # get arguments of grid function
-    args = inspect.getargspec(g).args[1:]
+    args = inspect.getfullargspec(g).args[1:]
 
     # read content of hdf5 and relate to arguments
     args_dict = dict()
     for a in args:
-        if a in ["coords", "coords_norm", "coords_gradient", "coords_gradient_norm"]:
+        if a in ["coords", "coords_norm", "coords_gradient", "coords_gradient_norm", "weights"]:
             args_dict[a] = grid_dict["_" + a]
         elif a == "parameters_random":
             parameters_random = read_parameters_from_hdf5(fn_hdf5=fn_hdf5,
@@ -318,7 +591,7 @@ def read_grid_from_hdf5(fn_hdf5, folder, verbose=False):
             args_dict[a] = grid_dict[a]
 
     # regenerate unique grid IDs
-    args_dict["coords_id"] = [uuid.uuid4() for _ in range(args_dict["n_grid"])]
+    args_dict["coords_id"] = [uuid.uuid4() for _ in range(grid_dict["n_grid"])]
 
     if args_dict["coords_gradient"] is not None:
         args_dict["coords_gradient_id"] = args_dict["coords_id"]
@@ -353,7 +626,7 @@ def read_validation_from_hdf5(fn_hdf5, folder, verbose=False):
         validation = None
     else:
         args_dict = dict()
-        args = inspect.getargspec(ValidationSet).args[1:]
+        args = inspect.getfullargspec(ValidationSet).args[1:]
 
         for a in args:
             if a == "grid":
@@ -394,24 +667,26 @@ def read_group_from_hdf5(fn_hdf5, folder, verbose=False):
 
     if isinstance(f[folder], h5py.Group) and len(f[folder].keys()) > 0:
         for key in f[folder].keys():
-            data["attrs"] = attrs
+            if folder != "/":
+                data["attrs"] = attrs
             data[key] = read_array_from_hdf5(fn_hdf5=fn_hdf5,
                                              arr_name=folder + "/" + key)
 
-        if data["attrs"]["dtype"] == "list":
-            data = [data[key] for key in data if key != "attrs"]
+        if folder != "/":
+            if data["attrs"]["dtype"] == "list":
+                data = [data[key] for key in data if key != "attrs"]
 
-        elif data["attrs"]["dtype"] == "dict":
-            del data["attrs"]
+            elif data["attrs"]["dtype"] == "dict":
+                del data["attrs"]
 
-        elif data["attrs"]["dtype"] == "collections.OrderedDict":
-            data_ordered = OrderedDict()
+            elif data["attrs"]["dtype"] == "collections.OrderedDict":
+                data_ordered = OrderedDict()
 
-            for key in data:
-                if key != "attrs":
-                    data_ordered[key] = data[key]
+                for key in data:
+                    if key != "attrs":
+                        data_ordered[key] = data[key]
 
-            data = data_ordered
+                data = data_ordered
 
     else:
         data = None
@@ -475,28 +750,34 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
     verbose : bool, optional, default: False
         Print output info
     """
-    max_recursion_depth = 6
+    max_recursion_depth = 12
 
     # object (dict)
     if is_instance(data) and not isinstance(data, OrderedDict):
 
         t, dt = get_dtype(data)
 
-        # create group and set type and dtype attributes
-        with h5py.File(fn_hdf5, "a") as f:
-            f.create_group(str(folder))
-            f[str(folder)].attrs.__setitem__("type", t)
-            f[str(folder)].attrs.__setitem__("dtype", dt)
+        # do not save uuids in hdf5
+        if dt == "uuid.UUID":
+            return
 
-        # write content
-        for key in data.__dict__:
-            if len(folder.split("/")) >= max_recursion_depth:
-                data.__dict__[key] = "None"
+        else:
 
-            write_arr_to_hdf5(fn_hdf5=fn_hdf5,
-                              arr_name=folder+"/"+key,
-                              data=data.__dict__[key],
-                              verbose=verbose)
+            # create group and set type and dtype attributes
+            with h5py.File(fn_hdf5, "a") as f:
+                f.create_group(str(folder))
+                f[str(folder)].attrs.__setitem__("type", t)
+                f[str(folder)].attrs.__setitem__("dtype", dt)
+
+            # write content
+            for key in data.__dict__:
+                if len(folder.split("/")) >= max_recursion_depth:
+                    data.__dict__[key] = "None"
+
+                write_arr_to_hdf5(fn_hdf5=fn_hdf5,
+                                  arr_name=folder+"/"+key,
+                                  data=data.__dict__[key],
+                                  verbose=verbose)
 
     # mappingproxy (can not be saved)
     elif str(type(data)) == "<class 'mappingproxy'>":
@@ -568,7 +849,7 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
     verbose : bool, optional, default: False
         Print information
     """
-    max_recursion_depth = 6
+    max_recursion_depth = 12
 
     # dict or OrderedDict
     if isinstance(data, dict) or isinstance(data, OrderedDict):
@@ -585,21 +866,26 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
     elif isinstance(data, list) and len(data) > 0 and (isinstance(data[0], dict) or is_instance(data[0])):
         t, dt = get_dtype(data)
 
-        # create group and set type and dtype attributes
-        with h5py.File(fn_hdf5, "a") as f:
-            f.create_group(str(arr_name))
-            f[str(arr_name)].attrs.__setitem__("type", t)
-            f[str(arr_name)].attrs.__setitem__("dtype", dt)
+        # do not save uuids in hdf5
+        if dt == "uuid.UUID":
+            return
 
-        for idx, lst in enumerate(data):
-            if len(arr_name.split("/")) >= max_recursion_depth:
-                data = np.array("None")
-            else:
+        else:
+            # create group and set type and dtype attributes
+            with h5py.File(fn_hdf5, "a") as f:
+                f.create_group(str(arr_name))
+                f[str(arr_name)].attrs.__setitem__("type", t)
+                f[str(arr_name)].attrs.__setitem__("dtype", dt)
+
+            for idx, lst in enumerate(data):
+                if len(arr_name.split("/")) >= max_recursion_depth:
+                    lst = np.array("None")
+
                 write_dict_to_hdf5(fn_hdf5=fn_hdf5,
                                    data=lst,
                                    folder=arr_name+"/"+str(idx),
                                    verbose=verbose)
-                return
+            return
 
     # object
     elif is_instance(data):
@@ -623,10 +909,15 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
     # list or tuple
     elif type(data) is list or type(data) is tuple:
         if len(arr_name.split("/")) >= max_recursion_depth:
-            data = np.array("None")
-        else:
-            t, dt = get_dtype(data)
+            data = np.array(["None"])
 
+        t, dt = get_dtype(data)
+
+        # do not save uuids in hdf5
+        if dt == "uuid.UUID":
+            return
+
+        else:
             # create group and set type and dtype attributes
             with h5py.File(fn_hdf5, "a") as f:
                 f.create_group(str(arr_name))
@@ -634,6 +925,7 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
                 f[str(arr_name)].attrs.__setitem__("dtype", dt)
 
             data_dict = dict()
+
             for idx, lst in enumerate(data):
                 data_dict[idx] = lst
 
@@ -642,7 +934,7 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
                                folder=arr_name,
                                verbose=verbose)
 
-        return
+            return
 
     elif not isinstance(data, np.ndarray):
         if len(arr_name.split("/")) >= max_recursion_depth:

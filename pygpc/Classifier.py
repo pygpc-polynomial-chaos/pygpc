@@ -123,10 +123,13 @@ class ClassifierLearning(object):
         results: ndarray [n_grid x n_out]
             Results of the model evaluation
         """
+        self.coords = coords
+        self.results = results
+
         domains_old = copy.deepcopy(self.domains)
 
         # rerun clusterer
-        self.clusterer.fit(results)
+        self.clusterer.fit(self.results)
         self.domains = self.clusterer.labels_
 
         # check if domain labels are swapped and change it back to initial order
@@ -153,7 +156,7 @@ class ClassifierLearning(object):
         self.domains = domains_temp.astype(int)
 
         # rerun classifier
-        self.clf.fit(coords, self.domains)
+        self.clf.fit(self.coords, self.domains)
 
     def predict(self, coords):
         """

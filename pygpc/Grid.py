@@ -1128,6 +1128,10 @@ class Random(RandomGrid):
 
             else:
                 for i_p, p in enumerate(self.parameters_random):
+                    try:
+                        self.parameters_random[p].pdf_type
+                    except AttributeError:
+                        te = 1
                     if self.parameters_random[p].pdf_type == "beta":
                         self.coords_norm[:, i_p] = (np.random.beta(self.parameters_random[p].pdf_shape[0],
                                                                    self.parameters_random[p].pdf_shape[1],

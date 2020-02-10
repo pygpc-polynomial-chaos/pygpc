@@ -165,7 +165,7 @@ class Ackley(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -248,7 +248,7 @@ class BukinFunctionNumber6(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -308,7 +308,7 @@ class CrossinTrayFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -367,7 +367,7 @@ class BohachevskyFunction1(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -426,7 +426,7 @@ class PermFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -504,7 +504,7 @@ class SixHumpCamelFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -563,7 +563,7 @@ class RotatedHyperEllipsoid(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -629,7 +629,7 @@ class SumOfDifferentPowersFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -696,7 +696,7 @@ class ZakharovFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -769,7 +769,7 @@ class DropWaveFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -827,7 +827,7 @@ class DixonPriceFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -909,7 +909,7 @@ class RosenbrockFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -984,7 +984,7 @@ class MichalewiczFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1055,7 +1055,7 @@ class DeJongFunctionFive(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1126,7 +1126,7 @@ class MatyasFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1186,7 +1186,7 @@ class GramacyLeeFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1242,7 +1242,7 @@ class SchafferFunction4(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1304,7 +1304,7 @@ class SphereFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1369,7 +1369,7 @@ class McCormickFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1423,7 +1423,7 @@ class BoothFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1479,7 +1479,7 @@ class Peaks(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1555,7 +1555,7 @@ class DiscontinuousRidgeManufactureDecayGenzDiscontinuous(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1609,7 +1609,7 @@ class HyperbolicTangent(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1681,7 +1681,7 @@ class MovingParticleFrictionForce(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1762,7 +1762,7 @@ class SurfaceCoverageSpecies(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1838,7 +1838,7 @@ class Franke(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1897,7 +1897,7 @@ class ManufactureDecay(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -1959,7 +1959,7 @@ class GenzContinuous(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2032,7 +2032,7 @@ class GenzCornerPeak(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2099,7 +2099,7 @@ class GenzDiscontinuous(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2175,7 +2175,7 @@ class GenzGaussianPeak(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2243,7 +2243,7 @@ class GenzOscillatory(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2313,7 +2313,7 @@ class GenzProductPeak(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2378,7 +2378,7 @@ class Ridge(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2444,7 +2444,7 @@ class Lim2002(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2532,7 +2532,7 @@ class Ishigami(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2625,7 +2625,7 @@ class GFunction(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2684,7 +2684,7 @@ class BinaryDiscontinuousSphere(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2739,7 +2739,7 @@ class Cluster3Simple(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2799,7 +2799,7 @@ class ContinuousDiscontinuousSphere(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -2951,7 +2951,7 @@ class OakleyOhagan2004(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -3010,7 +3010,7 @@ class Welch1992(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -3071,7 +3071,7 @@ class WingWeight(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -3122,6 +3122,7 @@ class SphereModel(AbstractModel):
     """
     def __init__(self):
         self.nbr_polynomials = 50
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -3265,7 +3266,7 @@ class PotentialHomogeneousDipole(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -3338,7 +3339,7 @@ class BfieldOutsideSphere(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -3406,7 +3407,7 @@ class TMSEfieldSphere(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
@@ -3475,7 +3476,7 @@ class PotentialDipole3Layers(AbstractModel):
     """
 
     def __init__(self):
-        pass
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass

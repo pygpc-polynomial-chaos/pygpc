@@ -389,7 +389,7 @@ class Static(Algorithm):
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
 
-                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
+                f.create_dataset("misc/fn_session", data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
                 f.create_dataset("grid/coords", data=gpc.grid.coords, maxshape=None, dtype="float64")
@@ -671,11 +671,11 @@ class MEStatic(Algorithm):
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
-                        fn_gpc_pkl = f["misc/fn_gpc_pkl"]
+                        fn_session = f["misc/fn_session"]
 
                     except KeyError:
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session",
+                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -1064,11 +1064,11 @@ class StaticProjection(Algorithm):
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
-                        fn_gpc_pkl = f["misc/fn_gpc_pkl"]
+                        fn_session = f["misc/fn_session"]
 
                     except KeyError:
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session",
+                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
 
                     f.create_dataset("error" + hdf5_subfolder,
                                      data=eps,
@@ -1486,11 +1486,11 @@ class MEStaticProjection(Algorithm):
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
-                        fn_gpc_pkl = f["misc/fn_gpc_pkl"]
+                        fn_session = f["misc/fn_session"]
 
                     except KeyError:
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session",
+                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -1929,7 +1929,7 @@ class RegAdaptive(Algorithm):
                                      maxshape=None, dtype="float64")
 
                 # misc
-                f.create_dataset("misc/fn_gpc_pkl", data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
+                f.create_dataset("misc/fn_session", data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
 
@@ -2954,11 +2954,11 @@ class MERegAdaptiveProjection(Algorithm):
                 with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
                     try:
-                        fn_gpc_pkl = f["misc/fn_gpc_pkl"]
+                        fn_session = f["misc/fn_session"]
 
                     except KeyError:
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session",
+                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
 
                     try:
                         del f["grid"]
@@ -3610,11 +3610,11 @@ class RegAdaptiveProjection(Algorithm):
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
                     try:
-                        fn_gpc_pkl = f["misc/fn_gpc_pkl"][:]
+                        fn_session = f["misc/fn_session"][:]
 
                     except KeyError:
-                        f.create_dataset("misc/fn_gpc_pkl",
-                                         data=np.array([os.path.split(fn_results + ".pkl")[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session",
+                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
 
                     try:
                         del f["coeffs" + hdf5_subfolder]

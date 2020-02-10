@@ -1,4 +1,5 @@
 import numpy as np
+import inspect
 from pygpc.AbstractModel import AbstractModel
 
 
@@ -25,13 +26,13 @@ class MyModel(AbstractModel):
         If multiple grid-points are evaluated in one function call, return a dict for every grid-point in a list
     """
 
-    def __init__(self, p, context):
-        super(MyModel, self).__init__(p, context)
+    def __init__(self):
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
 
-    def simulate(self, process_id):
+    def simulate(self, process_id=None, matlab_engine=None):
 
         y = self.p["x1"] * self.p["x2"] * self.p["x3"]
         y = y[:, np.newaxis]
@@ -39,6 +40,5 @@ class MyModel(AbstractModel):
         additional_data = [{"additional_data/info_1": [1, 2, 3],
                             "additional_data/info_2": ["some additional information"]}]
         additional_data = y.shape[0] * additional_data
-        # y = np.array([y])
 
         return y, additional_data

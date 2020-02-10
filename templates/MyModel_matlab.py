@@ -1,3 +1,4 @@
+import inspect
 import numpy as np
 import matlab.engine
 from pygpc.AbstractModel import AbstractModel
@@ -28,11 +29,12 @@ class MyModel_matlab(AbstractModel):
 
     def __init__(self, fun_path):
         self.fun_path = fun_path
+        self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
         pass
 
-    def simulate(self, process_id, matlab_engine):
+    def simulate(self, matlab_engine, process_id=None):
 
         # add path of Matlab function
         matlab_engine.addpath(self.fun_path, nargout=0)
