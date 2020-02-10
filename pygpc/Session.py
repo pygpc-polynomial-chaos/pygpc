@@ -4,6 +4,7 @@ from .SGPC import *
 from .GPC import *
 import pickle
 from .io import write_session
+import __main__ as main
 
 
 class Session(object):
@@ -33,9 +34,16 @@ class Session(object):
         self.model = self.algorithm.problem.model
         self.n_cpu = self.algorithm.options["n_cpu"]
         self.matlab_model = self.algorithm.options["matlab_model"]
-        self.fn_results = os.path.splitext(self.algorithm.options["fn_results"])[0]
-        import __main__ as main
-        self.fn_script = main.__file__
+
+        if self.algorithm.options["fn_results"] is not None:
+            self.fn_results = os.path.splitext(self.algorithm.options["fn_results"])[0]
+        else:
+            self.fn_results = None
+
+        try:
+            self.fn_script = main.__file__
+        except AttributeError:
+            self.fn_script = "jupter notebook"
 
         # safe the original problem and random parameters
         self.problem = self.algorithm.problem

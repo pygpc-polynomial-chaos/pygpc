@@ -47,8 +47,9 @@ class Algorithm(object):
         self.grid_gradient = []
 
         # Generate results folder if it doesn't exist
-        if not os.path.exists(os.path.split(self.options["fn_results"])[0]):
-            os.makedirs(os.path.split(self.options["fn_results"])[0])
+        if self.options["fn_results"] is not None:
+            if not os.path.exists(os.path.split(self.options["fn_results"])[0]):
+                os.makedirs(os.path.split(self.options["fn_results"])[0])
 
         self.check_basic_options()
 
