@@ -12,18 +12,20 @@ from collections import OrderedDict
 from importlib import import_module
 
 
-def write_session(obj, fname, overwrite=True):
+def write_session(obj, fname, folder="session", overwrite=True):
     """
     Saves a gpc session in pickle or hdf5 file formal depending on the
     file extension in fname (.pkl or .hdf5)
 
     Parameters
     ----------
-    obj: Session object
+    obj : Session object
         Session class instance containing the gPC information
-    fname: str
-        Path to output file
-    overwrite: bool, optional, default: True
+    fname : str
+        Path to output file (.pkl or .hdf5)
+    folder : str, optional, default: "session"
+        Path in .hdf5 file (for .hdf5 format only)
+    overwrite : bool, optional, default: True
         Overwrite existing file
 
     Returns
@@ -38,7 +40,7 @@ def write_session(obj, fname, overwrite=True):
         write_session_pkl(obj, fname, overwrite=overwrite)
 
     elif file_format == ".hdf5":
-        write_session_hdf5(obj, fname, overwrite=overwrite)
+        write_session_hdf5(obj, fname, folder, overwrite=overwrite)
 
     else:
         raise IOError("Session can only be saved in .pkl or .hdf5 format.")
@@ -67,17 +69,19 @@ def write_session_pkl(obj, fname, overwrite=True):
             pickle.dump(obj, f, -1)
 
 
-def write_session_hdf5(obj, fname, overwrite=True):
+def write_session_hdf5(obj, fname, folder="session", overwrite=True):
     """
     Write Session object including information about the Basis, Problem and Model as .hdf5 file.
 
     Parameters
     ----------
-    obj: Session object
+    obj : Session object
         Session class instance containing the gPC information
-    fname: str
+    fname : str
         Path to output file
-    overwrite: bool, optional, default: True
+    folder : str, optional, default: "session"
+        Path in .hdf5 file
+    overwrite : bool, optional, default: True
         Overwrite existing file
 
     Returns
@@ -86,28 +90,27 @@ def write_session_hdf5(obj, fname, overwrite=True):
         .hdf5 file containing the gpc session
     """
 
-    if not overwrite and os.path.exists(fname):
-        raise FileExistsError
-
     if overwrite and os.path.exists(fname):
         os.remove(fname)
 
-    write_dict_to_hdf5(fn_hdf5=fname, data=obj.__dict__, folder="")
+    write_dict_to_hdf5(fn_hdf5=fname, data=obj.__dict__, folder=folder)
 
 
-def read_session(fname):
+def read_session(fname, folder="session"):
     """
     Reads a gpc session in pickle or hdf5 file formal depending on the
     file extension in fname (.pkl or .hdf5)
 
     Parameters
     ----------
-    fname: str
+    fname : str
         path to input file
+    folder : str, optional, default: "session"
+        Path in .hdf5 file
 
     Returns
     -------
-    obj: Session Object
+    obj : Session Object
         Session object containing instances of Basis, Problem and Model etc.
     """
 
@@ -117,7 +120,7 @@ def read_session(fname):
         obj = read_session_pkl(fname)
 
     elif file_format == ".hdf5":
-        obj = read_session_hdf5(fname)
+        obj = read_session_hdf5(fname=fname, folder=folder)
 
     else:
         raise IOError("Session can only be read from .pkl or .hdf5 files.")
@@ -146,7 +149,7 @@ def read_session_pkl(fname):
     return obj
 
 
-def read_session_hdf5(fname, verbose=False):
+def read_session_hdf5(fname, folder="session", verbose=False):
     """
     Read gPC object including information about input pdfs, polynomials, grid etc.
 
@@ -154,8 +157,10 @@ def read_session_hdf5(fname, verbose=False):
 
     Parameters
     ----------
-    fname: str
+    fname : str
         path to input file
+    folder : str, optional, default: "session"
+        Path in .hdf5 file
     verbose : bool, optional, default: False
         Print output info
 
@@ -168,29 +173,32 @@ def read_session_hdf5(fname, verbose=False):
     from .Session import Session
 
     # model
-    model = read_model_from_hdf5(fn_hdf5=fname, folder="model", verbose=verbose)
+    model = read_model_from_hdf5(fn_hdf5=fname, folder=folder + "/model", verbose=verbose)
 
     # parameters
-    parameters = read_parameters_from_hdf5(fn_hdf5=fname, folder="problem/parameters", verbose=False)
+    parameters = read_parameters_from_hdf5(fn_hdf5=fname, folder=folder + "/problem/parameters", verbose=False)
 
     # parameters_random
-    parameters_random = read_parameters_from_hdf5(fn_hdf5=fname, folder="parameters_random", verbose=False)
+    parameters_random = read_parameters_from_hdf5(fn_hdf5=fname, folder=folder + "/parameters_random", verbose=False)
 
     # problem(model, parameters)
     problem = Problem(model, parameters)
 
     # options
-    options = read_group_from_hdf5(fn_hdf5=fname, folder="algorithm/options")
+    options = read_group_from_hdf5(fn_hdf5=fname, folder=folder + "/algorithm/options")
 
     # validation
-    validation = read_validation_from_hdf5(fn_hdf5=fname, folder="validation", verbose=verbose)
+    try:
+        validation = read_validation_from_hdf5(fn_hdf5=fname, folder=folder + "/validation", verbose=verbose)
+    except KeyError:
+        validation = None
 
     # grid
-    grid = read_grid_from_hdf5(fn_hdf5=fname, folder="grid", verbose=verbose)
+    grid = read_grid_from_hdf5(fn_hdf5=fname, folder=folder + "/grid", verbose=verbose)
 
     # algorithm
     module = import_module(".Algorithm", package="pygpc")
-    algorithm_dict = read_group_from_hdf5(fn_hdf5=fname, folder="algorithm", verbose=verbose)
+    algorithm_dict = read_group_from_hdf5(fn_hdf5=fname, folder=folder + "/algorithm", verbose=verbose)
     alg = getattr(module, algorithm_dict["attrs"]["dtype"].split(".")[-1])
     args = inspect.getfullargspec(alg).args[1:]
 
@@ -201,7 +209,7 @@ def read_session_hdf5(fname, verbose=False):
     algorithm = alg(**args_dict)
 
     # gpc
-    gpc_raw_list = read_group_from_hdf5(fn_hdf5=fname, folder="gpc", verbose=verbose)
+    gpc_raw_list = read_group_from_hdf5(fn_hdf5=fname, folder=folder + "/gpc", verbose=verbose)
     module = import_module(".Algorithm", package="pygpc")
 
     gpc_list = [0 for _ in range(len(gpc_raw_list))]
@@ -210,41 +218,48 @@ def read_session_hdf5(fname, verbose=False):
         # read and initialize classifier if present
         if "classifier" in gpc_raw.keys():
             classifier = read_classifier_from_hdf5(fn_hdf5=fname,
-                                                   folder="gpc/{}/classifier".format(i_gpc),
+                                                   folder=folder + "/gpc/{}/classifier".format(i_gpc),
                                                    verbose=verbose)
 
         # read SGPC object if present (sub-gpc)
         if "gpc" in gpc_raw.keys():
             gpc = read_sgpc_from_hdf5(fn_hdf5=fname,
-                                      folder="gpc/{}/gpc".format(i_gpc),
+                                      folder=folder + "/gpc/{}/gpc".format(i_gpc),
                                       verbose=verbose)
 
         # get gpc class (SGPC or MEGPC)
         g = getattr(module, gpc_raw["attrs"]["dtype"].rsplit(".", 1)[1])
         del gpc_raw["attrs"]
 
-        # get input parameters of gpc
-        args = inspect.getfullargspec(g).args[1:]
+        # SGPC
+        if "SGPC" in g.__module__:
+            gpc_list = read_sgpc_from_hdf5(fn_hdf5=fname,
+                                           folder=folder + "/gpc/{}".format(i_gpc),
+                                           verbose=verbose)
+        # MEGPC with sub-gpcs
+        else:
+            # get input parameters of gpc
+            args = inspect.getfullargspec(g).args[1:]
 
-        args_dict = dict()
-        for a in args:
-            args_dict[a] = locals()[a]
+            args_dict = dict()
+            for a in args:
+                args_dict[a] = locals()[a]
 
-        # initialize gpc
-        gpc_list[i_gpc] = g(**args_dict)
+            # initialize gpc
+            gpc_list[i_gpc] = g(**args_dict)
 
-        # loop over entries and save in self (if we have it in locals() we take this, e.g. gpc, grid, validation etc)
-        for key in gpc_raw:
-            if key in locals():
-                setattr(gpc_list[i_gpc], key, locals()[key])
-            else:
-                setattr(gpc_list[i_gpc], key, gpc_raw[key])
+            # loop over entries and save in self (if we have it in locals() we take this, e.g. gpc, grid, validation etc)
+            for key in gpc_raw:
+                if key in locals():
+                    setattr(gpc_list[i_gpc], key, locals()[key])
+                else:
+                    setattr(gpc_list[i_gpc], key, gpc_raw[key])
 
     # session(algorithm)
     session = Session(algorithm=algorithm)
 
     # read session hdf5 content
-    session_dict = read_group_from_hdf5(fn_hdf5=fname, folder="/", verbose=verbose)
+    session_dict = read_group_from_hdf5(fn_hdf5=fname, folder=folder, verbose=verbose)
 
     for key in session_dict:
         if key in locals():
@@ -426,9 +441,20 @@ def read_sgpc_from_hdf5(fn_hdf5, folder, verbose=False):
     sgpc_raw_list = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
     module = import_module(".SGPC", package="pygpc")
 
+    if type(sgpc_raw_list) is not list:
+        sgpc_raw_list = [sgpc_raw_list]
+        sub_gpc = False
+    else:
+        sub_gpc = True
+
     sgpc_list = [0 for _ in range(len(sgpc_raw_list))]
 
     for i_gpc, sgpc_raw in enumerate(sgpc_raw_list):
+        if sub_gpc:
+            hdf5_loc = "/{}/".format(i_gpc)
+        else:
+            hdf5_loc = "/"
+
         # get gpc by type
         g = getattr(module, sgpc_raw["attrs"]["dtype"].rsplit(".", 1)[1])
 
@@ -439,11 +465,11 @@ def read_sgpc_from_hdf5(fn_hdf5, folder, verbose=False):
         for a in args:
             if a == "problem":
                 args_dict[a] = read_problem_from_hdf5(fn_hdf5=fn_hdf5,
-                                                      folder=folder + "/{}/".format(i_gpc) + a,
+                                                      folder=folder + hdf5_loc + a,
                                                       verbose=verbose)
             elif a == "validation":
                 args_dict[a] = read_validation_from_hdf5(fn_hdf5=fn_hdf5,
-                                                         folder=folder + "/{}/".format(i_gpc) + a,
+                                                         folder=folder + hdf5_loc + a,
                                                          verbose=verbose)
             else:
                 args_dict[a] = sgpc_raw[a]
@@ -458,19 +484,19 @@ def read_sgpc_from_hdf5(fn_hdf5, folder, verbose=False):
 
                 if "pygpc.Basis" in dtype:
                     basis = read_basis_from_hdf5(fn_hdf5=fn_hdf5,
-                                                 folder=folder + "/{}/".format(i_gpc) + key,
+                                                 folder=folder + hdf5_loc + key,
                                                  verbose=verbose)
                     setattr(sgpc_list[i_gpc], key, basis)
 
                 elif "pygpc.Grid" in dtype:
                     grid = read_grid_from_hdf5(fn_hdf5=fn_hdf5,
-                                               folder=folder + "/{}/".format(i_gpc) + key,
+                                               folder=folder + hdf5_loc + key,
                                                verbose=verbose)
                     setattr(sgpc_list[i_gpc], key, grid)
 
                 elif "pygpc.Problem" in dtype:
                     problem = read_problem_from_hdf5(fn_hdf5=fn_hdf5,
-                                                     folder=folder + "/{}/".format(i_gpc) + key,
+                                                     folder=folder + hdf5_loc + key,
                                                      verbose=verbose)
                     setattr(sgpc_list[i_gpc], key, problem)
 
@@ -534,7 +560,7 @@ def read_parameters_from_hdf5(fn_hdf5, folder, verbose=False):
 
     for p in parameters_dict:
         if (type(parameters_dict[p]) is dict or type(parameters_dict[p]) is OrderedDict) and \
-            "RandomParameter" in parameters_dict[p]["attrs"]["dtype"]:
+                "RandomParameter" in parameters_dict[p]["attrs"]["dtype"]:
             rp = getattr(module, parameters_dict[p]["attrs"]["dtype"].split(".")[-1])
             args = inspect.getfullargspec(rp).args[1:]
 
@@ -630,7 +656,7 @@ def read_validation_from_hdf5(fn_hdf5, folder, verbose=False):
 
         for a in args:
             if a == "grid":
-                args_dict[a] = read_grid_from_hdf5(fn_hdf5=fn_hdf5, folder="validation/grid", verbose=verbose)
+                args_dict[a] = read_grid_from_hdf5(fn_hdf5=fn_hdf5, folder=folder + "/grid", verbose=verbose)
             else:
                 args_dict[a] = validation_dict[a]
 

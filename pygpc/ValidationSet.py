@@ -30,13 +30,15 @@ class ValidationSet(object):
         self.gradient_results = gradient_results
         self.gradient_idx = gradient_idx
 
-    def write(self, fname):
-        """ Save Validation set in .hdf5 format
+    def write(self, fname, folder):
+        """ Save ValidationSet in .hdf5 format
 
         Parameters
         ----------
         fname : str
             Filename of ValidationSet containing the grid points and the results data
+        folder : str
+            Path in .hdf5 file containing the validation set
 
         Returns
         -------
@@ -45,16 +47,16 @@ class ValidationSet(object):
             and the corresponding results in model_evaluations/results
         """
 
-        with h5py.File(os.path.splitext(fname)[0] + ".hdf5", 'w') as f:
-            f["grid/coords"] = self.grid.coords
-            f["grid/coords_norm"] = self.grid.coords_norm
-            f["model_evaluations/results"] = self.results
+        with h5py.File(fname, 'a') as f:
+            f[folder + "/grid/coords"] = self.grid.coords
+            f[folder + "/grid/coords_norm"] = self.grid.coords_norm
+            f[folder + "/model_evaluations/results"] = self.results
 
             if self.gradient_results is not None:
-                f["model_evaluations/gradient_results"] = ten2mat(self.gradient_results)
-                f["model_evaluations/gradient_results_idx"] = self.gradient_idx
+                f[folder + "/model_evaluations/gradient_results"] = ten2mat(self.gradient_results)
+                f[folder + "/model_evaluations/gradient_results_idx"] = self.gradient_idx
 
-    def read(self, fname, coords_key=None, coords_norm_key=None, results_key=None, gradient_results_key=None,
+    def read(self, fname, folder, coords_key=None, coords_norm_key=None, results_key=None, gradient_results_key=None,
              gradient_idx_key=None):
         """ Load Validation set from .hdf5 format
 
@@ -62,6 +64,8 @@ class ValidationSet(object):
         ----------
         fname : str
             Filename of ValidationSet containing the grid points and the results data
+        folder : str
+            Path in .hdf5 file containing the validation set
         coords_key : str, optional, default: "grid/coords"
             Path of coords in .hdf5 file
         coords_norm_key : str, optional, default: "grid/coords_norm"
@@ -80,25 +84,25 @@ class ValidationSet(object):
         """
 
         if coords_key is None:
-            coords_key = "grid/coords"
+            coords_key = folder + "/grid/coords"
 
         if coords_norm_key is None:
-            coords_norm_key = "grid/coords_norm"
+            coords_norm_key = folder + "/grid/coords_norm"
 
         if results_key is None:
-            results_key = "model_evaluations/results"
+            results_key = folder + "/model_evaluations/results"
 
         if gradient_results_key is None:
-            gradient_results_key = "model_evaluations/gradient_results"
+            gradient_results_key = folder + "/model_evaluations/gradient_results"
 
         if gradient_idx_key is None:
-            gradient_idx_key = "model_evaluations/gradient_results_idx"
+            gradient_idx_key = folder + "/model_evaluations/gradient_results_idx"
 
         del self.results
         del self.gradient_results
         del self.gradient_idx
 
-        with h5py.File(os.path.splitext(fname)[0] + ".hdf5", 'r') as f:
+        with h5py.File(fname, 'r') as f:
             coords = f[coords_key][:]
             coords_norm = f[coords_norm_key][:]
             self.results = f[results_key][:]

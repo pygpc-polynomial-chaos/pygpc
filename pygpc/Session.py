@@ -40,6 +40,13 @@ class Session(object):
         else:
             self.fn_results = None
 
+        if self.algorithm.options["fn_session"] is not None:
+            self.fn_session = self.algorithm.options["fn_session"]
+            self.fn_session_folder = self.algorithm.options["fn_session_folder"]
+        else:
+            self.fn_session = None
+            self.fn_session_folder = None
+
         try:
             self.fn_script = main.__file__
         except AttributeError:
@@ -59,20 +66,23 @@ class Session(object):
             GPC objects
         """
         # if fn_results is not absolute, try if it is relative wrt the path of the executing script
-        if not os.path.isabs(self.fn_results):
+        if self.fn_results is not None and os.path.isabs(self.fn_results):
             self.fn_results = os.path.join(os.path.split(self.fn_script)[0], self.fn_results)
 
-        # determine qoi specificity from coeffs structure in results file
-        with h5py.File(os.path.splitext(self.fn_results)[0] + ".hdf5", "r") as f:
-            try:
-                if type(f["coeffs"][()]) is np.ndarray:
-                    self.qoi_specific = False
-            except AttributeError:
+        # determine qoi specificity from algorithm
+        self.qoi_specific = self.algorithm.qoi_specific
 
-                if np.array([True for s in list(f["coeffs/"]) if "qoi" in s]).any():
-                    self.qoi_specific = True
-                else:
-                    self.qoi_specific = False
+        # # determine qoi specificity from coeffs structure in results file
+        # with h5py.File(os.path.splitext(self.fn_results)[0] + ".hdf5", "r") as f:
+        #     try:
+        #         if type(f["coeffs"][()]) is np.ndarray:
+        #             self.qoi_specific = False
+        #     except AttributeError:
+        #
+        #         if np.array([True for s in list(f["coeffs/"]) if "qoi" in s]).any():
+        #             self.qoi_specific = True
+        #         else:
+        #             self.qoi_specific = False
 
         if type(gpc) is list:
             self.gpc = gpc
@@ -104,6 +114,7 @@ class Session(object):
     def run(self):
         """
         Runs the gPC session by calling the algorithm and saves the Session object
+        in .hdf5 results file in the "session/" folder or as .pkl file
         """
         gpc, coeffs, results = self.algorithm.run()
         self.set_gpc(gpc)
@@ -116,7 +127,10 @@ class Session(object):
 
         self.grid = self.gpc[-1].grid
 
-        write_session(self, self.fn_results + "_session.hdf5")
+        if self.fn_session is not None:
+            if os.path.splitext(self.fn_session)[1] == ".hdf5":
+                write_session(self, fname=self.fn_session, folder=self.fn_session_folder, overwrite=False)
+            else:
+                write_session(self, fname=self.fn_session, overwrite=True)
 
         return self, coeffs, results
-
