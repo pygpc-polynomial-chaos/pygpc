@@ -1274,7 +1274,23 @@ class LHS(RandomGrid):
                 self.sample_init(self.n_grid)
 
     def sample_init(self, n_grid):
+        """
+                Initialises all parameters for Latin Hypercube Sampling and creates a new design
+                if there is at least one sampling point needed
 
+                Parameters
+                ----------
+                n_grid : ndarray of float [n]
+                    The number of needed sampes points
+                Returns
+                -------
+                coords : ndarray of float [n_grid_add x dim]
+                    Grid points to add (model space)
+                coords_norm : ndarray of float [n_grid_add x dim]
+                    Grid points to add (normalized space)
+                coords_id : list of UUID objects (version 4) [n_grid]
+                    Unique IDs of grid points
+        """
         if n_grid > 0:
             n_grid_lhs = self.n_grid
             self.coords_reservoir = np.zeros((n_grid_lhs, self.dim))
@@ -1328,7 +1344,7 @@ class LHS(RandomGrid):
         Returns
         -------
         cl2d_crit : float
-            CL criterion for centered L2 discrepancy
+            criterion for centered L2 discrepancy
 
         Notes
         -----
@@ -1353,34 +1369,39 @@ class LHS(RandomGrid):
 
     def log_R(self, array):
         """
-        Determines the Log(R) Entropy Criterion from array
+        Determines the Log(R) Entropy Criterion[1]
 
         Parameters
         ----------
-        array : ndarray of float []
+        array : ndarray of float [m x n]
             Array
 
         Returns
         -------
         log_R : float
             Log(R) Entropy Criterion
+        Notes
+        -----
+        .. [1] Koehler, J.R., Owen, A.B., 1996. Computer experiments. in: Ghosh, S., Rao, C.R. (Eds.),
+           Handbook of Statistics. Elsevier Science, New York, pp.261–308
+
         """
-        # R will only ever be 2D
-        R = np.corrcoef(array[:, 0], array[:, 1])
+        # R will be [m x m]
+        R = np.corrcoef(array.T)
         for i in range(0, np.shape(array)[1]):
             for j in range(0, np.shape(array)[1]):
                 R[i, j] = np.exp((R[i, :] * np.abs(array[i, :] - array[j, :]) ** 2).sum())
         log_R = np.log(np.linalg.norm(R))
 
-        return log_R
+        return (log_R)
 
     def PhiP(self, x, p=10):
         """
-        Calculates the Phi-p criterion of the design x with power p.
+        Calculates the Phi-p criterion of the design x with power p [1].
 
         Parameters
         ----------
-        x : ndarray of float
+        x : ndarray of float [n x m]
             The design to calculate Phi-p for
         p : int, optional, default: 10
             The power used for the calculation of PhiP
@@ -1400,8 +1421,28 @@ class LHS(RandomGrid):
 
         return phip
 
-    # TODO: Erik: Please add documentation
     def PhiP_exchange(self, P, k, Phi, p, fixed_index):
+        """
+                Performes a row exchange and return the altered design.
+
+                Parameters
+                ----------
+                P : ndarray of float [m x n]
+                    The design to perform the exchange on
+                k : int
+                    modulus of the iteration divided by the dimension to pick a row of the design repeating through the
+                    dimensions of the design
+                Phi: float
+                    the PhiP criterion of the current best Design
+                p: int
+                    The power used for the calculation of PhiP
+                fixed_index: list
+                    an empty list to check if variables are assigned a value
+                Returns
+                -------
+                phip : float
+                    Phi-p criterion
+        """
         # Choose two (different) random rows to perform the exchange
         er = P.shape
         i1 = np.random.randint(P.shape[0])
@@ -1434,7 +1475,7 @@ class LHS(RandomGrid):
             Number of random variables
         n : int
             Number of sampling points
-        crit: str, optional, default: None (regular LHS)
+        crit : str, optional, default: None (regular LHS)
             Criterion of LHS grid:
             - 'corr' - optimizes design points in their spearman correlation coefficients
             - 'maximin' or 'm' - optimizes design points in their maximum minimal distance using the Phi-P criterion
@@ -1479,21 +1520,21 @@ class LHS(RandomGrid):
         design : ndarray of float [n, n_dim]
             LHS grid points
         """
-        pi = np.zeros([n, dim])
+        design = np.zeros([n, dim])
 
         # u = matrix of uniform (0,1) that vary in n subareas
         u = np.random.rand(n, dim)
 
         for i in range(0, dim):
             for j in range(0, n):
-                pi[j, i] = j + 1
-            np.random.shuffle(pi[:, i])
+                design[j, i] = j + 1
+            np.random.shuffle(design[:, i])
 
         for i in range(0, dim):
             for j in range(0, n):
-                pi[j, i] = (pi[j, i] - u[j, i]) / n
+                design[j, i] = (design[j, i] - u[j, i]) / n
 
-        return pi
+        return design
 
     def lhs_corr(self, dim, n, iterations):
         """
@@ -1523,9 +1564,9 @@ class LHS(RandomGrid):
 
             if np.max(np.abs(R)) < mincorr:
                 mincorr = np.max(np.abs(R))
-                out = test.copy()
+                design = test.copy()
 
-        return out
+        return design
 
     def lhs_maximin(self, dim, n, iterations):
         """
@@ -1553,13 +1594,13 @@ class LHS(RandomGrid):
             phi = self.PhiP(test)
             if phi_best > phi:
                 phi_best = phi
-                out = test.copy()
+                design = test.copy()
 
-        return out
+        return design
 
     def lhs_ese(self, dim, n, t0=None):
         """
-        Create optimized LHS grid using enhanced evolutionary algorithm for PhiP Maximin criterion from SMT [1]
+        Create optimized LHS grid using a enhanced stochastic evolutionary algorithm for the PhiP Maximin criterion [1]
 
         Parameters
         ----------
