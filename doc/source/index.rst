@@ -14,16 +14,16 @@ Basic features:
 
 - Highly efficient **uncertainty analysis of N-dimensional systems**
 - Sensitivity analysis using **Sobol indices** and **Global derivative based sensitivity indices**
-- Easy **coupling** to user defined models written in Python, Matlab, etc... 
+- Easy **coupling** to user defined models written in Python, Matlab, etc...
 - The **parallelization** concept allows to run model evaluations in parallel
 - Highly efficient **adaptive algorithms** allow for analysis of complex systems
 - Includes highly efficient **CPU** and **GPU (CUDA)** implementations to significantly accelerate algorithmic and post-processing routines for high-dimensional and complex problems
 - Includes **state-of-the-art techniques** such as:
     - **Projection:** determination of optimal reduced basis
-    - **l1-minimization:** reduction of necessary model evaluations by making use of concepts from compressed sensing  
+    - **l1-minimization:** reduction of necessary model evaluations by making use of concepts from compressed sensing
     - **Gradient enhanced gPC:** use of gradient information of the model function to increase accuracy
     - **Multi-element gPC:** analyzing systems with discontinuities and sharp transitions
-    
+
 Areas of application:
 ---------------------
 
@@ -37,45 +37,74 @@ pygpc can be used to analyze a variety of different of problems. It is used for 
 
 - Transcranial direct current stimulation (`Kalloch, B., Weise, K., Bazin, P.-L., Lampea, L., Villringera, A., Hlawitschk, M., & Sehm, B. (2019). The influence of white matter lesions on the electrical fieldduring transcranial electric stimulation - Preliminary results of a computational sensitivity analysis, SfN Annual Meeting 2019, Chicago, Illinois, USA, October 19th-23rd 2019 <https://www.fens.org/News-Activities/Calendar/Meetings/2019/10/SfN-Annual-Meeting-2019/>`_)
 
-If you use pygpc in your studies, please contact `Konstantin Weise <https://www.cbs.mpg.de/person/51222/2470>`_ to extend the list above. 
+If you use pygpc in your studies, please contact `Konstantin Weise <https://www.cbs.mpg.de/person/51222/2470>`_ to extend the list above.
 
 Installation
 ------------
-
 **Installation using pip:**
 
-pygpc can be installed via the `pip` command with Python >= 3.6 and then simply run the following line from a terminal:
+Pygpc can be installed via the `pip` command with Python >= 3.5. Simply run the following command in your terminal:
 
 .. code-block:: bash
 
-   > pip install pygpc
+  pip install pygpc
 
-If you want to use the plot functionalities from pygpc, please also install matplotlib:
+If you want to use the plot functionalities of pygpc, please also install matplotlib and seaborn:
 
 .. code-block:: bash
 
-   > pip install matplotlib
-
+  pip install matplotlib seaborn
 
 **Installation using the GitHub repository:**
 
-Alternatively, it is possible to clone this repository and run the setup manually. This requires Cython to compile the C-extensions and Numpy for some headers. You can get Cython and Numpy by running the following command:
+Alternatively, it is possible to clone this repository and run the setup manually.
+This requires a compiler that supports OpenMP which is used by the C-extensions and NumPy for some headers. You can install NumPy by running the following command:
 
 .. code-block:: bash
 
-   > pip install cython numpy
+  pip install numpy
 
 Alternatively you can install the build dependencies with the following command:
 
 .. code-block:: bash
 
-   > pip install -r requirements.txt
+  pip install -r requirements.txt
 
 Afterwards, pygpc can be installed by running the following line from the directory in which the repository was cloned:
 
 .. code-block:: bash
 
-   > python setup.py install
+  python setup.py install
+
+**Installation of the CUDA backend:**
+
+Pygpc also provides a CUDA-backend to speed up some computations. To use the backend you need to build it manually. This requires the CUDA-toolkit and CMake.
+CMake can be installd via the `pip` command.  Simply run the following command in your terminal:
+
+.. code-block:: bash
+
+  pip install cmake
+
+For the installation of the CUDA-toolkit please refer to: https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html.
+If CMake and the CUDA-toolkit are installed on your machine you can build the extension with:
+
+.. code-block:: bash
+
+  python build_pygpc_extensions_cuda.py
+
+**Troubleshooting for OSX:**
+
+On a mac you need GCC to install pygpc. If you are using the `brew` package manager you can simply run:
+
+.. code-block:: bash
+
+  brew install gcc libomp
+
+Then install pygpc with:
+
+.. code-block:: bash
+
+  CC=gcc-9 CXX=g++-9 python setup.py install
 
 Analyzing MATLAB models with pygpc
 ----------------------------------
@@ -100,7 +129,7 @@ To install the engine API, choose one of the following. (You might need administ
 
    > cd "matlabroot\extern\engines\python"
    > python setup.py install
-    
+
 **macOS or Linux**
 
 .. code-block:: bash
@@ -118,7 +147,7 @@ To install the engine API, choose one of the following. (You might need administ
 After you installed the MATLAB Engine API for Python, you can set
 
 .. code-block:: python
-   
+
    options["matlab_model"] = True
 
 in your gPC run-file.

@@ -1275,21 +1275,22 @@ class LHS(RandomGrid):
 
     def sample_init(self, n_grid):
         """
-                Initialises all parameters for Latin Hypercube Sampling and creates a new design
-                if there is at least one sampling point needed
+        Initialises all parameters for Latin Hypercube Sampling and creates a new design
+        if there is at least one sampling point needed
 
-                Parameters
-                ----------
-                n_grid : ndarray of float [n]
-                    The number of needed sampes points
-                Returns
-                -------
-                coords : ndarray of float [n_grid_add x dim]
-                    Grid points to add (model space)
-                coords_norm : ndarray of float [n_grid_add x dim]
-                    Grid points to add (normalized space)
-                coords_id : list of UUID objects (version 4) [n_grid]
-                    Unique IDs of grid points
+        Parameters
+        ----------
+        n_grid : ndarray of float [n]
+            The number of needed sampes points
+
+        Returns
+        -------
+        coords : ndarray of float [n_grid_add x dim]
+            Grid points to add (model space)
+        coords_norm : ndarray of float [n_grid_add x dim]
+            Grid points to add (normalized space)
+        coords_id : list of UUID objects (version 4) [n_grid]
+            Unique IDs of grid points
         """
         if n_grid > 0:
             n_grid_lhs = self.n_grid
@@ -1384,7 +1385,6 @@ class LHS(RandomGrid):
         -----
         .. [1] Koehler, J.R., Owen, A.B., 1996. Computer experiments. in: Ghosh, S., Rao, C.R. (Eds.),
            Handbook of Statistics. Elsevier Science, New York, pp.261–308
-
         """
         # R will be [m x m]
         R = np.corrcoef(array.T)
@@ -1423,25 +1423,26 @@ class LHS(RandomGrid):
 
     def PhiP_exchange(self, P, k, Phi, p, fixed_index):
         """
-                Performes a row exchange and return the altered design.
+        Performes a row exchange and return the altered design.
 
-                Parameters
-                ----------
-                P : ndarray of float [m x n]
-                    The design to perform the exchange on
-                k : int
-                    modulus of the iteration divided by the dimension to pick a row of the design repeating through the
-                    dimensions of the design
-                Phi: float
-                    the PhiP criterion of the current best Design
-                p: int
-                    The power used for the calculation of PhiP
-                fixed_index: list
-                    an empty list to check if variables are assigned a value
-                Returns
-                -------
-                phip : float
-                    Phi-p criterion
+        Parameters
+        ----------
+        P : ndarray of float [m x n]
+            The design to perform the exchange on
+        k : int
+            modulus of the iteration divided by the dimension to pick a row of the design repeating through the
+            dimensions of the design
+        Phi: float
+            the PhiP criterion of the current best Design
+        p: int
+            The power used for the calculation of PhiP
+        fixed_index: list
+            an empty list to check if variables are assigned a value
+
+        Returns
+        -------
+        phip : float
+            Phi-p criterion
         """
         # Choose two (different) random rows to perform the exchange
         er = P.shape

@@ -140,7 +140,13 @@ class Algorithm(object):
             self.options["gradient_calculation"] = "FD_fwd"
 
         if "gradient_calculation_options" not in self.options.keys():
-            self.options["gradient_calculation_options"] = {"dx": 0.01, "distance_weight": -2}
+            self.options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+
+        if "dx" not in self.options["gradient_calculation_options"]:
+            self.options["gradient_calculation_options"]["dx"] = 0.001
+
+        if "distance_weight" not in self.options["gradient_calculation_options"]:
+            self.options["gradient_calculation_options"]["distance_weight"] = -2
 
         if "backend" not in self.options.keys():
             self.options["backend"] = "python"
