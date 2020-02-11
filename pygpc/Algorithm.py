@@ -45,6 +45,7 @@ class Algorithm(object):
         self.options = options
         self.grid = grid
         self.grid_gradient = []
+        self.qoi_specific = None
 
         # Generate results folder if it doesn't exist
         if self.options["fn_results"] is not None:
@@ -168,6 +169,26 @@ class Algorithm(object):
         if "n_samples_validation" not in self.options.keys():
             self.options["n_samples_validation"] = 1e4
 
+        if "save_session_format" not in self.options.keys():
+            self.options["save_session_format"] = ".hdf5"
+        elif self.options["save_session_format"] not in [".hdf5", ".pkl"]:
+            self.options["save_session_format"] = ".hdf5"
+        elif self.options["save_session_format"] in [".hdf5"]:
+            self.options["save_session_format"] = ".hdf5"
+        elif self.options["save_session_format"] in [".pkl"]:
+            self.options["save_session_format"] = ".pkl"
+
+        if self.options["fn_results"] is not None:
+            self.options["fn_session"] = os.path.splitext(self.options["fn_results"])[0] + \
+                                         self.options["save_session_format"]
+            if self.options["save_session_format"] == ".hdf5":
+                self.options["fn_session_folder"] = "session"
+            else:
+                self.options["fn_session_folder"] = None
+        else:
+            self.options["fn_session"] = None
+            self.options["fn_session_folder"] = None
+
         if "print_func_time" not in self.options.keys():
             self.options["print_func_time"] = False
 
@@ -254,6 +275,7 @@ class Static(Algorithm):
         """
         super(Static, self).__init__(problem=problem, options=options, validation=validation)
         self.grid = grid
+        self.qoi_specific = False
 
         # check contents of settings dict and set defaults
         if "method" not in self.options.keys():
@@ -284,12 +306,17 @@ class Static(Algorithm):
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
+
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
+
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+        else:
+            fn_results = None
+
         grad_res_3D = None
         gradient_idx = None
-        fn_results = os.path.splitext(self.options["fn_results"])[0]
-
-        if os.path.exists(fn_results + ".hdf5"):
-            os.remove(fn_results + ".hdf5")
 
         # Create gPC object
         if self.options["method"] == "reg":
@@ -386,11 +413,12 @@ class Static(Algorithm):
                                             eps), tab=0, verbose=self.options["verbose"])
 
         # save gpc object and gpc coeffs
-        if self.options["fn_results"]:
+        if self.options["fn_results"] is not None:
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
 
-                f.create_dataset("misc/fn_session", data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
+                f.create_dataset("misc/fn_session", data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                f.create_dataset("misc/fn_session_folder", data=np.array([self.options["fn_session_folder"]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
                 f.create_dataset("grid/coords", data=gpc.grid.coords, maxshape=None, dtype="float64")
@@ -419,7 +447,7 @@ class Static(Algorithm):
                                      maxshape=None, dtype="int64")
 
                 if gpc.validation is not None:
-                    f.create_dataset("validation/results", data=gpc.validation.results,
+                    f.create_dataset("validation/model_evaluations/results", data=gpc.validation.results,
                                      maxshape=None, dtype="float64")
                     f.create_dataset("validation/grid/coords", data=gpc.validation.grid.coords,
                                      maxshape=None, dtype="float64")
@@ -513,6 +541,11 @@ class MEStatic(Algorithm):
         if "classifier_options" not in self.options.keys():
             self.options["classifier_options"] = None
 
+        if self.options["qoi"] == "all":
+            self.qoi_specific = True
+        else:
+            self.qoi_specific = False
+
     def run(self):
         """
         Runs Multi-Element Static gPC algorithm to solve problem.
@@ -526,10 +559,13 @@ class MEStatic(Algorithm):
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
-        fn_results = os.path.splitext(self.options["fn_results"])[0]
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
 
-        if os.path.exists(fn_results + ".hdf5"):
-            os.remove(fn_results + ".hdf5")
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+        else:
+            fn_results = None
 
         grad_res_3D = None
         grad_res_3D_all = None
@@ -667,7 +703,7 @@ class MEStatic(Algorithm):
                                                       output_idx=output_idx_passed_validation)
 
             # save data
-            if self.options["fn_results"]:
+            if self.options["fn_results"] is not None:
 
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
@@ -676,7 +712,9 @@ class MEStatic(Algorithm):
 
                     except KeyError:
                         f.create_dataset("misc/fn_session",
-                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
+                                         data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session_folder",
+                                         data=np.array([self.options["fn_session_folder"]]).astype("|S"))
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -702,7 +740,7 @@ class MEStatic(Algorithm):
                                                  data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
                                                  maxshape=None, dtype="float64")
 
-        if self.options["fn_results"]:
+        if self.options["fn_results"] is not None:
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
 
@@ -739,7 +777,7 @@ class MEStatic(Algorithm):
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
 
                 if megpc[0].validation is not None:
-                    f.create_dataset("validation/results", data=megpc[0].validation.results,
+                    f.create_dataset("validation/model_evaluations/results", data=megpc[0].validation.results,
                                      maxshape=None, dtype="float64")
                     f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
                                      maxshape=None, dtype="float64")
@@ -824,6 +862,11 @@ class StaticProjection(Algorithm):
         if "qoi" not in self.options.keys():
             self.options["qoi"] = 0
 
+        if self.options["qoi"] == "all":
+            self.qoi_specific = True
+        else:
+            self.qoi_specific = False
+
     def run(self):
         """
         Runs static gPC algorithm using Projection to solve problem.
@@ -838,12 +881,15 @@ class StaticProjection(Algorithm):
             Simulation results at n_grid points of the n_out output variables
         """
 
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
+
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+        else:
+            fn_results = None
+
         grid = self.options["grid"]
-        fn_results = os.path.splitext(self.options["fn_results"])[0]
-
-        if os.path.exists(fn_results + ".hdf5"):
-            os.remove(fn_results + ".hdf5")
-
         grad_res_3D = None
         gradient_idx = None
 
@@ -1060,7 +1106,7 @@ class StaticProjection(Algorithm):
                                                 eps), tab=0, verbose=self.options["verbose"])
 
             # save gpc objects and gpc coeffs
-            if self.options["fn_results"]:
+            if self.options["fn_results"] is not None:
 
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
@@ -1069,7 +1115,9 @@ class StaticProjection(Algorithm):
 
                     except KeyError:
                         f.create_dataset("misc/fn_session",
-                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
+                                         data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session_folder",
+                                         data=np.array([self.options["fn_session_folder"]]).astype("|S"))
 
                     f.create_dataset("error" + hdf5_subfolder,
                                      data=eps,
@@ -1092,7 +1140,7 @@ class StaticProjection(Algorithm):
                                      data=gpc[i_qoi].p_matrix,
                                      maxshape=None, dtype="float64")
 
-        if self.options["fn_results"]:
+        if self.options["fn_results"] is not None:
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
                 f.create_dataset("grid/coords", data=grid_original.coords,
@@ -1119,7 +1167,7 @@ class StaticProjection(Algorithm):
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
 
                 if gpc[0].validation is not None:
-                    f.create_dataset("validation/results", data=gpc[0].validation.results,
+                    f.create_dataset("validation/model_evaluations/results", data=gpc[0].validation.results,
                                      maxshape=None, dtype="float64")
                     f.create_dataset("validation/grid/coords", data=gpc[0].validation.grid.coords,
                                      maxshape=None, dtype="float64")
@@ -1208,6 +1256,11 @@ class MEStaticProjection(Algorithm):
         if "classifier_options" not in self.options.keys():
             self.options["classifier_options"] = None
 
+        if self.options["qoi"] == "all":
+            self.qoi_specific = True
+        else:
+            self.qoi_specific = False
+
     def run(self):
         """
         Runs static multi-element gPC algorithm with projection.
@@ -1222,11 +1275,16 @@ class MEStaticProjection(Algorithm):
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
-        grid = self.options["grid"]
-        fn_results = os.path.splitext(self.options["fn_results"])[0]
 
-        if os.path.exists(fn_results + ".hdf5"):
-            os.remove(fn_results + ".hdf5")
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
+
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+        else:
+            fn_results = None
+
+        grid = self.options["grid"]
 
         # make initial random grid to determine gradients and projection matrix
         grid = grid(parameters_random=self.problem.parameters_random,
@@ -1482,7 +1540,7 @@ class MEStaticProjection(Algorithm):
                                                       domain=d,
                                                       output_idx=output_idx_passed_validation)
             # save data
-            if self.options["fn_results"]:
+            if self.options["fn_results"] is not None:
 
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
@@ -1491,7 +1549,9 @@ class MEStaticProjection(Algorithm):
 
                     except KeyError:
                         f.create_dataset("misc/fn_session",
-                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
+                                         data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session_folder",
+                                         data=np.array([self.options["fn_session_folder"]]).astype("|S"))
 
                     for i_gpc in range(megpc[i_qoi].n_gpc):
                         f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
@@ -1522,7 +1582,7 @@ class MEStaticProjection(Algorithm):
                                          data=megpc[i_qoi].gpc[i_gpc].p_matrix,
                                          maxshape=None, dtype="float64")
 
-        if self.options["fn_results"]:
+        if self.options["fn_results"] is not None:
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
 
@@ -1559,7 +1619,7 @@ class MEStaticProjection(Algorithm):
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
 
                 if megpc[0].validation is not None:
-                    f.create_dataset("validation/results", data=megpc[0].validation.results,
+                    f.create_dataset("validation/model_evaluations/results", data=megpc[0].validation.results,
                                      maxshape=None, dtype="float64")
                     f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
                                      maxshape=None, dtype="float64")
@@ -1607,6 +1667,8 @@ class RegAdaptive(Algorithm):
         """
         super(RegAdaptive, self).__init__(problem=problem, options=options, validation=validation)
 
+        self.qoi_specific = False
+
         # check contents of settings dict and set defaults
         if "order_start" not in self.options.keys():
             self.options["order_start"] = 0
@@ -1637,12 +1699,15 @@ class RegAdaptive(Algorithm):
             Simulation results at n_grid points of the n_out output variables
         """
 
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
+
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+        else:
+            fn_results = None
+
         grid = self.options["grid"]
-
-        fn_results = os.path.splitext(self.options["fn_results"])[0]
-
-        if os.path.exists(fn_results + ".hdf5"):
-            os.remove(fn_results + ".hdf5")
 
         # initialize iterators
         eps = self.options["eps"] + 1.0
@@ -1851,8 +1916,11 @@ class RegAdaptive(Algorithm):
                     if not self.options["adaptive_sampling"]:
                         break
 
-            # save gpc object and coeffs for this sub-iteration
-            if self.options["fn_results"]:
+            ###
+
+
+            # save gpc coeffs for this sub-iteration
+            if self.options["fn_results"] is not None:
 
                 with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
@@ -1904,8 +1972,10 @@ class RegAdaptive(Algorithm):
                            settings=gpc.settings,
                            verbose=True)
 
+        gpc.gpc_matrix.shape
+        len(gpc.basis.b)
         # save gpc object and gpc coeffs
-        if self.options["fn_results"]:
+        if self.options["fn_results"] is not None:
 
             with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
                 if "coeffs" in f.keys():
@@ -1930,12 +2000,15 @@ class RegAdaptive(Algorithm):
                                      maxshape=None, dtype="float64")
 
                 # misc
-                f.create_dataset("misc/fn_session", data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
+                f.create_dataset("misc/fn_session",
+                                 data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                f.create_dataset("misc/fn_session_folder",
+                                 data=np.array([self.options["fn_session_folder"]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
 
                 if gpc.validation is not None:
-                    f.create_dataset("validation/results", data=gpc.validation.results,
+                    f.create_dataset("validation/model_evaluations/results", data=gpc.validation.results,
                                      maxshape=None, dtype="float64")
                     f.create_dataset("validation/grid/coords", data=gpc.validation.grid.coords,
                                      maxshape=None, dtype="float64")
@@ -2014,6 +2087,11 @@ class MERegAdaptiveProjection(Algorithm):
         if "n_grid_init" not in self.options.keys():
             self.options["n_grid_init"] = 10
 
+        if self.options["qoi"] == "all":
+            self.qoi_specific = True
+        else:
+            self.qoi_specific = False
+
     def run(self):
         """
         Runs Multi-Element adaptive gPC algorithm to solve problem (optional projection).
@@ -2027,12 +2105,17 @@ class MERegAdaptiveProjection(Algorithm):
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
-        grid = self.options["grid"]
-        fn_results = os.path.splitext(self.options["fn_results"])[0]
-        problem_original = copy.deepcopy(self.problem)
 
-        if os.path.exists(fn_results + ".hdf5"):
-            os.remove(fn_results + ".hdf5")
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
+
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+        else:
+            fn_results = None
+
+        grid = self.options["grid"]
+        problem_original = copy.deepcopy(self.problem)
 
         # initialize iterators
         grad_res_3D = None
@@ -2064,7 +2147,7 @@ class MERegAdaptiveProjection(Algorithm):
                           coords_norm=grid.coords_norm,
                           i_iter=self.options["order_start"],
                           i_subiter=self.options["interaction_order"],
-                          fn_results=os.path.splitext(self.options["fn_results"])[0],  # + "_temp"
+                          fn_results=self.options["fn_results"],  # + "_temp"
                           print_func_time=self.options["print_func_time"])
 
         i_grid = grid.n_grid
@@ -2254,7 +2337,7 @@ class MERegAdaptiveProjection(Algorithm):
                                   coords_norm=grid.coords_norm[i_grid:, ],
                                   i_iter=None,
                                   i_subiter=None,
-                                  fn_results=os.path.splitext(self.options["fn_results"])[0],
+                                  fn_results=self.options["fn_results"],
                                   print_func_time=self.options["print_func_time"])
 
                 # add results to results array
@@ -2317,10 +2400,6 @@ class MERegAdaptiveProjection(Algorithm):
                                                n_cpu=self.options["n_cpu"],
                                                gradient=self.options["gradient_enhanced"])
 
-                iprint("Saving validation set to {} ".format(self.options["fn_results"] + "_validation_set.hdf5"),
-                       tab=0, verbose=self.options["verbose"])
-                megpc[0].validation.write(fname=self.options["fn_results"] + "_validation.hdf5")
-
             elif self.options["error_type"] == "nrmsd" and megpc[0].validation is not None:
                 megpc[i_qoi].validation = copy.deepcopy(megpc[0].validation)
 
@@ -2373,7 +2452,7 @@ class MERegAdaptiveProjection(Algorithm):
                                    coords_norm=coords_norm_disc,
                                    i_iter="Domain boundary",
                                    i_subiter=None,
-                                   fn_results=os.path.splitext(self.options["fn_results"])[0],  # + "_temp"
+                                   fn_results=self.options["fn_results"],
                                    print_func_time=self.options["print_func_time"])
 
                 iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
@@ -2670,7 +2749,7 @@ class MERegAdaptiveProjection(Algorithm):
                                                       coords_norm=grid.coords_norm[int(i_grid):, :],
                                                       i_iter=basis_order["poly_dom_{}".format(d)][0],
                                                       i_subiter=basis_order["poly_dom_{}".format(d)][1],
-                                                      fn_results=os.path.splitext(self.options["fn_results"])[0],
+                                                      fn_results=self.options["fn_results"],
                                                       print_func_time=self.options["print_func_time"])
 
                                     iprint('Total parallel function evaluation {} sec'.format(
@@ -2825,7 +2904,7 @@ class MERegAdaptiveProjection(Algorithm):
                                     break
 
                     # save gpc object and coeffs for this sub-iteration
-                    if self.options["fn_results"]:
+                    if self.options["fn_results"] is not None:
 
                         with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
@@ -2950,7 +3029,7 @@ class MERegAdaptiveProjection(Algorithm):
                                                verbose=True)
 
             # save gpc object and gpc coeffs
-            if self.options["fn_results"]:
+            if self.options["fn_results"] is not None:
 
                 with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
 
@@ -2959,7 +3038,9 @@ class MERegAdaptiveProjection(Algorithm):
 
                     except KeyError:
                         f.create_dataset("misc/fn_session",
-                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
+                                         data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session_folder",
+                                         data=np.array([self.options["fn_session_folder"]]).astype("|S"))
 
                     try:
                         del f["grid"]
@@ -3000,7 +3081,7 @@ class MERegAdaptiveProjection(Algorithm):
                         try:
                             del f["validation"]
                         except KeyError:
-                            f.create_dataset("validation/results", data=megpc[0].validation.results,
+                            f.create_dataset("validation/model_evaluations/results", data=megpc[0].validation.results,
                                              maxshape=None, dtype="float64")
                             f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
                                              maxshape=None, dtype="float64")
@@ -3109,6 +3190,11 @@ class RegAdaptiveProjection(Algorithm):
         if "adaptive_sampling" not in self.options.keys():
             self.options["adaptive_sampling"] = True
 
+        if self.options["qoi"] == "all":
+            self.qoi_specific = True
+        else:
+            self.qoi_specific = False
+
     def run(self):
         """
         Runs adaptive gPC algorithm using projection to solve problem.
@@ -3122,15 +3208,18 @@ class RegAdaptiveProjection(Algorithm):
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
+
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
+
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+            if os.path.exists(fn_results + "_temp.hdf5"):
+                os.remove(fn_results + "_temp.hdf5")
+        else:
+            fn_results = None
+
         grid = self.options["grid"]
-        fn_results = os.path.splitext(self.options["fn_results"])[0]
-
-        if os.path.exists(fn_results + ".hdf5"):
-            os.remove(fn_results + ".hdf5")
-
-        if os.path.exists(fn_results + "_temp.hdf5"):
-            os.remove(fn_results + "_temp.hdf5")
-
         grad_res_3D = None
         gradient_idx = None
 
@@ -3162,7 +3251,7 @@ class RegAdaptiveProjection(Algorithm):
                           coords_norm=grid_original.coords_norm,
                           i_iter=self.options["order_start"],
                           i_subiter=self.options["interaction_order"],
-                          fn_results=os.path.splitext(self.options["fn_results"])[0], #  + "_temp"
+                          fn_results=self.options["fn_results"],
                           print_func_time=self.options["print_func_time"])
 
         i_grid = grid_original.n_grid
@@ -3197,6 +3286,7 @@ class RegAdaptiveProjection(Algorithm):
         if self.options["qoi"] == "all":
             qoi_idx = np.arange(res_all.shape[1])
             n_qoi = len(qoi_idx)
+
         else:
             qoi_idx = [self.options["qoi"]]
             n_qoi = 1
@@ -3534,7 +3624,7 @@ class RegAdaptiveProjection(Algorithm):
                         break
 
                 # save gpc object and coeffs for this sub-iteration
-                if self.options["fn_results"]:
+                if self.options["fn_results"] is not None:
 
                     with h5py.File(os.path.splitext(fn_results)[0] + ".hdf5", "a") as f:
                         # overwrite coeffs
@@ -3606,7 +3696,7 @@ class RegAdaptiveProjection(Algorithm):
                                              verbose=True)
 
             # save gpc object gpc coeffs and projection matrix
-            if self.options["fn_results"]:
+            if self.options["fn_results"] is not None:
 
                 with h5py.File(fn_results + ".hdf5", "a") as f:
 
@@ -3615,7 +3705,9 @@ class RegAdaptiveProjection(Algorithm):
 
                     except KeyError:
                         f.create_dataset("misc/fn_session",
-                                         data=np.array([os.path.split(fn_results + "_session.hdf5")[1]]).astype("|S"))
+                                         data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session_folder",
+                                         data=np.array([self.options["fn_session_folder"]]).astype("|S"))
 
                     try:
                         del f["coeffs" + hdf5_subfolder]
@@ -3644,34 +3736,17 @@ class RegAdaptiveProjection(Algorithm):
             nrmsd = []
             loocv = []
 
-        with h5py.File(fn_results + ".hdf5", "a") as f:
-            if gpc[0].validation is not None:
-                f.create_dataset("validation/results", data=gpc[0].validation.results,
-                                 maxshape=None, dtype="float64")
-                f.create_dataset("validation/grid/coords", data=gpc[0].validation.grid.coords,
-                                 maxshape=None, dtype="float64")
-                f.create_dataset("validation/grid/coords_norm", data=gpc[0].validation.grid.coords_norm,
-                                 maxshape=None, dtype="float64")
-                f.create_dataset("misc/error_type", data=self.options["error_type"])
-
-        # remove results of initial simulation
-        # os.remove(os.path.splitext(self.options["fn_results"])[0] + "_temp.hdf5")
+        if self.options["fn_results"] is not None:
+            with h5py.File(fn_results + ".hdf5", "a") as f:
+                if gpc[0].validation is not None:
+                    f.create_dataset("validation/model_evaluations/results", data=gpc[0].validation.results,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("validation/grid/coords", data=gpc[0].validation.grid.coords,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("validation/grid/coords_norm", data=gpc[0].validation.grid.coords_norm,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("misc/error_type", data=self.options["error_type"])
 
         com.close()
 
         return gpc, coeffs, res
-
-
-        # # Append gradient of results (not projected)
-        # grad_res_2D = ten2mat(grad_res_3D)
-        #
-        # if "gradient_results" in f["model_evaluations"].keys():
-        #     n_rows_old = f["model_evaluations/gradient_results"].shape[0]
-        #     f["model_evaluations/gradient_results"].resize(grad_res_2D.shape[0], axis=0)
-        #     f["model_evaluations/gradient_results"][n_rows_old:, :] = grad_res_2D[n_rows_old:, :]
-        # else:
-        #     f.create_dataset("model_evaluations/gradient_results",
-        #                      (grad_res_2D.shape[0], grad_res_2D.shape[1]),
-        #                      maxshape=(None, None),
-        #                      dtype="float64",
-        #                      data=grad_res_2D)

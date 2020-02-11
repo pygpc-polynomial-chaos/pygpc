@@ -1,6 +1,6 @@
 import numpy as np
 import h5py
-from .io import read_session_pkl
+from .io import read_session
 from .MEGPC import *
 
 
@@ -27,7 +27,8 @@ def check_file_consistency(fn_hdf5):
     try:
         with h5py.File(fn_hdf5, "r") as f:
             try:
-                fn_gpc_pkl = os.path.join(os.path.split(fn_hdf5)[0], f["misc/fn_gpc_pkl"][0].astype(str))
+                fn_session = os.path.join(os.path.split(fn_hdf5)[0], f["misc/fn_session"][0].astype(str))
+                fn_session_folder = f["misc/fn_session_folder"][0].astype(str)
             except KeyError:
                 error_msg.append("misc/fn_gpc_pkl not found in results file: {}".format(fn_hdf5))
                 file_status = False
@@ -39,13 +40,12 @@ def check_file_consistency(fn_hdf5):
 
     # check for gPC object file
     ###########################
-    for fn in fn_gpc_pkl:
-        try:
-            session = read_session_pkl(fn_gpc_pkl)
-        except FileNotFoundError:
-            error_msg.append("gPC session object file not found: {}".format(fn))
-            file_status = False
-            return file_status, error_msg
+    try:
+        session = read_session(fname=fn_session, folder=fn_session_folder)
+    except FileNotFoundError:
+        error_msg.append("gPC session not found in file: {}".format(fn_session))
+        file_status = False
+        return file_status, error_msg
 
     # check for gPC results file and kind of simulation
     ###################################################
