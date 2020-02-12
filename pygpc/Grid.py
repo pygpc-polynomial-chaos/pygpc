@@ -1384,7 +1384,7 @@ class LHS(RandomGrid):
         Notes
         -----
         .. [1] Koehler, J.R., Owen, A.B., 1996. Computer experiments. in: Ghosh, S., Rao, C.R. (Eds.),
-           Handbook of Statistics. Elsevier Science, New York, pp.261–308
+           Handbook of Statistics. Elsevier Science, New York, pp.261-308
         """
         # R will be [m x m]
         R = np.corrcoef(array.T)
