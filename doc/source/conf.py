@@ -22,15 +22,15 @@ sys.path.append(os.path.abspath('sphinxext'))
 
 project = u'pygpc'
 # copyright = u'2018, Konstantin Weise, Benjamin Kalloch, Lucas Possner'
-copyright = u'2018, Konstantin Weise'
+copyright = u'2020, Konstantin Weise'
 # author = u'Konstantin Weise, Benjamin Kalloch, Lucas Possner'
 author = u'Konstantin Weise'
 
 # The short X.Y version
-version = u'0.1'
+version = u'0.27.1.'
 
 # The full version, including alpha/beta/rc tags
-release = u'2018'
+release = u'2020'
 
 
 # -- General configuration ---------------------------------------------------
@@ -50,7 +50,14 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.imgmath',
     'matplotlib.sphinxext.plot_directive',
+    'sphinx_gallery.gen_gallery'
 ]
+
+# configuration of sphinx gallery
+sphinx_gallery_conf = {
+    'examples_dirs': '../../examples',   # path to your example scripts
+    'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+}
 
 # 'IPython.sphinxext.ipython_directive',
 # 'IPython.sphinxext.ipython_console_highlighting',

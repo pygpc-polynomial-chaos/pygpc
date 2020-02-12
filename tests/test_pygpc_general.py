@@ -17,7 +17,7 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 folder = 'tmp'                  # output folder
 plot = False                    # plot and save output
 matlab = False                  # test Matlab functionality
-save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+save_session_format = ".hdf5"   # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 # temporary folder
 try:

@@ -174,6 +174,8 @@ Contact
 
 If you have questions, problems or suggestions regarding pygpc, please contact `Konstantin Weise <https://www.cbs.mpg.de/person/51222/2470>`_.
 
+.. include::
+   auto_examples/index.rst
 
 Table of contents
 -----------------
@@ -181,10 +183,13 @@ Table of contents
 .. toctree::
 
    pygpc
-
+   auto_examples/index
+   
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
