@@ -13,6 +13,7 @@ from .misc import *
 from .postprocessing import *
 from .validation import *
 from .Session import *
+from .io import write_session_pkl
 
 
 def run_test(session):
