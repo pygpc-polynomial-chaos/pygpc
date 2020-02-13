@@ -77,8 +77,8 @@ def MCMC_Hampton(n, p, d, dist='uniform'):
 
     return Metropolis_Hastings(n)
 n = 1000
-set = MCMC_Hampton(n, 8, 4)
+set = MCMC_Hampton(n, 8, 2)
 mu = pygpc.mutual_coherence(set)/pygpc.mutual_coherence(np.random.beta(1, 1, size=[n, 4]))
 print(set)
 print("time: {}seconds " .format(time.time() - start_time))
-
+np.savetxt('MCMC_samples_001.csv', set, delimiter=',')

@@ -65,17 +65,17 @@ plt.grid(True)
 # \\rho_{rg_{X_i}, rg_{X_j}} = \\frac{cov(rg_{X_i}, rg_{X_j})}{\\sigma_{rg} \\sigma_{rg}}
 
 #%%
-# LHS Designs can further be imporved upon, since the pseudo-random sampling procedure
-# can lead to samples with high spurrious correlation and the space filling capabillity
+# LHS Designs can further be improved upon, since the pseudo-random sampling procedure
+# can lead to samples with high spurious correlation and the space filling capability
 # in it self leaves room for improvement, some optimization criteria have been found to
-# be adequate for compensating the initial designs shortcommings.
+# be adequate for compensating the initial designs shortcomings.
 # 
-# Optimization Citeria of LHS designs
+# Optimization Criteria of LHS designs
 # -----------------------------------
 # Spearman Rank Correlation
 # ^^^^^^^^^^^^^^^^^^^^^^^^^
-# For a sample size of :math:`n` the scores of each varaible are converted to their Ranks :math:`rg_{X_i}`
-# the Spearman Rank Correlation Coefficiant is then the Pearson Correlation Coefficiant applied to the rank 
+# For a sample size of :math:`n` the scores of each variable are converted to their Ranks :math:`rg_{X_i}`
+# the Spearman Rank Correlation Coefficient is then the Pearson Correlation Coefficient applied to the rank
 # variables :math:`rg_{X_i}`:
 # 
 # .. math::
@@ -101,7 +101,7 @@ plt.grid(True)
 #
 #     d(x_i,x_j) = d_ij = [ \sum_{k=1}^{m}|x_ik - x_jk| ^ t]^\frac{1}{t}, t \in {1,2}
 #
-# There is however a more elegant way of computing this optimization criterion as shown by Morris and Mitchell (YEAR),
+# There is however a more elegant way of computing this optimization criterion as shown by Morris and Mitchell (1995),
 # called the :math:`\varphi_P` criterion.
 # 
 # .. math::
@@ -111,11 +111,12 @@ plt.grid(True)
 # where :math:`s` is the number of distinct distances, :math:`J` is an vector of indices of the distances
 # and :math:`p` is an integer. With a very large :math:`p` this criterion is equivalent to the maximin criterion
 #
-# .. Morris INSER REF HERE
+# .. Morris, M. D. and Mitchell, T. J. ( (1995). Exploratory Designs for Computer Experiments.J. Statist. Plann.
+#    Inference 43, 381-402.
 # 
 # LHS with enhanced stochastic evolutionary algorithm (ESE)
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# To achive optimized designs with a more stable method and possibly quicker then by simply evaluating
+# To achieve optimized designs with a more stable method and possibly quicker then by simply evaluating
 # the criteria over a number of repetitions **pygpc** can use an ESE for achieving sufficient
 # :math:`\varphi_P`-value. This algorithm is more appealing in its efficacy and proves to
 # [sth about the resulting error or std in a low sample size].
@@ -189,8 +190,8 @@ plt.subplots_adjust(bottom=0.3)
 
 #%%
 # The initial LHS (standard) has already good space filling properties compared
-# to the random sampling scheme (eg. less undersampled areas and less clustered areas,
-# visually and quantitavely represented by the optimization criteria). The LHS (ESE)
+# to the random sampling scheme (eg. less under sampled areas and less clustered areas,
+# visually and quantitatively represented by the optimization criteria). The LHS (ESE)
 # shows the best correlation and :math:`\varphi_P` criterion.
 
 ###############################################################################
@@ -294,11 +295,11 @@ err_std = np.std(err, axis=2)
 #%%
 # Results
 # ^^^^^^^
-# Even after a small set of repititions the :math:`\varphi_P` optimizing ESE will produce
-# the best results regarding the aformentioned criteria, while also having less variation
+# Even after a small set of repetitions the :math:`\varphi_P` optimizing ESE will produce
+# the best results regarding the aforementioned criteria, while also having less variation
 # in its pseudo-random design. Thus is it possible to half the the root-mean-squared error
 # :math:`\varepsilon` by using the ESE algorithm compared to completely random sampling the
-# grid points, while also having a consitently small standard deviation.
+# grid points, while also having a consistently small standard deviation.
 
 fig, ax = plt.subplots(1, 2, figsize=[12,5])
 
