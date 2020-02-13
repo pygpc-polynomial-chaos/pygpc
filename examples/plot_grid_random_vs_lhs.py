@@ -113,8 +113,8 @@ plt.grid(True)
 #
 # .. Morris INSER REF HERE
 # 
-# LHS with enhanced stochastic evolutionary algorthm (ESE)
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# LHS with enhanced stochastic evolutionary algorithm (ESE)
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # To achive optimized designs with a more stable method and possibly quicker then by simply evaluating
 # the criteria over a number of repetitions **pygpc** can use an ESE for achieving sufficient
 # :math:`\varphi_P`-value. This algorithm is more appealing in its efficacy and proves to

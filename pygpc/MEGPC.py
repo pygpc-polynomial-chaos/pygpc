@@ -25,6 +25,18 @@ class MEGPC(object):
     """
     General Multi-Element gPC base class
 
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC Problem under investigation
+    options : dict
+        Options of gPC algorithm
+    validation: ValidationSet object (optional)
+        Object containing a set of validation points and corresponding solutions. Can be used
+        to validate gpc approximation setting options["error_type"]="nrmsd".
+        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+        - results: ndarray [n_grid x n_out] results
+
     Attributes
     ----------
     problem: Problem class instance
@@ -55,18 +67,6 @@ class MEGPC(object):
     def __init__(self, problem, options, validation=None):
         """
         Constructor; Initializes MEGPC class
-
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC Problem under investigation
-        options : dict
-            Options of gPC algorithm
-        validation: ValidationSet object (optional)
-            Object containing a set of validation points and corresponding solutions. Can be used
-            to validate gpc approximation setting options["error_type"]="nrmsd".
-            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
-            - results: ndarray [n_grid x n_out] results
         """
 
         # objects

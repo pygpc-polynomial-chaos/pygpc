@@ -10,16 +10,16 @@ import __main__ as main
 class Session(object):
     """
     GPC Session class
+
+    Parameters
+    ----------
+    algorithm : Algorithm Object
+        Algorithm object containing the Problem object, the Model object
     """
 
     def __init__(self, algorithm):
         """
         Constructor; Initializes a gPC Session
-
-        Parameters
-        ----------
-        algorithm : Algorithm Object
-            Algorithm object containing the Problem object, the Model object
         """
         self.gpc = None
         self.grid = None

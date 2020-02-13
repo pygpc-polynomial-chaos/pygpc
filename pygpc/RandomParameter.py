@@ -16,19 +16,28 @@ class RandomParameter(object):
     """
     RandomParameter class
 
+    Parameters
+    ----------
+    pdf_type : str
+        Distribution type of random variable ('beta', 'norm', 'gamma')
+    pdf_shape : list of float [2]
+        Shape parameters
+    pdf_limits : list of float [2]
+        Lower and upper bounds of random variable (if applicable)
+
     Attributes
     ----------
-    pdf_type: str
-        Distribution type of random variable ('beta', 'norm')
-    pdf_shape: list of float [2]
+    pdf_type : str
+        Distribution type of random variable ('beta', 'norm', 'gamma')
+    pdf_shape : list of float [2]
         Shape parameters of beta distributed random variable [p, q]
-    pdf_limits: list of float [2]
+    pdf_limits : list of float [2]
         Lower and upper bounds of random variable [min, max]
-    mean: float
+    mean : float
         Mean value
-    std: float
+    std : float
         Standard deviation
-    var: float
+    var : float
         Variance
     """
     def __init__(self, pdf_type=None, pdf_shape=None, pdf_limits=None):
@@ -95,18 +104,20 @@ class Beta(RandomParameter):
     """
     Beta distributed random variable sub-class
 
-    Probability density function:
-
-    .. math::
-
-       p(x) = \\left(\\frac{\\Gamma(p)\\Gamma(q)}{\\Gamma(p+q)}(b-a)^{(p+q-1)}\\right)^{-1} (x-a)^{(p-1)} (b-x)^{(q-1)}
-
     Parameters
     ----------
     pdf_shape: list of float [2]
         Shape parameters of beta distributed random variable [p, q]
     pdf_limits: list of float [2]
         Lower and upper bounds of random variable [min, max]
+
+    Notes
+    -----
+    Probability density function:
+
+    .. math::
+
+       p(x) = \\left(\\frac{\\Gamma(p)\\Gamma(q)}{\\Gamma(p+q)}(b-a)^{(p+q-1)}\\right)^{-1} (x-a)^{(p-1)} (b-x)^{(q-1)}
 
     Examples
     --------
@@ -147,8 +158,6 @@ class Beta(RandomParameter):
     def pdf(self, x=None, a=None, b=None):
         """
         Calculate the probability density function of the beta distributed random variable.
-
-        pdf = Beta.pdf(x)
 
         Parameters
         ----------
@@ -236,13 +245,6 @@ class Norm(RandomParameter):
     """
     Normal distributed random variable sub-class
 
-    Probability density function
-
-    .. math::
-
-       p(x) = \\frac{1}{\\sqrt{2\\pi\\sigma^2}}\\exp\\left({-\\frac{(x-\\mu)^2}{2\\sigma^2}}\\right)
-
-
     Parameters
     ----------
     pdf_shape: list of float [2]
@@ -250,6 +252,14 @@ class Norm(RandomParameter):
     p_perc: float, optional, default=0.9973
         Probability of percentile, where infinite distributions are cut off
         (default value corresponds to 6 sigma)
+
+    Notes
+    -----
+    Probability density function
+
+    .. math::
+
+       p(x) = \\frac{1}{\\sqrt{2\\pi\\sigma^2}}\\exp\\left({-\\frac{(x-\\mu)^2}{2\\sigma^2}}\\right)
 
     Examples
     --------
@@ -364,12 +374,6 @@ class Gamma(RandomParameter):
     """
     Gamma distributed random variable sub-class
 
-    Probability density function:
-
-    .. math::
-
-       p(x) = \\frac{\\beta^{\\alpha}}{\\Gamma(\\alpha)}x^{\\alpha-1}e^{\\beta x}
-
     Parameters
     ----------
     pdf_shape: list of float [3]
@@ -377,6 +381,14 @@ class Gamma(RandomParameter):
     p_perc: float, optional, default=0.9973
         Probability of percentile, where infinite distributions are cut off
         (default value corresponds to 6 sigma from normal distribution)
+
+    Notes
+    -----
+    Probability density function:
+
+    .. math::
+
+       p(x) = \\frac{\\beta^{\\alpha}}{\\Gamma(\\alpha)}x^{\\alpha-1}e^{\\beta x}
 
     Examples
     --------

@@ -171,15 +171,24 @@ def read_session_hdf5(fname, folder="session", verbose=False):
     """
     from .Problem import Problem
     from .Session import Session
+    from .RandomParameter import RandomParameter
 
     # model
     model = read_model_from_hdf5(fn_hdf5=fname, folder=folder + "/model", verbose=verbose)
 
     # parameters
-    parameters = read_parameters_from_hdf5(fn_hdf5=fname, folder=folder + "/problem/parameters", verbose=False)
+    parameters_unsorted = read_parameters_from_hdf5(fn_hdf5=fname, folder=folder + "/problem/parameters", verbose=verbose)
 
-    # parameters_random
-    parameters_random = read_parameters_from_hdf5(fn_hdf5=fname, folder=folder + "/parameters_random", verbose=False)
+    problem_dict = read_group_from_hdf5(fn_hdf5=fname, folder=folder + "/problem", verbose=verbose)
+
+    parameters = OrderedDict()
+    parameters_random = OrderedDict()
+
+    for p in problem_dict["parameters_keys"]:
+        parameters[p] = parameters_unsorted[p]
+
+        if isinstance(parameters_unsorted[p], RandomParameter):
+            parameters_random[p] = parameters_unsorted[p]
 
     # problem(model, parameters)
     problem = Problem(model, parameters)
@@ -296,11 +305,20 @@ def read_problem_from_hdf5(fn_hdf5, folder, verbose=False):
     """
     from .Problem import Problem
 
+    # read content of problem
+    problem_dict = read_group_from_hdf5(fn_hdf5=fn_hdf5, folder=folder, verbose=verbose)
+
     # model
     model = read_model_from_hdf5(fn_hdf5=fn_hdf5, folder=folder + "/model", verbose=verbose)
 
     # parameters
-    parameters = read_parameters_from_hdf5(fn_hdf5=fn_hdf5, folder=folder + "/parameters", verbose=False)
+    parameters_unsorted = read_parameters_from_hdf5(fn_hdf5=fn_hdf5, folder=folder + "/parameters", verbose=False)
+
+    # sort parameters
+    parameters = OrderedDict()
+
+    for p in problem_dict["parameters_keys"]:
+        parameters[p] = parameters_unsorted[p]
 
     # initialize problem
     problem = Problem(model, parameters)

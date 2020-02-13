@@ -22,22 +22,22 @@ from .Gradient import get_gradient
 class Algorithm(object):
     """
     Class for GPC algorithms
+
+    Parameters
+    ----------
+    problem : Problem object
+        Object instance of gPC problem to investigate
+    options : dict
+        Algorithm specific options (see sub-classes for more details)
+    grid : Grid object
+        Grid object
+    validation : ValidationSet object
+        ValidationSet object
     """
 
     def __init__(self, problem, options, grid=None, validation=None):
         """
         Constructor; Initializes GPC algorithm
-
-        Parameters
-        ----------
-        problem : Problem object
-            Object instance of gPC problem to investigate
-        options : dict
-            Algorithm specific options (see sub-classes for more details)
-        grid : Grid object
-            Grid object
-        validation : ValidationSet object
-            ValidationSet object
         """
         self.problem = problem
         self.problem_reduced = []
@@ -236,48 +236,49 @@ class Algorithm(object):
 class Static(Algorithm):
     """
     Static gPC algorithm
+
+    Parameters
+    ----------
+    problem : Problem object
+        Object instance of gPC problem to investigate
+    options["method"]: str
+        GPC method to apply ['Reg', 'Quad']
+    options["order"]: list of int [dim]
+        Maximum individual expansion order [order_1, order_2, ..., order_dim].
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    options["order_max"]: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    options["order_max_norm"]: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    options["interaction_order"]: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    grid: Grid object instance
+        Grid object to use for static gPC (Random, SparseGrid, TensorGrid)
+
+    Notes
+    -----
+    .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+       regression. Journal of Computational Physics, 230(6), 2345-2367.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize static gPC algorithm
+    >>> algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+    >>> # run algorithm
+    >>> gpc, coeffs, results = algorithm.run()
     """
+
     def __init__(self, problem, options, grid, validation=None):
         """
         Constructor; Initializes static gPC algorithm
-
-        Parameters
-        ----------
-        problem : Problem object
-            Object instance of gPC problem to investigate
-        options["method"]: str
-            GPC method to apply ['Reg', 'Quad']
-        options["order"]: list of int [dim]
-            Maximum individual expansion order [order_1, order_2, ..., order_dim].
-            Generates individual polynomials also if maximum expansion order in order_max is exceeded
-        options["order_max"]: int
-            Maximum global expansion order.
-            The maximum expansion order considers the sum of the orders of combined polynomials together with the
-            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
-            monomial orders.
-        options["order_max_norm"]: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        options["interaction_order"]: int
-            Number of random variables, which can interact with each other.
-            All polynomials are ignored, which have an interaction order greater than the specified
-        grid: Grid object instance
-            Grid object to use for static gPC (Random, SparseGrid, TensorGrid)
-
-        Notes
-        -----
-        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle 
-           regression. Journal of Computational Physics, 230(6), 2345-2367.
-
-        Examples
-        --------
-        >>> import pygpc
-        >>> # initialize static gPC algorithm
-        >>> algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
-        >>> # run algorithm
-        >>> gpc, coeffs, results = algorithm.run()
         """
         super(Static, self).__init__(problem=problem, options=options, validation=validation)
         self.grid = grid
@@ -468,56 +469,57 @@ class Static(Algorithm):
 class MEStatic(Algorithm):
     """
     Multi-Element Static gPC algorithm
+
+    Parameters
+    ----------
+    problem : Problem object
+        Object instance of gPC problem to investigate
+    options["method"]: str
+        GPC method to apply ['Reg', 'Quad']
+    options["order"]: list of int [dim]
+        Maximum individual expansion order [order_1, order_2, ..., order_dim].
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    options["order_max"]: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    options["order_max_norm"]: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    options["interaction_order"]: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    options["qoi"] : int or str, optional, default: 0
+        Choose for which QOI the projection is determined for. The other QOIs use the same projection.
+        Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
+    options["classifier"] : str, optional, default: "learning"
+        Classification algorithm to subdivide parameter domain.
+        - "learning" ... ClassifierLearning algorithm based on Unsupervised and supervised learning
+    options["classifier_options"] : dict, optional, default: default settings
+        Options of classifier
+    grid: Grid object instance
+        Grid object to use for static gPC (Random, SparseGrid, TensorGrid)
+
+    Notes
+    -----
+    .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+       regression. Journal of Computational Physics, 230(6), 2345-2367.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize static gPC algorithm
+    >>> algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
+    >>> # run algorithm
+    >>> gpc, coeffs, results = algorithm.run()
     """
+
     def __init__(self, problem, options, grid, validation=None):
         """
         Constructor; Initializes multi-element static gPC algorithm
-
-        Parameters
-        ----------
-        problem : Problem object
-            Object instance of gPC problem to investigate
-        options["method"]: str
-            GPC method to apply ['Reg', 'Quad']
-        options["order"]: list of int [dim]
-            Maximum individual expansion order [order_1, order_2, ..., order_dim].
-            Generates individual polynomials also if maximum expansion order in order_max is exceeded
-        options["order_max"]: int
-            Maximum global expansion order.
-            The maximum expansion order considers the sum of the orders of combined polynomials together with the
-            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
-            monomial orders.
-        options["order_max_norm"]: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        options["interaction_order"]: int
-            Number of random variables, which can interact with each other.
-            All polynomials are ignored, which have an interaction order greater than the specified
-        options["qoi"] : int or str, optional, default: 0
-            Choose for which QOI the projection is determined for. The other QOIs use the same projection.
-            Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
-        options["classifier"] : str, optional, default: "learning"
-            Classification algorithm to subdivide parameter domain.
-            - "learning" ... ClassifierLearning algorithm based on Unsupervised and supervised learning
-        options["classifier_options"] : dict, optional, default: default settings
-            Options of classifier
-        grid: Grid object instance
-            Grid object to use for static gPC (Random, SparseGrid, TensorGrid)
-
-        Notes
-        -----
-        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
-           regression. Journal of Computational Physics, 230(6), 2345-2367.
-
-        Examples
-        --------
-        >>> import pygpc
-        >>> # initialize static gPC algorithm
-        >>> algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
-        >>> # run algorithm
-        >>> gpc, coeffs, results = algorithm.run()
         """
         super(MEStatic, self).__init__(problem=problem, options=options, validation=validation)
         self.grid = grid
@@ -798,51 +800,52 @@ class MEStatic(Algorithm):
 class StaticProjection(Algorithm):
     """
     Static gPC algorithm using Basis Projection approach
+
+    Parameters
+    ----------
+    problem : Problem object
+        Object instance of gPC problem to investigate
+    options["method"]: str
+        GPC method to apply ['Reg', 'Quad']
+    options["order"]: int
+        Expansion order, each projected variable \\eta is expanded to.
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    options["order_max"]: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    options["order_max_norm"]: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    options["interaction_order"]: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    options["qoi"] : int or str, optional, default: 0
+        Choose for which QOI the projection is determined for. The other QOIs use the same projection.
+        Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
+    options["n_grid_gradient"] : float, optional, default: 10
+        Number of initial grid points to determine gradient and projection matrix
+
+    Notes
+    -----
+    .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+       regression. Journal of Computational Physics, 230(6), 2345-2367.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize static gPC algorithm
+    >>> algorithm = pygpc.StaticProjection(problem=problem, options=options)
+    >>> # run algorithm
+    >>> gpc, coeffs, results = algorithm.run
     """
+
     def __init__(self, problem, options, validation=None):
         """
         Constructor; Initializes static gPC algorithm
-
-        Parameters
-        ----------
-        problem : Problem object
-            Object instance of gPC problem to investigate
-        options["method"]: str
-            GPC method to apply ['Reg', 'Quad']
-        options["order"]: int
-            Expansion order, each projected variable \\eta is expanded to.
-            Generates individual polynomials also if maximum expansion order in order_max is exceeded
-        options["order_max"]: int
-            Maximum global expansion order.
-            The maximum expansion order considers the sum of the orders of combined polynomials together with the
-            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
-            monomial orders.
-        options["order_max_norm"]: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        options["interaction_order"]: int
-            Number of random variables, which can interact with each other.
-            All polynomials are ignored, which have an interaction order greater than the specified
-        options["qoi"] : int or str, optional, default: 0
-            Choose for which QOI the projection is determined for. The other QOIs use the same projection.
-            Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
-        options["n_grid_gradient"] : float, optional, default: 10
-            Number of initial grid points to determine gradient and projection matrix
-
-        Notes
-        -----
-        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
-           regression. Journal of Computational Physics, 230(6), 2345-2367.
-
-        Examples
-        --------
-        >>> import pygpc
-        >>> # initialize static gPC algorithm
-        >>> algorithm = pygpc.StaticProjection(problem=problem, options=options)
-        >>> # run algorithm
-        >>> gpc, coeffs, results = algorithm.run
         """
         super(StaticProjection, self).__init__(problem=problem, options=options, validation=validation)
 
@@ -1188,49 +1191,50 @@ class StaticProjection(Algorithm):
 class MEStaticProjection(Algorithm):
     """
     Static gPC algorithm using Basis Projection approach
+
+    Parameters
+    ----------
+    problem : Problem object
+        Object instance of gPC problem to investigate
+    options["order"]: int
+        Expansion order, each projected variable \\eta is expanded to.
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    options["order_max"]: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    options["interaction_order"]: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    options["qoi"] : int or str, optional, default: 0
+        Choose for which QOI the projection is determined for. The other QOIs use the same projection.
+        Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
+    options["n_grid_gradient"] : float, optional, default: 10
+        Number of initial grid points to determine gradient and projection matrix
+    options["classifier"] : str, optional, default: "learning"
+        Classification algorithm to subdivide parameter domain.
+        - "learning" ... ClassifierLearning algorithm based on Unsupervised and supervised learning
+    options["classifier_options"] : dict, optional, default: default settings
+        Options of classifier
+
+    Notes
+    -----
+    .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+       regression. Journal of Computational Physics, 230(6), 2345-2367.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize static gPC algorithm
+    >>> algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
+    >>> # run algorithm
+    >>> gpc, coeffs, results = algorithm.run
     """
+
     def __init__(self, problem, options, validation=None):
         """
         Constructor; Initializes static gPC algorithm
-
-        Parameters
-        ----------
-        problem : Problem object
-            Object instance of gPC problem to investigate
-        options["order"]: int
-            Expansion order, each projected variable \\eta is expanded to.
-            Generates individual polynomials also if maximum expansion order in order_max is exceeded
-        options["order_max"]: int
-            Maximum global expansion order.
-            The maximum expansion order considers the sum of the orders of combined polynomials together with the
-            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
-            monomial orders.
-        options["interaction_order"]: int
-            Number of random variables, which can interact with each other.
-            All polynomials are ignored, which have an interaction order greater than the specified
-        options["qoi"] : int or str, optional, default: 0
-            Choose for which QOI the projection is determined for. The other QOIs use the same projection.
-            Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
-        options["n_grid_gradient"] : float, optional, default: 10
-            Number of initial grid points to determine gradient and projection matrix
-        options["classifier"] : str, optional, default: "learning"
-            Classification algorithm to subdivide parameter domain.
-            - "learning" ... ClassifierLearning algorithm based on Unsupervised and supervised learning
-        options["classifier_options"] : dict, optional, default: default settings
-            Options of classifier
-
-        Notes
-        -----
-        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
-           regression. Journal of Computational Physics, 230(6), 2345-2367.
-
-        Examples
-        --------
-        >>> import pygpc
-        >>> # initialize static gPC algorithm
-        >>> algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
-        >>> # run algorithm
-        >>> gpc, coeffs, results = algorithm.run
         """
         super(MEStaticProjection, self).__init__(problem=problem, options=options, validation=validation)
 
@@ -1640,36 +1644,38 @@ class MEStaticProjection(Algorithm):
 class RegAdaptive(Algorithm):
     """
     Adaptive regression approach based on leave one out cross validation error estimation
+
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC problem under investigation
+    options["order_start"] : int, optional, default=0
+          Initial gPC expansion order (maximum order)
+    options["order_end"] : int, optional, default=10
+        Maximum Gpc expansion order to expand to (algorithm will terminate afterwards)
+    options["interaction_order"]: int, optional, default=dim
+        Define maximum interaction order of parameters (default: all interactions)
+    options["order_max_norm"]: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    options["adaptive_sampling"] : boolean, optional, default: True
+        Adds samples adaptively to the expansion until the error is converged and continues by
+        adding new basis functions.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize adaptive gPC algorithm
+    >>> algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+    >>> # run algorithm
+    >>> gpc, coeffs, results = algorithm.run()
     """
 
     def __init__(self, problem, options, validation=None):
         """
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC problem under investigation
-        options["order_start"] : int, optional, default=0
-              Initial gPC expansion order (maximum order)
-        options["order_end"] : int, optional, default=10
-            Maximum Gpc expansion order to expand to (algorithm will terminate afterwards)
-        options["interaction_order"]: int, optional, default=dim
-            Define maximum interaction order of parameters (default: all interactions)
-        options["order_max_norm"]: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        options["adaptive_sampling"] : boolean, optional, default: True
-            Adds samples adaptively to the expansion until the error is converged and continues by
-            adding new basis functions.
-
-        Examples
-        --------
-        >>> import pygpc
-        >>> # initialize adaptive gPC algorithm
-        >>> algorithm = pygpc.RegAdaptive(problem=problem, options=options)
-        >>> # run algorithm
-        >>> gpc, coeffs, results = algorithm.run()
+        Constructor; Initializes RegAdaptive algorithm
         """
         super(RegAdaptive, self).__init__(problem=problem, options=options, validation=validation)
 
@@ -1922,9 +1928,6 @@ class RegAdaptive(Algorithm):
                     if not self.options["adaptive_sampling"]:
                         break
 
-            ###
-
-
             # save gpc coeffs for this sub-iteration
             if self.options["fn_results"] is not None:
 
@@ -2035,39 +2038,42 @@ class RegAdaptive(Algorithm):
 class MERegAdaptiveProjection(Algorithm):
     """
     Adaptive regression approach based on leave one out cross validation error estimation
+
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC problem under investigation
+    options["order_start"] : int, optional, default=0
+          Initial gPC expansion order (maximum order)
+    options["order_end"] : int, optional, default=10
+        Maximum Gpc expansion order to expand to (algorithm will terminate afterwards)
+    options["interaction_order"]: int, optional, default=dim
+        Define maximum interaction order of parameters (default: all interactions)
+    options["order_max_norm"]: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    options["adaptive_sampling"] : boolean, optional, default: True
+        Adds samples adaptively to the expansion until the error is converged and continues by
+        adding new basis functions.
+    options["n_samples_discontinuity"] : int, optional, default: 10
+        Number of grid points close to discontinuity to refine its location
+    options["n_grid_init"] : int, optional, default: 10
+        Number of initial simulations to explore the parameter space
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize adaptive gPC algorithm
+    >>> algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
+    >>> # run algorithm
+    >>> gpc, coeffs, results = algorithm.run()
     """
 
     def __init__(self, problem, options, validation=None):
         """
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC problem under investigation
-        options["order_start"] : int, optional, default=0
-              Initial gPC expansion order (maximum order)
-        options["order_end"] : int, optional, default=10
-            Maximum Gpc expansion order to expand to (algorithm will terminate afterwards)
-        options["interaction_order"]: int, optional, default=dim
-            Define maximum interaction order of parameters (default: all interactions)
-        options["order_max_norm"]: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        options["adaptive_sampling"] : boolean, optional, default: True
-            Adds samples adaptively to the expansion until the error is converged and continues by
-            adding new basis functions.
-        options["n_samples_discontinuity"] : int, optional, default: 10
-            Number of grid points close to discontinuity to refine its location
-        options["n_grid_init"] : int, optional, default: 10
-            Number of initial simulations to explore the parameter space
-        Examples
-        --------
-        >>> import pygpc
-        >>> # initialize adaptive gPC algorithm
-        >>> algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
-        >>> # run algorithm
-        >>> gpc, coeffs, results = algorithm.run()
+        Constructor; Initializes MERegAdaptiveProjection Algorithm
         """
         super(MERegAdaptiveProjection, self).__init__(problem=problem, options=options, validation=validation)
 
@@ -3134,43 +3140,45 @@ class MERegAdaptiveProjection(Algorithm):
 class RegAdaptiveProjection(Algorithm):
     """
     Adaptive regression approach using projection and leave one out cross validation error estimation
+
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC problem under investigation
+    options["order_start"] : int, optional, default=0
+          Initial gPC expansion order (maximum order)
+    options["order_end"] : int, optional, default=10
+        Maximum Gpc expansion order to expand to (algorithm will terminate afterwards)
+    options["interaction_order"]: int, optional, default=dim
+        Define maximum interaction order of parameters (default: all interactions)
+    options["order_max_norm"]: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    options["n_grid_gradient"] : float, optional, default: 10
+        Number of initial grid points to determine gradient and projection matrix. When the algorithm goes
+        into the main interations the number will be increased depending on the options "matrix_ratio"
+        and "adaptive_sampling".
+    options["qoi"] : int or str, optional, default: 0
+        Choose for which QOI the projection is determined for. The other QOIs use the same projection.
+        Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
+    options["adaptive_sampling"] : boolean, optional, default: True
+        Adds samples adaptively to the expansion until the error is converged and continues by
+        adding new basis functions.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize adaptive gPC algorithm
+    >>> algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
+    >>> # run algorithm
+    >>> gpc, coeffs, results = algorithm.run()
     """
 
     def __init__(self, problem, options, validation=None):
         """
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC problem under investigation
-        options["order_start"] : int, optional, default=0
-              Initial gPC expansion order (maximum order)
-        options["order_end"] : int, optional, default=10
-            Maximum Gpc expansion order to expand to (algorithm will terminate afterwards)
-        options["interaction_order"]: int, optional, default=dim
-            Define maximum interaction order of parameters (default: all interactions)
-        options["order_max_norm"]: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        options["n_grid_gradient"] : float, optional, default: 10
-            Number of initial grid points to determine gradient and projection matrix. When the algorithm goes
-            into the main interations the number will be increased depending on the options "matrix_ratio"
-            and "adaptive_sampling".
-        options["qoi"] : int or str, optional, default: 0
-            Choose for which QOI the projection is determined for. The other QOIs use the same projection.
-            Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
-        options["adaptive_sampling"] : boolean, optional, default: True
-            Adds samples adaptively to the expansion until the error is converged and continues by
-            adding new basis functions.
-
-        Examples
-        --------
-        >>> import pygpc
-        >>> # initialize adaptive gPC algorithm
-        >>> algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
-        >>> # run algorithm
-        >>> gpc, coeffs, results = algorithm.run()
+        Constructor; Initializes RegAdaptiveProjection algorithm
         """
         super(RegAdaptiveProjection, self).__init__(problem=problem, options=options, validation=validation)
 

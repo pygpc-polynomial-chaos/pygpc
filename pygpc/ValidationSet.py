@@ -8,22 +8,22 @@ from .Grid import Grid
 class ValidationSet(object):
     """
     ValidationSet object
+
+    Parameters
+    ----------
+    grid : Grid object
+        Grid object containing the validation points (grid.coords, grid.coords_norm)
+    results : ndarray [n_grid x n_out]
+        Results of the model evaluation
+    gradient_results : ndarray [n_grid x n_out x dim], optional, default=None
+        Gradient of results of the model evaluations
+    gradient_idx : ndarray of int [n_grid]
+        Indices of grid points where the gradient was evaluated
     """
 
     def __init__(self, grid=None, results=None, gradient_results=None, gradient_idx=None):
         """
         Initializes ValidationSet
-
-        Parameters
-        ----------
-        grid : Grid object
-            Grid object containing the validation points (grid.coords, grid.coords_norm)
-        results : ndarray [n_grid x n_out]
-            Results of the model evaluation
-        gradient_results : ndarray [n_grid x n_out x dim], optional, default=None
-            Gradient of results of the model evaluations
-        gradient_idx : ndarray of int [n_grid]
-            Indices of grid points where the gradient was evaluated
         """
         self.grid = grid
         self.results = results
