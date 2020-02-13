@@ -101,25 +101,27 @@ plt.grid(True)
 #
 #     d(x_i,x_j) = d_ij = [ \sum_{k=1}^{m}|x_ik - x_jk| ^ t]^\frac{1}{t}, t \in {1,2}
 #
-# There is however a more elegant way of computing this optimization criterion as shown by Morris and Mitchell,
+# There is however a more elegant way of computing this optimization criterion as shown by Morris and Mitchell (YEAR),
 # called the :math:`\varphi_P` criterion.
 # 
 # .. math::
 #
 #     \min\varphi_P \quad \text{subject to} \quad \varphi_P = [ \sum_{k = 1} ^ {s} J_id_i  ^ p]^\frac{1}{p},
 # 
-# where :math:`s` is the number of distinct distances, :math:`J` is an vector of indecies of the distances
+# where :math:`s` is the number of distinct distances, :math:`J` is an vector of indices of the distances
 # and :math:`p` is an integer. With a very large :math:`p` this criterion is equivalent to the maximin criterion
+#
+# .. Morris INSER REF HERE
 # 
 # LHS with enhanced stochastic evolutionary algorthm (ESE)
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# To achive otimized designs with a more stable method and possibly quicker then by simply evaluating
+# To achive optimized designs with a more stable method and possibly quicker then by simply evaluating
 # the criteria over a number of repetitions **pygpc** can use an ESE for achieving sufficient
-# :math:`\varphi_P`-value. This algorithm is more appealing in its efficiancy and proves to
+# :math:`\varphi_P`-value. This algorithm is more appealing in its efficacy and proves to
 # [sth about the resulting error or std in a low sample size].
-# This method originated from Jin et al. (2005)
+# This method originated from Jin et al. (2005).
 #
-# .. Jin, R., Chen, W., & Sudjianto, A. (2005). An efficient algorithm for constructing optimal
+# .. Jin, R., Chen, W., Sudjianto, A. (2005). An efficient algorithm for constructing optimal
 #    design of computer experiments. Journal of statistical planning and inference, 134(1), 268-287.
 
 ###############################################################################
