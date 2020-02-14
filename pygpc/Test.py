@@ -7,6 +7,11 @@ from .Problem import *
 class Test(object):
     """
     Test function objects
+
+    Parameters
+    ----------
+    dim : int
+        Number of random variables
     """
     def __init__(self, dim):
         """

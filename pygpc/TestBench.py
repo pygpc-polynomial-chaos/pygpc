@@ -50,24 +50,24 @@ def run_test(session):
 class TestBench(object):
     """
     TestBench for gPC algorithms
+
+    Parameters
+    ----------
+    algorithm : pygpc.Algorithm Object
+        Algorithm to benchmark
+    problem : Dict() or OrderedDict() of pygpc.Problem instances
+        Problem instances to test
+    options : Dict or OrderedDict()
+        Algorithm options
+    repetitions : int (default=1)
+        Number of repeated runs
+    n_cpu : int (default=1)
+        Number of threads to run tests in parallel
     """
 
     def __init__(self, algorithm, problem, options, repetitions=1, n_cpu=1):
         """
         Initializes the TestBench class object instance
-
-        Parameters
-        ----------
-        algorithm : pygpc.Algorithm Object
-            Algorithm to benchmark
-        problem : Dict() or OrderedDict() of pygpc.Problem instances
-            Problem instances to test
-        options : Dict or OrderedDict()
-            Algorithm options
-        repetitions : int (default=1)
-            Number of repeated runs
-        n_cpu : int (default=1)
-            Number of threads to run tests in parallel
         """
         self.session = OrderedDict()
         self.session_keys = []
@@ -194,21 +194,21 @@ class TestBench(object):
 class TestBenchContinuous(TestBench):
     """
     TestBenchContinuous
+
+    Parameters
+    ----------
+    algorithm : pygpc.Algorithm Object
+        Algorithm to benchmark
+    options : Dict or OrderedDict()
+        Algorithm options
+    repetitions : int
+        Number of repeated runs
+    n_cpu : int
+        Number of threads to run pygpc.Problems in parallel
     """
     def __init__(self, algorithm, options, repetitions, n_cpu=1):
         """
         Initializes TestBenchContinuous class. Setting up pygpc.Problem instances.
-
-        Parameters
-        ----------
-        algorithm : pygpc.Algorithm Object
-            Algorithm to benchmark
-        options : Dict or OrderedDict()
-            Algorithm options
-        repetitions : int
-            Number of repeated runs
-        n_cpu : int
-            Number of threads to run pygpc.Problems in parallel
         """
         self.dims = []
         self.validation = OrderedDict()
@@ -239,23 +239,23 @@ class TestBenchContinuous(TestBench):
 class TestBenchContinuousND(TestBench):
     """
     TestBenchContinuousND
+
+    Parameters
+    ----------
+    algorithm : pygpc.Algorithm Object
+        Algorithm to benchmark
+    options : Dict or OrderedDict()
+        Algorithm options
+    dims : list of int
+        Number of dimensions
+    repetitions : int
+        Number of repeated runs
+    n_cpu : int
+        Number of threads to run pygpc.Problems in parallel
     """
     def __init__(self, algorithm, options, dims, repetitions, n_cpu=1):
         """
         Initializes TestBenchContinuousND class. Setting up pygpc.Problem instances.
-
-        Parameters
-        ----------
-        algorithm : pygpc.Algorithm Object
-            Algorithm to benchmark
-        options : Dict or OrderedDict()
-            Algorithm options
-        dims : list of int
-            Number of dimensions
-        repetitions : int
-            Number of repeated runs
-        n_cpu : int
-            Number of threads to run pygpc.Problems in parallel
         """
         self.dims = dims
         self.validation = OrderedDict()
@@ -292,21 +292,21 @@ class TestBenchContinuousND(TestBench):
 class TestBenchContinuousHD(TestBench):
     """
     TestBenchContinuousHD
+
+    Parameters
+    ----------
+    algorithm : pygpc.Algorithm Object
+        Algorithm to benchmark
+    options : Dict or OrderedDict()
+        Algorithm options
+    repetitions : int
+        Number of repeated runs
+    n_cpu : int
+        Number of threads to run pygpc.Problems in parallel
     """
     def __init__(self, algorithm, options, repetitions, n_cpu=1):
         """
         Initializes TestBenchContinuousND class. Setting up pygpc.Problem instances.
-
-        Parameters
-        ----------
-        algorithm : pygpc.Algorithm Object
-            Algorithm to benchmark
-        options : Dict or OrderedDict()
-            Algorithm options
-        repetitions : int
-            Number of repeated runs
-        n_cpu : int
-            Number of threads to run pygpc.Problems in parallel
         """
         self.dims = []
         self.validation = OrderedDict()
@@ -329,21 +329,21 @@ class TestBenchContinuousHD(TestBench):
 class TestBenchDiscontinuous(TestBench):
     """
     TestBenchDiscontinuous
+
+    Parameters
+    ----------
+    algorithm : pygpc.Algorithm Object
+        Algorithm to benchmark
+    options : Dict or OrderedDict()
+        Algorithm options
+    repetitions : int
+        Number of repeated runs
+    n_cpu : int
+        Number of threads to run pygpc.Problems in parallel
     """
     def __init__(self, algorithm, options, repetitions, n_cpu=1):
         """
         Initializes TestBenchDiscontinuous class. Setting up pygpc.Problem instances.
-
-        Parameters
-        ----------
-        algorithm : pygpc.Algorithm Object
-            Algorithm to benchmark
-        options : Dict or OrderedDict()
-            Algorithm options
-        repetitions : int
-            Number of repeated runs
-        n_cpu : int
-            Number of threads to run pygpc.Problems in parallel
         """
         self.dims = []
         self.validation = OrderedDict()
@@ -369,23 +369,24 @@ class TestBenchDiscontinuous(TestBench):
 class TestBenchDiscontinuousND(TestBench):
     """
     TestBenchDiscontinuousND
+
+    Parameters
+    ----------
+    algorithm : pygpc.Algorithm Object
+        Algorithm to benchmark
+    options : Dict or OrderedDict()
+        Algorithm options
+    dims : list of int
+        Number of dimensions
+    repetitions : int
+        Number of repeated runs
+    n_cpu : int
+        Number of threads to run pygpc.Problems in parallel
     """
+
     def __init__(self, algorithm, options, dims, repetitions, n_cpu=1):
         """
         Initializes TestBenchDiscontinuousND class. Setting up pygpc.Problem instances.
-
-        Parameters
-        ----------
-        algorithm : pygpc.Algorithm Object
-            Algorithm to benchmark
-        options : Dict or OrderedDict()
-            Algorithm options
-        dims : list of int
-            Number of dimensions
-        repetitions : int
-            Number of repeated runs
-        n_cpu : int
-            Number of threads to run pygpc.Problems in parallel
         """
         self.dims = dims
         self.validation = OrderedDict()
@@ -408,21 +409,21 @@ class TestBenchDiscontinuousND(TestBench):
 class TestBenchNoisy(TestBench):
     """
     TestBenchNoisy
+
+    Parameters
+    ----------
+    algorithm : pygpc.Algorithm Object
+        Algorithm to benchmark
+    options : Dict or OrderedDict()
+        Algorithm options
+    repetitions : int
+        Number of repeated runs
+    n_cpu : int
+        Number of threads to run pygpc.Problems in parallel
     """
     def __init__(self, algorithm, options, repetitions, n_cpu=1):
         """
         Initializes TestBenchNoisy class. Setting up pygpc.Problem instances.
-
-        Parameters
-        ----------
-        algorithm : pygpc.Algorithm Object
-            Algorithm to benchmark
-        options : Dict or OrderedDict()
-            Algorithm options
-        repetitions : int
-            Number of repeated runs
-        n_cpu : int
-            Number of threads to run pygpc.Problems in parallel
         """
         self.dims = []
         self.validation = OrderedDict()
@@ -446,23 +447,23 @@ class TestBenchNoisy(TestBench):
 class TestBenchNoisyND(TestBench):
     """
     TestBenchNoisyND
+
+    Parameters
+    ----------
+    algorithm : pygpc.Algorithm Object
+        Algorithm to benchmark
+    options : Dict or OrderedDict()
+        Algorithm options
+    dims : list of int
+        Number of dimensions
+    repetitions : int
+        Number of repeated runs
+    n_cpu : int
+        Number of threads to run pygpc.Problems in parallel
     """
     def __init__(self, algorithm, options, dims, repetitions, n_cpu=1):
         """
         Initializes TestBenchNoisyND class. Setting up pygpc.Problem instances.
-
-        Parameters
-        ----------
-        algorithm : pygpc.Algorithm Object
-            Algorithm to benchmark
-        options : Dict or OrderedDict()
-            Algorithm options
-        dims : list of int
-            Number of dimensions
-        repetitions : int
-            Number of repeated runs
-        n_cpu : int
-            Number of threads to run pygpc.Problems in parallel
         """
         self.dims = dims
         self.validation = OrderedDict()

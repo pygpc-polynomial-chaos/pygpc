@@ -12,6 +12,11 @@ class BasisFunction(object):
     Abstract class of basis functions.
     This base class provides basic properties and methods for the basis functions.
     It cannot be used directly, but inherits properties and methods to the specific basis function sub classes.
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the polynomial (see subclasses for details)
     """
 
     def __init__(self, p):
@@ -49,19 +54,19 @@ class BasisFunction(object):
 class Jacobi(BasisFunction):
     """
     Jacobi basis function used in the orthogonal gPC to model beta distributed random variables.
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the Jacobi polynomial
+        - p["i"] ... order
+        - p["p"] ... first shape parameter
+        - p["q"] ... second shape parameter
     """
 
     def __init__(self, p):
         """
         Constructor; initialized a Jacobi basis function
-
-        Parameters
-        ----------
-        p : dict
-            Parameters of the Jacobi polynomial
-            - p["i"] ... order
-            - p["p"] ... first shape parameter
-            - p["q"] ... second shape parameter
         """
 
         super(Jacobi, self).__init__(p)
@@ -98,17 +103,17 @@ class Jacobi(BasisFunction):
 class Hermite(BasisFunction):
     """
     Hermite basis function used in the orthogonal gPC to model normal distributed random variables.
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the Hermite polynomial
+        - p["i"] ... order
     """
 
     def __init__(self, p):
         """
         Constructor; initializes a Hermite basis function
-
-        Parameters
-        ----------
-        p : dict
-            Parameters of the Hermite polynomial
-            - p["i"] ... order
         """
 
         super(Hermite, self).__init__(p)
@@ -136,36 +141,25 @@ class Laguerre(BasisFunction):
     """
     Laguerre basis function used in the orthogonal gPC to model gamma distributed random variables.
     It is defined in the gpc space from [0, inf]
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the Laguerre polynomial
+        - p["i"] ... order
+        - p["alpha"] ... shape parameter (alpha_poly = alpha_pdf - 1)
+        - p["beta"] ... rate parameter
     """
 
     def __init__(self, p):
         """
         Constructor; initializes a Laguerre basis function
-
-        Parameters
-        ----------
-        p : dict
-            Parameters of the Laguerre polynomial
-            - p["i"] ... order
-            - p["alpha"] ... shape parameter (alpha_poly = alpha_pdf - 1)
-            - p["beta"] ... rate parameter (   )
         """
 
         super(Laguerre, self).__init__(p)
 
-        # normalization factor of polynomial (to later normalize basis functions <psi^2> = int(psi^2*p)dx)
-        # self.fun_norm = scipy.special.gamma(p["i"]+p["alpha"]+2
-        #                                     ) / (scipy.special.factorial(p["i"]) * scipy.special.gamma(p["alpha"] + 2))
-
-        self.fun_norm = (scipy.special.factorial(p["i"]+p["alpha"]) / scipy.special.factorial(p["i"])) / scipy.special.gamma(p["alpha"] + 1)
-
-        # xmax = scipy.stats.gamma.ppf(0.99999999999, a=p["alpha"]+1, loc=0., scale=1.)
-        # x = np.linspace(0, xmax, int(5e5))
-        # poly = scipy.special.genlaguerre(n=p["i"], alpha=p["alpha"], monic=False)
-        # y_pdf = scipy.stats.gamma.pdf(x, a=p["alpha"]+1, loc=0., scale=1.)
-        # y_poly = poly(x) * poly(x)
-        # y = y_pdf * y_poly
-        # self.fun_norm = np.trapz(x=x, y=y)
+        self.fun_norm = (scipy.special.factorial(p["i"]+p["alpha"]) / scipy.special.factorial(p["i"])) / \
+                        scipy.special.gamma(p["alpha"] + 1)
 
         # define basis function
         self.fun = scipy.special.genlaguerre(p["i"], alpha=p["alpha"], monic=False) / np.sqrt(self.fun_norm)
@@ -186,17 +180,17 @@ class Laguerre(BasisFunction):
 class StepUp(BasisFunction):
     """
     StepUp (from 0 to 1) basis function used in the non-orthogonal gPC.
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the StepUp function
+        - p["xs"] ... location of step
     """
 
     def __init__(self, p):
         """
         Constructor; initializes a StepUp basis function
-
-        Parameters
-        ----------
-        p : dict
-            Parameters of the StepUp function
-            - p["xs"] ... location of step
         """
 
         super(StepUp, self).__init__(p)
@@ -214,17 +208,17 @@ class StepUp(BasisFunction):
 class StepDown(BasisFunction):
     """
     StepDown (from 1 to 0) basis function used in the non-orthogonal gPC.
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the StepDown function
+        - p["xs"] ... location of step
     """
 
     def __init__(self, p):
         """
         Constructor; initializes a StepDown basis function
-
-        Parameters
-        ----------
-        p : dict
-            Parameters of the StepDown function
-            - p["xs"] ... location of step
         """
 
         super(StepDown, self).__init__(p)
@@ -242,18 +236,18 @@ class StepDown(BasisFunction):
 class Rect(BasisFunction):
     """
     Rectangular basis function used in the non-orthogonal gPC.
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the Rect function
+        - p["x1"] ... location of positive flank (0 -> 1)
+        - p["x2"] ... location of negative flank (1 -> 0)
     """
 
     def __init__(self, p):
         """
         Constructor; initializes a Rect basis function
-
-        Parameters
-        ----------
-        p : dict
-            Parameters of the Rect function
-            - p["x1"] ... location of positive flank (0 -> 1)
-            - p["x2"] ... location of negative flank (1 -> 0)
         """
 
         super(Rect, self).__init__(p)
@@ -271,18 +265,18 @@ class Rect(BasisFunction):
 class SigmoidUp(BasisFunction):
     """
     SigmoidUp (from 0 to 1) basis function used in the non-orthogonal gPC.
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the SigmoidUp function
+        - p["xs"] ... location of turning point
+        - p["r"] ... steepness
     """
 
     def __init__(self, p):
         """
         Constructor; initializes a SigmoidUp basis function
-
-        Parameters
-        ----------
-        p : dict
-            Parameters of the SigmoidUp function
-            - p["xs"] ... location of turning point
-            - p["r"] ... steepness
         """
 
         super(SigmoidUp, self).__init__(p)
@@ -300,18 +294,18 @@ class SigmoidUp(BasisFunction):
 class SigmoidDown(BasisFunction):
     """
     SigmoidDown (from 0 to 1) basis function used in the non-orthogonal gPC.
+
+    Parameters
+    ----------
+    p : dict
+        Parameters of the SigmoidDown function
+        - p["xs"] ... location of turning point
+        - p["r"] ... steepness
     """
 
     def __init__(self, p):
         """
         Constructor; initializes a SigmoidDown basis function
-
-        Parameters
-        ----------
-        p : dict
-            Parameters of the SigmoidDown function
-            - p["xs"] ... location of turning point
-            - p["r"] ... steepness
         """
 
         super(SigmoidDown, self).__init__(p)

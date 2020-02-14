@@ -16,6 +16,43 @@ class SGPC(GPC):
     """
     Sub-class for standard gPC (SGPC)
 
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC Problem under investigation
+    order: list of int [dim]
+        Maximum individual expansion order [order_1, order_2, ..., order_dim].
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    order_max_norm: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    interaction_order: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    interaction_order_current: int, optional, default: interaction_order
+        Number of random variables currently interacting with respect to the highest order.
+        (interaction_order_current <= interaction_order)
+        The parameters for lower orders are all interacting with "interaction order".
+    options : dict
+        Options of gPC
+    validation: ValidationSet object (optional)
+        Object containing a set of validation points and corresponding solutions. Can be used
+        to validate gpc approximation setting options["error_type"]="nrmsd".
+        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+        - results: ndarray [n_grid x n_out] results
+
+    Notes
+    -----
+    .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+       regression. Journal of Computational Physics, 230(6), 2345-2367.
+
     Attributes
     ----------
     order: list of int [dim]
@@ -51,43 +88,6 @@ class SGPC(GPC):
                  interaction_order_current=None, validation=None):
         """
         Constructor; Initializes the SGPC class
-
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC Problem under investigation
-        order: list of int [dim]
-            Maximum individual expansion order [order_1, order_2, ..., order_dim].
-            Generates individual polynomials also if maximum expansion order in order_max is exceeded
-        order_max: int
-            Maximum global expansion order.
-            The maximum expansion order considers the sum of the orders of combined polynomials together with the
-            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
-            monomial orders.
-        order_max_norm: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        interaction_order: int
-            Number of random variables, which can interact with each other.
-            All polynomials are ignored, which have an interaction order greater than the specified
-        interaction_order_current: int, optional, default: interaction_order
-            Number of random variables currently interacting with respect to the highest order.
-            (interaction_order_current <= interaction_order)
-            The parameters for lower orders are all interacting with "interaction order".
-        options : dict
-            Options of gPC
-        validation: ValidationSet object (optional)
-            Object containing a set of validation points and corresponding solutions. Can be used
-            to validate gpc approximation setting options["error_type"]="nrmsd".
-            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
-            - results: ndarray [n_grid x n_out] results
-
-        Notes
-        -----
-        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle 
-           regression. Journal of Computational Physics, 230(6), 2345-2367.
         """
         super(SGPC, self).__init__(problem, options, validation)
 
@@ -450,7 +450,53 @@ class Reg(SGPC):
     """
     Regression gPC subclass
 
-    Reg(problem, order, order_max, interaction_order, fn_results=None)
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC Problem under investigation
+    order: list of int [dim]
+        Maximum individual expansion order [order_1, order_2, ..., order_dim].
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    order_max_norm: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    interaction_order: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    interaction_order_current: int, optional, default: interaction_order
+        Number of random variables currently interacting with respect to the highest order.
+        (interaction_order_current <= interaction_order)
+        The parameters for lower orders are all interacting with "interaction order".
+    options : dict
+        Options of gPC
+    validation: ValidationSet object (optional)
+        Object containing a set of validation points and corresponding solutions. Can be used
+        to validate gpc approximation setting options["error_type"]="nrmsd".
+        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+        - results: ndarray [n_grid x n_out] results
+
+    Notes
+    -----
+    .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+       regression. Journal of Computational Physics, 230(6), 2345-2367.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> gpc = pygpc.Reg(problem=problem,
+    >>>                 order=[7, 6],
+    >>>                 order_max=5,
+    >>>                 order_max_norm=1,
+    >>>                 interaction_order=2,
+    >>>                 interaction_order_current=1
+    >>>                 fn_results="/tmp/my_results")
 
     Attributes
     ----------
@@ -470,54 +516,6 @@ class Reg(SGPC):
                  interaction_order_current=None, validation=None):
         """
         Constructor; Initializes Regression SGPC class
-
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC Problem under investigation
-        order: list of int [dim]
-            Maximum individual expansion order [order_1, order_2, ..., order_dim].
-            Generates individual polynomials also if maximum expansion order in order_max is exceeded
-        order_max: int
-            Maximum global expansion order.
-            The maximum expansion order considers the sum of the orders of combined polynomials together with the
-            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
-            monomial orders.
-        order_max_norm: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        interaction_order: int
-            Number of random variables, which can interact with each other.
-            All polynomials are ignored, which have an interaction order greater than the specified
-        interaction_order_current: int, optional, default: interaction_order
-            Number of random variables currently interacting with respect to the highest order.
-            (interaction_order_current <= interaction_order)
-            The parameters for lower orders are all interacting with "interaction order".
-        options : dict
-            Options of gPC
-        validation: ValidationSet object (optional)
-            Object containing a set of validation points and corresponding solutions. Can be used
-            to validate gpc approximation setting options["error_type"]="nrmsd".
-            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
-            - results: ndarray [n_grid x n_out] results
-
-        Notes
-        -----
-        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle 
-           regression. Journal of Computational Physics, 230(6), 2345-2367.
-
-        Examples
-        --------
-        >>> import pygpc
-        >>> gpc = pygpc.Reg(problem=problem,
-        >>>                 order=[7, 6],
-        >>>                 order_max=5,
-        >>>                 order_max_norm=1,
-        >>>                 interaction_order=2,
-        >>>                 interaction_order_current=1
-        >>>                 fn_results="/tmp/my_results")
         """
 
         if interaction_order_current is None:
@@ -541,62 +539,60 @@ class Reg(SGPC):
 class Quad(SGPC):
     """
     Quadrature SGPC sub-class
+
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC Problem under investigation
+    order: list of int [dim]
+        Maximum individual expansion order [order_1, order_2, ..., order_dim].
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    order_max: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    order_max_norm: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    interaction_order: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    interaction_order_current: int, optional, default: interaction_order
+        Number of random variables currently interacting with respect to the highest order.
+        (interaction_order_current <= interaction_order)
+        The parameters for lower orders are all interacting with "interaction order".
+    options : dict
+        Options of gPC
+    validation: ValidationSet object (optional)
+        Object containing a set of validation points and corresponding solutions. Can be used
+        to validate gpc approximation setting options["error_type"]="nrmsd".
+        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+        - results: ndarray [n_grid x n_out] results
+
+    Notes
+    -----
+    .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+       regression. Journal of Computational Physics, 230(6), 2345-2367.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> gpc = pygpc.Quad(problem=problem,
+    >>>                  order=[7, 6],
+    >>>                  order_max=5,
+    >>>                  order_max_norm=1,
+    >>>                  interaction_order=2,
+    >>>                  interaction_order_current=1,
+    >>>                  fn_results="/tmp/my_results")
     """
 
     def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options,
                  interaction_order_current=None, validation=None):
         """
         Constructor; Initializes Quadrature SGPC sub-class
-
-        Quad(problem, order, order_max, order_max_norm, interaction_order)
-
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC Problem under investigation
-        order: list of int [dim]
-            Maximum individual expansion order [order_1, order_2, ..., order_dim].
-            Generates individual polynomials also if maximum expansion order in order_max is exceeded
-        order_max: int
-            Maximum global expansion order.
-            The maximum expansion order considers the sum of the orders of combined polynomials together with the
-            chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
-            monomial orders.
-        order_max_norm: float
-            Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
-            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
-            is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
-            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
-        interaction_order: int
-            Number of random variables, which can interact with each other.
-            All polynomials are ignored, which have an interaction order greater than the specified
-        interaction_order_current: int, optional, default: interaction_order
-            Number of random variables currently interacting with respect to the highest order.
-            (interaction_order_current <= interaction_order)
-            The parameters for lower orders are all interacting with "interaction order".
-        options : dict
-            Options of gPC
-        validation: ValidationSet object (optional)
-            Object containing a set of validation points and corresponding solutions. Can be used
-            to validate gpc approximation setting options["error_type"]="nrmsd".
-            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
-            - results: ndarray [n_grid x n_out] results
-
-        Notes
-        -----
-        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle 
-           regression. Journal of Computational Physics, 230(6), 2345-2367.
-
-        Examples
-        --------
-        >>> import pygpc
-        >>> gpc = pygpc.Quad(problem=problem,
-        >>>                  order=[7, 6],
-        >>>                  order_max=5,
-        >>>                  order_max_norm=1,
-        >>>                  interaction_order=2,
-        >>>                  interaction_order_current=1,
-        >>>                  fn_results="/tmp/my_results")
         """
 
         if interaction_order_current is None:
