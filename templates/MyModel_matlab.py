@@ -58,6 +58,6 @@ class MyModel_matlab(AbstractModel):
             y = y[:, np.newaxis]
 
         # delete matlab engine after simulations because it can not be saved in the gpc object
-        # del self.matlab_engine
+        del self.matlab_engine
 
         return y
