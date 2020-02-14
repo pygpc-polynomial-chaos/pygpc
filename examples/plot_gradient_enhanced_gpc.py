@@ -314,8 +314,8 @@ res = com.run(model=model,
 #%%
 # We are looping over the different methods and evaluate the gradients. The forward approximation method "FD_fwd"
 # returns the gradient for every grid point whereas the first and second order approximation "FD_1st" and "FD_2nd"
-# only return the gradient in grid points with sufficient number of neighbors. The indices stored in
-# "gradient_idx" are the indices of the grid points where the gradients are computed.
+# only return the gradient in grid points if they have sufficient number of neighboring points within radius
+# :math:`dx`. The indices stored in "gradient_idx" are the indices of the grid points where the gradients are computed.
 
 df = pd.DataFrame(columns=["method", "nrmsd", "coverage"])
 grad_res = dict()
