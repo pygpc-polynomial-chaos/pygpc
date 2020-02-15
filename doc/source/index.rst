@@ -23,6 +23,7 @@ Basic features:
     - **l1-minimization:** reduction of necessary model evaluations by making use of concepts from compressed sensing
     - **Gradient enhanced gPC:** use of gradient information of the model function to increase accuracy
     - **Multi-element gPC:** analyzing systems with discontinuities and sharp transitions
+    - **Optimized Latin Hypercube Sampling** for fast convergence
 
 Areas of application:
 ---------------------
@@ -106,56 +107,6 @@ Then install pygpc with:
 
   CC=gcc-9 CXX=g++-9 python setup.py install
 
-Analyzing MATLAB models with pygpc
-----------------------------------
-
-You can easily investigate your models written in MATLAB with pygpc. In order to do so, you have to install the MATLAB Engine API for Python.
-
-**Install MATLAB Engine API for Python**
-
-To start the MATLAB engine within a Python session, you first must install the engine API as a Python package. MATLAB provides a standard Python setup.py file for building and installing the engine using the distutils module. You can use the same setup.py commands to build and install the engine on Windows, Mac, or Linux systems.
-
-Before you install, verify your Python and MATLAB configurations.
-
-- Check that your system has a supported version of Python and MATLAB R2014b or later. To check that Python is installed on your system, run Python at the operating system prompt.
-- Add the folder that contains the Python interpreter to your path, if it is not already there.
-- Find the path to the MATLAB folder. Start MATLAB and type matlabroot in the command window. Copy the path returned by matlabroot.
-
-To install the engine API, choose one of the following. (You might need administrator privileges to execute these commands.)
-
-**Windows**
-
-.. code-block:: bash
-
-   > cd "matlabroot\extern\engines\python"
-   > python setup.py install
-
-**macOS or Linux**
-
-.. code-block:: bash
-
-   > cd "matlabroot/extern/engines/python"
-   > python setup.py install
-
-**Withing MATLAB**
-
-.. code-block:: bash
-
-   cd (fullfile(matlabroot,'extern','engines','python'))
-   system('python setup.py install')
-
-After you installed the MATLAB Engine API for Python, you can set
-
-.. code-block:: python
-
-   options["matlab_model"] = True
-
-in your gPC run-file.
-
-You can find an example model-file in :code:`.../templates/MyModel_matlab.py` and the associated gPC run-file in :code:`.../templates/MyGPC_matlab.py`.
-
-For additional readings visit the `Calling MATLAB from Python <https://www.mathworks.com/help/matlab/matlab-engine-for-python.html?s_tid=CRUX_lftnav>`_ homepage.
-
 Documentation
 -------------
 
@@ -174,8 +125,20 @@ Contact
 
 If you have questions, problems or suggestions regarding pygpc, please contact `Konstantin Weise <https://www.cbs.mpg.de/person/51222/2470>`_.
 
+Examples Gallery
+================
+
 .. include::
-   auto_examples/index.rst
+   auto_introduction/index.rst
+
+.. include::
+   auto_gpc/index.rst
+
+.. include::
+   auto_algorithms/index.rst
+
+.. include::
+   auto_features/index.rst
 
 Table of contents
 -----------------
@@ -183,13 +146,14 @@ Table of contents
 .. toctree::
 
    pygpc
-   auto_examples/index
-   
+   auto_introduction/index
+   auto_gpc/index
+   auto_algorithms/index
+   auto_features/index
+
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-

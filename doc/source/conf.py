@@ -55,9 +55,10 @@ extensions = [
 
 # configuration of sphinx gallery
 sphinx_gallery_conf = {
-    'examples_dirs': '../../examples',   # path to your example scripts
-    'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
-}
+    'examples_dirs': ['../../examples/introduction', '../../examples/gpc', '../../examples/algorithms', '../../examples/features'],   # path to your example scripts
+    'gallery_dirs': ['auto_introduction', 'auto_gpc', 'auto_algorithms', 'auto_features']  # path to where to save gallery generated output
+
+} #'default_thumb_file': '../../../pckg/media/pygpc_logo_git.png',
 
 # 'IPython.sphinxext.ipython_directive',
 # 'IPython.sphinxext.ipython_console_highlighting',
