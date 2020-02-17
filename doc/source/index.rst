@@ -32,7 +32,7 @@ pygpc can be used to analyze a variety of different of problems. It is used for 
 
 - Nondestructive testing (`Weise, K., Carlstedt, M., Ziolkowski, M., & Brauer, H. (2015). Uncertainty analysis in Lorentz force eddy current testing. IEEE Transactions on Magnetics, 52(3), 1-4. <https://ieeexplore.ieee.org/abstract/document/7272103>`_)
 
-- Noninvasive brain stimulation (`Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., & Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834. <https://www.sciencedirect.com/science/article/pii/S1053811918322031>`_)
+- Noninvasive brain stimulation (`Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., & Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834. <https://www.sciencedirect.com/science/article/pii/S1053811918322031>`_, `Weise, K., Numssen, O., Thielscher, A., Hartwigsen, G., & Knösche, T. R. (2020). A novel approach to localize cortical TMS effects. NeuroImage, 209, 116486. <https://www.sciencedirect.com/science/article/pii/S1053811919310778>`_,)
 
 - Transcranial magnetic stimulation (`Weise, K., Di Rienzo, L., Brauer, H., Haueisen, J., & Toepfer, H. (2015). Uncertainty analysis in transcranial magnetic stimulation using nonintrusive polynomial chaos expansion. IEEE Transactions on Magnetics, 51(7), 1-8. <https://ieeexplore.ieee.org/abstract/document/7006714>`_)
 

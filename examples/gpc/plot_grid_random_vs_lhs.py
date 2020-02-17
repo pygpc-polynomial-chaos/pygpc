@@ -40,6 +40,7 @@ where :math:`P` is a :math:`d \\times n` matrix of randomly perturbed integers
 # Constructing a simple LHS design
 # --------------------------------
 # We are going to create a simple LHS design for 2 random variables with 5 sampling points:
+# sphinx_gallery_thumbnail_number = 3
 
 import pygpc
 import matplotlib.pyplot as plt
@@ -213,9 +214,8 @@ import matplotlib.pyplot as plt
 grids = [pygpc.Random, pygpc.LHS, pygpc.LHS, pygpc.LHS, pygpc.LHS]
 grids_options = [None, None, "corr", "maximin", "ese"]
 grid_legend = ["Random", "LHS (standard)", "LHS (corr opt)", "LHS (Phi-P opt)", "LHS (ESE)"]
-# order = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-order = [2, 3, 4]
-repetitions = 2
+order = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+repetitions = 5
 
 err = np.zeros((len(grids), len(order), repetitions))
 n_grid = np.zeros(len(order))

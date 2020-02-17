@@ -1,6 +1,6 @@
 """
-Backends
-========
+OpenMP and CUDA
+===============
 
 Accelerating pygpc by using different computing backends
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

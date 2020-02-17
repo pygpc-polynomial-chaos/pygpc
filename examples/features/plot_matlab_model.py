@@ -7,10 +7,9 @@ install the MATLAB Engine API for Python.
 """
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=[15, 7])
-image = plt.imread("../images/python_matlab_interface.png")
-plt.imshow(image)
-plt.axis('off')
+_ = plt.figure(figsize=[15, 7])
+_ = plt.imshow(plt.imread("../images/python_matlab_interface.png"))
+_ = plt.axis('off')
 
 #%%
 # **Install MATLAB Engine API for Python**
