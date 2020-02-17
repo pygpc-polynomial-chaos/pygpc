@@ -106,6 +106,6 @@ References
 .. [13] Weise, K., Numssen, O., Thielscher, A., Hartwigsen, G., & Knösche, T. R. (2020).
    A novel approach to localize cortical TMS effects. NeuroImage, 209, 116486.
 
-.. Askey, R., & Wilson, J. A. (1985). Some basic hypergeometric orthogonal polynomials
+.. [14] Askey, R., & Wilson, J. A. (1985). Some basic hypergeometric orthogonal polynomials
    that generalize Jacobi polynomials (Vol. 319). American Mathematical Soc..
 """
