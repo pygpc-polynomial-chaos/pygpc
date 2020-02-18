@@ -92,9 +92,17 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
                          i_iter=None,
                          i_subiter=None,
                          fn_results=None,
-                         print_func_time=False)[:, output_idx]
+                         print_func_time=False)
+
+        if output_idx is None:
+            output_idx = np.arange(y_orig.shape[1])
+
+        y_orig = y_orig[:, output_idx]
 
     else:
+
+        if output_idx is None:
+            output_idx = np.arange(data_original.shape[1])
 
         grid_mc = Random(parameters_random=session.parameters_random,
                          n_grid=0,
@@ -154,7 +162,7 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
                 sns.distplot(y_orig[:, i].flatten(), bins=bins, label=r'original', ax=ax1)
                 # ax1.hist((y_gpc[:, i].flatten(), y_orig[:, i].flatten()), bins=bins, density=True)
 
-            ax1.legend([r'gpc', r'original'], fontsize=14)
+            ax1.legend([r'gpc', r'original'], fontsize=14, loc="upper right")
             ax1.grid()
             ax1.set_xlabel(r'$y$', fontsize=16)
             ax1.set_ylabel(r'$p(y)$', fontsize=16)

@@ -32,6 +32,26 @@ Features
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="pygpc is capable of to evaluate multiple sampling points, i.e. multiple model instances, in par...">
+
+.. only:: html
+
+ .. figure:: /auto_features/images/thumb/sphx_glr_plot_parallelization_thumb.png
+
+     :ref:`sphx_glr_auto_features_plot_parallelization.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_features/plot_parallelization
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Accelerating pygpc by using different computing backends ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...">
 
 .. only:: html

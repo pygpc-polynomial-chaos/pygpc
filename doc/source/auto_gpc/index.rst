@@ -32,26 +32,6 @@ Generalized Polynomial Chaos
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Validation of gPC approximation">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_gpc_validation_thumb.png
-
-     :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_gpc/plot_gpc_validation
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="The probability density function (pdf) p_i(\xi_i), with i=1,...,d, has to be defined for each r...">
 
 .. only:: html
@@ -69,6 +49,26 @@ Generalized Polynomial Chaos
    :hidden:
 
    /auto_gpc/plot_problem
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Validation of gPC approximation">
+
+.. only:: html
+
+ .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_gpc_validation_thumb.png
+
+     :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_gpc/plot_gpc_validation
 
 .. raw:: html
 
