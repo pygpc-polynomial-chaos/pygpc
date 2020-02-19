@@ -12,26 +12,6 @@ Generalized Polynomial Chaos
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Setting up a model">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_model_thumb.png
-
-     :ref:`sphx_glr_auto_gpc_plot_model.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_gpc/plot_model
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="The probability density function (pdf) p_i(\xi_i), with i=1,...,d, has to be defined for each r...">
 
 .. only:: html
@@ -92,6 +72,26 @@ Generalized Polynomial Chaos
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Setting up your model">
+
+.. only:: html
+
+ .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_model_thumb.png
+
+     :ref:`sphx_glr_auto_gpc_plot_model.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_gpc/plot_model
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ It is possible to accelerate the identification of the gPC coefficien...">
 
 .. only:: html
@@ -143,13 +143,13 @@ Generalized Polynomial Chaos
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_gpc_python.zip <//home/kporzig/py/pygpc/doc/source/auto_gpc/auto_gpc_python.zip>`
+    :download:`Download all examples in Python source code: auto_gpc_python.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_gpc/auto_gpc_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip <//home/kporzig/py/pygpc/doc/source/auto_gpc/auto_gpc_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_gpc/auto_gpc_jupyter.zip>`
 
 
 .. only:: html

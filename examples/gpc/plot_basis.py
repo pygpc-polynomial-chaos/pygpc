@@ -35,6 +35,7 @@ problem = pygpc.Problem(model, parameters)
 # :math:`\mathbf{\alpha}`, which correspond to the polynomial degrees of the individual basis functions
 # forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
 # coefficients to determine, increases exponentially in this case :math:`N_c=(P+1)^d`
+# sphinx_gallery_thumbnail_number = 2
 
 basis = pygpc.Basis()
 basis.init_basis_sgpc(problem=problem,

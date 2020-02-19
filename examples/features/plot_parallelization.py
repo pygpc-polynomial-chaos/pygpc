@@ -1,6 +1,6 @@
 """
-Parallel computing in pygpc
-===========================
+Parallel processing capabilities of pygpc
+=========================================
 
 pygpc is capable of to evaluate multiple sampling points, i.e. multiple model instances, in parallel.
 Depending on your model and its hardware requirements there exist three ways to evaluate your model
@@ -53,7 +53,7 @@ for n_cpu in n_cpu_list:
 # plot results
 plt.figure(figsize=[4, 4])
 for ind, t in enumerate(t_eval):
-    plt.bar(ind, t_eval[t], color=sns.color_palette("muted", len(t_eval))[ind])
+    plt.bar(ind, t_eval[t], color=sns.color_palette("pastel", len(t_eval))[ind])
 
 plt.xlabel("n_cpu", fontsize=11)
 plt.ylabel("Computation time in s", fontsize=11)

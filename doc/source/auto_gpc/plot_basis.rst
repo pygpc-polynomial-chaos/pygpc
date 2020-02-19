@@ -51,6 +51,7 @@ included in the gPC expansion. The coordinates of the boxes correspond to the mu
 :math:`\mathbf{\alpha}`, which correspond to the polynomial degrees of the individual basis functions
 forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
 coefficients to determine, increases exponentially in this case :math:`N_c=(P+1)^d`
+sphinx_gallery_thumbnail_number = 2
 
 
 .. code-block:: default
@@ -247,7 +248,7 @@ simulations to determine the gPC coefficients!
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  9.222 seconds)
+   **Total running time of the script:** ( 0 minutes  8.426 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_basis.py:

@@ -355,16 +355,21 @@ def read_classifier_from_hdf5(fn_hdf5, folder, verbose=False):
     for a in args:
         args_dict[a] = classifier_dict[a]
 
-    # initialize classifier
-    classifier = c(**args_dict)
+    init_classifier = True
 
-    # ensure that domains are not swapped
-    classifier.domains = classifier_dict["domains"]
-    classifier.update(coords=classifier_dict["coords"],
-                      results=classifier_dict["results"])
+    # for some reason the domains may be swapped in very rare cases so we do the init again
+    while init_classifier:
+        # initialize classifier
+        classifier = c(**args_dict)
 
-    if not (classifier.predict(coords=classifier_dict["coords"]) == classifier_dict["domains"]).all():
-        raise ValueError("Error during classifier initialization! Predicted domains do not fit to saved domains!")
+        # ensure that domains are not swapped
+        classifier.domains = classifier_dict["domains"]
+        classifier.update(coords=classifier_dict["coords"],
+                          results=classifier_dict["results"])
+
+        if np.sum(classifier.predict(coords=classifier_dict["coords"]) == classifier_dict["domains"])/ \
+                len(classifier_dict["domains"]) > 0.95:
+            init_classifier = False
 
     return classifier
 

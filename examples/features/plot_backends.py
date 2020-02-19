@@ -22,7 +22,8 @@ Simply run the following command in your terminal:
 
   pip install cmake
 
-For the installation of the CUDA-toolkit please refer to: https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html.
+For the installation of the CUDA-toolkit please refer to:
+https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html.
 If CMake and the CUDA-toolkit are installed on your machine you can build the extension with:
 
 .. code-block:: bash
@@ -145,16 +146,26 @@ for _ in range(n_iterations):
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib import patches as mpatches
 
 # plot results
-plt.figure(figsize=[5, 4])
+patches_muted = []
+patches_pastel = []
 for ind, b in enumerate(backends):
-    plt.bar(ind, np.mean(time_get_approximation[b]), yerr=np.std(time_get_approximation[b]),
+    plt.bar(ind, np.mean(time_get_approximation[b]),
+            yerr=np.std(time_get_approximation[b]),
             color=sns.color_palette("muted", len(backends))[ind])
-    plt.bar(ind, np.mean(time_create_gpc_matrix[b]), yerr=np.std(time_create_gpc_matrix[b]),
+    plt.bar(ind, np.mean(time_create_gpc_matrix[b]),
+            yerr=np.std(time_create_gpc_matrix[b]),
             color=sns.color_palette("pastel", len(backends))[ind])
+    patches_muted.append(mpatches.Patch(
+        color=sns.color_palette("muted", len(backends))[ind],
+        label="get_approximation (" + labels[ind] + ")"))
+    patches_pastel.append(mpatches.Patch(
+        color=sns.color_palette("pastel", len(backends))[ind],
+        label="create_gpc_matrix (" + labels[ind] + ")"))
 
 plt.ylabel("Computation time in s")
 plt.xticks(range(len(labels)), labels)
-plt.title("n_samples: {}, n_basis: {}, n_qoi: {}".format(n_samples, n_basis, n_qoi))
-plt.show()
+plt.title("Number of samples: {}, Number of basis functions: {}".format(n_samples, n_basis))
+_ = plt.legend(handles=patches_pastel + patches_muted)

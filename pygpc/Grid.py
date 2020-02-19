@@ -290,7 +290,7 @@ class TensorGrid(Grid):
     Examples
     --------
     >>> import pygpc
-    >>> pygpc.Grid.TensorGrid(parameters_random, options={"grid_type": ["hermite", "jacobi"], "n_dim": [5, 6]})
+    >>> pygpc.TensorGrid(parameters_random, options={"grid_type": ["hermite", "jacobi"], "n_dim": [5, 6]})
 
     Attributes
     ----------
@@ -1035,7 +1035,7 @@ class Random(RandomGrid):
     Examples
     --------
     >>> import pygpc
-    >>> grid = pygpc.RandomGrid(parameters_random=parameters_random, n_grid=100, seed=1)
+    >>> grid = pygpc.Random(parameters_random=parameters_random, n_grid=100, seed=1)
 
     Attributes
     ----------

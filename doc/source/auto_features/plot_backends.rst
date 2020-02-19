@@ -30,7 +30,8 @@ Simply run the following command in your terminal:
 
   pip install cmake
 
-For the installation of the CUDA-toolkit please refer to: https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html.
+For the installation of the CUDA-toolkit please refer to:
+https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html.
 If CMake and the CUDA-toolkit are installed on your machine you can build the extension with:
 
 .. code-block:: bash
@@ -186,19 +187,29 @@ Performance comparison between the backends
 
     import seaborn as sns
     from matplotlib import pyplot as plt
+    from matplotlib import patches as mpatches
 
     # plot results
-    plt.figure(figsize=[5, 4])
+    patches_muted = []
+    patches_pastel = []
     for ind, b in enumerate(backends):
-        plt.bar(ind, np.mean(time_get_approximation[b]), yerr=np.std(time_get_approximation[b]),
+        plt.bar(ind, np.mean(time_get_approximation[b]),
+                yerr=np.std(time_get_approximation[b]),
                 color=sns.color_palette("muted", len(backends))[ind])
-        plt.bar(ind, np.mean(time_create_gpc_matrix[b]), yerr=np.std(time_create_gpc_matrix[b]),
+        plt.bar(ind, np.mean(time_create_gpc_matrix[b]),
+                yerr=np.std(time_create_gpc_matrix[b]),
                 color=sns.color_palette("pastel", len(backends))[ind])
+        patches_muted.append(mpatches.Patch(
+            color=sns.color_palette("muted", len(backends))[ind],
+            label="get_approximation (" + labels[ind] + ")"))
+        patches_pastel.append(mpatches.Patch(
+            color=sns.color_palette("pastel", len(backends))[ind],
+            label="create_gpc_matrix (" + labels[ind] + ")"))
 
     plt.ylabel("Computation time in s")
     plt.xticks(range(len(labels)), labels)
-    plt.title("n_samples: {}, n_basis: {}, n_qoi: {}".format(n_samples, n_basis, n_qoi))
-    plt.show()
+    plt.title("Number of samples: {}, Number of basis functions: {}".format(n_samples, n_basis))
+    _ = plt.legend(handles=patches_pastel + patches_muted)
 
 
 
@@ -206,22 +217,13 @@ Performance comparison between the backends
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /home/kporzig/py/pygpc/examples/features/plot_backends.py:160: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      plt.show()
-
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  40.097 seconds)
+   **Total running time of the script:** ( 0 minutes  32.434 seconds)
 
 
 .. _sphx_glr_download_auto_features_plot_backends.py:
