@@ -18,7 +18,7 @@ Basic features:
 - Includes highly efficient **CPU** and **GPU (CUDA)** implementations to significantly accelerate algorithmic and post-processing routines for high-dimensional and complex problems
 - Includes **state-of-the-art techniques** such as:
     - **Projection:** determination of optimal reduced basis
-    - **l1-minimization:** reduction of necessary model evaluations by making use of concepts from compressed sensing  
+    - **l1-minimization:** reduction of necessary model evaluations by making use of concepts from compressed sensing 
     - **Gradient enhanced gPC:** use of gradient information of the model function to increase accuracy
     - **Multi-element gPC:** analyzing systems with discontinuities and sharp transitions
     - **Optimized Latin Hypercube Sampling** for fast convergence
