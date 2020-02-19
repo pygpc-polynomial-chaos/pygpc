@@ -37,6 +37,19 @@ class ClassifierLearning(object):
     """
     ClassifierLearning class
 
+    Parameters
+    ----------
+    coords: ndarray of float [n_grid, n_dim]
+        Grid points to train the classifier
+    results: ndarray [n_grid x n_out]
+        Results of the model evaluation
+    options: dict, optional, default=None
+        Classifier options
+        - options["clusterer"] ... Cluster algorithm (e.g. "KMeans")
+        - options["n_clusters"] ... Number of clusters in case of "KMeans"
+        - options["classifier"] ... Classification algorithm (e.g. "MLPClassifier")
+        - options["classifier_solver"] ... Classification algorithm (e.g. "adam" or "lbfgs")
+
     Attributes
     ----------
     coords: ndarray of float [n_grid, n_dim]
@@ -47,24 +60,10 @@ class ClassifierLearning(object):
         Classifier options
     clf: Classifier object
         Classifier object
-
     """
     def __init__(self, coords, results, options=None):
         """
         Constructor; Initializes ClassifierLearning class
-
-        Parameters
-        ----------
-        coords: ndarray of float [n_grid, n_dim]
-            Grid points to train the classifier
-        results: ndarray [n_grid x n_out]
-            Results of the model evaluation
-        options: dict, optional, default=None
-            Classifier options
-            - options["clusterer"] ... Cluster algorithm (e.g. "KMeans")
-            - options["n_clusters"] ... Number of clusters in case of "KMeans"
-            - options["classifier"] ... Classification algorithm (e.g. "MLPClassifier")
-            - options["classifier_solver"] ... Classification algorithm (e.g. "adam" or "lbfgs")
         """
         self.results = results
         self.coords = coords
@@ -123,10 +122,13 @@ class ClassifierLearning(object):
         results: ndarray [n_grid x n_out]
             Results of the model evaluation
         """
+        self.coords = coords
+        self.results = results
+
         domains_old = copy.deepcopy(self.domains)
 
         # rerun clusterer
-        self.clusterer.fit(results)
+        self.clusterer.fit(self.results)
         self.domains = self.clusterer.labels_
 
         # check if domain labels are swapped and change it back to initial order
@@ -153,7 +155,7 @@ class ClassifierLearning(object):
         self.domains = domains_temp.astype(int)
 
         # rerun classifier
-        self.clf.fit(coords, self.domains)
+        self.clf.fit(self.coords, self.domains)
 
     def predict(self, coords):
         """

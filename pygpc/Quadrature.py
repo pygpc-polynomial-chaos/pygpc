@@ -169,7 +169,7 @@ def get_quadrature_fejer1_1d(n):
     .. [2] Gautschi, W. (1967). Numerical quadrature in the presence of a singularity.
        SIAM Journal on Numerical Analysis, 4(3), 357-362.
 
-    .. [3] Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
+    .. [3] Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw-Curtis quadrature rules.
        BIT Numerical Mathematics, 46(1), 195-202.
     """
     n = np.int(n)
