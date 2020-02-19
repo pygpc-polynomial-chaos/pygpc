@@ -20,21 +20,23 @@ class Basis:
 
     Attributes
     ----------
-    b: list of BasisFunction object instances [n_basis x n_dim]
+    b : list of list of BasisFunction object instances [n_basis][n_dim]
         Parameter wise basis function objects used in gPC.
         Multiplying all elements in a row at location xi = (x1, x2, ..., x_dim) yields the global basis function.
-    b_array:
-        ???
-    b_id: list of UUID objects (version 4) [n_basis]
+    b_array : ndarray of float [n_poly_coeffs]
+        Polynomial coefficients of basis functions
+    b_id : list of UUID objects (version 4) [n_basis]
         Unique IDs of global basis functions
-    b_norm: [n_basis x dim] ndarray of float
+    b_norm : ndarray of float [n_basis x dim]
         Normalization factor of individual basis functions
-    b_norm_basis: [n_basis x 1] ndarray of float
+    b_norm_basis : ndarray of float [n_basis x 1]
         Normalization factor of global basis functions
-    dim:
+    dim : int
         Number of variables
-    n_basis: int
+    n_basis : int
         Total number of (global) basis function
+    multi_indices: ndarray [n_basis x dim]
+        Multi-indices of polynomial basis functions
     """
     def __init__(self):
         """
@@ -48,6 +50,7 @@ class Basis:
         self.b_norm_basis = None
         self.dim = None
         self.n_basis = 0
+        self.multi_indices = None
 
     def init_basis_sgpc(self, problem, order, order_max, order_max_norm, interaction_order,
                         interaction_order_current=None):
@@ -104,16 +107,16 @@ class Basis:
         self.dim = problem.dim
 
         if self.dim == 1:
-            multi_indices = np.linspace(0, order_max, order_max + 1, dtype=int)[:, np.newaxis]
+            self.multi_indices = np.linspace(0, order_max, order_max + 1, dtype=int)[:, np.newaxis]
         else:
-            multi_indices = get_multi_indices(order=order,
-                                              order_max=order_max,
-                                              order_max_norm=order_max_norm,
-                                              interaction_order=interaction_order,
-                                              interaction_order_current=interaction_order_current)
+            self.multi_indices = get_multi_indices(order=order,
+                                                   order_max=order_max,
+                                                   order_max_norm=order_max_norm,
+                                                   interaction_order=interaction_order,
+                                                   interaction_order_current=interaction_order_current)
 
         # get total number of basis functions
-        self.n_basis = multi_indices.shape[0]
+        self.n_basis = self.multi_indices.shape[0]
 
         # construct 2D list with BasisFunction objects and array with coefficients
         self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
@@ -121,7 +124,7 @@ class Basis:
         for i_basis in range(self.n_basis):
             for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects
                 self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(
-                    order=multi_indices[i_basis, i_dim])
+                    order=self.multi_indices[i_basis, i_dim])
 
         # Generate unique IDs of basis functions
         self.b_id = [uuid.uuid4() for _ in range(self.n_basis)]
@@ -213,9 +216,14 @@ class Basis:
 
         Parameters
         ----------
-        b_added: 2D list of BasisFunction instances [n_b_added x dim]
+        b_added: list of list of BasisFunction instances [n_b_added][dim]
             Individual BasisFunctions to add
         """
+        if self.b is None:
+            self.b = []
+
+        if self.b_id is None:
+            self.b_id = []
 
         # add b_added to b (check for duplicates) and generate IDs
         for i_row, _b in enumerate(b_added):

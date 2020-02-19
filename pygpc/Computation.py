@@ -23,7 +23,7 @@ def Computation(n_cpu, matlab_model=False):
     Parameters
     ----------
     n_cpu : int
-        Number of CPU cores to use
+        Number of CPU cores to use (parallel model evaluations)
     matlab_model : boolean, optional, default: False
         Use a Matlab model
 
@@ -41,6 +41,13 @@ def Computation(n_cpu, matlab_model=False):
 class ComputationPoolMap:
     """
     Computation sub-class to run the model using a processing pool for parallelization
+
+    Parameters
+    ----------
+    n_cpu : int
+        Number of CPU cores to use (parallel model evaluations)
+    matlab_model : boolean, optional, default: False
+        Use a Matlab model
     """
 
     def __init__(self, n_cpu, matlab_model=False):
@@ -220,6 +227,13 @@ class ComputationPoolMap:
 class ComputationFuncPar:
     """
     Computation sub-class to run the model using a the models internal parallelization
+
+    Parameters
+    ----------
+    n_cpu : int
+        Number of CPU cores to use (parallel model evaluations)
+    matlab_model : boolean, optional, default: False
+        Use a Matlab model
     """
 
     def __init__(self, n_cpu, matlab_model):

@@ -9,6 +9,7 @@ from sklearn import linear_model
 from .Grid import *
 from .SGPC import *
 from .misc import get_cartesian_product
+from .misc import get_gradient_idx_domain
 from .misc import display_fancy_bar
 from .misc import nrmsd
 from .misc import mat2ten
@@ -17,11 +18,24 @@ from .misc import increment_basis
 from .ValidationSet import *
 from .Computation import *
 from .Classifier import *
+from .Gradient import get_gradient
 
 
 class MEGPC(object):
     """
     General Multi-Element gPC base class
+
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC Problem under investigation
+    options : dict
+        Options of gPC algorithm
+    validation: ValidationSet object (optional)
+        Object containing a set of validation points and corresponding solutions. Can be used
+        to validate gpc approximation setting options["error_type"]="nrmsd".
+        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+        - results: ndarray [n_grid x n_out] results
 
     Attributes
     ----------
@@ -53,18 +67,6 @@ class MEGPC(object):
     def __init__(self, problem, options, validation=None):
         """
         Constructor; Initializes MEGPC class
-
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC Problem under investigation
-        options : dict
-            Options of gPC algorithm
-        validation: ValidationSet object (optional)
-            Object containing a set of validation points and corresponding solutions. Can be used
-            to validate gpc approximation setting options["error_type"]="nrmsd".
-            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
-            - results: ndarray [n_grid x n_out] results
         """
 
         # objects
@@ -83,8 +85,7 @@ class MEGPC(object):
         self.relative_error_loocv = []
         self.relative_error_nrmsd = []
         self.error = []
-        self.mask_res_domains = None
-        self.mask_grad_res_domains = None
+        self.gradient_idx = None
 
         # options
         self.gradient = options["gradient_enhanced"]
@@ -122,14 +123,6 @@ class MEGPC(object):
         self.domains = self.classifier.domains
         self.n_gpc = len(np.unique(self.domains))
 
-        if self.gradient:
-            self.mask_res_domains = np.hstack((self.domains,
-                                               self.domains.repeat(self.problem.dim)))
-            self.mask_grad_res_domains = np.hstack((np.array([np.nan]).repeat(len(self.domains)),
-                                                    self.domains.repeat(self.problem.dim)))
-        else:
-            self.mask_res_domains = self.domains
-
     def update_classifier(self, coords, results):
         """
         Updates self.classifier and keeps the existing class labels
@@ -144,14 +137,6 @@ class MEGPC(object):
         self.classifier.update(coords=coords, results=results)
         self.domains = self.classifier.domains
         self.n_gpc = len(np.unique(self.domains))
-
-        if self.gradient:
-            self.mask_res_domains = np.hstack((self.domains,
-                                               self.domains.repeat(self.problem.dim)))
-            self.mask_grad_res_domains = np.hstack((np.array([np.nan]).repeat(len(self.domains)),
-                                                    self.domains.repeat(self.problem.dim)))
-        else:
-            self.mask_res_domains = self.domains
 
     def add_sub_gpc(self, problem, order, order_max, order_max_norm, interaction_order,
                     interaction_order_current, options, domain, validation=None):
@@ -179,15 +164,25 @@ class MEGPC(object):
     def init_gpc_matrices(self):
         """
         Sets self.gpc_matrix with given self.basis and self.grid
+        The gradient_idx of the sub-gPCs are already assigned in assign_grids()
         """
 
         for gpc in self.gpc:
             gpc.init_gpc_matrix()
 
-    def assign_grids(self):
+    def assign_grids(self, gradient_idx=None):
         """
-        Assign sub-grids to sub-gPCs (including transformation in case of projection)
+        Assign sub-grids to sub-gPCs
+        (including transformation in case of projection and gradient_idx)
+
+        Parameters
+        ----------
+        gradient_idx : ndarray of int [gradient_results.shape[0]]
+            Indices of grid points where the gradient in gradient_results is provided
         """
+
+        self.gradient_idx = gradient_idx
+
         # update domain indices if grid points were added
         if len(self.domains) != self.grid.coords_norm.shape[0]:
             self.domains = self.classifier.predict(self.grid.coords_norm)
@@ -199,9 +194,9 @@ class MEGPC(object):
 
             # transform variables of original grid to reduced parameter space
             if self.gpc[d].p_matrix is not None:
-                coords = np.dot(coords, self.gpc[d].p_matrix.transpose())
-                coords_norm = np.dot(coords_norm, self.gpc[d].p_matrix.transpose() /
-                                     self.gpc[d].p_matrix_norm[np.newaxis, :])
+                coords = np.matmul(coords, self.gpc[d].p_matrix.transpose())
+                coords_norm = np.matmul(coords_norm, self.gpc[d].p_matrix.transpose() /
+                                        self.gpc[d].p_matrix_norm[np.newaxis, :])
 
             if self.grid.coords_gradient is not None:
                 coords_gradient = self.grid.coords_gradient[self.domains == d, :, :]
@@ -219,6 +214,12 @@ class MEGPC(object):
                                     coords_gradient_norm=coords_gradient_norm,
                                     coords_id=coords_id,
                                     coords_gradient_id=coords_gradient_id)
+
+            # assign gradient_idx for sub-gPCs
+            if self.gradient_idx is not None:
+                self.gpc[d].gradient_idx = get_gradient_idx_domain(domains=self.domains,
+                                                                   d=d,
+                                                                   gradient_idx=self.gradient_idx)
 
     def loocv(self, results, error_norm="relative", domain=None):
         """
@@ -305,7 +306,7 @@ class MEGPC(object):
                 norm = 1.
 
             # determine error
-            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx_domain, :],
+            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.matmul(matrix[loocv_point_idx_domain, :],
                                                                             coeffs_loo)) \
                                 / norm
             display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
@@ -576,8 +577,8 @@ class MEGPC(object):
         ----------
         results : ndarray of float [n_grid x n_out]
             Results from simulations with n_out output quantities
-        gradient_results : ndarray of float [n_grid x dim x n_out x dim], optional, default: None
-            Gradient of results in original parameter space (tensor)
+        gradient_results : ndarray of float [n_gradient x n_out x dim], optional, default: None
+            Gradient of results in original parameter space in specific grid points
         solver : str
             Solver to determine the gPC coefficients
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
@@ -598,6 +599,7 @@ class MEGPC(object):
         coeffs: list of ndarray of float [n_gpc][n_coeffs x n_out]
             gPC coefficients
         """
+
         # use default solver if not specified
         if solver is None:
             solver = self.solver
@@ -611,7 +613,7 @@ class MEGPC(object):
         # determine coeffs of sub-gPCs
         for d in np.unique(self.domains):
             if gradient_results is not None:
-                gradient_results_passed = gradient_results[self.domains == d, :, :]
+                gradient_results_passed = gradient_results[self.domains[self.gradient_idx] == d, :, :]
             else:
                 gradient_results_passed = None
 
@@ -679,11 +681,27 @@ class MEGPC(object):
 
         # Determine gradient of results at grid points
         if gradient:
-            gradient_results = self.get_gradient(grid=grid, results=results)
+            gradient_results, gradient_idx = get_gradient(model=self.problem.model,
+                                                          problem=self.problem,
+                                                          grid=grid,
+                                                          results=results,
+                                                          com=com,
+                                                          method="FD_fwd",
+                                                          gradient_results_present=None,
+                                                          gradient_idx_skip=None,
+                                                          i_iter=None,
+                                                          i_subiter=None,
+                                                          print_func_time=False,
+                                                          dx=1e-3,
+                                                          distance_weight=None)
         else:
             gradient_results = None
+            gradient_idx = None
 
-        self.validation = ValidationSet(grid=grid, results=results, gradient_results=gradient_results)
+        self.validation = ValidationSet(grid=grid,
+                                        results=results,
+                                        gradient_results=gradient_results,
+                                        gradient_idx=gradient_idx)
 
     @staticmethod
     def get_mean(samples):
@@ -871,22 +889,23 @@ class MEGPC(object):
         for d in np.unique(domains):
             # project coordinate to reduced parameter space if necessary
             if self.gpc[d].p_matrix is not None:
-                x_passed = np.dot(x[domains == d, :], self.gpc[d].p_matrix.transpose() /
-                                  self.gpc[d].p_matrix_norm[np.newaxis, :])
+                x_passed = np.matmul(x[domains == d, :], self.gpc[d].p_matrix.transpose() /
+                                     self.gpc[d].p_matrix_norm[np.newaxis, :])
             else:
                 x_passed = x[domains == d, :]
 
             # construct gPC gradient matrix [n_samples x n_basis x dim(_red)]
             gpc_matrix_gradient = self.gpc[d].create_gpc_matrix(b=self.gpc[d].basis.b,
-                                                              x=x_passed,
-                                                              gradient=True)
+                                                                x=x_passed,
+                                                                gradient=True,
+                                                                gradient_idx=np.arange(x_passed.shape[0]))
 
-            local_sens_domain = np.dot(gpc_matrix_gradient.transpose(2, 0, 1), coeffs[d]).transpose(1, 2, 0)
+            local_sens_domain = np.matmul(gpc_matrix_gradient.transpose(2, 0, 1), coeffs[d]).transpose(1, 2, 0)
 
             # project the gradient back to the original space if necessary
             if self.gpc[d].p_matrix is not None:
-                local_sens_domain = np.dot(local_sens_domain, self.gpc[d].p_matrix /
-                                           self.gpc[d].p_matrix_norm[:, np.newaxis])
+                local_sens_domain = np.matmul(local_sens_domain, self.gpc[d].p_matrix /
+                                              self.gpc[d].p_matrix_norm[:, np.newaxis])
 
             local_sens[domains == d, :, :] = local_sens_domain
 

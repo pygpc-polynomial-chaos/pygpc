@@ -21,7 +21,7 @@ except ImportError:
 
 
 def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=1e4, output_idx=0, n_cpu=1,
-                    smooth_pdf=[51, 5], bins=100, hist=False, fn_out=None, plot=True):
+                    smooth_pdf=[51, 5], bins=100, hist=False, fn_out=None, folder="gpc_vs_original_mc", plot=True):
     """
     Compares gPC approximation with original model function. Evaluates both at "n_samples" sampling points and
     evaluates the root mean square deviation. It also computes the pdf at the output quantity with output_idx
@@ -51,6 +51,8 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
         Plot histogram instead of pdf
     fn_out : str or None
         Filename of validation results and plot comparing original vs gPC model (w/o file extension)
+    folder : str, optional, default: "gpc_vs_original_plot"
+        Folder in .hdf5 file to save data in
     plot : boolean, optional, default: True
         Plots the pdfs of the original model function and the gPC approximation
 
@@ -90,9 +92,17 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
                          i_iter=None,
                          i_subiter=None,
                          fn_results=None,
-                         print_func_time=False)[:, output_idx]
+                         print_func_time=False)
+
+        if output_idx is None:
+            output_idx = np.arange(y_orig.shape[1])
+
+        y_orig = y_orig[:, output_idx]
 
     else:
+
+        if output_idx is None:
+            output_idx = np.arange(data_original.shape[1])
 
         grid_mc = Random(parameters_random=session.parameters_random,
                          n_grid=0,
@@ -125,14 +135,6 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
     # Calculate normalized root mean square deviation
     relative_error_nrmsd = nrmsd(y_gpc, y_orig)
 
-    if fn_out:
-        # save results in .hdf5 file
-        with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
-            f.create_dataset('results/original', data=y_orig)
-            f.create_dataset('results/gpc', data=y_gpc)
-            f.create_dataset('grid/coords', data=coords)
-            f.create_dataset('grid/coords_norm', data=coords_norm)
-
     for i, o_idx in enumerate(output_idx):
         pdf_y_gpc, tmp = np.histogram(y_gpc[:, i].flatten(), bins=bins, density=True)
         pdf_x_gpc = (tmp[1:] + tmp[0:-1]) / 2.
@@ -160,7 +162,7 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
                 sns.distplot(y_orig[:, i].flatten(), bins=bins, label=r'original', ax=ax1)
                 # ax1.hist((y_gpc[:, i].flatten(), y_orig[:, i].flatten()), bins=bins, density=True)
 
-            ax1.legend([r'gpc', r'original'], fontsize=14)
+            ax1.legend([r'gpc', r'original'], fontsize=14, loc="upper right")
             ax1.grid()
             ax1.set_xlabel(r'$y$', fontsize=16)
             ax1.set_ylabel(r'$p(y)$', fontsize=16)
@@ -172,21 +174,29 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
                 plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.pdf')
                 plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.png', dpi=1200)
 
+        if fn_out:
             # save results in .hdf5 file
-            with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
-                f.create_dataset('error/qoi_{}/nrmsd'.format(o_idx), data=relative_error_nrmsd[i])
-                f.create_dataset('pdf/qoi_{}/original'.format(o_idx), data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
-                f.create_dataset('pdf/qoi_{}/gpc'.format(o_idx), data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
-                f.create_dataset('grid/coords', data=coords)
-                f.create_dataset('grid/coords_norm', data=coords_norm)
-                f.create_dataset('model_evaluations/results/gpc', data=y_gpc)
-                f.create_dataset('model_evaluations/results/orig', data=y_orig)
+            with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'a') as f:
+                f.create_dataset(folder + '/error/qoi_{}/nrmsd'.format(o_idx),
+                                 data=relative_error_nrmsd[i])
+                f.create_dataset(folder + '/pdf/qoi_{}/original'.format(o_idx),
+                                 data=np.vstack((pdf_x_orig, pdf_y_orig)).transpose())
+                f.create_dataset(folder + '/pdf/qoi_{}/gpc'.format(o_idx),
+                                 data=np.vstack((pdf_x_gpc, pdf_y_gpc)).transpose())
+                f.create_dataset(folder + '/grid/coords',
+                                 data=coords)
+                f.create_dataset(folder + '/grid/coords_norm',
+                                 data=coords_norm)
+                f.create_dataset(folder + '/model_evaluations/results/gpc',
+                                 data=y_gpc)
+                f.create_dataset(folder + '/model_evaluations/results/orig',
+                                 data=y_orig)
 
     return relative_error_nrmsd
 
 
 def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, data_original=None,
-                      fn_out=None, n_cpu=1):
+                      fn_out=None, folder="gpc_vs_original_plot", n_cpu=1):
     """
     Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
     calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
@@ -212,6 +222,8 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
     fn_out : str, optional, default: None
         Filename of plot comparing original vs gPC model (*_QOI_idx_<output_idx>.png is added)
         Filename of .hdf5 file containing the grid and the data from the original model and the gPC
+    folder : str, optional, default: "gpc_vs_original_plot"
+        Folder in .hdf5 file to save data in
     n_cpu : int, default=1
         Number of CPU cores to use to calculate results of original model on grid.
 
@@ -310,13 +322,13 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
 
     # save results in .hdf5 file
     if fn_out is not None:
-        with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'w') as f:
-            f.create_dataset('model_evaluations/original', data=y_orig)
-            f.create_dataset('model_evaluations/original_all_qoi', data=y_orig_all)
-            f.create_dataset('model_evaluations/gpc', data=y_gpc)
-            f.create_dataset('model_evaluations/difference', data=y_dif)
-            f.create_dataset('grid/coords', data=grid)
-            f.create_dataset('grid/coords_norm', data=grid_norm)
+        with h5py.File(os.path.splitext(fn_out)[0] + '.hdf5', 'a') as f:
+            f.create_dataset(folder + '/model_evaluations/original', data=y_orig)
+            f.create_dataset(folder + '/model_evaluations/original_all_qoi', data=y_orig_all)
+            f.create_dataset(folder + '/model_evaluations/gpc', data=y_gpc)
+            f.create_dataset(folder + '/model_evaluations/difference', data=y_dif)
+            f.create_dataset(folder + '/grid/coords', data=grid)
+            f.create_dataset(folder + '/grid/coords_norm', data=grid_norm)
 
     # Plot results
     matplotlib.rc('text', usetex=False)

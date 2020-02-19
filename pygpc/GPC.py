@@ -29,6 +29,18 @@ class GPC(object):
     """
     General gPC base class
 
+    Parameters
+    ----------
+    problem: Problem class instance
+        GPC Problem under investigation
+    options : dict
+        Options of gPC algorithm
+    validation: ValidationSet object (optional)
+        Object containing a set of validation points and corresponding solutions. Can be used
+        to validate gpc approximation setting options["error_type"]="nrmsd".
+        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
+        - results: ndarray [n_grid x n_out] results
+
     Attributes
     ----------
     problem: Problem class instance
@@ -84,18 +96,6 @@ class GPC(object):
     def __init__(self, problem, options, validation=None):
         """
         Constructor; Initializes GPC class
-
-        Parameters
-        ----------
-        problem: Problem class instance
-            GPC Problem under investigation
-        options : dict
-            Options of gPC algorithm
-        validation: ValidationSet object (optional)
-            Object containing a set of validation points and corresponding solutions. Can be used
-            to validate gpc approximation setting options["error_type"]="nrmsd".
-            - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)
-            - results: ndarray [n_grid x n_out] results
         """
         # objects
         self.problem = problem
@@ -121,6 +121,7 @@ class GPC(object):
         self.relative_error_loocv = []
         self.error = []
         self.n_out = []
+        self.gradient_idx = None
 
         # options
         if options is not None:
@@ -153,24 +154,36 @@ class GPC(object):
 
         self.options = options
 
-    def init_gpc_matrix(self):
+    def init_gpc_matrix(self, gradient_idx=None):
         """
         Sets self.gpc_matrix and self.gpc_matrix_gradient with given self.basis and self.grid
+
+        Parameters
+        ----------
+        gradient_idx : ndarray of int [gradient_results.shape[0]]
+            Indices of grid points where the gradient in gradient_results is provided
         """
 
-        self.gpc_matrix = self.create_gpc_matrix(b=self.basis.b, x=self.grid.coords_norm)
+        if self.gradient_idx is None or gradient_idx is not None:
+            self.gradient_idx = gradient_idx
+
+        self.gpc_matrix = self.create_gpc_matrix(b=self.basis.b,
+                                                 x=self.grid.coords_norm,
+                                                 gradient=False)
         self.n_grid.append(self.gpc_matrix.shape[0])
         self.n_basis.append(self.gpc_matrix.shape[1])
         self.gpc_matrix_coords_id = copy.deepcopy(self.grid.coords_id)
         self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
 
-        if self.gradient:
-            self.gpc_matrix_gradient = self.create_gpc_matrix(b=self.basis.b, x=self.grid.coords_norm, gradient=True)
+        if self.gradient and self.gradient_idx is not None:
+            self.gpc_matrix_gradient = self.create_gpc_matrix(b=self.basis.b,
+                                                              x=self.grid.coords_norm,
+                                                              gradient=True)
             self.gpc_matrix_gradient = ten2mat(self.gpc_matrix_gradient)
             self.gpc_matrix_gradient_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_gradient_b_id = copy.deepcopy(self.basis.b_id)
 
-    def create_gpc_matrix(self, b, x, gradient=False, verbose=False):
+    def create_gpc_matrix(self, b, x, gradient=False, gradient_idx=None, verbose=False):
         """
         Construct the gPC matrix or its derivative.
 
@@ -181,20 +194,26 @@ class GPC(object):
             Multiplying all elements in a row at location xi = (x1, x2, ..., x_dim) yields the global basis function.
         x : ndarray of float [n_x x n_dim]
             Coordinates of x = (x1, x2, ..., x_dim) where the rows of the gPC matrix are evaluated (normalized [-1, 1])
-        gradient : boolean, optional, default: False
-            Use gradient of basis function.
+        gradient : bool, optional, default: False
+            Determine gradient gPC matrix.
+        gradient_idx : ndarray of int [gradient_results.shape[0]]
+            Indices of grid points where the gradient in gradient_results is provided
         verbose : bool, optional, default: False
             boolean value to determine if to print out the progress into the standard output
 
         Returns
         -------
-        gpc_matrix: ndarray of float [n_x (* dim) x n_basis]
+        gpc_matrix: ndarray of float [n_x x n_basis (x dim)]
             GPC matrix where the columns correspond to the basis functions and the rows the to the sample coordinates.
-            If gradient=True, the gradient is returned at the sample coordinates point by point.
+            If gradient_idx!=None, the gradient is returned at the specified sample coordinates point by point.
         """
+        # overwrite self.gradient_idx if it is provided
+        if gradient_idx is not None:
+            self.gradient_idx = gradient_idx
 
         iprint('Constructing gPC matrix...', verbose=verbose, tab=0)
 
+        # Python backend
         if self.backend == "python":
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
@@ -202,7 +221,7 @@ class GPC(object):
                     for i_dim in range(self.problem.dim):
                         gpc_matrix[:, i_basis] *= b[i_basis][i_dim](x[:, i_dim])
             else:
-                gpc_matrix = np.ones([x.shape[0], len(b), self.problem.dim])
+                gpc_matrix = np.ones([len(self.gradient_idx), len(b), self.problem.dim])
                 for i_dim_gradient in range(self.problem.dim):
                     for i_basis in range(len(b)):
                         for i_dim in range(self.problem.dim):
@@ -210,9 +229,10 @@ class GPC(object):
                                 derivative = True
                             else:
                                 derivative = False
-                            gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[:, i_dim],
+                            gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[self.gradient_idx, i_dim],
                                                                                         derivative=derivative)
 
+        # CPU backend (CPU single core)
         elif self.backend == "cpu":
             if not gradient:
                 # the third dimension is important and should not be removed
@@ -221,9 +241,10 @@ class GPC(object):
                 create_gpc_matrix_cpu(x, self.basis.b_array, gpc_matrix)
                 gpc_matrix = np.squeeze(gpc_matrix)
             else:
-                gpc_matrix = np.empty([x.shape[0], len(b), self.problem.dim])
-                create_gpc_matrix_cpu(x, self.basis.b_array_grad, gpc_matrix)
+                gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                create_gpc_matrix_cpu(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
 
+        # OpenMP backend (CPU multi core)
         elif self.backend == "omp":
             if not gradient:
                 # the third dimension is important and should not be removed
@@ -232,13 +253,14 @@ class GPC(object):
                 create_gpc_matrix_omp(x, self.basis.b_array, gpc_matrix)
                 gpc_matrix = np.squeeze(gpc_matrix)
             else:
-                gpc_matrix = np.empty([x.shape[0], len(b), self.problem.dim])
-                create_gpc_matrix_omp(x, self.basis.b_array_grad, gpc_matrix)
+                gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                create_gpc_matrix_omp(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
 
+        # CUDA backend (GPU multi core)
         elif self.backend == "cuda":
             try:
                 from .pygpc_extensions_cuda import create_gpc_matrix_cuda
-            except ImportError:
+            except (ImportError):
                 raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
             else:
                 if not gradient:
@@ -248,15 +270,14 @@ class GPC(object):
                     create_gpc_matrix_cuda(x, self.basis.b_array, gpc_matrix)
                     gpc_matrix = np.squeeze(gpc_matrix)
                 else:
-                    gpc_matrix = np.empty([x.shape[0], len(b), self.problem.dim])
-                    create_gpc_matrix_cuda(x, self.basis.b_array_grad, gpc_matrix)
+                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                    create_gpc_matrix_cuda(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
 
         else:
             raise NotImplementedError
 
         return gpc_matrix
 
-    # TODO: @Lucas: Please add GPU support
     def get_loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
         """
         Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
@@ -300,7 +321,7 @@ class GPC(object):
         #
         #     # transform gradient of results in case of projection
         #     if self.p_matrix is not None:
-        #         gradient_results = np.dot(gradient_results,
+        #         gradient_results = np.matmul(gradient_results,
         #                                   self.p_matrix.transpose() * self.p_matrix_norm[np.newaxis, :])
         #
         #     results_complete = np.vstack((results, ten2mat(gradient_results)))
@@ -314,10 +335,10 @@ class GPC(object):
         # Analytical error estimation in case of overdetermined systems
         # if matrix.shape[0] > 2*matrix.shape[1]:
             # determine Psi (Psi^T Psi)^-1 Psi^T
-            # h = np.dot(np.dot(matrix, np.linalg.inv(np.dot(matrix.transpose(), matrix))), matrix.transpose())
+            # h = np.matmul(np.matmul(matrix, np.linalg.inv(np.matmul(matrix.transpose(), matrix))), matrix.transpose())
             #
             # # determine loocv error
-            # err = np.mean(((results_complete - np.dot(matrix, coeffs)) /
+            # err = np.mean(((results_complete - np.matmul(matrix, coeffs)) /
             #                (1 - np.diag(h))[:, np.newaxis]) ** 2, axis=0)
             #
             # if error_norm == "relative":
@@ -361,7 +382,7 @@ class GPC(object):
             else:
                 norm = 1.
 
-            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.dot(matrix[loocv_point_idx[i], :],
+            relative_error[i] = scipy.linalg.norm(sim_results_temp - np.matmul(matrix[loocv_point_idx[i], :],
                                                                             coeffs_loo))\
                                 / norm
             display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
@@ -583,7 +604,7 @@ class GPC(object):
 
         # transform variables from xi to eta space if gpc model is reduced
         if self.p_matrix is not None:
-            x = np.dot(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
+            x = np.matmul(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
         if self.backend == 'python' or self.backend == 'cpu' or self.backend == 'omp':
             # determine gPC matrix at coordinates x
@@ -635,11 +656,13 @@ class GPC(object):
             self.gpc_matrix_coords_id[i] = copy.deepcopy(self.grid.coords_id[i])
 
         # determine new rows of gpc matrix and overwrite rows of gpc matrix
-        self.gpc_matrix[idx, :] = self.create_gpc_matrix(self.basis.b, new_grid_points.coords_norm)
+        self.gpc_matrix[idx, :] = self.create_gpc_matrix(b=self.basis.b,
+                                                         x=new_grid_points.coords_norm,
+                                                         gradient=False)
 
     def update_gpc_matrix(self):
         """
-        Update gPC matrix according to existing self.grid and self.basis.
+        Update gPC matrix and gPC matrix gradient according to existing self.grid and self.basis.
 
         Call this method when self.gpc_matrix does not fit to self.grid and self.basis objects anymore
         The old gPC matrix with their self.gpc_matrix_b_id and self.gpc_matrix_coords_id is compared
@@ -659,12 +682,12 @@ class GPC(object):
             if gradient:
                 # reshape gpc gradient matrix from 2D to 3D representation [n_grid x n_basis x n_dim]
                 matrix = mat2ten(mat=self.gpc_matrix_gradient, incr=self.problem.dim)
-                matrix_updated = np.zeros((len(self.grid.coords_id), len(self.basis.b_id), self.problem.dim))
-                coords_id = self.gpc_matrix_gradient_coords_id  # self.gpc_matrix_gradient_coords_id
-                coords_id_ref = self.grid.coords_gradient_id  # np.array(self.grid.coords_gradient_id).flatten()
+                matrix_updated = np.zeros((len(self.gradient_idx), len(self.basis.b_id), self.problem.dim))
+                coords_id = self.gpc_matrix_gradient_coords_id[self.gradient_idx]  # self.gpc_matrix_gradient_coords_id
+                coords_id_ref = self.grid.coords_gradient_id[self.gradient_idx]  # np.array(self.grid.coords_gradient_id).flatten()
                 b_id = self.gpc_matrix_gradient_b_id
                 b_id_ref = self.basis.b_id
-                coords_norm = self.grid.coords_norm
+                coords_norm = self.grid.coords_norm[self.gradient_idx]
                 ge_str = "(gradient)"
 
             else:
@@ -724,9 +747,9 @@ class GPC(object):
                 idx_col = np.reshape(idx[:, 1], (idx_coords_old.size, idx_b_new.size)).astype(int)
 
                 matrix_updated[idx_row, idx_col, ] = self.create_gpc_matrix(b=[self.basis.b[i] for i in idx_b_new],
-                                                                          x=coords_norm[idx_coords_old, :],
-                                                                          gradient=gradient,
-                                                                          verbose=False)
+                                                                            x=coords_norm[idx_coords_old, :],
+                                                                            gradient=gradient,
+                                                                            verbose=False)
 
             # determine new rows (new grid points) with all basis functions
             idx = get_cartesian_product([idx_coords_new, np.arange(len(self.basis.b))]).astype(int)
@@ -737,9 +760,9 @@ class GPC(object):
                 idx_col = np.reshape(idx[:, 1], (idx_coords_new.size, len(self.basis.b))).astype(int)
 
                 matrix_updated[idx_row, idx_col, ] = self.create_gpc_matrix(b=self.basis.b,
-                                                                          x=coords_norm[idx_coords_new, :],
-                                                                          gradient=gradient,
-                                                                          verbose=False)
+                                                                            x=coords_norm[idx_coords_new, :],
+                                                                            gradient=gradient,
+                                                                            verbose=False)
 
             # overwrite old attributes and append new sizes
             if gradient:
@@ -753,8 +776,9 @@ class GPC(object):
                 self.gpc_matrix_b_id = copy.deepcopy(self.basis.b_id)
                 self.n_grid.append(self.gpc_matrix.shape[0])
                 self.n_basis.append(self.gpc_matrix.shape[1])
+
         else:
-            raise NotImplementedError
+            self.init_gpc_matrix()
 
     def save_gpc_matrix_hdf5(self, hdf5_path_gpc_matrix=None, hdf5_path_gpc_matrix_gradient=None):
         """
@@ -855,8 +879,8 @@ class GPC(object):
         ----------
         results : [n_grid x n_out] np.ndarray of float
             Results from simulations with N_out output quantities
-        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
-            Gradient of results in original parameter space (tensor)
+        gradient_results : ndarray of float [n_gradient x n_out x dim], optional, default: None
+            Gradient of results in original parameter space in specific grid points
         solver : str
             Solver to determine the gPC coefficients
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
@@ -880,17 +904,21 @@ class GPC(object):
         coeffs: ndarray of float [n_coeffs x n_out]
             gPC coefficients
         """
+
         ge_str = ""
 
         if matrix is None:
             matrix = self.gpc_matrix
 
-            if self.options["gradient_enhanced"] is False:
+            if self.gradient is False:
                 matrix = self.gpc_matrix
                 ge_str = ""
             else:
                 if not solver == 'NumInt':
-                    matrix = np.vstack((self.gpc_matrix, self.gpc_matrix_gradient))
+                    if self.gpc_matrix_gradient is not None:
+                        matrix = np.vstack((self.gpc_matrix, self.gpc_matrix_gradient))
+                    else:
+                        matrix = self.gpc_matrix
                     ge_str = "(gradient enhanced)"
                 else:
                     Warning("Gradient enhanced version not applicable in case of numerical integration (quadrature).")
@@ -910,8 +938,8 @@ class GPC(object):
         if not solver == 'NumInt' and gradient_results is not None:
             # transform gradient of results according to projection
             if self.p_matrix is not None:
-                gradient_results = np.dot(gradient_results,
-                                          self.p_matrix.transpose() * self.p_matrix_norm[np.newaxis, :])
+                gradient_results = np.matmul(gradient_results,
+                                             self.p_matrix.transpose() * self.p_matrix_norm[np.newaxis, :])
 
             results_complete = np.vstack((results, ten2mat(gradient_results)))
         else:
@@ -925,7 +953,7 @@ class GPC(object):
             self.matrix_inv = np.linalg.pinv(matrix)
 
             try:
-                coeffs = np.dot(self.matrix_inv, results_complete)
+                coeffs = np.matmul(self.matrix_inv, results_complete)
             except ValueError:
                 raise AttributeError("Please check format of parameter sim_results: [n_grid (* dim) x n_out] "
                                      "np.ndarray.")
@@ -999,10 +1027,10 @@ class GPC(object):
                 results_complete = results_complete * joint_pdf * 2 ** self.problem.dim
 
             # scale rows of gpc matrix with quadrature weights
-            matrix_weighted = np.dot(np.diag(self.grid.weights), matrix)
+            matrix_weighted = np.matmul(np.diag(self.grid.weights), matrix)
 
             # determine gpc coefficients [n_coeffs x n_output]
-            coeffs = np.dot(results_complete.transpose(), matrix_weighted).transpose()
+            coeffs = np.matmul(results_complete.transpose(), matrix_weighted).transpose()
 
         else:
             raise AttributeError("Unknown solver: '{}'!")

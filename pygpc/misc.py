@@ -802,7 +802,34 @@ def list2dict(l):
     return d
 
 
-def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=0.95):
+def get_gradient_idx_domain(domains, d, gradient_idx):
+    """
+    Determine local gradient_idx in domain "d" from global gradient_idx
+
+    Parameters
+    ----------
+    domains : ndarray of float [n_grid_global]
+        Array containing the domain IDs
+    d : int
+        Domain ID for which the gradient index has to be computed for
+    gradient_idx : ndarray of int [n_grid_global]
+        Indices of grid points (global) where the gradient in gradient_results is provided
+
+    Returns
+    -------
+    gradient_idx_local : ndarray of int [len(domains[domains==d])]
+        Indices of grid points (local) where the gradient in gradient_results is provided
+    """
+    arr = np.arange(len(domains))
+    gradient_idx_local = np.array([i
+                                   for i, c in enumerate(arr[domains == d])  # local
+                                   for cr in arr[gradient_idx]               # global
+                                   if (c == cr).all()])
+
+    return gradient_idx_local
+
+
+def determine_projection_matrix(gradient_results, lambda_eps=0.95):
     """
     Determines projection matrix [P].
 
@@ -812,8 +839,6 @@ def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=0.95):
     ----------
     gradient_results : ndarray of float [n_grid x n_out x dim]
         Gradient of model function in grid points
-    qoi_idx : int
-        Index of QOI the projection matrix is determined for
     lambda_eps : float, optional, default: 0.95
         Bound of principal components in %. All eigenvectors are included until lambda_eps of total sum of all
         eigenvalues is included in the system.
@@ -825,7 +850,7 @@ def determine_projection_matrix(gradient_results, qoi_idx=0, lambda_eps=0.95):
     """
 
     # Determine projection matrices by SVD of gradients
-    u, s, v = np.linalg.svd(gradient_results[:, qoi_idx, :])
+    u, s, v = np.linalg.svd(gradient_results)
 
     # determine dominant eigenvalues up to lambda_eps * s_sum
     s_mask = [False]*len(s)

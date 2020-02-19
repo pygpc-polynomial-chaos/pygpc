@@ -9,6 +9,15 @@ class Problem:
     """
     Data wrapper for the gpc problem containing the model to investigate and the associated parameters.
 
+    Parameters
+    ----------
+    model: Model object
+        Model object instance of model to investigate (derived from AbstractModel class, implemented by user)
+    parameters: OrderedDict
+        Dictionary containing the model parameters as keys:
+        - constants: values (floats, lists, ndarray)
+        - random parameters: RandomParameter instances
+
     Notes
     -----
     Add Attributes:
@@ -53,25 +62,18 @@ class Problem:
     def __init__(self, model, parameters):
         """
         Constructor; Initializes Problem instance
-
-        Parameters
-        ----------
-        model: Model object
-            Model object instance of model to investigate (derived from AbstractModel class, implemented by user)
-        parameters: OrderedDict
-            Dictionary containing the model parameters as keys:
-            - constants: value as float or list of float
-            - random variable: namedtuple("RandomParameter", "pdf_type pdf_shape pdf_limits")
-              (e.g. RandomParameter("beta", [5, 5], [0.15, 0.45]))
         """
         assert(isinstance(parameters, OrderedDict))
 
         self.model = model                              # Model class instance
         self.parameters = parameters                    # OrderedDict of parameters (constants and random)
         self.parameters_random = OrderedDict()          # OrderedDict of parameters (random)
+        self.parameters_keys = []                       # Keys of parameters (saved for sorting)
 
         # extract random parameters
         for p in self.parameters:
+            self.parameters_keys.append(p)
+
             if isinstance(self.parameters[p], RandomParameter):
                 self.parameters_random[p] = self.parameters[p]
 

@@ -1,3 +1,4 @@
+import inspect
 import numpy as np
 import matlab.engine
 from pygpc.AbstractModel import AbstractModel
@@ -10,32 +11,39 @@ class MyModel_matlab(AbstractModel):
 
     Parameters
     ----------
-    p["x1"]: float or ndarray of float [n_grid]
+    fname_matlab : str
+        Filename of Matlab function
+    p["x1"] : float or ndarray of float [n_grid]
         Parameter 1
-    p["x2"]: float or ndarray of float [n_grid]
+    p["x2"] : float or ndarray of float [n_grid]
         Parameter 2
-    p["x3"]: float or ndarray of float [n_grid]
+    p["x3"] : float or ndarray of float [n_grid]
         Parameter 3
+    p["a"] : float
+        shape parameter (a=7)
+    p["b"] : float
+        shape parameter (b=0.1)
 
     Returns
     -------
-    y: ndarray of float [n_grid x n_out]
+    y : ndarray of float [n_grid x n_out]
         Results of the n_out quantities of interest the gPC is conducted for
-    additional_data: dict or list of dict [n_grid]
+    additional_data : dict or list of dict [n_grid]
         Additional data, will be saved under its keys in the .hdf5 file during gPC simulations.
         If multiple grid-points are evaluated in one function call, return a dict for every grid-point in a list
     """
 
-    def __init__(self, fun_path):
-        self.fun_path = fun_path
+    def __init__(self, fname_matlab):
+        self.fname_matlab = fname_matlab                            # filename of matlab function
+        self.fname = inspect.getfile(inspect.currentframe())        # filename of python function
 
     def validate(self):
         pass
 
-    def simulate(self, process_id, matlab_engine):
+    def simulate(self, matlab_engine, process_id=None):
 
         # add path of Matlab function
-        matlab_engine.addpath(self.fun_path, nargout=0)
+        matlab_engine.addpath(self.fname_matlab, nargout=0)
 
         # convert input parameters to matlab format (only lists can be converted)
         x1 = matlab.double(np.array(self.p["x1"]).tolist())
@@ -56,6 +64,6 @@ class MyModel_matlab(AbstractModel):
             y = y[:, np.newaxis]
 
         # delete matlab engine after simulations because it can not be saved in the gpc object
-        # del self.matlab_engine
+        del self.matlab_engine
 
         return y
