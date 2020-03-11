@@ -1,16 +1,19 @@
+import os
 import uuid
+import time
 import numpy as np
 import warnings
 from .BasisFunction import *
 from .misc import get_multi_indices
-
+import multiprocessing.pool
+from _functools import partial
 
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
 except ImportError:
     warnings.warn("If you would like to use plot functionality of pygpc, "
-                  "please install matplotlib (python3 -m pip install matplotlib).")
+                  "please install matplotlib (pip install matplotlib).")
     pass
 
 
@@ -51,6 +54,53 @@ class Basis:
         self.dim = None
         self.n_basis = 0
         self.multi_indices = None
+
+    def set_basis(self, i_basis, problem):
+        """
+        Worker function to initialize a global basis function (called by multiprocessing.pool).
+        It also initializes polynomial basis coefficients for fast processing. Converts list of lists of basis
+        into np.ndarray that can be processed on multi core systems.
+
+        Parameters
+        ----------
+        i_basis : int
+            Index of global basis function
+        problem : Problem class instance
+            gPC problem
+
+        Returns
+        -------
+        b_ : list [n_dim]
+            List containing the individual basis functions of the parameters
+        b_a_ : ndarray of int
+            Concatenated list of polynomial basis coefficients
+        b_a_grad_ : ndarray of int
+            Concatenated list of polynomial basis coefficients for gradient evaluation
+        """
+
+        b_ = [0 for _ in range(problem.dim)]
+        b_a_ = []
+        b_a_grad_ = []
+
+        for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects
+            b_[i_dim] = problem.parameters_random[p].init_basis_function(order=self.multi_indices[i_basis, i_dim])
+
+        for i_dim in range(problem.dim):
+            for i_dim_inner in range(problem.dim):
+                if i_dim == 0:
+                    b_a_ = b_a_ + [np.array([b_[i_dim_inner].fun.order]),
+                                   b_[i_dim_inner].fun.c]
+                if i_dim == i_dim_inner:
+                    b_a_grad_ = b_a_grad_ + [np.array([b_[i_dim_inner].fun.deriv().order]),
+                                             b_[i_dim_inner].fun.deriv().c]
+                else:
+                    b_a_grad_ = b_a_grad_ + [np.array([b_[i_dim_inner].fun.order]),
+                                             b_[i_dim_inner].fun.c]
+
+        b_a_ = np.concatenate(b_a_)
+        b_a_grad_ = np.concatenate(b_a_grad_)
+
+        return b_, b_a_, b_a_grad_
 
     def init_basis_sgpc(self, problem, order, order_max, order_max_norm, interaction_order,
                         interaction_order_current=None):
@@ -101,7 +151,6 @@ class Basis:
         b: list of BasisFunction object instances [n_basis x n_dim]
             Parameter wise basis function objects used in gPC.
             Multiplying all elements in a row at location xi = (x1, x2, ..., x_dim) yields the global basis function.
-
         """
 
         self.dim = problem.dim
@@ -118,19 +167,28 @@ class Basis:
         # get total number of basis functions
         self.n_basis = self.multi_indices.shape[0]
 
-        # construct 2D list with BasisFunction objects and array with coefficients
-        self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
+        # construct 2D list with BasisFunction objects and array with coefficients and
+        # initialize array of basis coefficients
+        workhorse_partial = partial(self.set_basis, problem=problem)
 
-        for i_basis in range(self.n_basis):
-            for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects
-                self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(
-                    order=self.multi_indices[i_basis, i_dim])
+        pool = multiprocessing.Pool(multiprocessing.cpu_count())
+
+        out = pool.map(workhorse_partial, range(self.n_basis))
+
+        self.b = [o[0] for o in out]
+        self.b_array = np.concatenate([o[1] for o in out])
+        self.b_array_grad = np.concatenate([o[2] for o in out])
+
+        # This is the single core implementation:
+        # self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
+        #
+        # for i_basis in range(self.n_basis):
+        #     for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects
+        #         self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(
+        #             order=self.multi_indices[i_basis, i_dim])
 
         # Generate unique IDs of basis functions
         self.b_id = [uuid.uuid4() for _ in range(self.n_basis)]
-
-        # initialize array of basis coefficients
-        self.init_basis_array()
 
         # initialize normalization factor (self.b_norm and self.b_norm_basis)
         self.init_basis_norm()
@@ -238,13 +296,15 @@ class Basis:
         self.init_basis_norm()
 
         # initialize array of basis coefficients
-        self.init_basis_array()
+        self.extend_basis_array(b_added)
 
     def init_basis_array(self):
         """
         Initialize polynomial basis coefficients for fast processing. Converts list of lists of self.b
         into np.ndarray that can be processed on multi core systems.
         """
+
+        start = time.time()
         _b_array = []
         _b_array_grad = []
         for i_basis in range(self.n_basis):
@@ -263,6 +323,45 @@ class Basis:
         self.b_array = np.concatenate(_b_array)
         self.b_array_grad = np.concatenate(_b_array_grad)
 
+        stop = time.time()
+        print(f"Time: {stop-start} sec")
+
+    def extend_basis_array(self, b_added):
+        """
+        Extends polynomial basis coefficients for fast processing. Converts list of lists of b_added
+        into np.ndarray that can be processed on multi core systems.
+
+        Parameters
+        ----------
+        b_added: list of list of BasisFunction instances [n_b_added][dim]
+            Individual BasisFunctions to add
+        """
+
+        _b_array = []
+        _b_array_grad = []
+        for i_basis in range(len(b_added)):
+            for i_dim_outer in range(self.dim):
+                for i_dim_inner in range(self.dim):
+                    if i_dim_outer == 0:
+                        _b_array = _b_array + [np.array([b_added[i_basis][i_dim_inner].fun.order]),
+                                               b_added[i_basis][i_dim_inner].fun.c]
+                    if i_dim_outer == i_dim_inner:
+                        _b_array_grad = _b_array_grad + [np.array([b_added[i_basis][i_dim_inner].fun.deriv().order]),
+                                                         b_added[i_basis][i_dim_inner].fun.deriv().c]
+                    else:
+                        _b_array_grad = _b_array_grad + [np.array([b_added[i_basis][i_dim_inner].fun.order]),
+                                                         b_added[i_basis][i_dim_inner].fun.c]
+
+        if self.b_array is not None:
+            self.b_array = np.hstack(self.b_array, np.concatenate(_b_array))
+        else:
+            self.b_array = np.concatenate(_b_array)
+
+        if self.b_array_grad is not None:
+            self.b_array_grad = np.hstack(self.b_array_grad, np.concatenate(_b_array_grad))
+        else:
+            self.b_array_grad = np.concatenate(_b_array_grad)
+
     def plot_basis(self, dims, fn_plot=None, dynamic_plot_update=False):
         """
         Generate 2D or 3D cube-plot of basis functions.
@@ -272,7 +371,7 @@ class Basis:
         dims : list of int of length [2] or [3]
             Indices of parameters in gPC expansion to plot
         fn_plot : str, optional, default: None
-            Filename of plot to save (without extension, it will be saved in .png and .pdf format)
+            Filename of plot to save (with .png or .pdf extension)
 
         Returns
         -------
@@ -337,3 +436,8 @@ class Basis:
                 ax.set_yticks(range(np.max(multi_indices) + 1))
                 ax.set_zticklabels(range(np.max(multi_indices) + 1))
                 ax.set_zticks(range(np.max(multi_indices) + 1))
+
+        if fn_plot is not None:
+            if os.path.splitext(fn_plot) not in [".pdf", ".png"]:
+                fn_plot = fn_plot + ".png"
+            plt.savefig(fn_plot, dpi=600)
