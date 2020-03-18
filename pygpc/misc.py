@@ -387,10 +387,14 @@ def mutual_coherence(array):
         Mutual coherence
     """
 
+    array = array / np.linalg.norm(array, axis=0)[np.newaxis, :]
     t = np.dot(array.conj().T, array)
-    s = np.sqrt(np.diag(t))
-    s_sqrt = np.diag(s)
-    mu = np.max(1.0*(t-s_sqrt)/np.outer(s, s))
+    np.fill_diagonal(t, 0.0)
+    mu = np.max(t)
+
+    # s = np.sqrt(np.diag(t))
+    # s_sqrt = np.diag(s)
+    # mu = np.max(1.0*(t-s_sqrt)/np.outer(s, s))
 
     return mu
 
