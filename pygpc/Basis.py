@@ -304,7 +304,6 @@ class Basis:
         into np.ndarray that can be processed on multi core systems.
         """
 
-        start = time.time()
         _b_array = []
         _b_array_grad = []
         for i_basis in range(self.n_basis):
@@ -322,9 +321,6 @@ class Basis:
 
         self.b_array = np.concatenate(_b_array)
         self.b_array_grad = np.concatenate(_b_array_grad)
-
-        stop = time.time()
-        print(f"Time: {stop-start} sec")
 
     def extend_basis_array(self, b_added):
         """
