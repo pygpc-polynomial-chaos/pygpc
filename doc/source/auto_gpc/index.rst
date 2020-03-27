@@ -143,13 +143,13 @@ Generalized Polynomial Chaos
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_gpc_python.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_gpc/auto_gpc_python.zip>`
+    :download:`Download all examples in Python source code: auto_gpc_python.zip <//home/kporzig/py/pygpc/doc/source/auto_gpc/auto_gpc_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_gpc/auto_gpc_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip <//home/kporzig/py/pygpc/doc/source/auto_gpc/auto_gpc_jupyter.zip>`
 
 
 .. only:: html

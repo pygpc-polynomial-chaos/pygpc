@@ -64,15 +64,14 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
     res = None
 
     with h5py.File(fn_gpc + ".hdf5", 'r') as f:
-
         # filename of associated gPC .pkl files
         fn_session = os.path.join(os.path.split(fn_gpc)[0], f["misc/fn_session"][0].astype(str))
         fn_session_folder = f["misc/fn_session_folder"][0].astype(str)
 
-        print("> Loading gpc session object: {}".format(fn_session))
+    print("> Loading gpc session object: {}".format(fn_session))
+    session = read_session(fname=fn_session, folder=fn_session_folder)
 
-        session = read_session(fname=fn_session, folder=fn_session_folder)
-
+    with h5py.File(fn_gpc + ".hdf5", 'r') as f:
         # check if we have qoi specific gPCs here
         try:
             if "qoi" in list(f["coeffs"].keys())[0]:

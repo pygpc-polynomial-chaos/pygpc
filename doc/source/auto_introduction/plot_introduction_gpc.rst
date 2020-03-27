@@ -20,7 +20,7 @@ uncertainties (Le Maitre, 2010). On the contrary,  non-intrusive approaches are 
 sampling of the probability space without any modification of the deterministic solvers. Those methods 
 are more flexible and thus more suitable for universal application. Typical applications can be found 
 in the fields of computational fluid dynamics (Knio and Le Maitre, 2006; Xiu, 2003; Hosder et al., 2006), heat transfer
-[Wan et al., 2004; Xiu and Karniadakis, 2003), multibody dynamics (Sandu et al., 2006a, Sandu et al. 2006b),
+(Wan et al., 2004; Xiu and Karniadakis, 2003), multibody dynamics (Sandu et al., 2006a, Sandu et al. 2006b),
 robust design optimization (Zein, 2013) or in biomedical engineering (Saturnino et al., 2019; Weise et al. 2015;
 Codecasa et al., 2016).
 During the last years, spectral approaches are becoming increasingly popular. However, those are not a reference

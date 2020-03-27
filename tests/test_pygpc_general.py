@@ -599,8 +599,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["fn_results"] = os.path.join(folder, test_name)
         options["save_session_format"] = save_session_format
         options["eps"] = 0.0075
-        options["grid"] = pygpc.Random
-        options["grid_options"] = None
+        options["grid"] = pygpc.LHS
+        options["grid_options"] = "ese"
 
         # define algorithm
         algorithm = pygpc.RegAdaptive(problem=problem, options=options)
@@ -795,7 +795,7 @@ class TestPygpcMethods(unittest.TestCase):
                                          "classifier_solver": "lbfgs"}
         options["n_samples_discontinuity"] = 12
         options["eps"] = 0.75
-        options["n_grid_init"] = 20
+        options["n_grid_init"] = 10
         options["backend"] = "omp"
         options["fn_results"] = os.path.join(folder, test_name)
         options["save_session_format"] = save_session_format
