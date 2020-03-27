@@ -295,7 +295,7 @@ class Basis:
         # update normalization factors
         self.init_basis_norm()
 
-        # initialize array of basis coefficients
+        # extend array of basis coefficients
         self.extend_basis_array(b_added)
 
     def init_basis_array(self):
@@ -353,12 +353,12 @@ class Basis:
                                                          b_added[i_basis][i_dim_inner].fun.c]
 
         if self.b_array is not None:
-            self.b_array = np.hstack(self.b_array, np.concatenate(_b_array))
+            self.b_array = np.hstack((self.b_array, np.concatenate(_b_array)))
         else:
             self.b_array = np.concatenate(_b_array)
 
         if self.b_array_grad is not None:
-            self.b_array_grad = np.hstack(self.b_array_grad, np.concatenate(_b_array_grad))
+            self.b_array_grad = np.hstack((self.b_array_grad, np.concatenate(_b_array_grad)))
         else:
             self.b_array_grad = np.concatenate(_b_array_grad)
 

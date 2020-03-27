@@ -890,31 +890,6 @@ class RandomGrid(Grid):
             Optional initial grid, which gets extended
         """
 
-        def lhs_extend(array, n_extend):
-            dim = np.shape(array)[1]
-            n_old = np.shape(array)[0]
-            n_new = n_old + n_extend
-            a_new = np.zeros([n_extend, np.shape(array)[1]])
-            u = np.random.rand(n_new, np.shape(array)[1])
-            # array = np.insert(array, n_old, np.zeros([n_extend ,np.shape(array)[1]]), axis=0)
-            for d in range(dim):
-                k = 0
-                s = 0
-                for j in range(n_new - 1):
-                    if not float(j / n_new) < float(np.sort(array[:, d])[min((j + s), len(array) - 1)]) < float(
-                            (j + 1) / n_new):
-                        if float((j + 1) / n_new) <= float(np.sort(array[:, d])[min((j + s), len(array) - 1)]):
-                            s = s - 1
-                        else:
-                            j = j - 1
-                            s = s + 1
-                        k = k + 1
-                        if k is np.shape(a_new)[0] + 1:
-                            k = 1
-                        a_new[k - 1, d] = float((j + u[j, d]) / n_new)
-                np.random.shuffle(a_new[:, d])
-            return np.insert(array, n_old, a_new, axis=0)
-
         if n_grid_new is not None:
             # Number of new grid points
             n_grid_add = int(n_grid_new - self.n_grid)
@@ -934,8 +909,8 @@ class RandomGrid(Grid):
 
                     elif isinstance(self, LHS):
                         # append points to existing grid
-                        self.coords = lhs_extend(self.coords_reservoir, n_grid_new)
-                        self.coords_norm = np.vstack([self.coords_norm, self.coords_norm_reservoir[self.n_grid:n_grid_new]])
+                        self.coords = self.lhs_extend(self.coords, n_grid_add)  # lhs_extend(self.coords_reservoir, n_grid_add)
+                        self.coords_norm = np.vstack([self.coords_norm, self.get_normalized_coordinates(self.coords[self.coords.shape[0]-n_grid_add:, :])])
 
                 else:
                     coords = np.zeros((n_grid_add, len(self.parameters_random)))
@@ -1325,6 +1300,31 @@ class LHS(RandomGrid):
 
         else:
             pass
+
+    def lhs_extend(self, array, n_extend):
+        dim = np.shape(array)[1]
+        n_old = np.shape(array)[0]
+        n_new = n_old + n_extend
+        a_new = np.zeros([n_extend, np.shape(array)[1]])
+        u = np.random.rand(n_new, np.shape(array)[1])
+        # array = np.insert(array, n_old, np.zeros([n_extend ,np.shape(array)[1]]), axis=0)
+        for d in range(dim):
+            k = 0
+            s = 0
+            for j in range(n_new - 1):
+                if not float(j / n_new) < float(np.sort(array[:, d])[min((j + s), len(array) - 1)]) < float(
+                        (j + 1) / n_new):
+                    if float((j + 1) / n_new) <= float(np.sort(array[:, d])[min((j + s), len(array) - 1)]):
+                        s = s - 1
+                    else:
+                        j = j - 1
+                        s = s + 1
+                    k = k + 1
+                    if k is np.shape(a_new)[0] + 1:
+                        k = 1
+                    a_new[k - 1, d] = float((j + u[j, d]) / n_new)
+            np.random.shuffle(a_new[:, d])
+        return np.insert(array, n_old, a_new, axis=0)
 
     def CL2(self, array):
         """
