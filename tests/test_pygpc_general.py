@@ -795,7 +795,7 @@ class TestPygpcMethods(unittest.TestCase):
                                          "classifier_solver": "lbfgs"}
         options["n_samples_discontinuity"] = 12
         options["eps"] = 0.75
-        options["n_grid_init"] = 10
+        options["n_grid_init"] = 100
         options["backend"] = "omp"
         options["fn_results"] = os.path.join(folder, test_name)
         options["save_session_format"] = save_session_format

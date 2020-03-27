@@ -890,11 +890,14 @@ def get_indices_of_k_smallest(arr, k):
     idx : tuple of ndarray [k]
         Indices of k smallest elements in array
     """
-    index = np.argpartition(arr.ravel(), k)
-    idx = tuple(np.array(np.unravel_index(index, arr.shape))[:, range(min(k, 0), max(k, 0))])
+    # index = np.argpartition(arr.ravel(), k)
+    # idx = tuple(np.array(np.unravel_index(index, arr.shape))[:, range(min(k, 0), max(k, 0))])
+    #
+    # return idx
 
-    return idx
+    idx = np.argpartition(arr.ravel(), arr.size - k)[:k]
 
+    return tuple(np.unravel_index(idx, arr.shape))
 
 def get_coords_discontinuity(classifier, x_min, x_max, n_coords_disc=10, border_sampling="structured"):
     """
