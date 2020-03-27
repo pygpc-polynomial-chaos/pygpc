@@ -13,7 +13,7 @@ matrix:
       dist: bionic
       language: python
       python: '3.8'
-      env: CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+      env: CIBW_BUILD='cp38-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython
         # - python -m pip install .
@@ -29,7 +29,7 @@ matrix:
       dist: bionic
       language: python
       python: '3.7'
-      env: CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+      env: CIBW_BUILD='cp37-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython
         - python -m pip install .
@@ -45,7 +45,7 @@ matrix:
       dist: bionic
       language: python
       python: '3.6'
-      env: CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+      env: CIBW_BUILD='cp36-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython
         - python -m pip install .
@@ -61,7 +61,7 @@ matrix:
       dist: bionic
       language: python
       python: '3.5'
-      env: CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
+      env: CIBW_BUILD='cp35-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython
         - python -m pip install .
@@ -79,7 +79,7 @@ matrix:
         - PYTHON=3.8.1
         - CC=gcc-9
         - CXX=g++-9
-        - CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+        - CIBW_BUILD='cp38-*'
       addons:
         homebrew:
           packages:
@@ -102,7 +102,7 @@ matrix:
         - PYTHON=3.7.6
         - CC=gcc-9
         - CXX=g++-9
-        - CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+        - CIBW_BUILD='cp37-*'
       addons:
         homebrew:
           packages:
@@ -125,7 +125,7 @@ matrix:
         - PYTHON=3.6.8
         - CC=gcc-9
         - CXX=g++-9
-        - CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - CIBW_BUILD='cp36-*'
       addons:
         homebrew:
           packages:
@@ -148,7 +148,7 @@ matrix:
         - PYTHON=3.5.4
         - CC=gcc-9
         - CXX=g++-9
-        - CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
+        - CIBW_BUILD='cp35-*'
       addons:
         homebrew:
           packages:
@@ -170,7 +170,7 @@ matrix:
       before_install:
         - choco install python --version 3.8.1
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
-        - export CIBW_SKIP='cp[!3]?-* cp3[!8]-*'
+        - export CIBW_BUILD='cp38-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython
         - python -m pip install .
@@ -187,7 +187,7 @@ matrix:
       before_install:
         - choco install python --version 3.7.6
         - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
-        - export CIBW_SKIP='cp[!3]?-* cp3[!7]-*'
+        - export CIBW_BUILD='cp37-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython
         - python -m pip install .
@@ -204,7 +204,7 @@ matrix:
       before_install:
         - choco install python --version 3.6.8
         - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
-        - export CIBW_SKIP='cp[!3]?-* cp3[!6]-*'
+        - export CIBW_BUILD='cp36-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython
         - python -m pip install .
@@ -221,7 +221,7 @@ matrix:
       before_install:
         - choco install python --version 3.5.4
         - export PATH="/c/Python35:/c/Python35/Scripts:$PATH"
-        - export CIBW_SKIP='cp[!3]?-* cp3[!5]-*'
+        - export CIBW_BUILD='cp35-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython
         - python -m pip install .
