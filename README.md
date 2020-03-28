@@ -18,7 +18,7 @@ Basic features:
 - Includes highly efficient **CPU** and **GPU (CUDA)** implementations to significantly accelerate algorithmic and post-processing routines for high-dimensional and complex problems
 - Includes **state-of-the-art techniques** such as:
     - **Projection:** determination of optimal reduced basis
-    - **l1-minimization:** reduction of necessary model evaluations by making use of concepts from compressed sensing 
+    - **L1-minimization:** reduction of necessary model evaluations by making use of concepts from compressed sensing 
     - **Gradient enhanced gPC:** use of gradient information of the model function to increase accuracy
     - **Multi-element gPC:** analyzing systems with discontinuities and sharp transitions
     - **Optimized Latin Hypercube Sampling** for fast convergence
@@ -105,7 +105,7 @@ Reference
 ---------
 If you use this framework, please cite:
 
-Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., & Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834.
+  - [Weise, K., Poßner, L., Müller, E., Gast, R., & Knösche, T. R. (2020). Pygpc: A sensitivity and uncertainty analysis toolbox for Python. SoftwareX, 11, 100450.](https://www.sciencedirect.com/science/article/pii/S2352711020300078)
 
 Contact
 -------
