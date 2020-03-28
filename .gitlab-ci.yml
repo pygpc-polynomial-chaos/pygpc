@@ -19,15 +19,11 @@ cache:
     - venv/
 
 before_script:
-  script:
-    - python -V  # Print out python version for debugging
-    - pip install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
-    - pip install numpy Cython
-  only:
-    - master
-    - stable
+  - python -V  # Print out python version for debugging
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install numpy Cython
 
 test:
   script:
