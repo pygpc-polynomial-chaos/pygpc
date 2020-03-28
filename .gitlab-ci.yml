@@ -1,0 +1,11 @@
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+  - apt-get update -qy
+  - apt-get install -y python-dev python-pip
+  - python -m pip install cibuildwheel twine numpy Cython
+  - cd tests
+  - python -m unittest 
