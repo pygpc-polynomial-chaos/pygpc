@@ -15,7 +15,7 @@ matrix:
       python: '3.8'
       env: CIBW_BUILD='cp38-*'
       script:
-        - python -m pip install cibuildwheel twine numpy Cython
+        - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         # - python -m pip install .
         # - cd tests
         # - python -m unittest
@@ -31,7 +31,7 @@ matrix:
       python: '3.7'
       env: CIBW_BUILD='cp37-*'
       script:
-        - python -m pip install cibuildwheel twine numpy Cython
+        - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python -m pip install .
         - cd tests
         - python -m unittest
@@ -47,7 +47,7 @@ matrix:
       python: '3.6'
       env: CIBW_BUILD='cp36-*'
       script:
-        - python -m pip install cibuildwheel twine numpy Cython
+        - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python -m pip install .
         - cd tests
         - python -m unittest
@@ -63,7 +63,7 @@ matrix:
       python: '3.5'
       env: CIBW_BUILD='cp35-*'
       script:
-        - python -m pip install cibuildwheel twine numpy Cython
+        - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python -m pip install .
         - cd tests
         - python -m unittest
@@ -86,7 +86,7 @@ matrix:
             - gcc
             - libomp
       script:
-        - python3 -m pip install cibuildwheel twine numpy Cython
+        - python3 -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python3 -m pip install .
         - cd tests
         - python3 -m unittest
@@ -109,7 +109,7 @@ matrix:
             - gcc
             - libomp
       script:
-        - python3 -m pip install cibuildwheel twine numpy Cython
+        - python3 -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python3 -m pip install .
         - cd tests
         - python3 -m unittest
@@ -132,7 +132,7 @@ matrix:
             - gcc
             - libomp
       script:
-        - python3 -m pip install cibuildwheel twine numpy Cython
+        - python3 -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python3 -m pip install .
         - cd tests
         - python3 -m unittest
@@ -155,7 +155,7 @@ matrix:
             - gcc
             - libomp
       script:
-        - python3 -m pip install cibuildwheel twine numpy Cython
+        - python3 -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python3 -m pip install .
         - cd tests
         - python3 -m unittest
@@ -172,7 +172,7 @@ matrix:
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
         - export CIBW_BUILD='cp38-*'
       script:
-        - python -m pip install cibuildwheel twine numpy Cython
+        - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python -m pip install .
         - cd tests
         - python -m unittest
@@ -189,7 +189,7 @@ matrix:
         - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
         - export CIBW_BUILD='cp37-*'
       script:
-        - python -m pip install cibuildwheel twine numpy Cython
+        - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python -m pip install .
         - cd tests
         - python -m unittest
@@ -206,7 +206,7 @@ matrix:
         - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
         - export CIBW_BUILD='cp36-*'
       script:
-        - python -m pip install cibuildwheel twine numpy Cython
+        - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python -m pip install .
         - cd tests
         - python -m unittest
@@ -223,7 +223,7 @@ matrix:
         - export PATH="/c/Python35:/c/Python35/Scripts:$PATH"
         - export CIBW_BUILD='cp35-*'
       script:
-        - python -m pip install cibuildwheel twine numpy Cython
+        - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
         - python -m pip install .
         - cd tests
         - python -m unittest
