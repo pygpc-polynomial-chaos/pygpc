@@ -21,6 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install Cython matplotlib seaborn
         pip install -r requirements.txt
         pip install .
     - name: Test with unittest
@@ -42,6 +43,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install Cython matplotlib seaborn
         pip install -r requirements.txt
         pip install .
     - name: Test with unittest
@@ -63,6 +65,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install Cython matplotlib seaborn
         pip install -r requirements.txt
         pip install .
     - name: Test with unittest
