@@ -1,11 +1,3 @@
-from .Grid import *
-from .misc import get_cartesian_product
-from .misc import display_fancy_bar
-from .misc import nrmsd
-from .misc import mat2ten
-from .misc import ten2mat
-from .ValidationSet import *
-from .Computation import *
 import numpy as np
 import fastmat as fm
 import scipy.stats
@@ -16,7 +8,16 @@ import random
 import sys
 from sklearn import linear_model
 from scipy.signal import savgol_filter
-from .pygpc_extensions import create_gpc_matrix_cpu, create_gpc_matrix_omp
+from .misc import get_cartesian_product
+from .misc import display_fancy_bar
+from .misc import nrmsd
+from .misc import mat2ten
+from .misc import ten2mat
+from .pygpc_extensions import create_gpc_matrix_cpu
+from .pygpc_extensions import create_gpc_matrix_omp
+from .ValidationSet import *
+from .Computation import *
+from .Grid import *
 
 
 try:
@@ -683,8 +684,10 @@ class GPC(object):
                 # reshape gpc gradient matrix from 2D to 3D representation [n_grid x n_basis x n_dim]
                 matrix = mat2ten(mat=self.gpc_matrix_gradient, incr=self.problem.dim)
                 matrix_updated = np.zeros((len(self.gradient_idx), len(self.basis.b_id), self.problem.dim))
-                coords_id = self.gpc_matrix_gradient_coords_id[self.gradient_idx]  # self.gpc_matrix_gradient_coords_id
-                coords_id_ref = self.grid.coords_gradient_id[self.gradient_idx]  # np.array(self.grid.coords_gradient_id).flatten()
+                # self.gpc_matrix_gradient_coords_id
+                coords_id = self.gpc_matrix_gradient_coords_id[self.gradient_idx]
+                # np.array(self.grid.coords_gradient_id).flatten()
+                coords_id_ref = self.grid.coords_gradient_id[self.gradient_idx]
                 b_id = self.gpc_matrix_gradient_b_id
                 b_id_ref = self.basis.b_id
                 coords_norm = self.grid.coords_norm[self.gradient_idx]
@@ -842,7 +845,8 @@ class GPC(object):
                             (self.gpc_matrix_gradient[0:n_rows_hdf5, 0:n_cols_hdf5] == gpc_matrix_gradient_hdf5).all():
                         # resize dataset and save new columns and rows
                         f[hdf5_path_gpc_matrix_gradient].resize(self.gpc_matrix_gradient.shape[1], axis=1)
-                        f[hdf5_path_gpc_matrix_gradient][:, n_cols_hdf5:] = self.gpc_matrix_gradient[0:n_rows_hdf5, n_cols_hdf5:]
+                        f[hdf5_path_gpc_matrix_gradient][:, n_cols_hdf5:] = self.gpc_matrix_gradient[0:n_rows_hdf5,
+                                                                                                     n_cols_hdf5:]
 
                         f[hdf5_path_gpc_matrix_gradient].resize(self.gpc_matrix_gradient.shape[0], axis=0)
                         f[hdf5_path_gpc_matrix_gradient][n_rows_hdf5:, :] = self.gpc_matrix_gradient[n_rows_hdf5:, :]

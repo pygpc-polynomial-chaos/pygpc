@@ -117,7 +117,8 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
         y_gpc = np.zeros((coords_norm.shape[0], len(output_idx)))
 
         for i, o_idx in enumerate(output_idx):
-            y_gpc[:, i] = session.gpc[o_idx].get_approximation(coeffs=coeffs[o_idx], x=coords_norm, output_idx=0).flatten()
+            y_gpc[:, i] = session.gpc[o_idx].get_approximation(coeffs=coeffs[o_idx], x=coords_norm,
+                                                               output_idx=0).flatten()
 
     else:
         y_gpc = session.gpc[0].get_approximation(coeffs=coeffs, x=coords_norm, output_idx=output_idx)
@@ -281,7 +282,8 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
         y_gpc = np.zeros((grid_norm.shape[0], len(output_idx)))
 
         for i, o_idx in enumerate(output_idx):
-            y_gpc[:, i] = session.gpc[o_idx].get_approximation(coeffs=coeffs[o_idx], x=grid_norm, output_idx=0).flatten()
+            y_gpc[:, i] = session.gpc[o_idx].get_approximation(coeffs=coeffs[o_idx], x=grid_norm,
+                                                               output_idx=0).flatten()
 
     else:
         y_gpc = session.gpc[0].get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx)

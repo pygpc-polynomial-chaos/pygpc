@@ -4,9 +4,9 @@ import copy
 import numpy as np
 import os
 import re
-# import dispy
 import multiprocessing
 import multiprocessing.pool
+# import dispy
 from collections import OrderedDict
 from pygpc import Worker
 from .io import iprint

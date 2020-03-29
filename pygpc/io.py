@@ -7,9 +7,9 @@ import pickle
 import inspect
 import logging
 import numpy as np
-from .misc import is_instance
 from collections import OrderedDict
 from importlib import import_module
+from .misc import is_instance
 
 
 def write_session(obj, fname, folder="session", overwrite=True):
@@ -56,6 +56,8 @@ def write_session_pkl(obj, fname, overwrite=True):
         Class instance containing the gPC information
     fname: str
         Path to output file
+    overwrite : bool, optional, default: True
+        Overwrite existing file
 
     Returns
     -------
@@ -177,7 +179,8 @@ def read_session_hdf5(fname, folder="session", verbose=False):
     model = read_model_from_hdf5(fn_hdf5=fname, folder=folder + "/model", verbose=verbose)
 
     # parameters
-    parameters_unsorted = read_parameters_from_hdf5(fn_hdf5=fname, folder=folder + "/problem/parameters", verbose=verbose)
+    parameters_unsorted = read_parameters_from_hdf5(fn_hdf5=fname, folder=folder + "/problem/parameters",
+                                                    verbose=verbose)
 
     problem_dict = read_group_from_hdf5(fn_hdf5=fname, folder=folder + "/problem", verbose=verbose)
 
@@ -257,7 +260,8 @@ def read_session_hdf5(fname, folder="session", verbose=False):
             # initialize gpc
             gpc_list[i_gpc] = g(**args_dict)
 
-            # loop over entries and save in self (if we have it in locals() we take this, e.g. gpc, grid, validation etc)
+            # loop over entries and save in self (if we have it in locals() we take this,
+            # e.g. gpc, grid, validation etc)
             for key in gpc_raw:
                 if key in locals():
                     setattr(gpc_list[i_gpc], key, locals()[key])

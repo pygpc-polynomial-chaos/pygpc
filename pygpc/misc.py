@@ -658,7 +658,8 @@ def get_multi_indices(order, order_max, interaction_order, order_max_norm=1., in
 
     # remove polynomials exceeding order_max considering max_order_norm
     if order_max_norm != 1:
-        multi_indices = multi_indices[np.linalg.norm(multi_indices, ord=order_max_norm, axis=1) <= (order_max + 1e-6), :]
+        multi_indices = multi_indices[np.linalg.norm(multi_indices, ord=order_max_norm, axis=1) <=
+                                      (order_max + 1e-6), :]
 
     # add or delete monomials specified in order
     for i_dim in range(dim):
@@ -898,6 +899,7 @@ def get_indices_of_k_smallest(arr, k):
     idx = np.argpartition(arr.ravel(), arr.size - k)[:k]
 
     return tuple(np.unravel_index(idx, arr.shape))
+
 
 def get_coords_discontinuity(classifier, x_min, x_max, n_coords_disc=10, border_sampling="structured"):
     """

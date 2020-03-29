@@ -65,7 +65,7 @@ class TestPygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def test_0_Static_gpc_quad(self):
+    def test_000_Static_gpc_quad(self):
         """
         Algorithm: Static
         Method: Quadrature
@@ -153,12 +153,13 @@ class TestPygpcMethods(unittest.TestCase):
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
         print("> Checking file consistency...")
 
+        # Todo: @Konstantin: adapt filename for *.pkl files
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
         self.expect_true(files_consistent, error_msg)
 
         print("done!\n")
 
-    def test_1_Static_gpc(self):
+    def test_001_Static_gpc(self):
         """
         Algorithm: Static
         Method: Regression
@@ -261,7 +262,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_2_MEStatic_gpc(self):
+    def test_002_MEStatic_gpc(self):
         """
         Algorithm: MEStatic
         Method: Regression
@@ -365,7 +366,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_3_StaticProjection_gpc(self):
+    def test_003_StaticProjection_gpc(self):
         """
         Algorithm: StaticProjection
         Method: Regression
@@ -460,7 +461,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_4_MEStaticProjection_gpc(self):
+    def test_004_MEStaticProjection_gpc(self):
         """
         Algorithm: MEStaticProjection
         Method: Regression
@@ -559,7 +560,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_5_RegAdaptive_gpc(self):
+    def test_005_RegAdaptive_gpc(self):
         """
         Algorithm: RegAdaptive
         Method: Regression
@@ -653,7 +654,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_6_RegAdaptiveProjection_gpc(self):
+    def test_006_RegAdaptiveProjection_gpc(self):
         """
         Algorithm: RegAdaptiveProjection
         Method: Regression
@@ -748,7 +749,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_7_MERegAdaptiveProjection_gpc(self):
+    def test_007_MERegAdaptiveProjection_gpc(self):
         """
         Algorithm: MERegAdaptiveProjection
         Method: Regression
@@ -853,7 +854,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_8_testfunctions(self):
+    def test_008_testfunctions(self):
         """
         Testing testfunctions (multi-threading and inherited parallelization)
         """
@@ -923,7 +924,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    def test_9_RandomParameters(self):
+    def test_009_RandomParameters(self):
         """
         Testing RandomParameters
         """
@@ -953,7 +954,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    def test_10_Grids(self):
+    def test_010_Grids(self):
         """
         Testing Grids [Random, LHS]
         """
@@ -989,7 +990,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_11_Matlab_gpc(self):
+    def test_011_Matlab_gpc(self):
         """
         Algorithm: RegAdaptive
         Method: Regression
@@ -1085,7 +1086,7 @@ class TestPygpcMethods(unittest.TestCase):
         else:
             print("Skipping Matlab test...")
 
-    def test_12_random_vars_postprocessing(self):
+    def test_012_random_vars_postprocessing(self):
         """
         Algorithm: Static
         Method: Regression
@@ -1212,7 +1213,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_13_clustering_3_domains(self):
+    def test_013_clustering_3_domains(self):
         """
         Algorithm: MERegAdaptiveprojection
         Method: Regression
@@ -1312,7 +1313,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_14_backends(self):
+    def test_014_backends(self):
         """
         Test the different backends ["python", "cpu", "omp", "cuda"]
         """
@@ -1361,7 +1362,7 @@ class TestPygpcMethods(unittest.TestCase):
         gpc_matrix_gradient = dict()
         pce_matrix = dict()
 
-        print("Constructing gPC matrices with different backends:")
+        print("Constructing gPC matrices with different backends...")
         for b in backends:
             try:
                 options["backend"] = b
@@ -1383,7 +1384,7 @@ class TestPygpcMethods(unittest.TestCase):
                 gpc.init_gpc_matrix(gradient_idx=np.arange(grid.coords.shape[0]))
                 stop = time.time()
 
-                print(b, "create gpc matrix: ", stop-start)
+                print(b, "Time create_gpc_matrix: ", stop-start)
 
                 # perform polynomial chaos expansion
                 coeffs = np.ones([len(gpc.basis.b), 2])
@@ -1391,7 +1392,7 @@ class TestPygpcMethods(unittest.TestCase):
                 pce = gpc.get_approximation(coeffs, gpc.grid.coords_norm)
                 stop = time.time()
 
-                print(b, "polynomial chaos expansion: ", stop-start)
+                print(b, "Time get_approximation: ", stop-start)
 
                 gpc_matrix[b] = gpc.gpc_matrix
                 gpc_matrix_gradient[b] = gpc.gpc_matrix_gradient
@@ -1399,7 +1400,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             except NotImplementedError:
                 backends.remove(b)
-                warnings.warn("Skipping to test backend: {} (not installed)".format(b))
+                warnings.warn("Skipping {} (not installed)...".format(b))
 
         for b_ref in backends:
             for b_compare in backends:
@@ -1415,7 +1416,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_15_save_and_load_session(self):
+    def test_015_save_and_load_session(self):
         """
         Save and load a gPC Session
         """
@@ -1425,7 +1426,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_16_gradient_estimation_methods(self):
+    def test_016_gradient_estimation_methods(self):
         """
         Test gradient estimation methods
         """
@@ -1491,7 +1492,7 @@ class TestPygpcMethods(unittest.TestCase):
                 self.expect_true((nrmsd < 0.05).all(),
                                  msg="gPC test failed during gradient estimation: {} error too large".format(m))
 
-    def test_17_grids(self):
+    def test_017_grids(self):
         """
         Test grids
         """

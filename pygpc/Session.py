@@ -1,10 +1,10 @@
 import numpy as np
+import pickle
+import __main__ as main
+from .io import write_session
 from .MEGPC import *
 from .SGPC import *
 from .GPC import *
-import pickle
-from .io import write_session
-import __main__ as main
 
 
 class Session(object):

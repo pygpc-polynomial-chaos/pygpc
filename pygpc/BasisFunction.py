@@ -1,10 +1,10 @@
 import scipy.special
 import scipy.stats
 import numpy as np
-from .Grid import *
 from .Quadrature import get_quadrature_jacobi_1d
 from .Quadrature import get_quadrature_hermite_1d
 from .Quadrature import get_quadrature_laguerre_1d
+from .Grid import *
 
 
 class BasisFunction(object):
@@ -317,4 +317,5 @@ class SigmoidDown(BasisFunction):
         self.fun = lambda x: 1.0 / (1 + np.exp(-p["r"] * (- x + p["xs"])))
 
         # derivative
-        self.fun_der = lambda x: (- p["r"] * np.exp(-p["r"] * (- x + p["xs"]))) / (1 + np.exp(-p["r"] * (- x + p["xs"])))**2
+        self.fun_der = lambda x: (- p["r"] * np.exp(-p["r"] * (- x + p["xs"]))) / (1 + np.exp(-p["r"] *
+                                 (- x + p["xs"])))**2

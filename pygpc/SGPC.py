@@ -2,14 +2,14 @@ import time
 import random
 import numpy as np
 import scipy.stats
-from .GPC import *
-from .io import iprint, wprint
-from .misc import display_fancy_bar
-from .misc import get_array_unique_rows
-from .Basis import *
 from scipy.special import binom
 from .sobol_saltelli import get_sobol_indices_saltelli
 from .sobol_saltelli import saltelli_sampling
+from .io import iprint, wprint
+from .misc import display_fancy_bar
+from .misc import get_array_unique_rows
+from .GPC import *
+from .Basis import *
 
 
 class SGPC(GPC):

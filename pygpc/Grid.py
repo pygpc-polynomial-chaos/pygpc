@@ -909,8 +909,10 @@ class RandomGrid(Grid):
 
                     elif isinstance(self, LHS):
                         # append points to existing grid
-                        self.coords = self.lhs_extend(self.coords, n_grid_add)  # lhs_extend(self.coords_reservoir, n_grid_add)
-                        self.coords_norm = np.vstack([self.coords_norm, self.get_normalized_coordinates(self.coords[self.coords.shape[0]-n_grid_add:, :])])
+                        # lhs_extend(self.coords_reservoir, n_grid_add)
+                        self.coords = self.lhs_extend(self.coords, n_grid_add)
+                        self.coords_norm = np.vstack([self.coords_norm, self.get_normalized_coordinates(
+                            self.coords[self.coords.shape[0]-n_grid_add:, :])])
 
                 else:
                     coords = np.zeros((n_grid_add, len(self.parameters_random)))
@@ -1116,7 +1118,8 @@ class Random(RandomGrid):
                             # print("Iteration: {}".format(j+1))
                             self.coords_norm[outlier_mask, i_p] = (np.random.normal(loc=0,
                                                                                     scale=1,
-                                                                                    size=[np.sum(outlier_mask), 1]))[:, 0]
+                                                                                    size=[
+                                                                                        np.sum(outlier_mask), 1]))[:, 0]
 
                             outlier_mask = np.logical_or(
                                 self.coords_norm[:, i_p] < self.parameters_random[p].x_perc_norm[0],
@@ -1269,14 +1272,15 @@ class LHS(RandomGrid):
             self.perc_mask = np.zeros((n_grid_lhs, self.dim)).astype(bool)
 
             if n_grid < 2:
-                if self.options is 'ese':
+                if self.options == 'ese':
                     self.options = 'maximin'
 
             # Generate random samples for each random input variable [n_grid x dim]
             self.coords_norm = np.zeros([self.n_grid, self.dim])
 
             # generate LHS grid in icdf space (seed of random grid (if necessary to reproduce random grid)
-            self.lhs_reservoir = self.get_lhs_grid(dim=self.dim, n=n_grid_lhs, crit=self.options, random_state=self.seed)
+            self.lhs_reservoir = self.get_lhs_grid(dim=self.dim, n=n_grid_lhs, crit=self.options,
+                                                   random_state=self.seed)
 
             # transform sample points from icdf to pdf space
             for i_p, p in enumerate(self.parameters_random):
@@ -1491,11 +1495,11 @@ class LHS(RandomGrid):
             random_state = np.random.RandomState()
         elif not isinstance(random_state, np.random.RandomState):
             random_state = np.random.RandomState(random_state)
-        if crit is 'corr':
+        if crit == 'corr':
             return self.lhs_corr(dim, n, 100)
-        elif crit is 'maximin' or crit is 'm':
+        elif crit == 'maximin' or crit == 'm':
             return self.lhs_maximin(dim, n, 100)
-        elif crit is 'ese':
+        elif crit == 'ese':
             return self.lhs_ese(dim, n)
         else:
             return self.lhs_initial(dim, n)

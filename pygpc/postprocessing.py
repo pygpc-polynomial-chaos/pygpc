@@ -187,13 +187,15 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
         for i, idx in enumerate(output_idx):
 
             # run model evaluations
-            res[:, i] = session.gpc[idx].get_approximation(coeffs=coeffs["qoi_" + str(idx)], x=grid.coords_norm).flatten()
+            res[:, i] = session.gpc[idx].get_approximation(coeffs=coeffs["qoi_" + str(idx)],
+                                                           x=grid.coords_norm).flatten()
 
             # determine Sobol indices
             if calc_sobol:
-                sobol_qoi, sobol_idx_qoi, sobol_idx_bool_qoi = session.gpc[idx].get_sobol_indices(coeffs=coeffs["qoi_" + str(idx)],
-                                                                                                  algorithm=algorithm,
-                                                                                                  n_samples=n_samples)
+                sobol_qoi, sobol_idx_qoi, sobol_idx_bool_qoi = \
+                    session.gpc[idx].get_sobol_indices(coeffs=coeffs["qoi_" + str(idx)],
+                                                       algorithm=algorithm,
+                                                       n_samples=n_samples)
 
             # rearrange sobol indices according to first qoi (reference)
             # (they are sorted w.r.t. highest contribution and this may change between qoi)
@@ -281,12 +283,14 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
             for i, idx in enumerate(output_idx):
 
                 # run model evaluations
-                res[:, i] = session.gpc[idx].get_approximation(coeffs=coeffs["qoi_" + str(idx)], x=grid.coords_norm).flatten()
+                res[:, i] = session.gpc[idx].get_approximation(coeffs=coeffs["qoi_" + str(idx)],
+                                                               x=grid.coords_norm).flatten()
 
                 # determine Sobol indices
                 if calc_sobol:
-                    sobol_qoi, sobol_idx_qoi, sobol_idx_bool_qoi = session.gpc[idx].get_sobol_indices(coeffs=coeffs["qoi_" + str(idx)],
-                                                                                                      n_samples=n_samples)
+                    sobol_qoi, sobol_idx_qoi, sobol_idx_bool_qoi = \
+                        session.gpc[idx].get_sobol_indices(coeffs=coeffs["qoi_" + str(idx)],
+                                                           n_samples=n_samples)
 
                 # rearrange sobol indices according to first qoi (reference)
                 # (they are sorted w.r.t. highest contribution and this may change between qoi)

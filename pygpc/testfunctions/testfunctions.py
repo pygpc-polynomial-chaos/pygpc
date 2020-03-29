@@ -11,7 +11,8 @@ from collections import OrderedDict
 from pygpc.AbstractModel import AbstractModel
 
 
-def plot_testfunction(testfunction_name: object, parameters: object, constants: object = None, output_idx: object = 0) -> object:
+def plot_testfunction(testfunction_name: object, parameters: object, constants: object = None, output_idx: object = 0)\
+                      -> object:
     """
     Plot 1D or 2D testfunctions for documentation.
 
@@ -1369,7 +1370,8 @@ class McCormickFunction(AbstractModel):
 
     def simulate(self, process_id=None, matlab_engine=None):
 
-        y = np.sin(self.p["x1"] + self.p["x2"]) + (self.p["x1"] - self.p["x2"]) ** 2 - 1.5 * self.p["x1"] + 2.5 * self.p["x2"] + 1
+        y = np.sin(self.p["x1"] + self.p["x2"]) + (self.p["x1"] - self.p["x2"]) ** 2 - 1.5 * self.p["x1"] +\
+                   2.5 * self.p["x2"] + 1
 
         y_out = y[:, np.newaxis]
 
@@ -2443,7 +2445,9 @@ class Lim2002(AbstractModel):
         pass
 
     def simulate(self, process_id=None, matlab_engine=None):
-        y = 9 + 2.5 * self.p["x1"] - 17.5 * self.p["x2"] + 2.5 * self.p["x1"] * self.p["x2"] + 19 * self.p["x2"] ** 2 - 7.5 * self.p["x1"] ** 3 - 2.5 * self.p["x1"] * self.p["x2"] ** 2 - 5.5 * self.p["x2"] ** 4 + (self.p["x1"] ** 3) * (self.p["x2"] ** 2)
+        y = 9 + 2.5 * self.p["x1"] - 17.5 * self.p["x2"] + 2.5 * self.p["x1"] * self.p["x2"] + 19 * self.p["x2"] ** 2 -\
+            7.5 * self.p["x1"] ** 3 - 2.5 * self.p["x1"] * self.p["x2"] ** 2 - 5.5 * self.p["x2"] ** 4 +\
+            (self.p["x1"] ** 3) * (self.p["x2"] ** 2)
 
         # y = (9 + 5.0 / 2 * self.p["x1"] - 35.0 / 2 * self.p["x2"] + 5.0 / 2 * self.p["x1"] * self.p["x2"] +
         #      19 * self.p["x2"] ** 2 - 15.0 / 2 * self.p["x1"] ** 3 - 5.0 / 2 * self.p["x1"] * self.p["x2"] ** 2 -

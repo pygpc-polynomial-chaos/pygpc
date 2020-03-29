@@ -6,8 +6,6 @@ import h5py
 import time
 import random
 from sklearn import linear_model
-from .Grid import *
-from .SGPC import *
 from .misc import get_cartesian_product
 from .misc import get_gradient_idx_domain
 from .misc import display_fancy_bar
@@ -15,10 +13,12 @@ from .misc import nrmsd
 from .misc import mat2ten
 from .misc import ten2mat
 from .misc import increment_basis
+from .Gradient import get_gradient
 from .ValidationSet import *
 from .Computation import *
 from .Classifier import *
-from .Gradient import get_gradient
+from .Grid import *
+from .SGPC import *
 
 
 class MEGPC(object):

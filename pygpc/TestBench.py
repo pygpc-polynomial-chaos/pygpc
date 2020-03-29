@@ -7,13 +7,13 @@ import os
 import pickle
 from _functools import partial
 from collections import OrderedDict
+from .io import write_session_pkl
 from .Algorithm import *
 from .Test import *
 from .misc import *
 from .postprocessing import *
 from .validation import *
 from .Session import *
-from .io import write_session_pkl
 
 
 def run_test(session):
@@ -173,12 +173,14 @@ class TestBench(object):
                 for rep in range(self.repetitions):
                     f.create_group(str(rep).zfill(4))
 
-                    with h5py.File(os.path.splitext(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_val.hdf5", 'r') as g:
+                    with h5py.File(os.path.splitext(self.algorithm[key + "_" +
+                                   str(rep).zfill(4)].options["fn_results"])[0] + "_val.hdf5", 'r') as g:
                         for gkey in list(g.keys()):
                             g.copy(gkey, f[str(rep).zfill(4)])
 
                     # delete individual .hdf5 files
-                    os.remove(os.path.splitext(self.algorithm[key + "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_val.hdf5")
+                    os.remove(os.path.splitext(self.algorithm[key +
+                              "_" + str(rep).zfill(4)].options["fn_results"])[0] + "_val.hdf5")
 
         # delete .pdf files
         for f in glob.glob(os.path.join(self.fn_results, "*.pdf")):
