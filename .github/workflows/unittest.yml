@@ -62,6 +62,10 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Set up system
+      run: |
+        export CC=gcc
+        export CXX=g++
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
