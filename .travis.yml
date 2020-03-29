@@ -16,10 +16,10 @@ matrix:
       env: CIBW_BUILD='cp38-*'
       script:
         - python -m pip install cibuildwheel twine numpy Cython matplotlib seaborn
-        # - python -m pip install .
-        # - cd tests
-        # - python -m unittest
-        # - cd ..
+        - python -m pip install .
+        - cd tests
+        - python -m unittest
+        - cd ..
         - python -m cibuildwheel --output-dir wheelhouse
         - ls wheelhouse/
         - if [ $TRAVIS_BRANCH == "master" ]; then
