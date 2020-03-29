@@ -1,15 +1,8 @@
 import scipy.special
 import scipy.stats
 import numpy as np
-import warnings
+import matplotlib.pyplot as plt
 from .BasisFunction import *
-
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    warnings.warn("If you want to use plot functionality from pygpc, "
-                  "please install matplotlib (pip install matplotlib).")
-    pass
 
 
 class RandomParameter(object):

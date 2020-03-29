@@ -4,18 +4,11 @@ import inspect
 import warnings
 import numpy as np
 import scipy.special
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 from collections import OrderedDict
 from pygpc.AbstractModel import AbstractModel
-
-
-try:
-    import matplotlib as mpl
-    import matplotlib.pyplot as plt
-except ImportError:
-    warnings.warn("If you want to use plot functionality from pygpc, "
-                  "please install matplotlib (pip install matplotlib).")
-    pass
 
 
 def plot_testfunction(testfunction_name: object, parameters: object, constants: object = None, output_idx: object = 0) -> object:
@@ -2919,6 +2912,7 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
 
 
 class OakleyOhagan2004(AbstractModel):
+    # Todo: @Lucas: remove text files
     """
     15-dimensional test function of Oakley and O'Hagan (2004) [1].
 

@@ -1,23 +1,16 @@
 import os
-import scipy.stats
 import h5py
-import warnings
+import matplotlib
+import seaborn as sns
+import matplotlib.pyplot as plt
+import scipy.stats
+from scipy.signal import savgol_filter
+from .misc import nrmsd
+from .misc import get_cartesian_product
 from pygpc.Computation import *
 from .MEGPC import *
 from .Grid import *
-from .misc import nrmsd
-from .misc import get_cartesian_product
 from .Visualization import *
-from scipy.signal import savgol_filter
-
-
-try:
-    import matplotlib
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-except ImportError:
-    warnings.warn("If you want to use the plot functionality, install matplotlib and seaborn")
-    pass
 
 
 def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=1e4, output_idx=0, n_cpu=1,

@@ -2,19 +2,13 @@ import os
 import uuid
 import time
 import numpy as np
-import warnings
-from .BasisFunction import *
-from .misc import get_multi_indices
+import multiprocessing
 import multiprocessing.pool
+import matplotlib.pyplot as plt
 from _functools import partial
-
-try:
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
-except ImportError:
-    warnings.warn("If you would like to use plot functionality of pygpc, "
-                  "please install matplotlib (pip install matplotlib).")
-    pass
+from .misc import get_multi_indices
+from mpl_toolkits.mplot3d import Axes3D
+from .BasisFunction import *
 
 
 class Basis:
@@ -171,13 +165,11 @@ class Basis:
         # initialize array of basis coefficients
         workhorse_partial = partial(self.set_basis, problem=problem)
 
-        pool = multiprocessing.Pool(multiprocessing.cpu_count())
-
-        out = pool.map(workhorse_partial, range(self.n_basis))
-
-        self.b = [o[0] for o in out]
-        self.b_array = np.concatenate([o[1] for o in out])
-        self.b_array_grad = np.concatenate([o[2] for o in out])
+        with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+            out = pool.map(workhorse_partial, range(self.n_basis))
+            self.b = [o[0] for o in out]
+            self.b_array = np.concatenate([o[1] for o in out])
+            self.b_array_grad = np.concatenate([o[2] for o in out])
 
         # This is the single core implementation:
         # self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]

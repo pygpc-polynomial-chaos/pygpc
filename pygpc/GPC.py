@@ -996,7 +996,7 @@ class GPC(object):
             else:
                 coeffs = coeffs.transpose()
 
-        # TODO: @Lucas: Please add GPU support
+        # TODO: @Lucas: add GPU support
         #########################
         # Numerical Integration #
         #########################

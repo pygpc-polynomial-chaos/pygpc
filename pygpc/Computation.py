@@ -1,16 +1,16 @@
-import multiprocessing
-import multiprocessing.pool
 import subprocess
 import time
 import copy
 import numpy as np
-# import dispy
 import os
 import re
-from pygpc import Worker
+# import dispy
+import multiprocessing
+import multiprocessing.pool
 from collections import OrderedDict
-from .RandomParameter import *
+from pygpc import Worker
 from .io import iprint
+from .RandomParameter import *
 
 
 def Computation(n_cpu, matlab_model=False):
