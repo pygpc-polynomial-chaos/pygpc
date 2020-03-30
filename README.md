@@ -1,6 +1,6 @@
 [![](https://img.shields.io/pypi/dm/pygpc.svg)](https://pypi.org/project/pygpc/)
 [![](https://img.shields.io/pypi/wheel/pygpc.svg)](https://pypi.org/project/pygpc/)
-![Build](https://github.com/pygpc-polynomial-chaos/pygpc/workflows/Build/badge.svg)
+[![Build](https://github.com/pygpc-polynomial-chaos/pygpc/workflows/Build/badge.svg)](https://github.com/pygpc-polynomial-chaos/pygpc/actions)
 [![](https://img.shields.io/readthedocs/pygpc.svg)](https://pygpc.readthedocs.io/en/latest/)
 [![](https://img.shields.io/twitter/follow/brainnetleipzig?style=social)](https://twitter.com/intent/follow?screen_name=brainnetleipzig)
 <img src="https://avatars3.githubusercontent.com/u/52486646?s=200&v=4" width="20%" heigth="20%" align="right">
