@@ -1,10 +1,10 @@
-name: Unittest and build on stable branch 
+name: Build 
 
 on:
   push:
-    branches: [stable]
+    branches: [ main, stable ]
   pull_request:
-    branches: [stable]
+    branches: [ main, stable ]
 
 jobs:
   linux:
@@ -43,6 +43,10 @@ jobs:
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: ${{ matrix.cibw-string }} 
+    - name: Upload with twine
+      if: "contains(github.event.head_commit.message, 'PyPI')"
+      run: |
+        python -m twine upload wheelhouse/*.whl
 
   windows:
     runs-on: windows-latest
@@ -80,6 +84,10 @@ jobs:
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: ${{ matrix.cibw-string }} 
+    - name: Upload with twine
+      if: "contains(github.event.head_commit.message, 'PyPI')"
+      run: |
+        python -m twine upload wheelhouse/*.whl
 
   macos:
     runs-on: macos-latest
@@ -120,3 +128,7 @@ jobs:
         CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} {wheel}"
         CC: gcc-9
         CXX: g++-9
+    - name: Upload with twine
+      if: "contains(github.event.head_commit.message, 'PyPI')"
+      run: |
+        python -m twine upload wheelhouse/*.whl
