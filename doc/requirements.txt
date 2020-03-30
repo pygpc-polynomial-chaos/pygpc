@@ -7,3 +7,4 @@ scipy>=1.4.1
 seaborn>=0.10.0
 sphinx>=2.4.4
 sphinx-gallery>=0.6.0
+Pillow>=7.0.0
