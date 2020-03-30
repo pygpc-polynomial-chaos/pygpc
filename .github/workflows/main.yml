@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ main, stable ]
+    branches: [ master, stable ]
   pull_request:
-    branches: [ main, stable ]
+    branches: [ master, stable ]
 
 jobs:
   linux:
