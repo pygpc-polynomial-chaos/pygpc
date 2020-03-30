@@ -27,7 +27,7 @@ jobs:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
         CIBW_TEST_REQUIRES: "matplotlib seaborn pytest"
-        CIBW_TEST_COMMAND: "pytest {project}/tests"
+        CIBW_TEST_COMMAND: "cd {project}/tests && pytest"
 
   windows:
     runs-on: windows-latest
@@ -49,7 +49,7 @@ jobs:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
         CIBW_TEST_REQUIRES: "matplotlib seaborn pytest"
-        CIBW_TEST_COMMAND: "pytest {project}/tests"
+        CIBW_TEST_COMMAND: "cd {project}/tests && pytest"
 
   macos:
     runs-on: macos-latest
@@ -71,6 +71,6 @@ jobs:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
         CIBW_TEST_REQUIRES: "matplotlib seaborn pytest"
-        CIBW_TEST_COMMAND: "pytest {project}/tests"
-        CC: gcc-9
-        CXX: g++-9
+        CIBW_TEST_COMMAND: "cd {project}/tests && pytest"
+        CC: gcc-8
+        CXX: g++-8
