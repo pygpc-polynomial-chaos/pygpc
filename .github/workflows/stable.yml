@@ -7,28 +7,18 @@ on:
     branches: [stable]
 
 jobs:
-  test_ubuntu:
+  linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8]
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.7 
       uses: actions/setup-python@v1
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+        python-version: 3.7 
+    - name: Install cibuildwheel 
       run: |
         python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn cibuildwheel twine
-        pip install -r requirements.txt
-        pip install .
-    - name: Test with unittest
-      run: |
-        cd tests
-        python -m unittest
-        cd .. 
+        pip install cibuildwheel
     - name: Build with cibuildwheel
       run: |
         python -m cibuildwheel --output-dir wheelhouse
@@ -36,29 +26,22 @@ jobs:
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
+        CIBW_TEST_REQUIRES: "matplotlib seaborn"
+        CIBW_BEFORE_TEST: "cd tests"
+        CIBW_TEST_COMMAND: "python -m unittest"
 
-  test_windows:
+  windows:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8]
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.7 
       uses: actions/setup-python@v1
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+        python-version: 3.7 
+    - name: Install cibuildwheel 
       run: |
         python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn cibuildwheel twine
-        pip install -r requirements.txt
-        pip install .
-    - name: Test with unittest
-      run: |
-        cd tests
-        python -m unittest
-        cd .. 
+        pip install cibuildwheel
     - name: Build with cibuildwheel
       run: |
         python -m cibuildwheel --output-dir wheelhouse
@@ -66,29 +49,22 @@ jobs:
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
+        CIBW_TEST_REQUIRES: "matplotlib seaborn"
+        CIBW_BEFORE_TEST: "cd tests"
+        CIBW_TEST_COMMAND: "python -m unittest"
 
-  test_macos:
+  macos:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8]
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.7 
       uses: actions/setup-python@v1
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+        python-version: 3.7 
+    - name: Install cibuildwheel 
       run: |
         python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn cibuildwheel twine
-        pip install -r requirements.txt
-        CC=gcc-9 CXX=g++-9 pip install .
-    - name: Test with unittest
-      run: |
-        cd tests
-        python -m unittest
-        cd .. 
+        pip install cibuildwheel
     - name: Build with cibuildwheel
       run: |
         python -m cibuildwheel --output-dir wheelhouse
@@ -96,3 +72,6 @@ jobs:
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
+        CIBW_TEST_REQUIRES: "matplotlib seaborn"
+        CIBW_BEFORE_TEST: "CC=gcc-9 CXX=g++-9 cd tests"
+        CIBW_TEST_COMMAND: "python -m unittest"
