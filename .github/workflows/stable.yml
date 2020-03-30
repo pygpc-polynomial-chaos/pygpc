@@ -1,10 +1,10 @@
-name: Unittest 
+name: Unittest and build on stable branch 
 
 on:
   push:
-    branches: [ master, stable ]
+    branches: [stable]
   pull_request:
-    branches: [ master, stable ]
+    branches: [stable]
 
 jobs:
   test_ubuntu:
