@@ -27,6 +27,7 @@ jobs:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
         CIBW_TEST_REQUIRES: "matplotlib seaborn pytest"
+        CIBW_BEFORE_TEST: "pip install {project}"
         CIBW_TEST_COMMAND: "cd {project}/tests && pytest"
 
   windows:
@@ -49,6 +50,7 @@ jobs:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
         CIBW_TEST_REQUIRES: "matplotlib seaborn pytest"
+        CIBW_BEFORE_TEST: "pip install {project}"
         CIBW_TEST_COMMAND: "cd {project}/tests && pytest"
 
   macos:
@@ -68,9 +70,10 @@ jobs:
         python -m cibuildwheel --output-dir wheelhouse
         ls wheelhouse/
       env:
-        CIBW_BEFORE_BUILD: "pip install numpy"
+        CIBW_BEFORE_BUILD: "pip install numpy && brew install libomp"
         CIBW_BUILD: "cp36-* cp37-* cp38-*"
         CIBW_TEST_REQUIRES: "matplotlib seaborn pytest"
+        CIBW_BEFORE_TEST: "pip install {project}"
         CIBW_TEST_COMMAND: "cd {project}/tests && pytest"
         CC: gcc-8
         CXX: g++-8
