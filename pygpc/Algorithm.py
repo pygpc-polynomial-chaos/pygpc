@@ -3,6 +3,7 @@ import h5py
 import os
 import time
 import shutil
+import numpy as np
 from .Classifier import Classifier
 from .Gradient import get_gradient
 from .misc import determine_projection_matrix

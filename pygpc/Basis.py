@@ -127,7 +127,7 @@ class Basis:
 
         Notes
         -----
-        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle 
+        .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
            regression. Journal of Computational Physics, 230(6), 2345-2367.
 
         .. math::
@@ -402,7 +402,7 @@ class Basis:
                 ax.set_aspect('equal', 'box')
 
             else:
-                ax.bar3d(multi_indices[i_poly, dims[0]] - 0.4, # lower corner coordinates
+                ax.bar3d(multi_indices[i_poly, dims[0]] - 0.4,  # lower corner coordinates
                          multi_indices[i_poly, dims[1]] - 0.4,
                          multi_indices[i_poly, dims[2]] - 0.4,
                          0.8, 0.8, 0.8,  # width, depth and height

@@ -21,13 +21,20 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn
+        pip install Cython matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
         pip install .
     - name: Test with unittest
       run: |
         cd tests
         python -m unittest
+        cd .. 
+    - name: Build with cibuildwheel
+      run: |
+        python -m cibuildwheel --output-dir wheelhouse
+        ls wheelhouse/
+      env:
+        CIBW_BEFORE_BUILD: "pip install numpy"
 
   test_windows:
     runs-on: windows-latest
@@ -43,13 +50,20 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn
+        pip install Cython matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
         pip install .
     - name: Test with unittest
       run: |
         cd tests
         python -m unittest
+        cd .. 
+    - name: Build with cibuildwheel
+      run: |
+        python -m cibuildwheel --output-dir wheelhouse
+        ls wheelhouse/
+      env:
+        CIBW_BEFORE_BUILD: "pip install numpy"
 
   test_macos:
     runs-on: macos-latest
@@ -65,10 +79,17 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn
+        pip install Cython matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
         CC=gcc-9 CXX=g++-9 pip install .
     - name: Test with unittest
       run: |
         cd tests
         python -m unittest
+        cd .. 
+    - name: Build with cibuildwheel
+      run: |
+        python -m cibuildwheel --output-dir wheelhouse
+        ls wheelhouse/
+      env:
+        CIBW_BEFORE_BUILD: "pip install numpy"

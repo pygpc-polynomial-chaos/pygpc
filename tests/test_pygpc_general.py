@@ -73,7 +73,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: TensorGrid
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_0_Static_gpc_quad'
+        test_name = 'pygpc_test_000_Static_gpc_quad'
         print(test_name)
 
         # define model
@@ -167,7 +167,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_1_Static_gpc'
+        test_name = 'pygpc_test_001_Static_gpc'
         print(test_name)
 
         # define model
@@ -270,7 +270,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_2_MEStatic_gpc'
+        test_name = 'pygpc_test_002_MEStatic_gpc'
         print(test_name)
 
         # define model
@@ -374,7 +374,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_3_StaticProjection_gpc'
+        test_name = 'pygpc_test_003_StaticProjection_gpc'
         print(test_name)
 
         # define model
@@ -469,7 +469,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_4_MEStaticProjection_gpc'
+        test_name = 'pygpc_test_004_MEStaticProjection_gpc'
         print(test_name)
 
         # define model
@@ -568,7 +568,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_5_RegAdaptive_gpc'
+        test_name = 'pygpc_test_005_RegAdaptive_gpc'
         print(test_name)
 
         # Model
@@ -662,7 +662,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_6_RegAdaptiveProjection_gpc'
+        test_name = 'pygpc_test_006_RegAdaptiveProjection_gpc'
         print(test_name)
 
         # define model
@@ -757,7 +757,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_7_MERegAdaptiveProjection_gpc'
+        test_name = 'pygpc_test_007_MERegAdaptiveProjection_gpc'
         print(test_name)
 
         # define model
@@ -858,7 +858,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
         Testing testfunctions (multi-threading and inherited parallelization)
         """
-        test_name = 'pygpc_test_8_testfunctions'
+        test_name = 'pygpc_test_008_testfunctions'
         print(test_name)
 
         tests = []
@@ -929,7 +929,7 @@ class TestPygpcMethods(unittest.TestCase):
         Testing RandomParameters
         """
         global folder, plot
-        test_name = 'pygpc_test_9_RandomParameters'
+        test_name = 'pygpc_test_009_RandomParameters'
         print(test_name)
 
         parameters = OrderedDict()
@@ -959,7 +959,7 @@ class TestPygpcMethods(unittest.TestCase):
         Testing Grids [Random, LHS]
         """
         global folder, plot
-        test_name = 'pygpc_test_10_Grids'
+        test_name = 'pygpc_test_010_Grids'
         print(test_name)
 
         test = pygpc.Peaks()
@@ -998,7 +998,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, matlab, save_session_format
-        test_name = 'pygpc_test_11_Matlab_gpc'
+        test_name = 'pygpc_test_011_Matlab_gpc'
         print(test_name)
 
         if matlab:
@@ -1094,7 +1094,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_12_random_vars_postprocessing_sobol'
+        test_name = 'pygpc_test_012_random_vars_postprocessing_sobol'
         print(test_name)
 
         # define model
@@ -1221,7 +1221,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_13_clustering_3_domains'
+        test_name = 'pygpc_test_013_clustering_3_domains'
         print(test_name)
 
         # define model
@@ -1319,7 +1319,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
 
         global folder, gpu
-        test_name = 'pygpc_test_14_backends'
+        test_name = 'pygpc_test_014_backends'
         print(test_name)
 
         backends = ["python", "cpu", "omp", "cuda"]
@@ -1417,11 +1417,13 @@ class TestPygpcMethods(unittest.TestCase):
         print("done!\n")
 
     def test_015_save_and_load_session(self):
+        # Todo: @Konstantin: implement this test
         """
         Save and load a gPC Session
         """
+
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_15_save_and_load_session'
+        test_name = 'pygpc_test_015_save_and_load_session'
         print(test_name)
 
         print("done!\n")
@@ -1430,6 +1432,11 @@ class TestPygpcMethods(unittest.TestCase):
         """
         Test gradient estimation methods
         """
+
+        global folder, plot, save_session_format
+        test_name = 'pygpc_test_016_gradient_estimation_methods'
+        print(test_name)
+
         methods_options = dict()
         methods = ["FD_fwd", "FD_1st", "FD_2nd", "FD_1st2nd"]
         methods_options["FD_fwd"] = {"dx": 0.001, "distance_weight": -2}
@@ -1492,6 +1499,8 @@ class TestPygpcMethods(unittest.TestCase):
                 self.expect_true((nrmsd < 0.05).all(),
                                  msg="gPC test failed during gradient estimation: {} error too large".format(m))
 
+        print("done!\n")
+
     def test_017_grids(self):
         """
         Test grids
@@ -1499,6 +1508,8 @@ class TestPygpcMethods(unittest.TestCase):
 
         global folder, plot
         test_name = 'pygpc_test_17_grids'
+
+        print(test_name)
 
         # grids to compare
         grids = [pygpc.Random, pygpc.LHS, pygpc.LHS, pygpc.LHS, pygpc.LHS]
@@ -1600,6 +1611,8 @@ class TestPygpcMethods(unittest.TestCase):
             ax[1].set_title("gPC error vs original model (std)")
 
             plt.savefig(os.path.join(folder, test_name + ".png"), dpi=300)
+
+        print("done!\n")
 
 
 if __name__ == '__main__':
