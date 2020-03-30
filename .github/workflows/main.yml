@@ -48,8 +48,8 @@ jobs:
       run: |
         python -m twine upload wheelhouse/*.whl
       env:
-        TWINE_PASSWORD: {{ secrets.twine_password }}
-        TWINE_USERNAME: {{ secrets.twine_username }}
+        TWINE_PASSWORD: ${{ secrets.twine_password }}
+        TWINE_USERNAME: ${{ secrets.twine_username }}
 
   windows:
     runs-on: windows-latest
@@ -92,8 +92,8 @@ jobs:
       run: |
         python -m twine upload wheelhouse/*.whl
       env:
-        TWINE_PASSWORD: {{ secrets.twine_password }}
-        TWINE_USERNAME: {{ secrets.twine_username }}
+        TWINE_PASSWORD: ${{ secrets.twine_password }}
+        TWINE_USERNAME: ${{ secrets.twine_username }}
 
   macos:
     runs-on: macos-latest
@@ -139,5 +139,5 @@ jobs:
       run: |
         python -m twine upload wheelhouse/*.whl
       env:
-        TWINE_PASSWORD: {{ secrets.twine_password }}
-        TWINE_USERNAME: {{ secrets.twine_username }}
+        TWINE_PASSWORD: ${{ secrets.twine_password }}
+        TWINE_USERNAME: ${{ secrets.twine_username }}
