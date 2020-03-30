@@ -35,6 +35,7 @@ jobs:
         ls wheelhouse/
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
+        CIBW_BUILD: "cp36-* cp37-* cp38-*"
 
   test_windows:
     runs-on: windows-latest
@@ -64,6 +65,7 @@ jobs:
         ls wheelhouse/
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
+        CIBW_BUILD: "cp36-* cp37-* cp38-*"
 
   test_macos:
     runs-on: macos-latest
@@ -93,3 +95,4 @@ jobs:
         ls wheelhouse/
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
+        CIBW_BUILD: "cp36-* cp37-* cp38-*"
