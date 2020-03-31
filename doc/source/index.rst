@@ -53,7 +53,7 @@ Installation
 ------------
 **Installation using pip:**
 
-Pygpc can be installed via the `pip` command with Python >= 3.5. Simply run the following command in your terminal:
+Pygpc can be installed via the `pip` command with Python >= 3.6. Simply run the following command in your terminal:
 
 .. code-block:: bash
 
