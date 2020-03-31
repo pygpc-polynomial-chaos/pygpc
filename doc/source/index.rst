@@ -127,7 +127,7 @@ Reference
 
 If you use pygpc, please cite:
 
-`Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., & Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834. <https://www.sciencedirect.com/science/article/pii/S1053811918322031>`_
+`Weise, K., Poßner, L., Müller, E., Gast, R., & Knösche, T. R. (2020). Pygpc: A sensitivity and uncertainty analysis toolbox for Python. SoftwareX, 11, 100450. <https://www.sciencedirect.com/science/article/pii/S2352711020300078>`_
 
 Contact
 -------
