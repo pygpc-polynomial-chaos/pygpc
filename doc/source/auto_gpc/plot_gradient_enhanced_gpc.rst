@@ -541,7 +541,7 @@ This is reflected in the lower coverage
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.890 seconds)
+   **Total running time of the script:** ( 0 minutes  0.917 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_gradient_enhanced_gpc.py:

@@ -248,7 +248,7 @@ simulations to determine the gPC coefficients!
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  10.778 seconds)
+   **Total running time of the script:** ( 0 minutes  10.410 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_basis.py:

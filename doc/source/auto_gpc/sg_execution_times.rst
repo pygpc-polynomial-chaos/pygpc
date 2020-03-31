@@ -5,18 +5,18 @@
 
 Computation times
 =================
-**02:23.306** total execution time for **auto_gpc** files:
+**02:42.844** total execution time for **auto_gpc** files:
 
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_grid_random_vs_lhs.py` (``plot_grid_random_vs_lhs.py``)       | 02:23.306 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_grid_random_vs_lhs.py` (``plot_grid_random_vs_lhs.py``)       | 02:28.141 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_basis.py` (``plot_basis.py``)                                 | 00:00.000 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_basis.py` (``plot_basis.py``)                                 | 00:10.410 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py` (``plot_gpc_validation.py``)               | 00:00.000 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py` (``plot_gpc_validation.py``)               | 00:02.677 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_gradient_enhanced_gpc.py` (``plot_gradient_enhanced_gpc.py``) | 00:00.000 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_gradient_enhanced_gpc.py` (``plot_gradient_enhanced_gpc.py``) | 00:00.917 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_model.py` (``plot_model.py``)                                 | 00:00.000 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_model.py` (``plot_model.py``)                                 | 00:00.399 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_problem.py` (``plot_problem.py``)                             | 00:00.000 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_problem.py` (``plot_problem.py``)                             | 00:00.300 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+

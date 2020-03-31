@@ -160,7 +160,7 @@ The gPC problem is initialized with the model and the parameters defined before:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.299 seconds)
+   **Total running time of the script:** ( 0 minutes  0.300 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_problem.py:
