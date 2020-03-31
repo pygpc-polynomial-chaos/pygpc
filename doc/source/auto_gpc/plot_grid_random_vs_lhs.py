@@ -9,7 +9,7 @@ To calculate the coefficients of the gPC matrix, a number of random samples need
 picked to represent the propability space :math:`\\Theta` and enable descrete evaluations of the
 polynomials. As for the computation of the coefficients, the input parameters :math:`\\mathbf{\\xi}`
 can be sampled in a number of different ways. In **pygpc** the grid :math:`\\mathcal{G}` for this
-application is constructed in `pygpc/Grid.py <../../../../pygpc/Grid.py>`_
+application is constructed in `pygpc/Grid.py <../../../../pygpc/Grid.py>`_.
 
 Random Sampling
 ^^^^^^^^^^^^^^^
@@ -33,14 +33,14 @@ a matrix :math:`\\Pi` is constructed with
     \\pi_{ij} = \\frac{p_{ij} - u}{n}
 
 where :math:`P` is a :math:`d \\times n` matrix of randomly perturbed integers
-:math:`p_{ij} \\in \\mathbb{N}, {1,...,n}` and u is uniform random number :math:`u \\in [0,1]`
+:math:`p_{ij} \\in \\mathbb{N}, {1,...,n}` and u is uniform random number :math:`u \\in [0,1]`.
 """
 
 ###############################################################################
 # Constructing a simple LHS design
 # --------------------------------
 # We are going to create a simple LHS design for 2 random variables with 5 sampling points:
-# sphinx_gallery_thumbnail_number = 3
+# sphinx_gallery_thumbnail_number = 3:
 
 import pygpc
 import matplotlib.pyplot as plt
@@ -56,23 +56,26 @@ parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 lhs = pygpc.LHS(parameters_random=parameters, n_grid=0)
 
 # draw samples
-pi = lhs.get_lhs_grid(dim=2, n=5)
+pi = lhs.get_lhs_grid(dim=2, n=25)
 
 # plot
 fig = plt.figure(figsize=(4, 4))
 plt.scatter(pi[:,0], pi[:,1])
-plt.grid(True)
-
-# \\rho_{rg_{X_i}, rg_{X_j}} = \\frac{cov(rg_{X_i}, rg_{X_j})}{\\sigma_{rg} \\sigma_{rg}}
+plt.xlabel("$x_1$", fontsize=12)
+plt.ylabel("$x_2$", fontsize=12)
+plt.xlim([0, 1])
+plt.ylim([0, 1])
+plt.grid()
+plt.tight_layout()
 
 #%%
 # LHS Designs can further be improved upon, since the pseudo-random sampling procedure
 # can lead to samples with high spurious correlation and the space filling capability
-# in it self leaves room for improvement, some optimization criteria have been found to
+# in itself leaves room for improvement, some optimization criteria have been found to
 # be adequate for compensating the initial designs shortcomings.
 # 
 # Optimization Criteria of LHS designs
-# -----------------------------------
+# ------------------------------------
 # Spearman Rank Correlation
 # ^^^^^^^^^^^^^^^^^^^^^^^^^
 # For a sample size of :math:`n` the scores of each variable are converted to their Ranks :math:`rg_{X_i}`
@@ -316,4 +319,4 @@ ax[0].set_ylabel("$\epsilon$", fontsize=12)
 ax[1].set_ylabel("std($\epsilon$)", fontsize=12)
 
 ax[0].set_title("gPC error vs original model (mean and std)")
-ax[1].set_title("gPC error vs original model (std)")
+_ = ax[1].set_title("gPC error vs original model (std)")

@@ -125,9 +125,9 @@ Running the gpc
 
     Performing 20 initial simulations!
     It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total function evaluation: 0.002852916717529297 sec
+    Total function evaluation: 0.0028040409088134766 sec
     It/Sub-it: 3/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Gradient evaluation: 0.0013577938079833984 sec
+    Gradient evaluation: 0.0011909008026123047 sec
     Determining gPC approximation for QOI #0:
     =========================================
     Determining gPC domains ...
@@ -137,14 +137,14 @@ Running the gpc
     Refining domain boundary ...
     Performing 12 simulations to refine discontinuity location!
     It/Sub-it: Domain boundary/N/A Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total function evaluation: 0.022498607635498047 sec
+    Total function evaluation: 0.0027463436126708984 sec
     It/Sub-it: Domain boundary/N/A Performing simulation 01 from 24 [=                                       ] 4.2%
-    Gradient evaluation: 0.0008342266082763672 sec
+    Gradient evaluation: 0.0005946159362792969 sec
     Updating classifier ...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    -> Domain: 0 absolute nrmsd error = 0.6028536824060177
-    -> Domain: 1 absolute nrmsd error = 0.21833135782008908
+    -> Domain: 0 absolute nrmsd error = 0.0009263193023522684
+    -> Domain: 1 absolute nrmsd error = 0.7011856648518827
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
 
@@ -250,7 +250,7 @@ Validate gPC vs original model function (Monte Carlo)
  .. code-block:: none
 
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.075%
+    > Maximum NRMSD (gpc vs original): 0.084%
 
 
 
@@ -258,7 +258,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  20.030 seconds)
+   **Total running time of the script:** ( 0 minutes  11.056 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_meregadaptiveprojection.py:

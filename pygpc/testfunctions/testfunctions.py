@@ -8,6 +8,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 from collections import OrderedDict
+from mpl_toolkits.mplot3d import Axes3D
 from pygpc.AbstractModel import AbstractModel
 
 

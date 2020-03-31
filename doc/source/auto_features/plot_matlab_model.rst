@@ -42,10 +42,10 @@ You can use the same setup.py commands to build and install the engine on Window
 Before you install, verify your Python and MATLAB configurations.
 
 - Check that your system has a supported version of Python and MATLAB R2014b or later.
-To check that Python is installed on your system, run Python at the operating system prompt.
+  To check that Python is installed on your system, run Python at the operating system prompt.
 - Add the folder that contains the Python interpreter to your path, if it is not already there.
 - Find the path to the MATLAB folder. Start MATLAB and type matlabroot in the command window. Copy the path returned
-by matlabroot.
+  by matlabroot.
 
 To install the engine API, choose one of the following. (You might need administrator privileges
 to execute these commands.)
@@ -214,7 +214,7 @@ processing capabilities of pygpc is given in this
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.221 seconds)
+   **Total running time of the script:** ( 0 minutes  0.353 seconds)
 
 
 .. _sphx_glr_download_auto_features_plot_matlab_model.py:

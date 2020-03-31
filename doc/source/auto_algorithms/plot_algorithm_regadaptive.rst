@@ -120,9 +120,9 @@ Running the gpc
     Extending grid from 14 to 14 by 0 sampling points
     Performing simulations 1 to 14
     It/Sub-it: 5/2 Performing simulation 01 from 14 [==                                      ] 7.1%
-    Total parallel function evaluation: 0.009347677230834961 sec
+    Total parallel function evaluation: 0.0065267086029052734 sec
     It/Sub-it: 5/2 Performing simulation 01 from 28 [=                                       ] 3.6%
-    Gradient evaluation: 0.0005791187286376953 sec
+    Gradient evaluation: 0.0011358261108398438 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 14 [==                                      ] 7.1%
     LOOCV 02 from 14 [=====                                   ] 14.3%
@@ -138,14 +138,14 @@ Running the gpc
     LOOCV 12 from 14 [==================================      ] 85.7%
     LOOCV 13 from 14 [=====================================   ] 92.9%
     LOOCV 14 from 14 [========================================] 100.0%
-    LOOCV computation time: 0.07821393013000488 sec
-    -> relative loocv error = 6.346391583734324
+    LOOCV computation time: 0.09157347679138184 sec
+    -> relative loocv error = 51.9863838405722
     Extending grid from 14 to 15 by 1 sampling points
     Performing simulations 15 to 15
     It/Sub-it: 5/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.002409696578979492 sec
+    Total parallel function evaluation: 0.002535104751586914 sec
     It/Sub-it: 5/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0006697177886962891 sec
+    Gradient evaluation: 0.0006215572357177734 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 15 [==                                      ] 6.7%
     LOOCV 02 from 15 [=====                                   ] 13.3%
@@ -162,14 +162,14 @@ Running the gpc
     LOOCV 13 from 15 [==================================      ] 86.7%
     LOOCV 14 from 15 [=====================================   ] 93.3%
     LOOCV 15 from 15 [========================================] 100.0%
-    LOOCV computation time: 0.11508679389953613 sec
-    -> relative loocv error = 24.546614303594165
+    LOOCV computation time: 0.09639239311218262 sec
+    -> relative loocv error = 357.20791981944313
     Extending grid from 15 to 16 by 1 sampling points
     Performing simulations 16 to 16
     It/Sub-it: 5/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.0025353431701660156 sec
+    Total parallel function evaluation: 0.0023958683013916016 sec
     It/Sub-it: 5/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0006875991821289062 sec
+    Gradient evaluation: 0.0006017684936523438 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 16 [==                                      ] 6.2%
     LOOCV 02 from 16 [=====                                   ] 12.5%
@@ -187,14 +187,14 @@ Running the gpc
     LOOCV 14 from 16 [===================================     ] 87.5%
     LOOCV 15 from 16 [=====================================   ] 93.8%
     LOOCV 16 from 16 [========================================] 100.0%
-    LOOCV computation time: 0.09920573234558105 sec
-    -> relative loocv error = 21.645434447819717
+    LOOCV computation time: 0.08013701438903809 sec
+    -> relative loocv error = 27.671499511298745
     Extending grid from 16 to 17 by 1 sampling points
     Performing simulations 17 to 17
     It/Sub-it: 5/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.0025315284729003906 sec
+    Total parallel function evaluation: 0.002380847930908203 sec
     It/Sub-it: 5/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0006327629089355469 sec
+    Gradient evaluation: 0.0006299018859863281 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 17 [==                                      ] 5.9%
     LOOCV 02 from 17 [====                                    ] 11.8%
@@ -213,62 +213,60 @@ Running the gpc
     LOOCV 15 from 17 [===================================     ] 88.2%
     LOOCV 16 from 17 [=====================================   ] 94.1%
     LOOCV 17 from 17 [========================================] 100.0%
-    LOOCV computation time: 0.07691359519958496 sec
-    -> relative loocv error = 5.092349121271938
-    Extending grid from 17 to 18 by 1 sampling points
-    Performing simulations 18 to 18
-    It/Sub-it: 5/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.002673625946044922 sec
-    It/Sub-it: 5/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0007059574127197266 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 18 [==                                      ] 5.6%
-    LOOCV 02 from 18 [====                                    ] 11.1%
-    LOOCV 03 from 18 [======                                  ] 16.7%
-    LOOCV 04 from 18 [========                                ] 22.2%
-    LOOCV 05 from 18 [===========                             ] 27.8%
-    LOOCV 06 from 18 [=============                           ] 33.3%
-    LOOCV 07 from 18 [===============                         ] 38.9%
-    LOOCV 08 from 18 [=================                       ] 44.4%
-    LOOCV 09 from 18 [====================                    ] 50.0%
-    LOOCV 10 from 18 [======================                  ] 55.6%
-    LOOCV 11 from 18 [========================                ] 61.1%
-    LOOCV 12 from 18 [==========================              ] 66.7%
-    LOOCV 13 from 18 [============================            ] 72.2%
-    LOOCV 14 from 18 [===============================         ] 77.8%
-    LOOCV 15 from 18 [=================================       ] 83.3%
-    LOOCV 16 from 18 [===================================     ] 88.9%
-    LOOCV 17 from 18 [=====================================   ] 94.4%
-    LOOCV 18 from 18 [========================================] 100.0%
-    LOOCV computation time: 0.07849693298339844 sec
-    -> relative loocv error = 5.579273264602323
+    LOOCV computation time: 0.0791623592376709 sec
+    -> relative loocv error = 22.75046957574746
     Order/Interaction order: 6/1
     ============================
     Starting adaptive sampling:
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 18 [==                                      ] 5.6%
-    LOOCV 02 from 18 [====                                    ] 11.1%
-    LOOCV 03 from 18 [======                                  ] 16.7%
-    LOOCV 04 from 18 [========                                ] 22.2%
-    LOOCV 05 from 18 [===========                             ] 27.8%
-    LOOCV 06 from 18 [=============                           ] 33.3%
-    LOOCV 07 from 18 [===============                         ] 38.9%
-    LOOCV 08 from 18 [=================                       ] 44.4%
-    LOOCV 09 from 18 [====================                    ] 50.0%
-    LOOCV 10 from 18 [======================                  ] 55.6%
-    LOOCV 11 from 18 [========================                ] 61.1%
-    LOOCV 12 from 18 [==========================              ] 66.7%
-    LOOCV 13 from 18 [============================            ] 72.2%
-    LOOCV 14 from 18 [===============================         ] 77.8%
-    LOOCV 15 from 18 [=================================       ] 83.3%
-    LOOCV 16 from 18 [===================================     ] 88.9%
-    LOOCV 17 from 18 [=====================================   ] 94.4%
-    LOOCV 18 from 18 [========================================] 100.0%
-    LOOCV computation time: 0.09241461753845215 sec
-    -> relative loocv error = 0.4680176315553291
+    LOOCV 01 from 17 [==                                      ] 5.9%
+    LOOCV 02 from 17 [====                                    ] 11.8%
+    LOOCV 03 from 17 [=======                                 ] 17.6%
+    LOOCV 04 from 17 [=========                               ] 23.5%
+    LOOCV 05 from 17 [===========                             ] 29.4%
+    LOOCV 06 from 17 [==============                          ] 35.3%
+    LOOCV 07 from 17 [================                        ] 41.2%
+    LOOCV 08 from 17 [==================                      ] 47.1%
+    LOOCV 09 from 17 [=====================                   ] 52.9%
+    LOOCV 10 from 17 [=======================                 ] 58.8%
+    LOOCV 11 from 17 [=========================               ] 64.7%
+    LOOCV 12 from 17 [============================            ] 70.6%
+    LOOCV 13 from 17 [==============================          ] 76.5%
+    LOOCV 14 from 17 [================================        ] 82.4%
+    LOOCV 15 from 17 [===================================     ] 88.2%
+    LOOCV 16 from 17 [=====================================   ] 94.1%
+    LOOCV 17 from 17 [========================================] 100.0%
+    LOOCV computation time: 0.11909079551696777 sec
+    -> relative loocv error = 0.6089839519932241
     Order/Interaction order: 6/2
     ============================
     Starting adaptive sampling:
+    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
+    LOOCV 01 from 17 [==                                      ] 5.9%
+    LOOCV 02 from 17 [====                                    ] 11.8%
+    LOOCV 03 from 17 [=======                                 ] 17.6%
+    LOOCV 04 from 17 [=========                               ] 23.5%
+    LOOCV 05 from 17 [===========                             ] 29.4%
+    LOOCV 06 from 17 [==============                          ] 35.3%
+    LOOCV 07 from 17 [================                        ] 41.2%
+    LOOCV 08 from 17 [==================                      ] 47.1%
+    LOOCV 09 from 17 [=====================                   ] 52.9%
+    LOOCV 10 from 17 [=======================                 ] 58.8%
+    LOOCV 11 from 17 [=========================               ] 64.7%
+    LOOCV 12 from 17 [============================            ] 70.6%
+    LOOCV 13 from 17 [==============================          ] 76.5%
+    LOOCV 14 from 17 [================================        ] 82.4%
+    LOOCV 15 from 17 [===================================     ] 88.2%
+    LOOCV 16 from 17 [=====================================   ] 94.1%
+    LOOCV 17 from 17 [========================================] 100.0%
+    LOOCV computation time: 0.11872267723083496 sec
+    -> relative loocv error = 0.6089839519932241
+    Extending grid from 17 to 18 by 1 sampling points
+    Performing simulations 18 to 18
+    It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
+    Total parallel function evaluation: 0.0024080276489257812 sec
+    It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Gradient evaluation: 0.0006377696990966797 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 18 [==                                      ] 5.6%
     LOOCV 02 from 18 [====                                    ] 11.1%
@@ -288,14 +286,14 @@ Running the gpc
     LOOCV 16 from 18 [===================================     ] 88.9%
     LOOCV 17 from 18 [=====================================   ] 94.4%
     LOOCV 18 from 18 [========================================] 100.0%
-    LOOCV computation time: 0.09682774543762207 sec
-    -> relative loocv error = 0.4680176315553291
+    LOOCV computation time: 0.11734485626220703 sec
+    -> relative loocv error = 0.7448634644156447
     Extending grid from 18 to 19 by 1 sampling points
     Performing simulations 19 to 19
     It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.0025229454040527344 sec
+    Total parallel function evaluation: 0.0023126602172851562 sec
     It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0009763240814208984 sec
+    Gradient evaluation: 0.0006575584411621094 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 19 [==                                      ] 5.3%
     LOOCV 02 from 19 [====                                    ] 10.5%
@@ -316,14 +314,14 @@ Running the gpc
     LOOCV 17 from 19 [===================================     ] 89.5%
     LOOCV 18 from 19 [=====================================   ] 94.7%
     LOOCV 19 from 19 [========================================] 100.0%
-    LOOCV computation time: 0.11323046684265137 sec
-    -> relative loocv error = 0.9616313412705704
+    LOOCV computation time: 0.1328141689300537 sec
+    -> relative loocv error = 0.5883031327755891
     Extending grid from 19 to 20 by 1 sampling points
     Performing simulations 20 to 20
     It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.002396106719970703 sec
+    Total parallel function evaluation: 0.002363443374633789 sec
     It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.000637054443359375 sec
+    Gradient evaluation: 0.0006644725799560547 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 20 [==                                      ] 5.0%
     LOOCV 02 from 20 [====                                    ] 10.0%
@@ -345,44 +343,40 @@ Running the gpc
     LOOCV 18 from 20 [====================================    ] 90.0%
     LOOCV 19 from 20 [======================================  ] 95.0%
     LOOCV 20 from 20 [========================================] 100.0%
-    LOOCV computation time: 0.1788170337677002 sec
-    -> relative loocv error = 1.0284087038324914
-    Extending grid from 20 to 21 by 1 sampling points
-    Performing simulations 21 to 21
-    It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.0027472972869873047 sec
-    It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0006711483001708984 sec
+    LOOCV computation time: 0.14393091201782227 sec
+    -> relative loocv error = 0.6215772359932087
+    Order/Interaction order: 7/1
+    ============================
+    Starting adaptive sampling:
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 21 [=                                       ] 4.8%
-    LOOCV 02 from 21 [===                                     ] 9.5%
-    LOOCV 03 from 21 [=====                                   ] 14.3%
-    LOOCV 04 from 21 [=======                                 ] 19.0%
-    LOOCV 05 from 21 [=========                               ] 23.8%
-    LOOCV 06 from 21 [===========                             ] 28.6%
-    LOOCV 07 from 21 [=============                           ] 33.3%
-    LOOCV 08 from 21 [===============                         ] 38.1%
-    LOOCV 09 from 21 [=================                       ] 42.9%
-    LOOCV 10 from 21 [===================                     ] 47.6%
-    LOOCV 11 from 21 [====================                    ] 52.4%
-    LOOCV 12 from 21 [======================                  ] 57.1%
-    LOOCV 13 from 21 [========================                ] 61.9%
-    LOOCV 14 from 21 [==========================              ] 66.7%
-    LOOCV 15 from 21 [============================            ] 71.4%
-    LOOCV 16 from 21 [==============================          ] 76.2%
-    LOOCV 17 from 21 [================================        ] 81.0%
-    LOOCV 18 from 21 [==================================      ] 85.7%
-    LOOCV 19 from 21 [====================================    ] 90.5%
-    LOOCV 20 from 21 [======================================  ] 95.2%
-    LOOCV 21 from 21 [========================================] 100.0%
-    LOOCV computation time: 0.14316034317016602 sec
-    -> relative loocv error = 1.7862592056172635
-    Extending grid from 21 to 22 by 1 sampling points
-    Performing simulations 22 to 22
-    It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.002537965774536133 sec
-    It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0007114410400390625 sec
+    LOOCV 01 from 20 [==                                      ] 5.0%
+    LOOCV 02 from 20 [====                                    ] 10.0%
+    LOOCV 03 from 20 [======                                  ] 15.0%
+    LOOCV 04 from 20 [========                                ] 20.0%
+    LOOCV 05 from 20 [==========                              ] 25.0%
+    LOOCV 06 from 20 [============                            ] 30.0%
+    LOOCV 07 from 20 [==============                          ] 35.0%
+    LOOCV 08 from 20 [================                        ] 40.0%
+    LOOCV 09 from 20 [==================                      ] 45.0%
+    LOOCV 10 from 20 [====================                    ] 50.0%
+    LOOCV 11 from 20 [======================                  ] 55.0%
+    LOOCV 12 from 20 [========================                ] 60.0%
+    LOOCV 13 from 20 [==========================              ] 65.0%
+    LOOCV 14 from 20 [============================            ] 70.0%
+    LOOCV 15 from 20 [==============================          ] 75.0%
+    LOOCV 16 from 20 [================================        ] 80.0%
+    LOOCV 17 from 20 [==================================      ] 85.0%
+    LOOCV 18 from 20 [====================================    ] 90.0%
+    LOOCV 19 from 20 [======================================  ] 95.0%
+    LOOCV 20 from 20 [========================================] 100.0%
+    LOOCV computation time: 0.14589500427246094 sec
+    -> relative loocv error = 0.7696451151156614
+    Extending grid from 20 to 22 by 2 sampling points
+    Performing simulations 21 to 22
+    It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.0023245811462402344 sec
+    It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0006871223449707031 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 22 [=                                       ] 4.5%
     LOOCV 02 from 22 [===                                     ] 9.1%
@@ -406,46 +400,14 @@ Running the gpc
     LOOCV 20 from 22 [====================================    ] 90.9%
     LOOCV 21 from 22 [======================================  ] 95.5%
     LOOCV 22 from 22 [========================================] 100.0%
-    LOOCV computation time: 0.13703083992004395 sec
-    -> relative loocv error = 1.3263092944577417
-    Extending grid from 22 to 23 by 1 sampling points
-    Performing simulations 23 to 23
-    It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.0036509037017822266 sec
-    It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0011289119720458984 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 23 [=                                       ] 4.3%
-    LOOCV 02 from 23 [===                                     ] 8.7%
-    LOOCV 03 from 23 [=====                                   ] 13.0%
-    LOOCV 04 from 23 [======                                  ] 17.4%
-    LOOCV 05 from 23 [========                                ] 21.7%
-    LOOCV 06 from 23 [==========                              ] 26.1%
-    LOOCV 07 from 23 [============                            ] 30.4%
-    LOOCV 08 from 23 [=============                           ] 34.8%
-    LOOCV 09 from 23 [===============                         ] 39.1%
-    LOOCV 10 from 23 [=================                       ] 43.5%
-    LOOCV 11 from 23 [===================                     ] 47.8%
-    LOOCV 12 from 23 [====================                    ] 52.2%
-    LOOCV 13 from 23 [======================                  ] 56.5%
-    LOOCV 14 from 23 [========================                ] 60.9%
-    LOOCV 15 from 23 [==========================              ] 65.2%
-    LOOCV 16 from 23 [===========================             ] 69.6%
-    LOOCV 17 from 23 [=============================           ] 73.9%
-    LOOCV 18 from 23 [===============================         ] 78.3%
-    LOOCV 19 from 23 [=================================       ] 82.6%
-    LOOCV 20 from 23 [==================================      ] 87.0%
-    LOOCV 21 from 23 [====================================    ] 91.3%
-    LOOCV 22 from 23 [======================================  ] 95.7%
-    LOOCV 23 from 23 [========================================] 100.0%
-    LOOCV computation time: 0.15355992317199707 sec
-    -> relative loocv error = 1.2074126505018035
-    Extending grid from 23 to 24 by 1 sampling points
-    Performing simulations 24 to 24
-    It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.0026044845581054688 sec
-    It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0007188320159912109 sec
+    LOOCV computation time: 0.1995983123779297 sec
+    -> relative loocv error = 0.9222118586440365
+    Extending grid from 22 to 24 by 2 sampling points
+    Performing simulations 23 to 24
+    It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.0023360252380371094 sec
+    It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0006897449493408203 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 24 [=                                       ] 4.2%
     LOOCV 02 from 24 [===                                     ] 8.3%
@@ -471,14 +433,14 @@ Running the gpc
     LOOCV 22 from 24 [====================================    ] 91.7%
     LOOCV 23 from 24 [======================================  ] 95.8%
     LOOCV 24 from 24 [========================================] 100.0%
-    LOOCV computation time: 0.1382904052734375 sec
-    -> relative loocv error = 0.9634505556480429
-    Extending grid from 24 to 25 by 1 sampling points
-    Performing simulations 25 to 25
-    It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.0024933815002441406 sec
-    It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0006978511810302734 sec
+    LOOCV computation time: 0.2348923683166504 sec
+    -> relative loocv error = 2.5699641755047824
+    Extending grid from 24 to 26 by 2 sampling points
+    Performing simulations 25 to 26
+    It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.0023093223571777344 sec
+    It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0007026195526123047 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -505,79 +467,14 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.13787841796875 sec
-    -> relative loocv error = 1.1224915247164058
-    Extending grid from 25 to 26 by 1 sampling points
-    Performing simulations 26 to 26
-    It/Sub-it: 6/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.0026154518127441406 sec
-    It/Sub-it: 6/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Gradient evaluation: 0.0011730194091796875 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.1349034309387207 sec
-    -> relative loocv error = 1.0758104736911205
-    Order/Interaction order: 7/1
-    ============================
-    Starting adaptive sampling:
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.3668184280395508 sec
-    -> relative loocv error = 3.2123069410099236
+    LOOCV computation time: 0.2600576877593994 sec
+    -> relative loocv error = 8.732087429925889
     Extending grid from 26 to 28 by 2 sampling points
     Performing simulations 27 to 28
     It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.002978801727294922 sec
+    Total parallel function evaluation: 0.002286195755004883 sec
     It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0008060932159423828 sec
+    Gradient evaluation: 0.0007615089416503906 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -604,14 +501,14 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.32221221923828125 sec
-    -> relative loocv error = 2.7089773419726395
+    LOOCV computation time: 0.19543933868408203 sec
+    -> relative loocv error = 3.24722241893233
     Extending grid from 28 to 30 by 2 sampling points
     Performing simulations 29 to 30
     It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0030062198638916016 sec
+    Total parallel function evaluation: 0.002549409866333008 sec
     It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.001074075698852539 sec
+    Gradient evaluation: 0.0007648468017578125 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -638,14 +535,14 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.3425891399383545 sec
-    -> relative loocv error = 2.029274642121952
+    LOOCV computation time: 0.19535398483276367 sec
+    -> relative loocv error = 1.5711564721773181
     Extending grid from 30 to 32 by 2 sampling points
     Performing simulations 31 to 32
     It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.002859354019165039 sec
+    Total parallel function evaluation: 0.0023238658905029297 sec
     It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0007545948028564453 sec
+    Gradient evaluation: 0.0007598400115966797 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -672,14 +569,14 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.29767346382141113 sec
-    -> relative loocv error = 0.36573554128509483
+    LOOCV computation time: 0.1552600860595703 sec
+    -> relative loocv error = 0.7480467526575861
     Extending grid from 32 to 34 by 2 sampling points
     Performing simulations 33 to 34
     It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0034742355346679688 sec
+    Total parallel function evaluation: 0.0024178028106689453 sec
     It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0012607574462890625 sec
+    Gradient evaluation: 0.0007758140563964844 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -706,14 +603,14 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.28299713134765625 sec
-    -> relative loocv error = 1.995753768359557
+    LOOCV computation time: 0.1397113800048828 sec
+    -> relative loocv error = 0.2767175081875749
     Extending grid from 34 to 36 by 2 sampling points
     Performing simulations 35 to 36
     It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0025644302368164062 sec
+    Total parallel function evaluation: 0.002376556396484375 sec
     It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.00090789794921875 sec
+    Gradient evaluation: 0.0008039474487304688 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -740,14 +637,14 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.21989130973815918 sec
-    -> relative loocv error = 1.6189879084773597
+    LOOCV computation time: 0.11386227607727051 sec
+    -> relative loocv error = 0.16238714620609965
     Extending grid from 36 to 38 by 2 sampling points
     Performing simulations 37 to 38
     It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0025625228881835938 sec
+    Total parallel function evaluation: 0.0023071765899658203 sec
     It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0008158683776855469 sec
+    Gradient evaluation: 0.0007994174957275391 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -774,51 +671,17 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.17846417427062988 sec
-    -> relative loocv error = 1.1732911134738055
-    Extending grid from 38 to 40 by 2 sampling points
-    Performing simulations 39 to 40
-    It/Sub-it: 7/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0034973621368408203 sec
-    It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0011072158813476562 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.19246482849121094 sec
-    -> relative loocv error = 1.0691741771681635
+    LOOCV computation time: 0.12223005294799805 sec
+    -> relative loocv error = 0.21921302653480834
     Order/Interaction order: 7/2
     ============================
     Starting adaptive sampling:
-    Extending grid from 40 to 42 by 2 sampling points
-    Performing simulations 41 to 42
+    Extending grid from 38 to 40 by 2 sampling points
+    Performing simulations 39 to 40
     It/Sub-it: 7/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0026073455810546875 sec
+    Total parallel function evaluation: 0.00211334228515625 sec
     It/Sub-it: 7/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0009179115295410156 sec
+    Gradient evaluation: 0.0008587837219238281 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -845,8 +708,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.18038368225097656 sec
-    -> relative loocv error = 0.8371078401532531
+    LOOCV computation time: 0.1122589111328125 sec
+    -> relative loocv error = 0.25082731421724724
     Order/Interaction order: 8/1
     ============================
     Starting adaptive sampling:
@@ -876,8 +739,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.3228278160095215 sec
-    -> relative loocv error = 0.3273853018169959
+    LOOCV computation time: 0.20055174827575684 sec
+    -> relative loocv error = 0.08077804600212488
     Order/Interaction order: 8/2
     ============================
     Starting adaptive sampling:
@@ -907,8 +770,76 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.30828261375427246 sec
-    -> relative loocv error = 0.10661940866404261
+    LOOCV computation time: 0.1963481903076172 sec
+    -> relative loocv error = 0.08833104100239765
+    Extending grid from 40 to 42 by 2 sampling points
+    Performing simulations 41 to 42
+    It/Sub-it: 8/2 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.002386331558227539 sec
+    It/Sub-it: 8/2 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0008370876312255859 sec
+    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
+    LOOCV 01 from 25 [=                                       ] 4.0%
+    LOOCV 02 from 25 [===                                     ] 8.0%
+    LOOCV 03 from 25 [====                                    ] 12.0%
+    LOOCV 04 from 25 [======                                  ] 16.0%
+    LOOCV 05 from 25 [========                                ] 20.0%
+    LOOCV 06 from 25 [=========                               ] 24.0%
+    LOOCV 07 from 25 [===========                             ] 28.0%
+    LOOCV 08 from 25 [============                            ] 32.0%
+    LOOCV 09 from 25 [==============                          ] 36.0%
+    LOOCV 10 from 25 [================                        ] 40.0%
+    LOOCV 11 from 25 [=================                       ] 44.0%
+    LOOCV 12 from 25 [===================                     ] 48.0%
+    LOOCV 13 from 25 [====================                    ] 52.0%
+    LOOCV 14 from 25 [======================                  ] 56.0%
+    LOOCV 15 from 25 [========================                ] 60.0%
+    LOOCV 16 from 25 [=========================               ] 64.0%
+    LOOCV 17 from 25 [===========================             ] 68.0%
+    LOOCV 18 from 25 [============================            ] 72.0%
+    LOOCV 19 from 25 [==============================          ] 76.0%
+    LOOCV 20 from 25 [================================        ] 80.0%
+    LOOCV 21 from 25 [=================================       ] 84.0%
+    LOOCV 22 from 25 [===================================     ] 88.0%
+    LOOCV 23 from 25 [====================================    ] 92.0%
+    LOOCV 24 from 25 [======================================  ] 96.0%
+    LOOCV 25 from 25 [========================================] 100.0%
+    LOOCV computation time: 0.20212340354919434 sec
+    -> relative loocv error = 0.05206808236121816
+    Extending grid from 42 to 44 by 2 sampling points
+    Performing simulations 43 to 44
+    It/Sub-it: 8/2 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.0024247169494628906 sec
+    It/Sub-it: 8/2 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0008764266967773438 sec
+    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
+    LOOCV 01 from 25 [=                                       ] 4.0%
+    LOOCV 02 from 25 [===                                     ] 8.0%
+    LOOCV 03 from 25 [====                                    ] 12.0%
+    LOOCV 04 from 25 [======                                  ] 16.0%
+    LOOCV 05 from 25 [========                                ] 20.0%
+    LOOCV 06 from 25 [=========                               ] 24.0%
+    LOOCV 07 from 25 [===========                             ] 28.0%
+    LOOCV 08 from 25 [============                            ] 32.0%
+    LOOCV 09 from 25 [==============                          ] 36.0%
+    LOOCV 10 from 25 [================                        ] 40.0%
+    LOOCV 11 from 25 [=================                       ] 44.0%
+    LOOCV 12 from 25 [===================                     ] 48.0%
+    LOOCV 13 from 25 [====================                    ] 52.0%
+    LOOCV 14 from 25 [======================                  ] 56.0%
+    LOOCV 15 from 25 [========================                ] 60.0%
+    LOOCV 16 from 25 [=========================               ] 64.0%
+    LOOCV 17 from 25 [===========================             ] 68.0%
+    LOOCV 18 from 25 [============================            ] 72.0%
+    LOOCV 19 from 25 [==============================          ] 76.0%
+    LOOCV 20 from 25 [================================        ] 80.0%
+    LOOCV 21 from 25 [=================================       ] 84.0%
+    LOOCV 22 from 25 [===================================     ] 88.0%
+    LOOCV 23 from 25 [====================================    ] 92.0%
+    LOOCV 24 from 25 [======================================  ] 96.0%
+    LOOCV 25 from 25 [========================================] 100.0%
+    LOOCV computation time: 0.1892092227935791 sec
+    -> relative loocv error = 0.044352842685294915
     Order/Interaction order: 9/1
     ============================
     Starting adaptive sampling:
@@ -938,48 +869,14 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.367281436920166 sec
-    -> relative loocv error = 0.23500914098459408
-    Extending grid from 42 to 44 by 2 sampling points
-    Performing simulations 43 to 44
-    It/Sub-it: 9/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.003448009490966797 sec
-    It/Sub-it: 9/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0013852119445800781 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.4295799732208252 sec
-    -> relative loocv error = 0.20127589356178738
+    LOOCV computation time: 0.31962132453918457 sec
+    -> relative loocv error = 0.1938110688658174
     Extending grid from 44 to 46 by 2 sampling points
     Performing simulations 45 to 46
     It/Sub-it: 9/1 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.003410816192626953 sec
+    Total parallel function evaluation: 0.002346038818359375 sec
     It/Sub-it: 9/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0013968944549560547 sec
+    Gradient evaluation: 0.0008642673492431641 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -1006,153 +903,153 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.4400947093963623 sec
-    -> relative loocv error = 0.1808714908710107
+    LOOCV computation time: 0.2903604507446289 sec
+    -> relative loocv error = 0.09627534849806313
+    Extending grid from 46 to 48 by 2 sampling points
+    Performing simulations 47 to 48
+    It/Sub-it: 9/1 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.0023043155670166016 sec
+    It/Sub-it: 9/1 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0008955001831054688 sec
+    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
+    LOOCV 01 from 25 [=                                       ] 4.0%
+    LOOCV 02 from 25 [===                                     ] 8.0%
+    LOOCV 03 from 25 [====                                    ] 12.0%
+    LOOCV 04 from 25 [======                                  ] 16.0%
+    LOOCV 05 from 25 [========                                ] 20.0%
+    LOOCV 06 from 25 [=========                               ] 24.0%
+    LOOCV 07 from 25 [===========                             ] 28.0%
+    LOOCV 08 from 25 [============                            ] 32.0%
+    LOOCV 09 from 25 [==============                          ] 36.0%
+    LOOCV 10 from 25 [================                        ] 40.0%
+    LOOCV 11 from 25 [=================                       ] 44.0%
+    LOOCV 12 from 25 [===================                     ] 48.0%
+    LOOCV 13 from 25 [====================                    ] 52.0%
+    LOOCV 14 from 25 [======================                  ] 56.0%
+    LOOCV 15 from 25 [========================                ] 60.0%
+    LOOCV 16 from 25 [=========================               ] 64.0%
+    LOOCV 17 from 25 [===========================             ] 68.0%
+    LOOCV 18 from 25 [============================            ] 72.0%
+    LOOCV 19 from 25 [==============================          ] 76.0%
+    LOOCV 20 from 25 [================================        ] 80.0%
+    LOOCV 21 from 25 [=================================       ] 84.0%
+    LOOCV 22 from 25 [===================================     ] 88.0%
+    LOOCV 23 from 25 [====================================    ] 92.0%
+    LOOCV 24 from 25 [======================================  ] 96.0%
+    LOOCV 25 from 25 [========================================] 100.0%
+    LOOCV computation time: 0.30542802810668945 sec
+    -> relative loocv error = 0.14096042200516773
+    Extending grid from 48 to 50 by 2 sampling points
+    Performing simulations 49 to 50
+    It/Sub-it: 9/1 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.0023283958435058594 sec
+    It/Sub-it: 9/1 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0009510517120361328 sec
+    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
+    LOOCV 01 from 25 [=                                       ] 4.0%
+    LOOCV 02 from 25 [===                                     ] 8.0%
+    LOOCV 03 from 25 [====                                    ] 12.0%
+    LOOCV 04 from 25 [======                                  ] 16.0%
+    LOOCV 05 from 25 [========                                ] 20.0%
+    LOOCV 06 from 25 [=========                               ] 24.0%
+    LOOCV 07 from 25 [===========                             ] 28.0%
+    LOOCV 08 from 25 [============                            ] 32.0%
+    LOOCV 09 from 25 [==============                          ] 36.0%
+    LOOCV 10 from 25 [================                        ] 40.0%
+    LOOCV 11 from 25 [=================                       ] 44.0%
+    LOOCV 12 from 25 [===================                     ] 48.0%
+    LOOCV 13 from 25 [====================                    ] 52.0%
+    LOOCV 14 from 25 [======================                  ] 56.0%
+    LOOCV 15 from 25 [========================                ] 60.0%
+    LOOCV 16 from 25 [=========================               ] 64.0%
+    LOOCV 17 from 25 [===========================             ] 68.0%
+    LOOCV 18 from 25 [============================            ] 72.0%
+    LOOCV 19 from 25 [==============================          ] 76.0%
+    LOOCV 20 from 25 [================================        ] 80.0%
+    LOOCV 21 from 25 [=================================       ] 84.0%
+    LOOCV 22 from 25 [===================================     ] 88.0%
+    LOOCV 23 from 25 [====================================    ] 92.0%
+    LOOCV 24 from 25 [======================================  ] 96.0%
+    LOOCV 25 from 25 [========================================] 100.0%
+    LOOCV computation time: 0.2988123893737793 sec
+    -> relative loocv error = 0.062409928888233414
+    Extending grid from 50 to 52 by 2 sampling points
+    Performing simulations 51 to 52
+    It/Sub-it: 9/1 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.002299785614013672 sec
+    It/Sub-it: 9/1 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0009415149688720703 sec
+    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
+    LOOCV 01 from 25 [=                                       ] 4.0%
+    LOOCV 02 from 25 [===                                     ] 8.0%
+    LOOCV 03 from 25 [====                                    ] 12.0%
+    LOOCV 04 from 25 [======                                  ] 16.0%
+    LOOCV 05 from 25 [========                                ] 20.0%
+    LOOCV 06 from 25 [=========                               ] 24.0%
+    LOOCV 07 from 25 [===========                             ] 28.0%
+    LOOCV 08 from 25 [============                            ] 32.0%
+    LOOCV 09 from 25 [==============                          ] 36.0%
+    LOOCV 10 from 25 [================                        ] 40.0%
+    LOOCV 11 from 25 [=================                       ] 44.0%
+    LOOCV 12 from 25 [===================                     ] 48.0%
+    LOOCV 13 from 25 [====================                    ] 52.0%
+    LOOCV 14 from 25 [======================                  ] 56.0%
+    LOOCV 15 from 25 [========================                ] 60.0%
+    LOOCV 16 from 25 [=========================               ] 64.0%
+    LOOCV 17 from 25 [===========================             ] 68.0%
+    LOOCV 18 from 25 [============================            ] 72.0%
+    LOOCV 19 from 25 [==============================          ] 76.0%
+    LOOCV 20 from 25 [================================        ] 80.0%
+    LOOCV 21 from 25 [=================================       ] 84.0%
+    LOOCV 22 from 25 [===================================     ] 88.0%
+    LOOCV 23 from 25 [====================================    ] 92.0%
+    LOOCV 24 from 25 [======================================  ] 96.0%
+    LOOCV 25 from 25 [========================================] 100.0%
+    LOOCV computation time: 0.3042416572570801 sec
+    -> relative loocv error = 0.040804404584236925
+    Extending grid from 52 to 54 by 2 sampling points
+    Performing simulations 53 to 54
+    It/Sub-it: 9/1 Performing simulation 1 from 2 [====================                    ] 50.0%
+    Total parallel function evaluation: 0.0023179054260253906 sec
+    It/Sub-it: 9/1 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Gradient evaluation: 0.0009326934814453125 sec
+    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
+    LOOCV 01 from 25 [=                                       ] 4.0%
+    LOOCV 02 from 25 [===                                     ] 8.0%
+    LOOCV 03 from 25 [====                                    ] 12.0%
+    LOOCV 04 from 25 [======                                  ] 16.0%
+    LOOCV 05 from 25 [========                                ] 20.0%
+    LOOCV 06 from 25 [=========                               ] 24.0%
+    LOOCV 07 from 25 [===========                             ] 28.0%
+    LOOCV 08 from 25 [============                            ] 32.0%
+    LOOCV 09 from 25 [==============                          ] 36.0%
+    LOOCV 10 from 25 [================                        ] 40.0%
+    LOOCV 11 from 25 [=================                       ] 44.0%
+    LOOCV 12 from 25 [===================                     ] 48.0%
+    LOOCV 13 from 25 [====================                    ] 52.0%
+    LOOCV 14 from 25 [======================                  ] 56.0%
+    LOOCV 15 from 25 [========================                ] 60.0%
+    LOOCV 16 from 25 [=========================               ] 64.0%
+    LOOCV 17 from 25 [===========================             ] 68.0%
+    LOOCV 18 from 25 [============================            ] 72.0%
+    LOOCV 19 from 25 [==============================          ] 76.0%
+    LOOCV 20 from 25 [================================        ] 80.0%
+    LOOCV 21 from 25 [=================================       ] 84.0%
+    LOOCV 22 from 25 [===================================     ] 88.0%
+    LOOCV 23 from 25 [====================================    ] 92.0%
+    LOOCV 24 from 25 [======================================  ] 96.0%
+    LOOCV 25 from 25 [========================================] 100.0%
+    LOOCV computation time: 0.2920799255371094 sec
+    -> relative loocv error = 0.022285946625815196
     Order/Interaction order: 9/2
     ============================
     Starting adaptive sampling:
-    Extending grid from 46 to 48 by 2 sampling points
-    Performing simulations 47 to 48
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.003352642059326172 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.00109100341796875 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.4319291114807129 sec
-    -> relative loocv error = 0.11756318276547569
-    Extending grid from 48 to 50 by 2 sampling points
-    Performing simulations 49 to 50
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0026412010192871094 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0009555816650390625 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.4381227493286133 sec
-    -> relative loocv error = 0.4887065191533469
-    Extending grid from 50 to 52 by 2 sampling points
-    Performing simulations 51 to 52
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0025599002838134766 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0009207725524902344 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.39443445205688477 sec
-    -> relative loocv error = 0.10213702025261334
-    Extending grid from 52 to 54 by 2 sampling points
-    Performing simulations 53 to 54
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.007559776306152344 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0009453296661376953 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.32290101051330566 sec
-    -> relative loocv error = 0.43704361840744477
     Extending grid from 54 to 56 by 2 sampling points
     Performing simulations 55 to 56
     It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.002544879913330078 sec
+    Total parallel function evaluation: 0.0021851062774658203 sec
     It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0009987354278564453 sec
+    Gradient evaluation: 0.0009348392486572266 sec
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -1179,314 +1076,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.33071327209472656 sec
-    -> relative loocv error = 0.05350848455273294
-    Extending grid from 56 to 58 by 2 sampling points
-    Performing simulations 57 to 58
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0024785995483398438 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0010082721710205078 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.33894801139831543 sec
-    -> relative loocv error = 0.4860040378645886
-    Extending grid from 58 to 60 by 2 sampling points
-    Performing simulations 59 to 60
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0034089088439941406 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0010569095611572266 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.3211233615875244 sec
-    -> relative loocv error = 0.10656677945495856
-    Extending grid from 60 to 62 by 2 sampling points
-    Performing simulations 61 to 62
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0024476051330566406 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0010058879852294922 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.39766430854797363 sec
-    -> relative loocv error = 0.1317806896189883
-    Extending grid from 62 to 64 by 2 sampling points
-    Performing simulations 63 to 64
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.00516963005065918 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.002425670623779297 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.44802355766296387 sec
-    -> relative loocv error = 0.33645025557451996
-    Extending grid from 64 to 66 by 2 sampling points
-    Performing simulations 65 to 66
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.003900766372680664 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0018126964569091797 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.33710408210754395 sec
-    -> relative loocv error = 0.20412859200528743
-    Extending grid from 66 to 68 by 2 sampling points
-    Performing simulations 67 to 68
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.005835533142089844 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0012331008911132812 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.3952672481536865 sec
-    -> relative loocv error = 0.026620539623192673
-    Extending grid from 68 to 70 by 2 sampling points
-    Performing simulations 69 to 70
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.003027200698852539 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0011172294616699219 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.23850154876708984 sec
-    -> relative loocv error = 0.057218391207881164
-    Extending grid from 70 to 72 by 2 sampling points
-    Performing simulations 71 to 72
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.002731800079345703 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0010824203491210938 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.23493599891662598 sec
-    -> relative loocv error = 0.09457618947700538
-    Extending grid from 72 to 74 by 2 sampling points
-    Performing simulations 73 to 74
-    It/Sub-it: 9/2 Performing simulation 1 from 2 [====================                    ] 50.0%
-    Total parallel function evaluation: 0.0030066967010498047 sec
-    It/Sub-it: 9/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Gradient evaluation: 0.0012524127960205078 sec
-    Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    LOOCV 01 from 25 [=                                       ] 4.0%
-    LOOCV 02 from 25 [===                                     ] 8.0%
-    LOOCV 03 from 25 [====                                    ] 12.0%
-    LOOCV 04 from 25 [======                                  ] 16.0%
-    LOOCV 05 from 25 [========                                ] 20.0%
-    LOOCV 06 from 25 [=========                               ] 24.0%
-    LOOCV 07 from 25 [===========                             ] 28.0%
-    LOOCV 08 from 25 [============                            ] 32.0%
-    LOOCV 09 from 25 [==============                          ] 36.0%
-    LOOCV 10 from 25 [================                        ] 40.0%
-    LOOCV 11 from 25 [=================                       ] 44.0%
-    LOOCV 12 from 25 [===================                     ] 48.0%
-    LOOCV 13 from 25 [====================                    ] 52.0%
-    LOOCV 14 from 25 [======================                  ] 56.0%
-    LOOCV 15 from 25 [========================                ] 60.0%
-    LOOCV 16 from 25 [=========================               ] 64.0%
-    LOOCV 17 from 25 [===========================             ] 68.0%
-    LOOCV 18 from 25 [============================            ] 72.0%
-    LOOCV 19 from 25 [==============================          ] 76.0%
-    LOOCV 20 from 25 [================================        ] 80.0%
-    LOOCV 21 from 25 [=================================       ] 84.0%
-    LOOCV 22 from 25 [===================================     ] 88.0%
-    LOOCV 23 from 25 [====================================    ] 92.0%
-    LOOCV 24 from 25 [======================================  ] 96.0%
-    LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.24086594581604004 sec
-    -> relative loocv error = 0.10580381488459009
+    LOOCV computation time: 0.2953042984008789 sec
+    -> relative loocv error = 0.01391934873851469
     Order/Interaction order: 10/1
     =============================
     Starting adaptive sampling:
@@ -1516,8 +1107,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.41880154609680176 sec
-    -> relative loocv error = 0.0018111552862871924
+    LOOCV computation time: 0.26936912536621094 sec
+    -> relative loocv error = 0.00545877769161675
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
 
 
@@ -1622,7 +1213,7 @@ Validate gPC vs original model function (Monte Carlo)
  .. code-block:: none
 
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.0015%
+    > Maximum NRMSD (gpc vs original): 0.0013%
 
 
 
@@ -1630,7 +1221,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  27.631 seconds)
+   **Total running time of the script:** ( 0 minutes  16.401 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_regadaptive.py:

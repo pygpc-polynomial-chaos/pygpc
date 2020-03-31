@@ -115,16 +115,16 @@ Running the gpc
 
     Performing 5 simulations!
     It/Sub-it: 2/2 Performing simulation 1 from 5 [========                                ] 20.0%
-    Total function evaluation: 0.0030748844146728516 sec
+    Total function evaluation: 0.0025284290313720703 sec
     It/Sub-it: 2/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Gradient evaluation: 0.001102447509765625 sec
+    Gradient evaluation: 0.0006928443908691406 sec
     Order/Interaction order: 2/2
     ============================
     Extending grid from 5 to 6 by 1 sampling points
     Performing simulations 6 to 6
     It/Sub-it: 2/2 Performing simulation 1 from 1 [========================================] 100.0%
-    Total parallel function evaluation: 0.003629446029663086 sec
-    Gradient evaluation: 0.0005719661712646484 sec
+    Total parallel function evaluation: 0.007620334625244141 sec
+    Gradient evaluation: 0.001150369644165039 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 1 from 6 [======                                  ] 16.7%
@@ -133,15 +133,15 @@ Running the gpc
     LOOCV 4 from 6 [==========================              ] 66.7%
     LOOCV 5 from 6 [=================================       ] 83.3%
     LOOCV 6 from 6 [========================================] 100.0%
-    LOOCV computation time: 0.001665353775024414 sec
+    LOOCV computation time: 0.0035266876220703125 sec
     -> relative loocv error = 0.9213533835561233
     Order/Interaction order: 3/1
     ============================
     Extending grid from 6 to 16 by 10 sampling points
     Performing simulations 7 to 16
     It/Sub-it: 3/1 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0031790733337402344 sec
-    Gradient evaluation: 0.0012786388397216797 sec
+    Total parallel function evaluation: 0.003533601760864258 sec
+    Gradient evaluation: 0.0017049312591552734 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 16 [==                                      ] 6.2%
@@ -160,15 +160,15 @@ Running the gpc
     LOOCV 14 from 16 [===================================     ] 87.5%
     LOOCV 15 from 16 [=====================================   ] 93.8%
     LOOCV 16 from 16 [========================================] 100.0%
-    LOOCV computation time: 0.004656553268432617 sec
-    -> relative loocv error = 0.6605458102970638
+    LOOCV computation time: 0.004763126373291016 sec
+    -> relative loocv error = 0.6605458102970639
     Order/Interaction order: 3/2
     ============================
     Extending grid from 16 to 20 by 4 sampling points
     Performing simulations 17 to 20
     It/Sub-it: 3/2 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Total parallel function evaluation: 0.0027816295623779297 sec
-    Gradient evaluation: 0.0019273757934570312 sec
+    Total parallel function evaluation: 0.002455472946166992 sec
+    Gradient evaluation: 0.001668691635131836 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 20 [==                                      ] 5.0%
@@ -191,15 +191,15 @@ Running the gpc
     LOOCV 18 from 20 [====================================    ] 90.0%
     LOOCV 19 from 20 [======================================  ] 95.0%
     LOOCV 20 from 20 [========================================] 100.0%
-    LOOCV computation time: 0.0056056976318359375 sec
-    -> relative loocv error = 0.7598247952190154
+    LOOCV computation time: 0.006072044372558594 sec
+    -> relative loocv error = 0.7598247952190152
     Order/Interaction order: 4/1
     ============================
     Extending grid from 20 to 24 by 4 sampling points
     Performing simulations 21 to 24
     It/Sub-it: 4/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Total parallel function evaluation: 0.0032732486724853516 sec
-    Gradient evaluation: 0.0024797916412353516 sec
+    Total parallel function evaluation: 0.004207611083984375 sec
+    Gradient evaluation: 0.003526449203491211 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 24 [=                                       ] 4.2%
@@ -226,15 +226,15 @@ Running the gpc
     LOOCV 22 from 24 [====================================    ] 91.7%
     LOOCV 23 from 24 [======================================  ] 95.8%
     LOOCV 24 from 24 [========================================] 100.0%
-    LOOCV computation time: 0.007004261016845703 sec
+    LOOCV computation time: 0.00816798210144043 sec
     -> relative loocv error = 0.5843434567886424
     Order/Interaction order: 4/2
     ============================
     Extending grid from 24 to 30 by 6 sampling points
     Performing simulations 25 to 30
     It/Sub-it: 4/2 Performing simulation 1 from 6 [======                                  ] 16.7%
-    Total parallel function evaluation: 0.002947568893432617 sec
-    Gradient evaluation: 0.0036046504974365234 sec
+    Total parallel function evaluation: 0.0024924278259277344 sec
+    Gradient evaluation: 0.0036911964416503906 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -262,15 +262,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.008507728576660156 sec
-    -> relative loocv error = 1.0133730159943064
+    LOOCV computation time: 0.009166717529296875 sec
+    -> relative loocv error = 0.943837473192185
     Order/Interaction order: 5/1
     ============================
     Extending grid from 30 to 34 by 4 sampling points
     Performing simulations 31 to 34
     It/Sub-it: 5/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Total parallel function evaluation: 0.0029909610748291016 sec
-    Gradient evaluation: 0.004152059555053711 sec
+    Total parallel function evaluation: 0.004461765289306641 sec
+    Gradient evaluation: 0.003935098648071289 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -298,15 +298,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.00952291488647461 sec
-    -> relative loocv error = 0.21286249864308587
+    LOOCV computation time: 0.008263587951660156 sec
+    -> relative loocv error = 0.22671706583529094
     Order/Interaction order: 5/2
     ============================
     Extending grid from 34 to 42 by 8 sampling points
     Performing simulations 35 to 42
     It/Sub-it: 5/2 Performing simulation 1 from 8 [=====                                   ] 12.5%
-    Total parallel function evaluation: 0.0028426647186279297 sec
-    Gradient evaluation: 0.005892276763916016 sec
+    Total parallel function evaluation: 0.008826494216918945 sec
+    Gradient evaluation: 0.008576393127441406 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -334,15 +334,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.014688491821289062 sec
-    -> relative loocv error = 0.09629723274223112
+    LOOCV computation time: 0.009853124618530273 sec
+    -> relative loocv error = 0.2934176391678479
     Order/Interaction order: 6/1
     ============================
     Extending grid from 42 to 46 by 4 sampling points
     Performing simulations 43 to 46
     It/Sub-it: 6/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Total parallel function evaluation: 0.003147602081298828 sec
-    Gradient evaluation: 0.0061798095703125 sec
+    Total parallel function evaluation: 0.0023124217987060547 sec
+    Gradient evaluation: 0.005680561065673828 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -370,15 +370,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.012925863265991211 sec
-    -> relative loocv error = 0.32533983301403346
+    LOOCV computation time: 0.010047674179077148 sec
+    -> relative loocv error = 0.3726320653073442
     Order/Interaction order: 6/2
     ============================
     Extending grid from 46 to 56 by 10 sampling points
     Performing simulations 47 to 56
     It/Sub-it: 6/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.003072023391723633 sec
-    Gradient evaluation: 0.0075075626373291016 sec
+    Total parallel function evaluation: 0.0023975372314453125 sec
+    Gradient evaluation: 0.006656169891357422 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -406,15 +406,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.01371312141418457 sec
-    -> relative loocv error = 0.0730587274064606
+    LOOCV computation time: 0.011185646057128906 sec
+    -> relative loocv error = 0.41906045996201613
     Order/Interaction order: 7/1
     ============================
     Extending grid from 56 to 60 by 4 sampling points
     Performing simulations 57 to 60
     It/Sub-it: 7/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Total parallel function evaluation: 0.004889726638793945 sec
-    Gradient evaluation: 0.015430688858032227 sec
+    Total parallel function evaluation: 0.0023293495178222656 sec
+    Gradient evaluation: 0.0073394775390625 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -442,15 +442,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.02870488166809082 sec
-    -> relative loocv error = 0.016629945168130524
+    LOOCV computation time: 0.023985624313354492 sec
+    -> relative loocv error = 0.013552921157604115
     Order/Interaction order: 7/2
     ============================
     Extending grid from 60 to 72 by 12 sampling points
     Performing simulations 61 to 72
     It/Sub-it: 7/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.003160715103149414 sec
-    Gradient evaluation: 0.009650707244873047 sec
+    Total parallel function evaluation: 0.003996133804321289 sec
+    Gradient evaluation: 0.01517939567565918 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -478,15 +478,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.03191995620727539 sec
-    -> relative loocv error = 0.020598412108697676
+    LOOCV computation time: 0.02922654151916504 sec
+    -> relative loocv error = 0.009324647980328749
     Order/Interaction order: 8/1
     ============================
     Extending grid from 72 to 76 by 4 sampling points
     Performing simulations 73 to 76
     It/Sub-it: 8/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Total parallel function evaluation: 0.004383087158203125 sec
-    Gradient evaluation: 0.01884293556213379 sec
+    Total parallel function evaluation: 0.0040209293365478516 sec
+    Gradient evaluation: 0.017939329147338867 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -514,15 +514,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.05741381645202637 sec
-    -> relative loocv error = 0.02550741378425769
+    LOOCV computation time: 0.03206586837768555 sec
+    -> relative loocv error = 0.01636424672203078
     Order/Interaction order: 8/2
     ============================
     Extending grid from 76 to 90 by 14 sampling points
     Performing simulations 77 to 90
     It/Sub-it: 8/2 Performing simulation 01 from 14 [==                                      ] 7.1%
-    Total parallel function evaluation: 0.005419492721557617 sec
-    Gradient evaluation: 0.024228572845458984 sec
+    Total parallel function evaluation: 0.0052165985107421875 sec
+    Gradient evaluation: 0.01934528350830078 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -550,15 +550,15 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.1956641674041748 sec
-    -> relative loocv error = 0.006034857100203359
+    LOOCV computation time: 0.054215192794799805 sec
+    -> relative loocv error = 0.0068170594610108045
     Order/Interaction order: 9/1
     ============================
     Extending grid from 90 to 94 by 4 sampling points
     Performing simulations 91 to 94
     It/Sub-it: 9/1 Performing simulation 1 from 4 [==========                              ] 25.0%
-    Total parallel function evaluation: 0.0061130523681640625 sec
-    Gradient evaluation: 0.026105880737304688 sec
+    Total parallel function evaluation: 0.004060029983520508 sec
+    Gradient evaluation: 0.022748231887817383 sec
     Dimension of reduced problem: 2
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -586,8 +586,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.2218165397644043 sec
-    -> relative loocv error = 0.00044549272742646555
+    LOOCV computation time: 0.05639910697937012 sec
+    -> relative loocv error = 0.0007466246798216776
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
 
 
@@ -700,7 +700,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  15.113 seconds)
+   **Total running time of the script:** ( 0 minutes  12.151 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_regadaptiveprojection.py:

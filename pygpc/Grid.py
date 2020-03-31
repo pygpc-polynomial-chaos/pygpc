@@ -424,17 +424,17 @@ class SparseGrid(Grid):
     parameters_random : OrderedDict of RandomParameter instances
         OrderedDict containing the RandomParameter instances the grids are generated for
     options: dict
-        Grid parameters
-        - grid_type ([N_vars] list of str) ... Type of quadrature rule used to construct sparse grid
-          ('jacobi', 'hermite', 'clenshaw_curtis', 'fejer2', 'patterson')
-        - level ([N_vars] list of int) ... Number of levels in each dimension
-        - level_max (int) ... Global combined level maximum
-        - interaction_order (int) ...Interaction order of parameters and grid, i.e. the grid points are lying
-          between this number of dimensions
-        - order_sequence_type (str) ... Type of order sequence ('lin', 'exp') common: 'exp'
-        - make_grid (boolean, optional, default=True) ... Boolean value to determine if to generate grid
-          during initialization
-        - verbose (bool, optional, default=True) ... Print output messages into stdout
+        Grid parameters:
+            - grid_type ([N_vars] list of str) ... Type of quadrature rule used to construct sparse grid
+              ('jacobi', 'hermite', 'clenshaw_curtis', 'fejer2', 'patterson')
+            - level ([N_vars] list of int) ... Number of levels in each dimension
+            - level_max (int) ... Global combined level maximum
+            - interaction_order (int) ...Interaction order of parameters and grid, i.e. the grid points are lying
+              between this number of dimensions
+            - order_sequence_type (str) ... Type of order sequence ('lin', 'exp') common: 'exp'
+            - make_grid (boolean, optional, default=True) ... Boolean value to determine if to generate grid
+              during initialization
+            - verbose (bool, optional, default=True) ... Print output messages into stdout
     coords : ndarray of float [n_grid_add x dim]
         Grid points to add (model space)
     coords_norm : ndarray of float [n_grid_add x dim]

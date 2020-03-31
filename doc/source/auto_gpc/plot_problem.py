@@ -45,7 +45,7 @@ ax = parameters["x2"].plot_pdf()
 ax = parameters["x3"].plot_pdf()
 ax = parameters["x4"].plot_pdf()
 ax = parameters["x5"].plot_pdf()
-ax.legend(["x1", "x2", "x3", "x4", "x5"])
+_ = ax.legend(["x1", "x2", "x3", "x4", "x5"])
 
 #%%
 # Normal distributed random variables
@@ -65,7 +65,7 @@ parameters["x3"] = pygpc.Norm(pdf_shape=[1, 3])
 ax = parameters["x1"].plot_pdf()
 ax = parameters["x2"].plot_pdf()
 ax = parameters["x3"].plot_pdf()
-ax.legend(["x1", "x2", "x3"])
+_ = ax.legend(["x1", "x2", "x3"])
 
 #%%
 # Gamma distributed random variables
@@ -89,7 +89,7 @@ ax = parameters["x1"].plot_pdf()
 ax = parameters["x2"].plot_pdf()
 ax = parameters["x3"].plot_pdf()
 ax = parameters["x4"].plot_pdf()
-ax.legend(["x1", "x2", "x3", "x4"])
+_ = ax.legend(["x1", "x2", "x3", "x4"])
 
 #%%
 # Problem definition

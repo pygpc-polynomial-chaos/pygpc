@@ -113,10 +113,10 @@ Running the gpc
 
     Performing 81 simulations!
     It/Sub-it: 9/2 Performing simulation 01 from 81 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0005390644073486328 sec
+    Total parallel function evaluation: 0.0003802776336669922 sec
     Determine gPC coefficients using 'NumInt' solver ...
     It/Sub-it: N/A/N/A Performing simulation 0001 from 1000 [                                        ] 0.1%
-    -> relative nrmsd error = 3.176468252417231e-08
+    -> relative nrmsd error = 3.7153767043303724e-08
 
 
 
@@ -228,7 +228,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.806 seconds)
+   **Total running time of the script:** ( 0 minutes  11.506 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_static_quad.py:

@@ -22,10 +22,10 @@ _ = plt.axis('off')
 # Before you install, verify your Python and MATLAB configurations.
 #
 # - Check that your system has a supported version of Python and MATLAB R2014b or later.
-# To check that Python is installed on your system, run Python at the operating system prompt.
+#   To check that Python is installed on your system, run Python at the operating system prompt.
 # - Add the folder that contains the Python interpreter to your path, if it is not already there.
 # - Find the path to the MATLAB folder. Start MATLAB and type matlabroot in the command window. Copy the path returned
-# by matlabroot.
+#   by matlabroot.
 #
 # To install the engine API, choose one of the following. (You might need administrator privileges
 # to execute these commands.)

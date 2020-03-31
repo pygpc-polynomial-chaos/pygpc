@@ -55,7 +55,7 @@ and the limits with pdf_limits :math:`=[a, b]`.
     ax = parameters["x3"].plot_pdf()
     ax = parameters["x4"].plot_pdf()
     ax = parameters["x5"].plot_pdf()
-    ax.legend(["x1", "x2", "x3", "x4", "x5"])
+    _ = ax.legend(["x1", "x2", "x3", "x4", "x5"])
 
 
 
@@ -64,14 +64,6 @@ and the limits with pdf_limits :math:`=[a, b]`.
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <matplotlib.legend.Legend object at 0x7f260233e1d0>
 
 
 
@@ -96,7 +88,7 @@ The mean and the standard deviation are defined with the parameter pdf_shape :ma
     ax = parameters["x1"].plot_pdf()
     ax = parameters["x2"].plot_pdf()
     ax = parameters["x3"].plot_pdf()
-    ax.legend(["x1", "x2", "x3"])
+    _ = ax.legend(["x1", "x2", "x3"])
 
 
 
@@ -105,14 +97,6 @@ The mean and the standard deviation are defined with the parameter pdf_shape :ma
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <matplotlib.legend.Legend object at 0x7f2602270c88>
 
 
 
@@ -141,7 +125,7 @@ the parameter pdf_shape :math:`=[\alpha, \beta, loc]`
     ax = parameters["x2"].plot_pdf()
     ax = parameters["x3"].plot_pdf()
     ax = parameters["x4"].plot_pdf()
-    ax.legend(["x1", "x2", "x3", "x4"])
+    _ = ax.legend(["x1", "x2", "x3", "x4"])
 
 
 
@@ -150,14 +134,6 @@ the parameter pdf_shape :math:`=[\alpha, \beta, loc]`
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <matplotlib.legend.Legend object at 0x7f2602205b70>
 
 
 
@@ -184,7 +160,7 @@ The gPC problem is initialized with the model and the parameters defined before:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.332 seconds)
+   **Total running time of the script:** ( 0 minutes  0.299 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_problem.py:

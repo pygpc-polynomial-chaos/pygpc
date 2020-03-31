@@ -118,28 +118,28 @@ Running the gpc
 
     Performing 5 simulations!
     It/Sub-it: 3/2 Performing simulation 1 from 5 [========                                ] 20.0%
-    Total function evaluation: 0.0005764961242675781 sec
+    Total function evaluation: 0.00038886070251464844 sec
     It/Sub-it: 3/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Gradient evaluation: 0.0011589527130126953 sec
-    Extending grid from 3 to 8 grid points in domain 0 ...
-    Performing 5 additional simulations!
-    It/Sub-it: 3/2 Performing simulation 1 from 5 [========                                ] 20.0%
-    Total function evaluation: 0.0005824565887451172 sec
-    It/Sub-it: 3/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Gradient evaluation: 0.0010483264923095703 sec
-    Extending grid from 2 to 8 grid points in domain 1 ...
-    Performing 6 additional simulations!
-    It/Sub-it: 3/2 Performing simulation 1 from 6 [======                                  ] 16.7%
-    Total function evaluation: 0.0003161430358886719 sec
-    It/Sub-it: 3/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Gradient evaluation: 0.0007450580596923828 sec
+    Gradient evaluation: 0.0007781982421875 sec
+    Extending grid from 4 to 8 grid points in domain 0 ...
+    Performing 4 additional simulations!
+    It/Sub-it: 3/2 Performing simulation 1 from 4 [==========                              ] 25.0%
+    Total function evaluation: 0.0010373592376708984 sec
+    It/Sub-it: 3/2 Performing simulation 1 from 8 [=====                                   ] 12.5%
+    Gradient evaluation: 0.0018436908721923828 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     It/Sub-it: N/A/N/A Performing simulation 0001 from 1000 [                                        ] 0.1%
-    -> relative nrmsd error = 0.17383628218785913
+    -> relative nrmsd error = 0.17174138999162433
+    Extending grid from 1 to 8 grid points in domain 0 ...
+    Performing 7 additional simulations!
+    It/Sub-it: 3/2 Performing simulation 1 from 7 [=====                                   ] 14.3%
+    Total function evaluation: 0.0015387535095214844 sec
+    It/Sub-it: 3/2 Performing simulation 01 from 14 [==                                      ] 7.1%
+    Gradient evaluation: 0.0024127960205078125 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
-    -> relative nrmsd error = 0.17947194003740866
+    -> relative nrmsd error = 0.09352099312385723
 
 
 
@@ -243,7 +243,7 @@ Validate gPC vs original model function (Monte Carlo)
  .. code-block:: none
 
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.17%
+    > Maximum NRMSD (gpc vs original): 0.16%
 
 
 
@@ -251,7 +251,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  15.562 seconds)
+   **Total running time of the script:** ( 0 minutes  14.174 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_mestaticprojection.py:

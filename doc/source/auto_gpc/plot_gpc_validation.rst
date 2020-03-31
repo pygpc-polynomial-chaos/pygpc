@@ -80,8 +80,8 @@ by determining a gPC approximation with fixed basis of the Peaks function in the
 
     Performing 110 simulations!
     It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0002911090850830078 sec
-    Gradient evaluation: 0.002512693405151367 sec
+    Total parallel function evaluation: 0.0003955364227294922 sec
+    Gradient evaluation: 0.0029120445251464844 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     It/Sub-it: N/A/N/A Performing simulation 0001 from 1000 [                                        ] 0.1%
     -> relative nrmsd error = 1.285591969665802e-07
@@ -182,7 +182,7 @@ Similar to the previous function, the results can be saved into an .hdf5 file sp
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.889 seconds)
+   **Total running time of the script:** ( 0 minutes  2.640 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_gpc_validation.py:

@@ -38,10 +38,9 @@ run the model with the desired set of parameters.
 # The values of a and b used by Crestaux et al. (2007) and Marrel et al. (2009) are: a = 7 and b = 0.1.
 
 import pygpc
-import time
 import numpy as np
-from IPython import display
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 # Parameters
 p = dict()
@@ -65,37 +64,32 @@ mean = []
 std = []
 
 for i in range(len(N)):
-    ax1 = fig.add_subplot(131, projection='3d')
-    ax1.scatter(p["x1"][:N[i]],
-                p["x2"][:N[i]],
-                y[:N[i]],
-                s=4, c=y[0:N[i]].flatten(), cmap="jet")
-    ax1.set_xlabel("x1")
-    ax1.set_ylabel("x2")
-    ax1.set_zlabel("y")
-    ax1.view_init(elev=45, azim=180)
-
-    ax2 = fig.add_subplot(132)
     mean.append(np.mean(y[:N[i]]))
-    ax2.plot(N[:i+1], mean)
-    ax2.set_xscale("log")
-    ax2.grid(True)
-    ax2.set_xlabel("N")
-    ax2.set_ylabel("Mean")
-
-    ax3 = fig.add_subplot(133)
     std.append(np.std(y[:N[i]]))
-    ax3.plot(N[:i+1], std)
-    ax3.set_xscale("log")
-    ax3.grid(True)
-    ax3.set_xlabel("N")
-    ax3.set_ylabel("STD")
-    _ = display.display(plt.gcf())
 
-    if i < (len(N)-1):
-        display.clear_output(wait=True)
+ax1 = fig.add_subplot(131, projection='3d')
+ax1.scatter(p["x1"][:N[-1]],
+            p["x2"][:N[-1]],
+            y[:N[-1]],
+            s=4, c=y[0:N[-1]].flatten(), cmap="jet")
+ax1.set_xlabel("x1")
+ax1.set_ylabel("x2")
+ax1.set_zlabel("y")
+ax1.view_init(elev=45, azim=180)
 
-    time.sleep(0)
+ax2 = fig.add_subplot(132)
+ax2.plot(N, mean)
+ax2.set_xscale("log")
+ax2.grid(True)
+ax2.set_xlabel("N")
+ax2.set_ylabel("Mean")
+
+ax3 = fig.add_subplot(133)
+ax3.plot(N, std)
+ax3.set_xscale("log")
+ax3.grid(True)
+ax3.set_xlabel("N")
+_ = ax3.set_ylabel("STD")
 
 # %%
 # It can be clearly seen that the mean and the standard deviation converge slowly with increasing :math:`N`,

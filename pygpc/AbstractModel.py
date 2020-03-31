@@ -40,18 +40,18 @@ class AbstractModel:
             Dictionary containing the model parameters
         context : dictionary
             dictionary that contains information about this worker's context
-            - lock        : reference to the Lock object that all processes share for synchronization
-            - max_grid    : size of the current sub-grid that is processed
-            - global_task_counter  : reference to the Value object that is shared among all processes to keep track
-                                     of the overall progress
-            - seq_number  : sequence number of the task this object represents; necessary to maintain the correct
-                            sequence of results
-            - fn_results  : location of the hdf5 file to serialize the results to
-            - i_grid      : current iteration in the sub-grid that is processed
-            - i_iter      : current main-iteration
-            - i_subiter   : current sub-iteration
-            - coords      : parameters of particular simulation in original parameter space
-            - coords_norm : parameters of particular simulation in normalized parameter space
+                - lock : reference to the Lock object that all processes share for synchronization
+                - max_grid : size of the current sub-grid that is processed
+                - global_task_counter  : reference to the Value object that is shared among all processes to keep track
+                                         of the overall progress
+                - seq_number  : sequence number of the task this object represents; necessary to maintain the correct
+                                sequence of results
+                - fn_results  : location of the hdf5 file to serialize the results to
+                - i_grid      : current iteration in the sub-grid that is processed
+                - i_iter      : current main-iteration
+                - i_subiter   : current sub-iteration
+                - coords      : parameters of particular simulation in original parameter space
+                - coords_norm : parameters of particular simulation in normalized parameter space
         """
 
         self.p = p

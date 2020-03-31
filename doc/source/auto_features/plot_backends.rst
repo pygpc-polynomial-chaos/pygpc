@@ -223,7 +223,7 @@ Performance comparison between the backends
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  32.434 seconds)
+   **Total running time of the script:** ( 0 minutes  35.956 seconds)
 
 
 .. _sphx_glr_download_auto_features_plot_backends.py:

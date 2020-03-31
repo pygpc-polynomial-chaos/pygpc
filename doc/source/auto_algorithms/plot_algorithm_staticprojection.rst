@@ -114,18 +114,18 @@ Running the gpc
 
     Performing 10 simulations!
     It/Sub-it: 10/1 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total function evaluation: 0.0003161430358886719 sec
+    Total function evaluation: 0.00025773048400878906 sec
     It/Sub-it: 10/1 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Gradient evaluation: 0.001135110855102539 sec
+    Gradient evaluation: 0.0007884502410888672 sec
     Extending grid from 10 to 22 grid points ...
     Performing 22 additional simulations!
     It/Sub-it: 10/1 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total function evaluation: 0.00043320655822753906 sec
+    Total function evaluation: 0.0002658367156982422 sec
     It/Sub-it: 10/1 Performing simulation 01 from 24 [=                                       ] 4.2%
-    Gradient evaluation: 0.0015056133270263672 sec
+    Gradient evaluation: 0.0008935928344726562 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     It/Sub-it: N/A/N/A Performing simulation 0001 from 1000 [                                        ] 0.1%
-    -> relative nrmsd error = 0.009663685503452138
+    -> relative nrmsd error = 0.0007360350168418144
 
 
 
@@ -229,7 +229,7 @@ Validate gPC vs original model function (Monte Carlo)
  .. code-block:: none
 
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.01%
+    > Maximum NRMSD (gpc vs original): 0.00085%
 
 
 
@@ -237,7 +237,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.150 seconds)
+   **Total running time of the script:** ( 0 minutes  5.657 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_staticprojection.py:

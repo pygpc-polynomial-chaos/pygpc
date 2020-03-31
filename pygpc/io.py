@@ -889,8 +889,8 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
     If data is list of dict, write_dict_to_hdf5() is called for each dict with adapted hdf5-folder name
     Otherwise, data is casted to np.ndarray and dtype of unicode data casted to '|S'.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     fn_hdf5 : str
         Filename of .hdf5 file
     arr_name : str

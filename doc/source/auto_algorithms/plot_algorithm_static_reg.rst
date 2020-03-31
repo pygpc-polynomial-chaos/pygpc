@@ -123,8 +123,8 @@ Running the gpc
 
     Performing 1100 simulations!
     It/Sub-it: 9/2 Performing simulation 0001 from 1100 [                                        ] 0.1%
-    Total parallel function evaluation: 0.0005357265472412109 sec
-    Gradient evaluation: 0.20708680152893066 sec
+    Total parallel function evaluation: 0.0006158351898193359 sec
+    Gradient evaluation: 0.15166187286376953 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     It/Sub-it: N/A/N/A Performing simulation 0001 from 1000 [                                        ] 0.1%
     -> relative nrmsd error = 0.002465797911172747
@@ -231,7 +231,7 @@ Validate gPC vs original model function (Monte Carlo)
  .. code-block:: none
 
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.0025%
+    > Maximum NRMSD (gpc vs original): 0.0024%
 
 
 
@@ -239,7 +239,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  15.044 seconds)
+   **Total running time of the script:** ( 0 minutes  11.898 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_static_reg.py:

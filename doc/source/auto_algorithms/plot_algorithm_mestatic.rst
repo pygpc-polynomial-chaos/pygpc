@@ -123,8 +123,8 @@ Running the gpc
 
     Performing 1000 simulations!
     It/Sub-it: 10/2 Performing simulation 0001 from 1000 [                                        ] 0.1%
-    Total parallel function evaluation: 0.9397580623626709 sec
-    Gradient evaluation: 0.055585384368896484 sec
+    Total parallel function evaluation: 0.7621402740478516 sec
+    Gradient evaluation: 0.049759626388549805 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -152,8 +152,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.42769742012023926 sec
-    -> relative loocv error = 0.019449331878849545
+    LOOCV computation time: 0.11038446426391602 sec
+    -> relative loocv error = 0.01297424649105885
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
     LOOCV 03 from 25 [====                                    ] 12.0%
@@ -179,7 +179,7 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.2946758270263672 sec
+    LOOCV computation time: 0.1106407642364502 sec
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
     LOOCV 03 from 25 [====                                    ] 12.0%
@@ -205,7 +205,7 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.32419443130493164 sec
+    LOOCV computation time: 0.08616757392883301 sec
 
 
 
@@ -309,7 +309,7 @@ Validate gPC vs original model function (Monte Carlo)
  .. code-block:: none
 
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.0078%
+    > Maximum NRMSD (gpc vs original): 0.0074%
 
 
 
@@ -317,7 +317,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  57.765 seconds)
+   **Total running time of the script:** ( 0 minutes  45.974 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_mestatic.py:
