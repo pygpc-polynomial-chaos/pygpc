@@ -8,7 +8,7 @@ from .misc import get_cartesian_product
 from.Quadrature import *
 
 
-class Grid(object):
+class Grid():
     """
     Grid class
 
