@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ master, stable ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, stable ]
+    branches: [ master ]
 
 jobs:
   linux:
@@ -132,8 +132,8 @@ jobs:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: ${{ matrix.cibw-string }} 
         CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} {wheel}"
-        CC: gcc-8
-        CXX: g++-8
+        CC: gcc-9
+        CXX: g++-9
     - name: Upload with twine
       if: "contains(github.event.head_commit.message, 'PyPI')"
       run: |
