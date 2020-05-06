@@ -46,7 +46,7 @@ where :math:`P` is a :math:`d \times n` matrix of randomly perturbed integers
 Constructing a simple LHS design
 --------------------------------
 We are going to create a simple LHS design for 2 random variables with 5 sampling points:
-sphinx_gallery_thumbnail_number = 3:
+sphinx_gallery_thumbnail_number = 2:
 
 
 .. code-block:: default
@@ -351,1578 +351,1578 @@ Running the analysis
 
     Performing 12 simulations!
     It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0008671283721923828 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.32965051700118025
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0009000301361083984 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.6150769230256643
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.001001119613647461 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.6915179091436132
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0008144378662109375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.32791380875668175
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0004878044128417969 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3831439516601068
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0011026859283447266 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.49184949197422534
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0006325244903564453 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 1.1985018755042445
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0013265609741210938 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.39147684586079223
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0011019706726074219 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 1.1715184530478797
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0014374256134033203 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.44410136613466655
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0012793540954589844 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4385246905881125
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0008981227874755859 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.212901646214159
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.001247406005859375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.44471331020444843
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0007097721099853516 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4110210775513524
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0014166831970214844 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2581950445612717
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.001295328140258789 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2996721849808704
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0013496875762939453 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.505494815677068
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0014641284942626953 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.26591504300658003
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.001245737075805664 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4860639530321117
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0004582405090332031 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4977935665960531
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0011806488037109375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.06711032233994649
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0011799335479736328 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.07051482694076087
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0004668235778808594 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.05155399347006535
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0013208389282226562 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.11886642801030035
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.001226663589477539 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.11282838181583091
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00031948089599609375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.10357162272631587
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.000324249267578125 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.07457283743600675
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00032329559326171875 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.09093108625661106
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003235340118408203 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.08612648739134901
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00033211708068847656 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0849503248689929
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00033020973205566406 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.013010808101611334
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003185272216796875 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.07833041962473923
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00032210350036621094 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.020818266919192654
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003268718719482422 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.012854119883360401
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00032401084899902344 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01653161267214408
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00031948089599609375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01131129282251151
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00035452842712402344 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01943395071564083
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003159046173095703 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.058958252897242665
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0004937648773193359 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.07037884012821895
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003304481506347656 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.013638804127003818
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00051116943359375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0019079531073238063
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0003523826599121094 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0023078727340819167
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00036072731018066406 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0023840357427296175
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0003490447998046875 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.005682194332135005
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0005853176116943359 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.001468632987137165
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0003924369812011719 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3398383863884569
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0004837512969970703 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.38321632573738507
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.00043010711669921875 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.30135182946468947
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0003345012664794922 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3535916276208592
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0005319118499755859 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.39307651579088304
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0005145072937011719 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.30624557753025966
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0005092620849609375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4098980477865768
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.00047469139099121094 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.5178826527537563
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.00046825408935546875 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.47819824270720546
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0004413127899169922 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.44900621909638383
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0004315376281738281 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.34658492980448663
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0004849433898925781 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3278940549294228
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.00037026405334472656 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.20401853057259006
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0014493465423583984 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.267489052159903
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
     Total parallel function evaluation: 0.0005900859832763672 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.24081486480232342
+    -> relative nrmsd error = 0.3411633210083902
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0008275508880615234 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.44848974797225527
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0008263587951660156 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.28910713165976953
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0008637905120849609 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.39799602969677733
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0009238719940185547 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.359646461090493
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0006506443023681641 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.4414778346445425
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0005881786346435547 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.35606580318341335
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0006697177886962891 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2939809471686884
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0009303092956542969 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.4144054741641762
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0010826587677001953 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.8272296157525125
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0005936622619628906 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2112820690910254
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.001016855239868164 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.31577731406237625
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0011680126190185547 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.24272859136616318
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0010035037994384766 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.30520664292418076
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0011904239654541016 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3316519618673423
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0005905628204345703 sec
+    Total parallel function evaluation: 0.0010051727294921875 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2613371421969584
+    -> relative nrmsd error = 0.5403150034520617
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0015349388122558594 sec
+    Total parallel function evaluation: 0.0005588531494140625 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2878961074950875
+    -> relative nrmsd error = 0.7564867599045157
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.00036644935607910156 sec
+    Total parallel function evaluation: 0.0010018348693847656 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.22549029332435006
+    -> relative nrmsd error = 0.40744423645003813
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0005254745483398438 sec
+    Total parallel function evaluation: 0.0009963512420654297 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.6107827619230075
+    -> relative nrmsd error = 0.3271833816873176
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0008976459503173828 sec
+    Total parallel function evaluation: 0.001102447509765625 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.21375133737259053
+    -> relative nrmsd error = 0.2806299906259488
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0010068416595458984 sec
+    Total parallel function evaluation: 0.0004153251647949219 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.14512817711035378
+    -> relative nrmsd error = 0.18165280030438652
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0009620189666748047 sec
+    Total parallel function evaluation: 0.0010788440704345703 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.14842794750063645
+    -> relative nrmsd error = 0.2867074565407547
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0009763240814208984 sec
+    Total parallel function evaluation: 0.0009260177612304688 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.09441940556468362
+    -> relative nrmsd error = 0.06350224246730579
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.00048804283142089844 sec
+    Total parallel function evaluation: 0.0004355907440185547 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.11713550693449219
+    -> relative nrmsd error = 0.06973696665623687
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0005507469177246094 sec
+    Total parallel function evaluation: 0.0010101795196533203 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.07797252363951303
+    -> relative nrmsd error = 0.07850876986605662
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00033473968505859375 sec
+    Total parallel function evaluation: 0.0002899169921875 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.1873322102024641
+    -> relative nrmsd error = 0.0855653644637648
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00035572052001953125 sec
+    Total parallel function evaluation: 0.00029158592224121094 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.12141045923330868
+    -> relative nrmsd error = 0.20664752843423523
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00030112266540527344 sec
+    Total parallel function evaluation: 0.0002865791320800781 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.10805015891082988
+    -> relative nrmsd error = 0.07080626970998671
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003216266632080078 sec
+    Total parallel function evaluation: 0.0002903938293457031 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0713757131648799
+    -> relative nrmsd error = 0.10549837722635039
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003440380096435547 sec
+    Total parallel function evaluation: 0.0003254413604736328 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.11127680885586866
+    -> relative nrmsd error = 0.09679615392663718
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 90 simulations!
     It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.000316619873046875 sec
+    Total parallel function evaluation: 0.0005865097045898438 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.03241500422419163
+    -> relative nrmsd error = 0.01923432719269401
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 90 simulations!
     It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00047016143798828125 sec
+    Total parallel function evaluation: 0.00028395652770996094 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.053389092550640345
+    -> relative nrmsd error = 0.017941694768275517
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 90 simulations!
     It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0002853870391845703 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.05415670306329138
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0006527900695800781 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.028663322438428365
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0002865791320800781 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.018896522047999815
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0004134178161621094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.032689319817172754
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00039315223693847656 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.038613244436630334
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0002949237823486328 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.019337578784561067
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0002963542938232422 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.027741139830127996
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0005159378051757812 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.026398982516264678
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
     Total parallel function evaluation: 0.0003237724304199219 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.011254900463211684
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0005731582641601562 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01969669809336342
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0006642341613769531 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.03130580719777896
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003345012664794922 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0229790452411659
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00031828880310058594 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.043508808943534434
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003311634063720703 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.05481980613850361
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00032258033752441406 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.011954983344775962
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00031948089599609375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.020053178018417505
+    -> relative nrmsd error = 0.020608323911383338
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0003151893615722656 sec
+    Total parallel function evaluation: 0.000347137451171875 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.003810436746165234
+    -> relative nrmsd error = 0.0024000306224635595
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0003323554992675781 sec
+    Total parallel function evaluation: 0.00036525726318359375 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.00198801585059959
+    -> relative nrmsd error = 0.002854995796224686
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00039458274841308594 sec
+    Total parallel function evaluation: 0.00029969215393066406 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0020081987111908715
+    -> relative nrmsd error = 0.01146564097158087
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0006229877471923828 sec
+    Total parallel function evaluation: 0.00029397010803222656 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0012891134261516497
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.000335693359375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0011481972280768338
+    -> relative nrmsd error = 0.001199790674804371
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 12 simulations!
     It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.00078582763671875 sec
+    Total parallel function evaluation: 0.0007376670837402344 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.41981380650361577
+    -> relative nrmsd error = 0.29932972274492425
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 12 simulations!
     It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0004968643188476562 sec
+    Total parallel function evaluation: 0.0007309913635253906 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.29843513308033365
+    -> relative nrmsd error = 0.5388455398472665
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 12 simulations!
     It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0009655952453613281 sec
+    Total parallel function evaluation: 0.0007252693176269531 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3451055330517679
+    -> relative nrmsd error = 0.31441077210620577
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 12 simulations!
     It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0006542205810546875 sec
+    Total parallel function evaluation: 0.0012135505676269531 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3520984606550244
+    -> relative nrmsd error = 0.3547545124910063
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 12 simulations!
     It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.00041985511779785156 sec
+    Total parallel function evaluation: 0.0009443759918212891 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3215360754394527
+    -> relative nrmsd error = 0.3675508399756489
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 20 simulations!
     It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0006933212280273438 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.40241210767237184
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0016357898712158203 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3894431318037418
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0012357234954833984 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4208043635381923
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.001165151596069336 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.37123272002703517
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.002246379852294922 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.35535057141061316
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0005037784576416016 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.20930422540598745
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0009114742279052734 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4026359943696481
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0019273757934570312 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.24076051751442162
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0011734962463378906 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4003118525174663
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.00037169456481933594 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.19570186911958928
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0004279613494873047 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2978108861404222
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0011632442474365234 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.33358557411178674
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0009844303131103516 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.22158499924814867
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0004978179931640625 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.23543902387189283
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0004010200500488281 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.32703087065823533
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0006306171417236328 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.12077888460339073
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0010213851928710938 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0754991558661975
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.000946044921875 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.09511303184097944
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0009818077087402344 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.08037996002996278
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0011458396911621094 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.11830598082970273
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00033354759216308594 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.1362167739456595
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0005519390106201172 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.17485496461469618
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00033283233642578125 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.164065201474014
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.000324249267578125 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.32853622113937164
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00032401084899902344 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.24301949968557743
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0006477832794189453 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.037945713633389895
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0005857944488525391 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.015708596528527845
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003211498260498047 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.014888060389245462
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00032258033752441406 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.025125666882901444
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003170967102050781 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.018002615025590325
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00033211708068847656 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01782568297797758
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00035834312438964844 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01666575402369556
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00032782554626464844 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.03677319116607281
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003330707550048828 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.014809739627359177
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.000331878662109375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0426393566557967
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00040793418884277344 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.001904238983019215
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0003399848937988281 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.002015366712179703
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00037384033203125 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.004076780914595479
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0003333091735839844 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.002664248428494406
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0005381107330322266 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0011526845635223715
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.001024484634399414 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2944380951704596
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0008933544158935547 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3033035379589684
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0011310577392578125 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2931542216000166
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0010895729064941406 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.32660835103385555
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0010187625885009766 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2943276699591107
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0011167526245117188 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.32298299102773287
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0010869503021240234 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3314051403331821
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0010161399841308594 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3224110361084736
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0007634162902832031 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.34445390414421306
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0010237693786621094 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.30462559442574044
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0006170272827148438 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.19150789334404358
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0015964508056640625 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.310502214268278
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0011432170867919922 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.22044835058575238
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
     Total parallel function evaluation: 0.0010149478912353516 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.23096704254474415
+    -> relative nrmsd error = 0.32352391967467437
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 30 simulations!
-    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0016393661499023438 sec
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.001107931137084961 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.20389503157294933
+    -> relative nrmsd error = 0.3957527834365172
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0011687278747558594 sec
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0010442733764648438 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.5021304857032262
+    -> relative nrmsd error = 0.43970305338295956
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
     Total parallel function evaluation: 0.0012543201446533203 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.4373890707133855
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0005080699920654297 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.24621007065525075
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0004885196685791016 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.23681281446631386
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 42 simulations!
-    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0010921955108642578 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2682994800429234
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0018007755279541016 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.11272552902936069
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.00045609474182128906 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.09953504705846752
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0004038810729980469 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0742480738818714
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0005676746368408203 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.07131838316130092
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 56 simulations!
-    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.001220703125 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.08719014977895458
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003230571746826172 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.24254335707810443
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003199577331542969 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.10849042009749296
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003325939178466797 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.09514246645353254
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003199577331542969 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.11181908513837323
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 72 simulations!
-    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003218650817871094 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.05950967739103951
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00032067298889160156 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.015050108683973317
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003235340118408203 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.012803719110882975
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0006463527679443359 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.03150945299606057
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00031948089599609375 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.015466558433996877
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 90 simulations!
-    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003170967102050781 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.02421760733290502
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003421306610107422 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.03610754360641372
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003170967102050781 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.027327044553491962
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003743171691894531 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.018521190615046725
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003170967102050781 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.018740692427199675
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 110 simulations!
-    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00032067298889160156 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.029494026615114195
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.000324249267578125 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.005704697429706211
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00033020973205566406 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0017333398070345947
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00034165382385253906 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.004336038929802115
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00032401084899902344 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0033381906988823834
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 132 simulations!
-    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00033164024353027344 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0019041918463336765
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0006935596466064453 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.34943974350078794
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0007596015930175781 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.30794811536471467
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0007345676422119141 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2863778650115438
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.001005411148071289 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3029548270636301
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 12 simulations!
-    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total parallel function evaluation: 0.0010898113250732422 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.27674870471409513
+    -> relative nrmsd error = 0.4157690585381963
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 20 simulations!
     It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0008177757263183594 sec
+    Total parallel function evaluation: 0.0010373592376708984 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.28332283629905625
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0009739398956298828 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2704917515819616
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0009109973907470703 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.3510845271203993
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.001140594482421875 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.27653144449898137
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    Performing 20 simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0009253025054931641 sec
-    Determine gPC coefficients using 'Moore-Penrose' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2714361870059388
+    -> relative nrmsd error = 0.47458399154330794
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 30 simulations!
     It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0010797977447509766 sec
+    Total parallel function evaluation: 0.0012023448944091797 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.1853435968815733
+    -> relative nrmsd error = 0.25322372823168393
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 30 simulations!
     It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0008537769317626953 sec
+    Total parallel function evaluation: 0.0007686614990234375 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.1760998228421143
+    -> relative nrmsd error = 0.5011014551681982
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 30 simulations!
     It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0009043216705322266 sec
+    Total parallel function evaluation: 0.0017354488372802734 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.193651479282263
+    -> relative nrmsd error = 0.48109640704515927
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 30 simulations!
     It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0009007453918457031 sec
+    Total parallel function evaluation: 0.0010256767272949219 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.24270604916851227
+    -> relative nrmsd error = 0.22076087331684588
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 30 simulations!
     It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0010492801666259766 sec
+    Total parallel function evaluation: 0.0011982917785644531 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2121888479008357
+    -> relative nrmsd error = 0.25094410741711665
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0008363723754882812 sec
+    Total parallel function evaluation: 0.0011496543884277344 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.22738777348965336
+    -> relative nrmsd error = 0.3507710109608819
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0008270740509033203 sec
+    Total parallel function evaluation: 0.0010569095611572266 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.2043033747150115
+    -> relative nrmsd error = 0.45475948009968264
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0007681846618652344 sec
+    Total parallel function evaluation: 0.0010497570037841797 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.22273175491908226
+    -> relative nrmsd error = 0.27863925177090204
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.0007491111755371094 sec
+    Total parallel function evaluation: 0.0011854171752929688 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.20629914437985059
+    -> relative nrmsd error = 0.37591223950022024
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 42 simulations!
     It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
-    Total parallel function evaluation: 0.000904083251953125 sec
+    Total parallel function evaluation: 0.0005061626434326172 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.21102767731455996
+    -> relative nrmsd error = 0.31726900927069285
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0007827281951904297 sec
+    Total parallel function evaluation: 0.0005414485931396484 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.06154854206420791
+    -> relative nrmsd error = 0.06469138375463693
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0008656978607177734 sec
+    Total parallel function evaluation: 0.000522613525390625 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.06290279901760319
+    -> relative nrmsd error = 0.06859278748748805
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0008988380432128906 sec
+    Total parallel function evaluation: 0.0005054473876953125 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.04911006635536939
+    -> relative nrmsd error = 0.06770516651097826
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0008177757263183594 sec
+    Total parallel function evaluation: 0.0012445449829101562 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.060455094797190564
+    -> relative nrmsd error = 0.07869103387503372
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 56 simulations!
     It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
-    Total parallel function evaluation: 0.0008206367492675781 sec
+    Total parallel function evaluation: 0.0005183219909667969 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.06745509529849313
+    -> relative nrmsd error = 0.07737830559720509
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.000377655029296875 sec
+    Total parallel function evaluation: 0.00030422210693359375 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.06229990007453454
+    -> relative nrmsd error = 0.22390456975051629
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00033164024353027344 sec
+    Total parallel function evaluation: 0.0003044605255126953 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.05932528155424208
+    -> relative nrmsd error = 0.08172659048004609
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00032806396484375 sec
+    Total parallel function evaluation: 0.0003478527069091797 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.09081464149417279
+    -> relative nrmsd error = 0.16245443774931675
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003826618194580078 sec
+    Total parallel function evaluation: 0.0003342628479003906 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.07414588186460326
+    -> relative nrmsd error = 0.07055522929115866
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 72 simulations!
     It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003211498260498047 sec
+    Total parallel function evaluation: 0.0014641284942626953 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.056906010529400655
+    -> relative nrmsd error = 0.16942165366673956
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 90 simulations!
     It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003151893615722656 sec
+    Total parallel function evaluation: 0.00034427642822265625 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.011350001260062408
+    -> relative nrmsd error = 0.03235996208174953
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 90 simulations!
     It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00033020973205566406 sec
+    Total parallel function evaluation: 0.0002980232238769531 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01248846645203314
+    -> relative nrmsd error = 0.030950062802995188
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 90 simulations!
     It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00031185150146484375 sec
+    Total parallel function evaluation: 0.0003600120544433594 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.009262661524466092
+    -> relative nrmsd error = 0.019020625543507516
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 90 simulations!
     It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.000514984130859375 sec
+    Total parallel function evaluation: 0.0004591941833496094 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.015668787362038153
+    -> relative nrmsd error = 0.1344469387768134
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 90 simulations!
     It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003185272216796875 sec
+    Total parallel function evaluation: 0.0003972053527832031 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01265607027947034
+    -> relative nrmsd error = 0.012173097362928088
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 110 simulations!
     It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.0003249645233154297 sec
+    Total parallel function evaluation: 0.0003342628479003906 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.011324181770244869
+    -> relative nrmsd error = 0.015252838155550641
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 110 simulations!
     It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.000316619873046875 sec
+    Total parallel function evaluation: 0.00067138671875 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01452316045223306
+    -> relative nrmsd error = 0.019091022825153455
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 110 simulations!
     It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0003275871276855469 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.015401801813778699
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00029659271240234375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.021515703797031237
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0003082752227783203 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.018956323985787626
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
     Total parallel function evaluation: 0.00030922889709472656 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01012603055734501
+    -> relative nrmsd error = 0.0037028875043636014
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.00030422210693359375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.002086852059655248
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.00031447410583496094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0019441844980985438
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.0003192424774169922 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0026027538283884656
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.0005025863647460938 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.002052313537877079
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.00043702125549316406 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3940208868546257
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0007870197296142578 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.41268385470115315
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0008504390716552734 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3478118179111896
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0009245872497558594 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.37654806046983785
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0010797977447509766 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.31022490567882455
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0011548995971679688 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3470296575918378
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0005223751068115234 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.34436318467865085
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0010569095611572266 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3495543226766119
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0009839534759521484 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.32009591390110387
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0005469322204589844 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.4148664991826893
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0012450218200683594 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.20995434066189136
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0017147064208984375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.27463846270825165
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0009310245513916016 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.4018602875713958
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0006871223449707031 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.24711422550969533
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0008852481842041016 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.35498102029533884
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0008456707000732422 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.20453825231537384
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0008635520935058594 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.24477993922983807
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0009713172912597656 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2538793510274124
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0010859966278076172 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2356103212771226
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0005464553833007812 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3411522987914836
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0014204978942871094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.09649480895202463
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0010442733764648438 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.08749902557888443
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0011296272277832031 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.08662673199177419
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0010313987731933594 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.07863817232574341
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0010256767272949219 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0839618476797768
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00031495094299316406 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.06644028154496553
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00031304359436035156 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.08576928847306217
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00030040740966796875 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.11302307273291565
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003046989440917969 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.07959819314554577
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002911090850830078 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.08778115560952977
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.00030684471130371094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.014895472572471377
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0003008842468261719 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.015047542260383592
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0006816387176513672 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.018125472207841893
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0003020763397216797 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.01079519358732736
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0003008842468261719 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.012911826906354208
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 110 simulations!
     It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00032401084899902344 sec
+    Total parallel function evaluation: 0.0002949237823486328 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.010976811232021032
+    -> relative nrmsd error = 0.03169178343650243
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 110 simulations!
     It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00033593177795410156 sec
+    Total parallel function evaluation: 0.0002970695495605469 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.01026497320436617
+    -> relative nrmsd error = 0.013916801053795405
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0002961158752441406 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.013659526222163605
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00029730796813964844 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.011714227770511444
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.000301361083984375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.01902213444102801
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0003266334533691406 sec
+    Total parallel function evaluation: 0.0003070831298828125 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0018375436519209956
+    -> relative nrmsd error = 0.0009113841260259473
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.00032973289489746094 sec
+    Total parallel function evaluation: 0.0006310939788818359 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0008757922107915476
+    -> relative nrmsd error = 0.0018075896657403021
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0005249977111816406 sec
+    Total parallel function evaluation: 0.0003578662872314453 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0010529137911092555
+    -> relative nrmsd error = 0.001783945042699453
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.000335693359375 sec
+    Total parallel function evaluation: 0.0003008842468261719 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.001021832465407841
+    -> relative nrmsd error = 0.0016971257301365721
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
     Performing 132 simulations!
     It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
-    Total parallel function evaluation: 0.0005075931549072266 sec
+    Total parallel function evaluation: 0.00030493736267089844 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    -> relative nrmsd error = 0.0029248871199077826
+    -> relative nrmsd error = 0.015530608805399542
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0007839202880859375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2905357333797566
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0007994174957275391 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.29484126347336265
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0009989738464355469 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.29812039054768036
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0014119148254394531 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.31761538609155776
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0011610984802246094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.30554328767878813
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0007879734039306641 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2992697092549257
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0016620159149169922 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3696260453514938
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.001013040542602539 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3596026035053065
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0011005401611328125 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.29433532074430674
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0010347366333007812 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.28742659092609346
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.001026153564453125 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.17831596913365974
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0010480880737304688 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2648670927179873
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0003273487091064453 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.20221296248639387
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.00046563148498535156 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.17845588478450045
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0011005401611328125 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.1932376166842211
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0010647773742675781 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.24964002001943292
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0010187625885009766 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.26064205105284133
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0011963844299316406 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3099079387786072
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0011909008026123047 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2779690070332276
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0011081695556640625 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2355864837714504
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0007429122924804688 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.06662745367718392
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.001155853271484375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.11780376792964443
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0008244514465332031 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.10124913065088557
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0012798309326171875 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.06430205882231732
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0009751319885253906 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.10387435576805014
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003139972686767578 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.07891766553418984
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00029349327087402344 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.1362873542952538
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00028967857360839844 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.1038076627490928
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0004515647888183594 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.060654660385862924
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.000396728515625 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3726363582044131
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.00029540061950683594 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.010353814368737738
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.00029397010803222656 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.026941609157030616
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.00031447410583496094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.025996054042762694
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.00029850006103515625 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.012672281946114163
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0003609657287597656 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.013356990872096691
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00030493736267089844 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.029599598921770783
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0003020763397216797 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.019837062007909318
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0003082752227783203 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.014203890230221663
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00030517578125 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.025755597303088972
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00030875205993652344 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.014118904451032302
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.00030684471130371094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0015320527999491663
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.0003845691680908203 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0015593758670349005
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.00030541419982910156 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.00226390925926712
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.0003135204315185547 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0019304930812090383
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.0005314350128173828 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0032805087472853028
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0007469654083251953 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2918112340328755
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0007762908935546875 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.29686284958278514
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0008122920989990234 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.28291038265693963
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0007634162902832031 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.3493551800629417
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 12 simulations!
+    It/Sub-it: 2/2 Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total parallel function evaluation: 0.0016489028930664062 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.35469437232307105
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.001054525375366211 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.28093569709352395
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0007946491241455078 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.27741325237052716
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0004520416259765625 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.27029881222699836
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0004451274871826172 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2798981126104185
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 20 simulations!
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0007240772247314453 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2879928212703381
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0008802413940429688 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.19356918524234265
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.001636505126953125 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.19496586135691615
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0008590221405029297 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.1956872820674673
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.00030517578125 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.2162801416398415
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 30 simulations!
+    It/Sub-it: 4/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0007011890411376953 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.20446090136772183
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.002270221710205078 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.19748404774296532
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0005679130554199219 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.23506088146045456
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0010573863983154297 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.179954745727931
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0009665489196777344 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.20187793448895155
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 42 simulations!
+    It/Sub-it: 5/2 Performing simulation 01 from 42 [                                        ] 2.4%
+    Total parallel function evaluation: 0.0003235340118408203 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.19657102539291813
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.001470804214477539 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.07083596698270449
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0007009506225585938 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0549478023822352
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0008461475372314453 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.06190017044627378
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0007772445678710938 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.05528155873440478
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 56 simulations!
+    It/Sub-it: 6/2 Performing simulation 01 from 56 [                                        ] 1.8%
+    Total parallel function evaluation: 0.0007262229919433594 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.057055859422752875
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00036215782165527344 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.06710061545234026
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002987384796142578 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0921763117955537
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00037479400634765625 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.06622318480667021
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003101825714111328 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.059619246939712045
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 72 simulations!
+    It/Sub-it: 7/2 Performing simulation 01 from 72 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003077983856201172 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.06426033915448133
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.00038170814514160156 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.008533910589588741
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.00029659271240234375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.012913703694624766
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0003066062927246094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.00905458886268688
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0005793571472167969 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.012498413214810227
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 90 simulations!
+    It/Sub-it: 8/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    Total parallel function evaluation: 0.0003478527069091797 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.012882925702526776
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.0003032684326171875 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0185019687918211
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00031185150146484375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.012474349731702493
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.000293731689453125 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.009477880560624992
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00048232078552246094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0113710098584639
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 110 simulations!
+    It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
+    Total parallel function evaluation: 0.00036787986755371094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.013977630822348123
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.000423431396484375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0009585216263142648
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.0003383159637451172 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.001900153322860712
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.0003039836883544922 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0008244110022705227
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.000499725341796875 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0013334739356011811
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    Performing 132 simulations!
+    It/Sub-it: 10/2 Performing simulation 001 from 132 [                                        ] 0.8%
+    Total parallel function evaluation: 0.00033164024353027344 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver ...
+    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
+    -> relative nrmsd error = 0.0017861969703185457
     It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
 
 
@@ -1969,7 +1969,7 @@ grid points, while also having a consistently small standard deviation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  28.141 seconds)
+   **Total running time of the script:** ( 2 minutes  29.445 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_grid_random_vs_lhs.py:

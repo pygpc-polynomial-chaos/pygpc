@@ -486,7 +486,7 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, o
     Parameters
     ----------
     order_dim_max: ndarray of int or list of int [dim]
-        Maximum order in each dimension
+        Maximum order in each dimensionder
     order_glob_max: int
         Maximum global order of interacting polynomials
     order_inter_max: int
