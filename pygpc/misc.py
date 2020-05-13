@@ -368,7 +368,6 @@ def get_beta_pdf_fit(data, beta_tolerance=0, uni_interval=0, fn_plot=None):
     return beta_parameters, moments, p_value, uni_parameters
 
 
-
 def mutual_coherence(array):
     """
     Calculate the mutual coherence of a matrix A. It can also be referred as the cosine of the smallest angle

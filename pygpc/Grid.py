@@ -938,7 +938,7 @@ class RandomGrid(Grid):
                                 # check if gridpoint exceeds sampling reservoir
                                 # if self.n_grid > max(10000, self.n_grid_lhs * 10)
                                 # coords.np.append(pygpc.LSH( seed=seed+1))
-                                coords_norm_test = lhs_extend(self.coords_norm_reservoir, 1)
+                                coords_norm_test = self.lhs_extend(self.coords_norm_reservoir, 1)
                                 # test if next grid point lies in right domain
                                 if classifier.predict(coords_norm_test[len(coords_norm_test) - 1]) == domain:
                                     self.coords_norm_reservoir = coords_norm_test
