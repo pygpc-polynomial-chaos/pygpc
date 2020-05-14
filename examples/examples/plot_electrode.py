@@ -19,8 +19,12 @@ The elements **Qdl** and **Qd** can be described with:
 The equation depends on the angular frequency :math:`\\omega` as a variable and :math:`Q` and :math:`\\alpha`
 as parameters.
 
-The impedance of the equivalent circuit is complex valued, has seven parameters :math:`Rs`,  :math:`Rct`,  :math:`Rd`,
-:math:`Qd`, :math:`\\alpha d`, :math:`Qdl`, :math:`\\alpha dl` and one variable :math:`\\omega`.
+The impedance of the equivalent circuit is complex valued, has seven parameters :math:`$R_s$`,  :math:`$R_{ct}$`,
+:math:`$R_d$`, :math:`$Q_d$`, :math:`$\\alpha_d$`, :math:`$Q_{dl}$`, :math:`$\\alpha_{dl}$`
+and one variable :math:`\\omega`.
+
+The model returns an array of containing the real and imaginary part of every frequency point. Every element of this
+array is a quantity of interest (**Qoi**) and a gPC is computed for every quantity of interest.
 """
 
 import matplotlib.pyplot as plt
@@ -38,7 +42,7 @@ import pygpc
 import numpy as np
 from collections import OrderedDict
 
-fn_results = 'tmp/electrode'   # filename of output
+fn_results = 'GPC/electrode'   # filename of output
 save_session_format = ".hdf5"  # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 # define model
@@ -140,7 +144,7 @@ pygpc.validate_gpc_plot(session=session,
                         random_vars=["Rd", "n_Qd"],
                         n_grid=[51, 51],
                         output_idx=500,
-                        fn_out=None,
+                        fn_out=fn_results,
                         n_cpu=session.n_cpu)
 
 #%%
@@ -151,38 +155,201 @@ nrmsd = pygpc.validate_gpc_mc(session=session,
                               n_samples=int(1e4),
                               output_idx=500,
                               n_cpu=session.n_cpu,
-                              fn_out=None)
+                              fn_out=fn_results)
 
 print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
 
 #%%
-# Mean and std of the real part of the model
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# Result
-_ = plt.figure(figsize=[15, 7])
-_ = plt.imshow(plt.imread("../images/modified_Randles_circuit_GPC_re.png"))
-_ = plt.axis('off')
+# Load sobol indices, mean and std from the *.hdf5 file
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+import h5py
+
+# Set parameters for plot
+n_f = 1000
+f_start = 0
+f_stop = 9
+f = np.logspace(f_start, f_stop, n_f)
+legend = [r"$n_{Q_{dl}}$", r"$Q_{dl}$", r"$n_{Q_{d}}$", r"$Q_{d}$", r"$Rs$", r"$Rct$", r"$Rd$"]
+
+# Set indices for quantities of interest
+real_indices = np.arange(0, 1*n_f)
+imag_indices = np.arange(1*n_f, 2*n_f)
+
+# Load results file
+file = h5py.File(fn_results + ".hdf5", "r")
+
+# Load mean
+mean = file["sens/mean"][()]
+
+mean_real = np.squeeze(mean[:, real_indices].T)
+mean_imag = np.squeeze(mean[:, imag_indices].T)
+
+# Load std
+std = file["sens/std"][()]
+
+std_real = np.squeeze(std[:, real_indices].T)
+std_imag = np.squeeze(std[:, imag_indices].T)
+
+# Load boolean array that indicates which sensitivity coefficient corresponds to which parameter or
+# interaction of parameters
+sobol_index_bool = std = file["sens/sobol_idx_bool"][()]
+
+# Get die sobol coefficients for interactions of first order i.e. just the parameter
+n_Qdl_index_array = np.eye(7, 7)[0, :]
+Qdl_index_array = np.eye(7, 7)[1, :]
+n_Qd_index_array = np.eye(7, 7)[2, :]
+Qd_index_array = np.eye(7, 7)[3, :]
+Rs_index_array = np.eye(7, 7)[4, :]
+Rct_index_array = np.eye(7, 7)[5, :]
+Rd_index_array = np.eye(7, 7)[6, :]
+
+n_Qdl_index = None
+Qdl_index = None
+n_Qd_index = None
+Qd_index = None
+Rs_index = None
+Rct_index = None
+Rd_index = None
+
+for index in range(sobol_index_bool.shape[0]):
+    if np.all(sobol_index_bool[index, :] == n_Qdl_index_array):
+        n_Qdl_index = index
+    if np.all(sobol_index_bool[index, :] == Qdl_index_array):
+        Qdl_index = index
+    if np.all(sobol_index_bool[index, :] == n_Qd_index_array):
+        n_Qd_index = index
+    if np.all(sobol_index_bool[index, :] == Qd_index_array):
+        Qd_index = index
+    if np.all(sobol_index_bool[index, :] == Rs_index_array):
+        Rs_index = index
+    if np.all(sobol_index_bool[index, :] == Rct_index_array):
+        Rct_index = index
+    if np.all(sobol_index_bool[index, :] == Rd_index_array):
+        Rd_index = index
+
+
+sobol_norm = std = file["sens/sobol_norm"][()]
+
+sobol_norm_n_Qdl_real = sobol_norm[n_Qdl_index, real_indices]
+sobol_norm_n_Qdl_imag = sobol_norm[n_Qdl_index, imag_indices]
+
+sobol_norm_Qdl_real = sobol_norm[Qdl_index, real_indices]
+sobol_norm_Qdl_imag = sobol_norm[Qdl_index, imag_indices]
+
+sobol_norm_n_Qd_real = sobol_norm[n_Qd_index, real_indices]
+sobol_norm_n_Qd_imag = sobol_norm[n_Qd_index, imag_indices]
+
+sobol_norm_Qd_real = sobol_norm[Qd_index, real_indices]
+sobol_norm_Qd_imag = sobol_norm[Qd_index, imag_indices]
+
+sobol_norm_Rs_real = sobol_norm[Rs_index, real_indices]
+sobol_norm_Rs_imag = sobol_norm[Rs_index, imag_indices]
+
+sobol_norm_Rct_real = sobol_norm[Rct_index, real_indices]
+sobol_norm_Rct_imag = sobol_norm[Rct_index, imag_indices]
+
+sobol_norm_Rd_real = sobol_norm[Rd_index, real_indices]
+sobol_norm_Rd_imag = sobol_norm[Rd_index, imag_indices]
+
+
+# Print sum of first order sobol indices. The sum of all sobol indices must be equal to one
+print("Minimum of sum of sobol indices of real part: ", np.min(sobol_norm_n_Qdl_real + sobol_norm_n_Qd_real +
+      sobol_norm_Qd_real + sobol_norm_Qdl_real + sobol_norm_Rs_real + sobol_norm_Rct_real + sobol_norm_Rd_real))
+
+print("Maximum of sum of sobol indices of real part: ", np.max(sobol_norm_n_Qdl_real + sobol_norm_n_Qd_real +
+      sobol_norm_Qd_real + sobol_norm_Qdl_real + sobol_norm_Rs_real + sobol_norm_Rct_real + sobol_norm_Rd_real))
+
+print("Mean of sum of sobol indices of real part: ", np.mean(sobol_norm_n_Qdl_real + sobol_norm_n_Qd_real +
+      sobol_norm_Qd_real + sobol_norm_Qdl_real + sobol_norm_Rs_real + sobol_norm_Rct_real + sobol_norm_Rd_real))
+
+print("Minimum of sum of sobol indices of imag part: ", np.min(sobol_norm_n_Qdl_imag + sobol_norm_n_Qd_imag +
+      sobol_norm_Qd_imag + sobol_norm_Qdl_imag + sobol_norm_Rs_imag + sobol_norm_Rct_imag + sobol_norm_Rd_imag))
+
+print("Maximum of sum of sobol indices of imag part: ", np.max(sobol_norm_n_Qdl_imag + sobol_norm_n_Qd_imag +
+      sobol_norm_Qd_imag + sobol_norm_Qdl_imag + sobol_norm_Rs_imag + sobol_norm_Rct_imag + sobol_norm_Rd_imag))
+
+print("Mean of sum of sobol indices of imag part: ", np.mean(sobol_norm_n_Qdl_imag + sobol_norm_n_Qd_imag +
+      sobol_norm_Qd_imag + sobol_norm_Qdl_imag + sobol_norm_Rs_imag + sobol_norm_Rct_imag + sobol_norm_Rd_imag))
+
+# Close file
+file.close()
 
 #%%
-# Mean and std of the imaginary part of the model
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# Result
+# Plot mean and std of real part of the model
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Set step size for frequency points to plot
+frequency_index_step = 20
+
+# Plot mean and std of real part of the model
 _ = plt.figure(figsize=[15, 7])
-_ = plt.imshow(plt.imread("../images/modified_Randles_circuit_GPC_im.png"))
-_ = plt.axis('off')
+_ = plt.semilogx(f[::frequency_index_step], mean_real[::frequency_index_step], "C0o-")
+_ = plt.fill_between(f[::frequency_index_step], mean_real[::frequency_index_step]-std_real[::frequency_index_step],
+                     mean_real[::frequency_index_step]+std_real[::frequency_index_step],
+                     color="grey", alpha=0.5)
+_ = plt.title("Mean and std of the real part of Z")
+_ = plt.xlabel("f/Hz")
+_ = plt.ylabel(r"Re(Z)/$\Omega$")
 
 #%%
-# Sobol indices of the parameters of the real part of the model
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# Result
+# Plot mean and std of imaginary part of the model
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 _ = plt.figure(figsize=[15, 7])
-_ = plt.imshow(plt.imread("../images/modified_Randles_circuit_GPC_sobol_re.png"))
-_ = plt.axis('off')
+_ = plt.semilogx(f[::frequency_index_step], mean_imag[::frequency_index_step], "C1o-")
+_ = plt.fill_between(f[::frequency_index_step], mean_imag[::frequency_index_step]-std_imag[::frequency_index_step], mean_imag[::frequency_index_step]+std_imag[::frequency_index_step],
+                     color="grey", alpha=0.5)
+_ = plt.title("Mean and std of the imaginary part of Z")
+_ = plt.xlabel("f/Hz")
+_ = plt.ylabel(r"Im(Z)/$\Omega$")
 
 #%%
-# Sobol indices of the parameters of the imaginary part of the model
+# Plot sobol indices of the parameters of the real part of the model
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#  Result
+# Set step size for frequency points to plot
+frequency_index_step = 1
+
 _ = plt.figure(figsize=[15, 7])
-_ = plt.imshow(plt.imread("../images/modified_Randles_circuit_GPC_sobol_im.png"))
-_ = plt.axis('off')
+
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_n_Qdl_real[::frequency_index_step], label=r"$n_{Q_{dl}}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Qdl_real[::frequency_index_step], label=r"$Q_{dl}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_n_Qd_real[::frequency_index_step], label=r"$n_{Q_{d}}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Qd_real[::frequency_index_step], label=r"$Q_{d}}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Rs_real[::frequency_index_step], label=r"$R_s$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Rct_real[::frequency_index_step], label=r"$R_{ct}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Rd_real[::frequency_index_step], label=r"$R_d$")
+_ = plt.title("Sobol indices of the parameters of the real part of Z")
+_ = plt.xlabel("f/Hz")
+_ = plt.ylabel("S")
+
+ax = plt.gca()
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+ylim_bottom, ylim_top = plt.ylim()
+_ = plt.ylim([ylim_bottom, 10])
+_ = plt.yticks(np.flip(np.logspace(np.int(np.floor(np.log10(ylim_bottom))), 0,
+                                   np.int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
+
+#%%
+# Plot sobol indices of the parameters of the imaginary part of the model
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ = plt.figure(figsize=[15, 7])
+
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_n_Qdl_imag[::frequency_index_step], label=r"$n_{Q_{dl}}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Qdl_imag[::frequency_index_step], label=r"$Q_{dl}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_n_Qd_imag[::frequency_index_step], label=r"$n_{Q_{d}}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Qd_imag[::frequency_index_step], label=r"$Q_{d}}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Rs_imag[::frequency_index_step], label=r"$R_s$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Rct_imag[::frequency_index_step], label=r"$R_{ct}$")
+_ = plt.loglog(f[::frequency_index_step], sobol_norm_Rd_imag[::frequency_index_step], label=r"$R_d$")
+_ = plt.title("Sobol indices of the parameters of the imaginary part of Z")
+_ = plt.xlabel("f/Hz")
+_ = plt.ylabel("S")
+
+ax = plt.gca()
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+ylim_bottom, ylim_top = plt.ylim()
+_ = plt.ylim([ylim_bottom, 10])
+_ = plt.yticks(np.flip(np.logspace(np.int(np.floor(np.log10(ylim_bottom))), 0,
+                                   np.int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
