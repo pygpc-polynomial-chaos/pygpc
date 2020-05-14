@@ -292,7 +292,7 @@ _ = plt.ylabel(r"Re(Z)/$\Omega$")
 
 #%%
 # Plot mean and std of imaginary part of the model
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 _ = plt.figure(figsize=[15, 7])
 _ = plt.semilogx(f[::frequency_index_step], mean_imag[::frequency_index_step], "C1o-")
 _ = plt.fill_between(f[::frequency_index_step], mean_imag[::frequency_index_step]-std_imag[::frequency_index_step], mean_imag[::frequency_index_step]+std_imag[::frequency_index_step],
