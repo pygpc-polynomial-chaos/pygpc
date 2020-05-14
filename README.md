@@ -80,14 +80,14 @@ CMake can be installd via the `pip` command.  Simply run the following command i
 ```
 pip install cmake 
 ```
-For the installation of the CUDA-toolkit please refer to the this [website](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html).
+For the installation of the CUDA-toolkit, please refer to this [website](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html).
 If CMake and the CUDA-toolkit are installed on your machine you can build the extension with:  
 ```
 python build_pygpc_extensions_cuda.py 
 ```
 
 **Troubleshooting for OSX:**
-On a mac you need GCC to install pygpc. If you are using the `brew` package manager you can simply run:
+On a Mac you need GCC to install pygpc. If you are using the `brew` package manager you can simply run:
 ```
 brew install gcc libomp 
 ```
@@ -95,6 +95,9 @@ Then install pygpc with:
 ```
 CC=gcc-9 CXX=g++-9 python setup.py install 
 ```
+
+**Troubleshooting for Windows:**
+On windows you might need a compiler to install pygpc. To install the `Visual C++ Build Tools`, please refer to this [website](http://go.microsoft.com/fwlink/?LinkId=691126&fixForIE=.exe.).
 
 Documentation
 -------------

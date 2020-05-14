@@ -3549,3 +3549,68 @@ class PotentialDipole3Layers(AbstractModel):
         potential = potential[np.newaxis, :]
 
         return potential
+
+
+class ElectrodeModel(AbstractModel):
+    """
+    Modified version of Randles circuit.
+    This circuit is used to model the impedance of an inert electrode in an electrolyte with a finite Warburg layer.
+    Circuit: -Rs-(Q(Rct-(WRw)))-
+
+    Parameters
+    ----------
+    p["n_Qdl"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, Inf]
+    p["Qdl"]: float or ndarray of float [n_grid]
+        Second parameter defined in [0, 1]
+    p["n_Qd"]: float or ndarray of float [n_grid]
+        Third parameter defined in [0, Inf]
+    p["Qd"]: float or ndarray of float [n_grid]
+        Fourth parameter defined in [0, 1]
+    p["Rs"]: float or ndarray of float [n_grid]
+        Fifth parameter defined in [0, Inf]
+    p["Rct"]: float or ndarray of float [n_grid]
+        Sixth parameter defined in [0, Inf]
+    p["Rd"]: float or ndarray of float [n_grid]
+        Seventh parameter defined in [0, Inf]
+    p["w"]: float or ndarray of float [n_w]
+         Frequency variable defined in [0, Inf]
+
+
+    Returns
+    -------
+    Z: ndarray of float [n_grid x 1]
+        Output
+    """
+
+    def __init__(self):
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def impedance(self, w, n_Qdl, Qdl, n_Qd, Qd, Rs, Rct, Rd):
+        return Rs + 1 / (1 / (1 / (Qdl * (w * 1j) ** n_Qdl)) +
+                         1 / (Rct + 1 / (1 / (1 / (Qd * (w * 1j) ** n_Qd)) + 1 / Rd)))
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+        # set constants
+        p = copy.deepcopy(self.p)
+        w = self.p["w"]
+        # w = np.logspace(0, 9, 1000)
+        # w = 1000
+        # del p["w"]
+
+        # set parmeters
+        n_Qdl = self.p["n_Qdl"]
+        Qdl = self.p["Qdl"]
+        n_Qd = self.p["n_Qd"]
+        Qd = self.p["Qd"]
+        Rs = self.p["Rs"]
+        Rct = self.p["Rct"]
+        Rd = self.p["Rd"]
+
+        Z = self.impedance(w=w.T, n_Qdl=n_Qdl, Qdl=Qdl, n_Qd=n_Qd, Qd=Qd, Rs=Rs, Rct=Rct, Rd=Rd)
+        Z = np.concatenate((np.real(Z.T), np.imag(Z.T)), axis=1)
+
+        return Z

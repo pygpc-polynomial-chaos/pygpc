@@ -115,6 +115,10 @@ Then install pygpc with:
 .. code-block:: bash
 
   CC=gcc-9 CXX=g++-9 python setup.py install
+  
+**Troubleshooting for Windows:**
+
+On windows you might need a compiler to install pygpc. To install the `Visual C++ Build Tools`, please refer to: http://go.microsoft.com/fwlink/?LinkId=691126&fixForIE=.exe.
 
 Documentation
 -------------
@@ -148,6 +152,9 @@ Examples Gallery
 
 .. include::
    auto_features/index.rst
+
+.. include::
+   auto_examples/index.rst
 
 Table of contents
 -----------------
