@@ -40,7 +40,7 @@ where :math:`P` is a :math:`d \\times n` matrix of randomly perturbed integers
 # Constructing a simple LHS design
 # --------------------------------
 # We are going to create a simple LHS design for 2 random variables with 5 sampling points:
-# sphinx_gallery_thumbnail_number = 2:
+# sphinx_gallery_thumbnail_number = 3:
 
 import pygpc
 import matplotlib.pyplot as plt
