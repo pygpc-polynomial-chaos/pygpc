@@ -83,7 +83,7 @@ class ComputationPoolMap:
             self.matlab_engine = matlab.engine.start_matlab()
 
     def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
-            print_func_time=False, increment_grid=True):
+            print_func_time=False, increment_grid=True, verbose=False):
         """
         Runs model evaluations for parameter combinations specified in coords array
 
@@ -107,6 +107,8 @@ class ComputationPoolMap:
             Print time of single function evaluation
         increment_grid : bool
             Increment grid counter (not done in case of gradient calculation)
+        verbose : bool, optional, default: False
+            Print progress
 
         Returns
         -------
@@ -160,7 +162,8 @@ class ComputationPoolMap:
                 'fn_results': fn_results,
                 'coords': np.array(random_var_instances)[np.newaxis, :],
                 'coords_norm': c_norm,
-                'print_func_time': print_func_time
+                'print_func_time': print_func_time,
+                'verbose': verbose,
             }
 
             # deepcopy parameters
@@ -258,7 +261,7 @@ class ComputationFuncPar:
             self.matlab_engine = matlab.engine.start_matlab()
 
     def run(self, model, problem, coords, coords_norm=None, i_iter=None, i_subiter=None, fn_results=None,
-            print_func_time=False, increment_grid=True):
+            print_func_time=False, increment_grid=True, verbose=False):
         """
         Runs model evaluations for parameter combinations specified in coords array
 
@@ -282,6 +285,8 @@ class ComputationFuncPar:
             Print time of single function evaluation
         increment_grid : bool
             Increment grid counter (not done in case of gradient calculation)
+        verbose : bool, optional, default: False
+            Print progress
 
         Returns
         -------
@@ -325,7 +330,8 @@ class ComputationFuncPar:
             'fn_results': fn_results,
             'coords': coords,
             'coords_norm': c_norm,
-            'print_func_time': print_func_time
+            'print_func_time': print_func_time,
+            'verbose': verbose
         }
 
         parameters = OrderedDict()

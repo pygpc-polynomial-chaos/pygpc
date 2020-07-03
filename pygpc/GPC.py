@@ -277,6 +277,11 @@ class GPC(object):
         else:
             raise NotImplementedError
 
+        if gpc_matrix.ndim == 1 and x.shape[0] == 1:
+            gpc_matrix = gpc_matrix[np.newaxis, :]
+        elif gpc_matrix.ndim == 1 and self.basis.n_basis == 1:
+            gpc_matrix = gpc_matrix[:, np.newaxis]
+
         return gpc_matrix
 
     def get_loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
@@ -548,8 +553,7 @@ class GPC(object):
 
         # generate temporary grid with random samples for each random input variable [n_samples x dim]
         grid = Random(parameters_random=problem.parameters_random,
-                      n_grid=n_samples,
-                      seed=None)
+                      n_grid=n_samples)
 
         # if output index list is not provided, sample all gpc outputs
         if output_idx is None:
@@ -684,9 +688,7 @@ class GPC(object):
                 # reshape gpc gradient matrix from 2D to 3D representation [n_grid x n_basis x n_dim]
                 matrix = mat2ten(mat=self.gpc_matrix_gradient, incr=self.problem.dim)
                 matrix_updated = np.zeros((len(self.gradient_idx), len(self.basis.b_id), self.problem.dim))
-                # self.gpc_matrix_gradient_coords_id
                 coords_id = self.gpc_matrix_gradient_coords_id[self.gradient_idx]
-                # np.array(self.grid.coords_gradient_id).flatten()
                 coords_id_ref = self.grid.coords_gradient_id[self.gradient_idx]
                 b_id = self.gpc_matrix_gradient_b_id
                 b_id_ref = self.basis.b_id
@@ -949,6 +951,14 @@ class GPC(object):
         else:
             results_complete = results
 
+        # if(isinstance(self.grid, L1OPT)):# or isinstance(self.grid, LHS)  ):
+        #     a = 1 / np.abs(matrix).max(axis=0)
+        #
+        #     matrix = a * matrix
+        #     results_complete = a * results_complete
+
+        self.coherence_matrix = matrix
+
         #################
         # Moore-Penrose #
         #################
@@ -1062,8 +1072,7 @@ class GPC(object):
             problem = self.problem
 
         grid = Random(parameters_random=problem.parameters_random,
-                      n_grid=n_samples,
-                      seed=None)
+                      n_grid=n_samples)
 
         # Evaluate original model at grid points
         com = Computation(n_cpu=n_cpu, matlab_model=self.matlab_model)

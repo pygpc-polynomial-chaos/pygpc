@@ -493,7 +493,6 @@ class MEGPC(object):
         # generate temporary grid with random samples for each random input variable [n_samples x dim]
         grid = Random(parameters_random=self.problem.parameters_random,
                       n_grid=n_samples,
-                      seed=None,
                       options=None)
 
         # if output index list is not provided, sample all gpc outputs
@@ -669,7 +668,6 @@ class MEGPC(object):
 
         grid = Random(parameters_random=self.problem.parameters_random,
                       n_grid=n_samples,
-                      seed=None,
                       options=None)
 
         # Evaluate original model at grid points
@@ -846,7 +844,6 @@ class MEGPC(object):
         # generate sample coordinates (original parameter space)
         grid = Random(parameters_random=self.problem.parameters_random,
                       n_grid=n_samples,
-                      seed=None,
                       options=None)
 
         local_sens = self.get_local_sens(coeffs, grid.coords_norm)

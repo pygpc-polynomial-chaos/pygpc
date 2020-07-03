@@ -118,6 +118,7 @@ def run(obj, matlab_engine=None):
     else:
         func_time = None
 
-    obj.print_progress(func_time=func_time, read_from_file=skip_sim, )
+    if obj.verbose:
+        obj.print_progress(func_time=func_time, read_from_file=skip_sim, )
 
     return obj.get_seq_number(), res

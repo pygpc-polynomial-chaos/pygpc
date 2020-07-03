@@ -3,9 +3,8 @@ import h5py
 import os
 import time
 import shutil
-import numpy as np
-from .Classifier import Classifier
-from .Gradient import get_gradient
+from .Problem import *
+from .SGPC import *
 from .misc import determine_projection_matrix
 from .misc import get_num_coeffs_sparse
 from .misc import ten2mat
@@ -16,8 +15,8 @@ from .misc import increment_basis
 from .misc import get_num_coeffs_sparse
 from .Grid import *
 from .MEGPC import *
-from .Problem import *
-from .SGPC import *
+from .Classifier import Classifier
+from .Gradient import get_gradient
 
 
 class Algorithm(object):
@@ -233,6 +232,9 @@ class Algorithm(object):
         if "backend" not in self.options.keys():
             self.options["backend"] = "python"
 
+        if "n_grid" not in self.options.keys():
+            self.options["n_grid"] = None
+
 
 class Static(Algorithm):
     """
@@ -277,7 +279,7 @@ class Static(Algorithm):
     >>> gpc, coeffs, results = algorithm.run()
     """
 
-    def __init__(self, problem, options, grid, validation=None):
+    def __init__(self, problem, options, grid=None, validation=None):
         """
         Constructor; Initializes static gPC algorithm
         """
@@ -352,8 +354,36 @@ class Static(Algorithm):
 
         gpc.backend = self.options["backend"]
 
+        # determine number of basis functions
+        n_coeffs = get_num_coeffs_sparse(order_dim_max=self.options["order"],
+                                         order_glob_max=self.options["order_max"],
+                                         order_inter_max=self.options["interaction_order"],
+                                         dim=self.problem.dim)
+
+        if self.options["n_grid"] is not None:
+            n_grid = self.options["n_grid"]
+        else:
+            n_grid = self.options["matrix_ratio"] * n_coeffs
+
         # Write grid in gpc object
-        gpc.grid = copy.deepcopy(self.grid)
+        if self.grid is not None:
+            gpc.grid = self.grid
+
+        elif self.options["grid"] == Random or self.options["grid"] == LHS:
+            gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                            n_grid=n_grid,
+                                            options=self.options["grid_options"])
+
+        elif self.options["grid"] == L1 or self.options["grid"] == L1_LHS or self.options["grid"] == LHS_L1\
+                or self.options["grid"] == FIM:
+            gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                            n_grid=n_grid,
+                                            options=self.options["grid_options"],
+                                            gpc=gpc)
+
+        else:
+            raise ValueError("Grid not provided and specified grid type not known!")
+
         gpc.interaction_order_current = copy.deepcopy(self.options["interaction_order"])
 
         # Initialize parallel Computation class
@@ -372,7 +402,8 @@ class Static(Algorithm):
                       i_iter=gpc.order_max,
                       i_subiter=gpc.interaction_order,
                       fn_results=None,
-                      print_func_time=self.options["print_func_time"])
+                      print_func_time=self.options["print_func_time"],
+                      verbose=self.options["verbose"])
 
         iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -393,8 +424,8 @@ class Static(Algorithm):
                                                      i_subiter=gpc.interaction_order,
                                                      print_func_time=self.options["print_func_time"],
                                                      dx=self.options["gradient_calculation_options"]["dx"],
-                                                     distance_weight=self.options["gradient_calculation_options"]
-                                                     ["distance_weight"])
+                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                     verbose=self.options["verbose"])
 
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
@@ -407,7 +438,7 @@ class Static(Algorithm):
                            gradient_results=grad_res_3D,
                            solver=self.options["solver"],
                            settings=self.options["settings"],
-                           verbose=True)
+                           verbose=self.options["verbose"])
 
         # create validation set if necessary
         if self.options["error_type"] == "nrmsd" and gpc.validation is None:
@@ -447,8 +478,8 @@ class Static(Algorithm):
                                  maxshape=None, dtype="float64")
 
                 if gpc.gpc_matrix_gradient is not None:
-                    f.create_dataset("gpc_matrix_gradient", data=gpc.gpc_matrix_gradient, maxshape=None,
-                                     dtype="float64")
+                    f.create_dataset("gpc_matrix_gradient",
+                                     data=gpc.gpc_matrix_gradient, maxshape=None, dtype="float64")
 
                 f.create_dataset("model_evaluations/results", data=res, maxshape=None, dtype="float64")
 
@@ -522,7 +553,7 @@ class MEStatic(Algorithm):
     >>> gpc, coeffs, results = algorithm.run()
     """
 
-    def __init__(self, problem, options, grid, validation=None):
+    def __init__(self, problem, options, grid=None, validation=None):
         """
         Constructor; Initializes multi-element static gPC algorithm
         """
@@ -583,7 +614,29 @@ class MEStatic(Algorithm):
         grad_res_3D = None
         grad_res_3D_all = None
         gradient_idx = None
-        grid = self.grid
+
+        if self.options["n_grid"] is not None:
+            n_grid = self.options["n_grid"]
+        else:
+            n_grid = None
+
+        # Write grid in gpc object
+        if self.grid is not None:
+            grid = self.grid
+        elif n_grid is None:
+            raise ValueError("If grid is not provided during initialization please provide options['n_grid']")
+
+        elif self.options["grid"] == Random or self.options["grid"] == LHS:
+            grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                        n_grid=n_grid,
+                                        options=self.options["grid_options"])
+
+        elif self.options["grid"] == L1 or self.options["grid"] == L1_LHS or self.options["grid"] == LHS_L1 \
+                or self.options["grid"] == FIM:
+            raise NotImplementedError("Grid type not implemented yet for this algorithm.")
+
+        else:
+            raise ValueError("Grid not provided and specified grid type not known!")
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -601,7 +654,8 @@ class MEStatic(Algorithm):
                           i_iter=self.options["order_max"],
                           i_subiter=self.options["interaction_order"],
                           fn_results=None,
-                          print_func_time=self.options["print_func_time"])
+                          print_func_time=self.options["print_func_time"],
+                          verbose=self.options["verbose"])
 
         iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -629,8 +683,8 @@ class MEStatic(Algorithm):
                                                          i_subiter=self.options["interaction_order"],
                                                          print_func_time=self.options["print_func_time"],
                                                          dx=self.options["gradient_calculation_options"]["dx"],
-                                                         distance_weight=self.options["gradient_calculation_options"]
-                                                         ["distance_weight"])
+                                                         distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                         verbose=self.options["verbose"])
 
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
@@ -692,7 +746,7 @@ class MEStatic(Algorithm):
                                                gradient_results=grad_res_3D,
                                                solver=self.options["solver"],
                                                settings=self.options["settings"],
-                                               verbose=True)
+                                               verbose=self.options["verbose"])
 
             # create validation set if necessary
             if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
@@ -911,7 +965,6 @@ class StaticProjection(Algorithm):
         # make initial random grid to determine gradients and projection matrix
         grid_original = grid(parameters_random=self.problem.parameters_random,
                              n_grid=self.options["n_grid_gradient"],
-                             seed=self.options["seed"],
                              options=self.options["grid_options"])
 
         # Initialize parallel Computation class
@@ -930,7 +983,8 @@ class StaticProjection(Algorithm):
                           i_iter=self.options["order_max"],
                           i_subiter=self.options["interaction_order"],
                           fn_results=None,
-                          print_func_time=self.options["print_func_time"])
+                          print_func_time=self.options["print_func_time"],
+                          verbose=self.options["verbose"])
 
         iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -950,7 +1004,8 @@ class StaticProjection(Algorithm):
                                                      i_subiter=self.options["interaction_order"],
                                                      print_func_time=self.options["print_func_time"],
                                                      dx=1e-3,
-                                                     distance_weight=None)
+                                                     distance_weight=None,
+                                                     verbose=self.options["verbose"])
 
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -1023,7 +1078,7 @@ class StaticProjection(Algorithm):
                        tab=0, verbose=self.options["verbose"])
 
                 # extend grid
-                grid_original.extend_random_grid(n_grid_new=n_grid_new, seed=self.options["seed"])
+                grid_original.extend_random_grid(n_grid_new=n_grid_new)
 
                 # Run simulations
                 iprint("Performing {} additional simulations!".format(grid_original.coords.shape[0]),
@@ -1038,7 +1093,8 @@ class StaticProjection(Algorithm):
                                   i_iter=self.options["order_max"],
                                   i_subiter=self.options["interaction_order"],
                                   fn_results=None,
-                                  print_func_time=self.options["print_func_time"])
+                                  print_func_time=self.options["print_func_time"],
+                                  verbose=self.options["verbose"])
 
                 res_all = np.vstack((res_all, res_new))
 
@@ -1061,8 +1117,8 @@ class StaticProjection(Algorithm):
                                                                  i_subiter=self.options["interaction_order"],
                                                                  print_func_time=self.options["print_func_time"],
                                                                  dx=self.options["gradient_calculation_options"]["dx"],
-                                                                 distance_weight=self.options
-                                                                 ["gradient_calculation_options"]["distance_weight"])
+                                                                 distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                                 verbose=self.options["verbose"])
 
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
@@ -1106,7 +1162,7 @@ class StaticProjection(Algorithm):
                                              gradient_results=grad_res_3D_passed,
                                              solver=self.options["solver"],
                                              settings=self.options["settings"],
-                                             verbose=True)
+                                             verbose=self.options["verbose"])
 
             # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
             if self.options["error_type"] == "nrmsd" and gpc[0].validation is None:
@@ -1306,7 +1362,6 @@ class MEStaticProjection(Algorithm):
         # make initial random grid to determine gradients and projection matrix
         grid = grid(parameters_random=self.problem.parameters_random,
                     n_grid=self.options["n_grid_gradient"],
-                    seed=self.options["seed"],
                     options=self.options["grid_options"])
 
         # Initialize parallel Computation class
@@ -1325,7 +1380,8 @@ class MEStaticProjection(Algorithm):
                           i_iter=self.options["order_max"],
                           i_subiter=self.options["interaction_order"],
                           fn_results=None,
-                          print_func_time=self.options["print_func_time"])
+                          print_func_time=self.options["print_func_time"],
+                          verbose=self.options["verbose"])
 
         iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -1344,7 +1400,8 @@ class MEStaticProjection(Algorithm):
                                                      i_subiter=self.options["interaction_order"],
                                                      print_func_time=self.options["print_func_time"],
                                                      dx=1e-3,
-                                                     distance_weight=None)
+                                                     distance_weight=None,
+                                                     verbose=self.options["verbose"])
 
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
@@ -1447,7 +1504,6 @@ class MEStaticProjection(Algorithm):
 
                     # extend grid
                     grid.extend_random_grid(n_grid_new=grid.n_grid-n_grid_domain+n_grid_new,
-                                            seed=self.options["seed"],
                                             classifier=megpc[i_qoi].classifier,
                                             domain=d)
 
@@ -1464,7 +1520,8 @@ class MEStaticProjection(Algorithm):
                                       i_iter=self.options["order_max"],
                                       i_subiter=self.options["interaction_order"],
                                       fn_results=None,
-                                      print_func_time=self.options["print_func_time"])
+                                      print_func_time=self.options["print_func_time"],
+                                      verbose=self.options["verbose"])
 
                     res_all = np.vstack((res_all, res_new))
 
@@ -1486,11 +1543,9 @@ class MEStaticProjection(Algorithm):
                                                                      i_iter=self.options["order_max"],
                                                                      i_subiter=self.options["interaction_order"],
                                                                      print_func_time=self.options["print_func_time"],
-                                                                     dx=self.options["gradient_calculation_options"]
-                                                                     ["dx"],
-                                                                     distance_weight=self.options
-                                                                     ["gradient_calculation_options"]
-                                                                     ["distance_weight"])
+                                                                     dx=self.options["gradient_calculation_options"]["dx"],
+                                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                                     verbose=self.options["verbose"])
 
                         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                tab=0, verbose=self.options["verbose"])
@@ -1539,7 +1594,7 @@ class MEStaticProjection(Algorithm):
                                                gradient_results=grad_res_3D_passed,
                                                solver=self.options["solver"],
                                                settings=self.options["settings"],
-                                               verbose=True)
+                                               verbose=self.options["verbose"])
 
             # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
             if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
@@ -1685,7 +1740,7 @@ class RegAdaptive(Algorithm):
     >>> gpc, coeffs, results = algorithm.run()
     """
 
-    def __init__(self, problem, options, validation=None):
+    def __init__(self, problem, options, validation=None, grid=None):
         """
         Constructor; Initializes RegAdaptive algorithm
         """
@@ -1730,8 +1785,10 @@ class RegAdaptive(Algorithm):
                 os.remove(fn_results + ".hdf5")
         else:
             fn_results = None
-
-        grid = self.options["grid"]
+        if self.grid is None:
+            grid = self.options["grid"]
+        else:
+            grid = self.grid
 
         # initialize iterators
         eps = self.options["eps"] + 1.0
@@ -1771,10 +1828,16 @@ class RegAdaptive(Algorithm):
         else:
             n_grid_init = gpc.basis.n_basis
 
-        gpc.grid = grid(parameters_random=self.problem.parameters_random,
-                        n_grid=n_grid_init,
-                        seed=self.options["seed"],
-                        options=self.options["grid_options"])
+        if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
+            gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                            n_grid=n_grid_init,
+                                            options=self.options["grid_options"],
+                                            gpc=gpc)
+
+        else:
+            gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                            n_grid=n_grid_init,
+                                            options=self.options["grid_options"])
 
         gpc.solver = self.options["solver"]
         gpc.settings = self.options["settings"]
@@ -1853,7 +1916,7 @@ class RegAdaptive(Algorithm):
                             gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
                             tab=0, verbose=self.options["verbose"])
 
-                        gpc.grid.extend_random_grid(n_grid_new=n_grid_new, seed=None)
+                        gpc.grid.extend_random_grid(n_grid_new=n_grid_new)
 
                         # run simulations
                         iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
@@ -1868,7 +1931,8 @@ class RegAdaptive(Algorithm):
                                           i_iter=basis_order[0],
                                           i_subiter=basis_order[1],
                                           fn_results=gpc.fn_results,
-                                          print_func_time=self.options["print_func_time"])
+                                          print_func_time=self.options["print_func_time"],
+                                          verbose=self.options["verbose"])
 
                         iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
                                tab=0, verbose=self.options["verbose"])
@@ -1893,11 +1957,9 @@ class RegAdaptive(Algorithm):
                                                                      i_iter=basis_order[0],
                                                                      i_subiter=basis_order[1],
                                                                      print_func_time=self.options["print_func_time"],
-                                                                     dx=self.options["gradient_calculation_options"]
-                                                                     ["dx"],
-                                                                     distance_weight=self.options
-                                                                     ["gradient_calculation_options"]
-                                                                     ["distance_weight"])
+                                                                     dx=self.options["gradient_calculation_options"]["dx"],
+                                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                                     verbose=self.options["verbose"])
 
                             if self.options["gradient_calculation"] == "FD_fwd":
                                 gradient_idx_FD_fwd = gradient_idx
@@ -1916,7 +1978,7 @@ class RegAdaptive(Algorithm):
                                        gradient_results=grad_res_3D,
                                        solver=gpc.solver,
                                        settings=gpc.settings,
-                                       verbose=True)
+                                       verbose=self.options["verbose"])
 
                     # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
                     eps = gpc.validate(coeffs=coeffs,
@@ -1994,7 +2056,7 @@ class RegAdaptive(Algorithm):
                            gradient_results=grad_res_3D,
                            solver=gpc.solver,
                            settings=gpc.settings,
-                           verbose=True)
+                           verbose=self.options["verbose"])
 
         gpc.gpc_matrix.shape
         len(gpc.basis.b)
@@ -2154,10 +2216,9 @@ class MERegAdaptiveProjection(Algorithm):
         n_grid_init = self.options["n_grid_init"]
 
         # make initial random grid to determine number of output variables and to estimate projection
-        grid = grid(parameters_random=self.problem.parameters_random,
-                    n_grid=n_grid_init,
-                    seed=self.options["seed"],
-                    options=self.options["grid"])
+        grid = Random(parameters_random=self.problem.parameters_random,
+                      n_grid=n_grid_init,
+                      options=self.options["grid"])
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -2175,7 +2236,8 @@ class MERegAdaptiveProjection(Algorithm):
                           i_iter=self.options["order_start"],
                           i_subiter=self.options["interaction_order"],
                           fn_results=self.options["fn_results"],  # + "_temp"
-                          print_func_time=self.options["print_func_time"])
+                          print_func_time=self.options["print_func_time"],
+                          verbose=self.options["verbose"])
 
         i_grid = grid.n_grid
 
@@ -2216,7 +2278,8 @@ class MERegAdaptiveProjection(Algorithm):
                                                          i_subiter=self.options["interaction_order"],
                                                          print_func_time=self.options["print_func_time"],
                                                          dx=dx,
-                                                         distance_weight=distance_weight)
+                                                         distance_weight=distance_weight,
+                                                         verbose=self.options["verbose"])
 
             if method == "FD_fwd":
                 gradient_idx_FD_fwd = gradient_idx
@@ -2342,10 +2405,9 @@ class MERegAdaptiveProjection(Algorithm):
                 # Check if we have enough samples in this particular domain for the given order we start
                 if n_grid_reinit[d] > np.sum(megpc[i_qoi].domains == d):
 
+                    # TODO: implement new grids before here
                     # extend random grid
-                    grid.extend_random_grid(n_grid_new=grid.n_grid - np.sum(megpc[i_qoi].domains == d) +
-                                                       n_grid_reinit[d],
-                                            seed=None,
+                    grid.extend_random_grid(n_grid_new=grid.n_grid - np.sum(megpc[i_qoi].domains == d) + n_grid_reinit[d],
                                             domain=d)
 
                     megpc[i_qoi].grid = copy.deepcopy(grid)
@@ -2366,7 +2428,8 @@ class MERegAdaptiveProjection(Algorithm):
                                   i_iter=None,
                                   i_subiter=None,
                                   fn_results=self.options["fn_results"],
-                                  print_func_time=self.options["print_func_time"])
+                                  print_func_time=self.options["print_func_time"],
+                                  verbose=self.options["verbose"])
 
                 # add results to results array
                 res_all = np.vstack((res_all, res_new))
@@ -2400,7 +2463,8 @@ class MERegAdaptiveProjection(Algorithm):
                                                                  i_subiter=None,
                                                                  print_func_time=self.options["print_func_time"],
                                                                  dx=dx,
-                                                                 distance_weight=distance_weight)
+                                                                 distance_weight=distance_weight,
+                                                                 verbose=self.options["verbose"])
 
                     if method == "FD_fwd":
                         gradient_idx_FD_fwd = gradient_idx
@@ -2481,7 +2545,8 @@ class MERegAdaptiveProjection(Algorithm):
                                    i_iter="Domain boundary",
                                    i_subiter=None,
                                    fn_results=self.options["fn_results"],
-                                   print_func_time=self.options["print_func_time"])
+                                   print_func_time=self.options["print_func_time"],
+                                   verbose=self.options["verbose"])
 
                 iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
                        tab=0, verbose=self.options["verbose"])
@@ -2505,9 +2570,8 @@ class MERegAdaptiveProjection(Algorithm):
                                                                  i_subiter=None,
                                                                  print_func_time=self.options["print_func_time"],
                                                                  dx=self.options["gradient_calculation_options"]["dx"],
-                                                                 distance_weight=self.options
-                                                                 ["gradient_calculation_options"]
-                                                                 ["distance_weight"])
+                                                                 distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                                 verbose=self.options["verbose"])
 
                     if self.options["gradient_calculation"] == "FD_fwd":
                         gradient_idx_FD_fwd = gradient_idx
@@ -2636,7 +2700,7 @@ class MERegAdaptiveProjection(Algorithm):
                                                    gradient_results=grad_res_3D_passed,
                                                    solver=self.options["solver"],
                                                    settings=self.options["settings"],
-                                                   verbose=True)
+                                                   verbose=self.options["verbose"])
 
                 # domain specific error
                 for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
@@ -2717,7 +2781,7 @@ class MERegAdaptiveProjection(Algorithm):
                                                                      gradient_results=grad_res_3D_passed,
                                                                      solver=megpc[i_qoi].gpc[d].solver,
                                                                      settings=megpc[i_qoi].gpc[d].settings,
-                                                                     verbose=True)
+                                                                     verbose=self.options["verbose"])
 
                         # Add samples
                         add_samples = True  # if adaptive sampling is False, the loop will be only executed once
@@ -2761,7 +2825,6 @@ class MERegAdaptiveProjection(Algorithm):
                                     # add grid points in this domain to global grid
                                     grid.extend_random_grid(
                                         n_grid_new=grid.n_grid - megpc[i_qoi].gpc[d].grid.n_grid + n_grid_new,
-                                        seed=None,
                                         classifier=megpc[i_qoi].classifier,
                                         domain=d,
                                         gradient=self.options["gradient_enhanced"])
@@ -2780,7 +2843,8 @@ class MERegAdaptiveProjection(Algorithm):
                                                       i_iter=basis_order["poly_dom_{}".format(d)][0],
                                                       i_subiter=basis_order["poly_dom_{}".format(d)][1],
                                                       fn_results=self.options["fn_results"],
-                                                      print_func_time=self.options["print_func_time"])
+                                                      print_func_time=self.options["print_func_time"],
+                                                      verbose=self.options["verbose"])
 
                                     iprint('Total parallel function evaluation {} sec'.format(
                                         str(time.time() - start_time)),
@@ -2804,7 +2868,8 @@ class MERegAdaptiveProjection(Algorithm):
                                                                                      i_subiter=basis_order["poly_dom_{}".format(d)][1],
                                                                                      print_func_time=self.options["print_func_time"],
                                                                                      dx=self.options["gradient_calculation_options"]["dx"],
-                                                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
+                                                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                                                     verbose=self.options["verbose"])
 
                                         if self.options["gradient_calculation"] == "FD_fwd":
                                             gradient_idx_FD_fwd = gradient_idx
@@ -2900,7 +2965,7 @@ class MERegAdaptiveProjection(Algorithm):
                                         gradient_results=grad_res_3D_passed,
                                         solver=megpc[i_qoi].gpc[d].solver,
                                         settings=megpc[i_qoi].gpc[d].settings,
-                                        verbose=True)
+                                        verbose=self.options["verbose"])
 
                                 # validate gpc approximation
                                 eps[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
@@ -3057,7 +3122,7 @@ class MERegAdaptiveProjection(Algorithm):
                                                gradient_results=grad_res_3D_passed,
                                                solver=megpc[i_qoi].gpc[d].solver,
                                                settings=megpc[i_qoi].gpc[d].settings,
-                                               verbose=True)
+                                               verbose=self.options["verbose"])
 
             # save gpc object and gpc coeffs
             if self.options["fn_results"] is not None:
@@ -3264,10 +3329,9 @@ class RegAdaptiveProjection(Algorithm):
         loocv = []
 
         # make initial random grid to determine gradients and projection matrix
-        grid_original = grid(parameters_random=self.problem.parameters_random,
-                             n_grid=self.options["n_grid_gradient"],
-                             seed=self.options["seed"],
-                             options=self.options["grid_options"])
+        grid_original = Random(parameters_random=self.problem.parameters_random,
+                               n_grid=self.options["n_grid_gradient"],
+                               options=self.options["grid_options"])
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -3285,7 +3349,8 @@ class RegAdaptiveProjection(Algorithm):
                           i_iter=self.options["order_start"],
                           i_subiter=self.options["interaction_order"],
                           fn_results=self.options["fn_results"],
-                          print_func_time=self.options["print_func_time"])
+                          print_func_time=self.options["print_func_time"],
+                          verbose=self.options["verbose"])
 
         i_grid = grid_original.n_grid
 
@@ -3307,7 +3372,8 @@ class RegAdaptiveProjection(Algorithm):
                                                      i_subiter=self.options["interaction_order"],
                                                      print_func_time=self.options["print_func_time"],
                                                      dx=1e-3,
-                                                     distance_weight=None)
+                                                     distance_weight=None,
+                                                     verbose=self.options["verbose"])
 
         gradient_idx_FD_fwd = gradient_idx
         grad_res_3D_all_FD_fwd = grad_res_3D_all
@@ -3392,15 +3458,27 @@ class RegAdaptiveProjection(Algorithm):
             gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
             gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
 
+            # TODO: Implement new grid types here
+            # if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
+            #     gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+            #                                     n_grid=n_grid_init,
+            #                                     options=self.options["grid_options"],
+            #                                     gpc=gpc)
+            #
+            # else:
+            #     gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+            #                                     n_grid=n_grid_init,
+            #                                     options=self.options["grid_options"])
+
             # transformed grid
             grid[i_qoi] = copy.deepcopy(grid_original)
 
             # transform variables of original grid to reduced parameter space
             grid[i_qoi].coords = np.matmul(grid_original.coords,
-                                        gpc[i_qoi].p_matrix.transpose())
+                                           gpc[i_qoi].p_matrix.transpose())
             grid[i_qoi].coords_norm = np.matmul(grid_original.coords_norm,
-                                             gpc[i_qoi].p_matrix.transpose() /
-                                             gpc[i_qoi].p_matrix_norm[np.newaxis, :])
+                                                gpc[i_qoi].p_matrix.transpose() /
+                                                gpc[i_qoi].p_matrix_norm[np.newaxis, :])
 
             # assign transformed grid
             gpc[i_qoi].grid = copy.deepcopy(grid[i_qoi])
@@ -3482,7 +3560,7 @@ class RegAdaptiveProjection(Algorithm):
                             iprint("Extending grid from {} to {} by {} sampling points".format(
                                 gpc[i_qoi].grid.n_grid, n_grid_new, n_grid_new - gpc[i_qoi].grid.n_grid),
                                 tab=0, verbose=self.options["verbose"])
-                            grid_original.extend_random_grid(n_grid_new=n_grid_new, seed=None)
+                            grid_original.extend_random_grid(n_grid_new=n_grid_new)
 
                             # run simulations
                             iprint("Performing simulations " + str(i_grid + 1) + " to " +
@@ -3498,7 +3576,8 @@ class RegAdaptiveProjection(Algorithm):
                                               i_iter=basis_order[0],
                                               i_subiter=basis_order[1],
                                               fn_results=gpc[i_qoi].fn_results,
-                                              print_func_time=self.options["print_func_time"])
+                                              print_func_time=self.options["print_func_time"],
+                                              verbose=self.options["verbose"])
 
                             res_all = np.vstack((res_all, res_new))
 
@@ -3522,7 +3601,8 @@ class RegAdaptiveProjection(Algorithm):
                                                                              i_subiter=basis_order[1],
                                                                              print_func_time=self.options["print_func_time"],
                                                                              dx=self.options["gradient_calculation_options"]["dx"],
-                                                                             distance_weight=self.options["gradient_calculation_options"]["distance_weight"])
+                                                                             distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                                             verbose=self.options["verbose"])
 
                                 if self.options["gradient_calculation"] == "FD_fwd":
                                     gradient_idx_FD_fwd = gradient_idx
@@ -3616,7 +3696,7 @@ class RegAdaptiveProjection(Algorithm):
                                                      gradient_results=grad_res_3D_passed,
                                                      solver=gpc[i_qoi].solver,
                                                      settings=gpc[i_qoi].settings,
-                                                     verbose=True)
+                                                     verbose=self.options["verbose"])
 
                     # Add a validation set if nrmsd is chosen and no validation set is yet present
                     if self.options["error_type"] == "nrmsd" and not isinstance(gpc[0].validation, ValidationSet):
@@ -3729,7 +3809,7 @@ class RegAdaptiveProjection(Algorithm):
                                              gradient_results=grad_res_3D_passed,
                                              solver=gpc[i_qoi].solver,
                                              settings=gpc[i_qoi].settings,
-                                             verbose=True)
+                                             verbose=self.options["verbose"])
 
             # save gpc object gpc coeffs and projection matrix
             if self.options["fn_results"] is not None:

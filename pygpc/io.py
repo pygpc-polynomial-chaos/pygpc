@@ -7,9 +7,9 @@ import pickle
 import inspect
 import logging
 import numpy as np
+from .misc import is_instance
 from collections import OrderedDict
 from importlib import import_module
-from .misc import is_instance
 
 
 def write_session(obj, fname, folder="session", overwrite=True):
@@ -1014,7 +1014,6 @@ def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False)
                                folder=arr_name,
                                verbose=verbose)
             return
-
 
     # do some type casting from numpy/pd -> h5py
     # date column from experiment.csv is O

@@ -156,7 +156,37 @@ def get_rotation_matrix(theta):
 
     return rotation_matrix
 
-    
+
+def get_different_rows_from_matrices(a, b):
+    """
+    Compares rows from matrix a with rows from matrix b. It is assumed that b contains rows from a.
+    The function returns the rows of b, which are not included in a.
+
+    Parameters
+    ----------
+    a : ndarray of float [m1 x n]
+        First matrix (usually the smaller one), where rows are part of b
+    b : ndarray of float [m2 x n]
+        Second matrix (usually the larger one), containing rows of a
+
+    Returns
+    -------
+    b_diff : ndarray of float [m3 x n]
+        Rows from b differing from a
+    """
+    idx_in = []
+
+    for _a in a:
+        for i_b, _b in enumerate(b):
+            if (np.isclose(_a, _b, atol=1e-6)).all():
+                idx_in.append(i_b)
+
+    idx = np.arange(b.shape[0])
+    idx_not_in = [i for i in idx if i not in idx_in]
+
+    return b[idx_not_in, :]
+
+
 def get_list_multi_delete(input_list, index):
     """
     Delete multiple entries from list.
@@ -391,10 +421,6 @@ def mutual_coherence(array):
     np.fill_diagonal(t, 0.0)
     mu = np.max(t)
 
-    # s = np.sqrt(np.diag(t))
-    # s_sqrt = np.diag(s)
-    # mu = np.max(1.0*(t-s_sqrt)/np.outer(s, s))
-
     return mu
 
 
@@ -485,7 +511,7 @@ def get_num_coeffs_sparse(order_dim_max, order_glob_max, order_inter_max, dim, o
     Parameters
     ----------
     order_dim_max: ndarray of int or list of int [dim]
-        Maximum order in each dimensionder
+        Maximum order in each dimension
     order_glob_max: int
         Maximum global order of interacting polynomials
     order_inter_max: int
@@ -1028,36 +1054,6 @@ def increment_basis(order_current, interaction_order_current, interaction_order_
     return order_current, interaction_order_current
 
 
-    # order = order_current
-    #
-    # order_incr = np.floor(float((incr+interaction_order_current-1)) / interaction_order_max)
-    # sub_iter_incr = (incr+interaction_order_current) % interaction_order_max
-    #
-    # order += int(order_incr)
-    #
-    # if order_incr > 0 and sub_iter_incr:
-    #     interaction_order = sub_iter_incr
-    # elif order_incr > 0 and sub_iter_incr == 0:
-    #     interaction_order = interaction_order_max
-    # else:
-    #     interaction_order = incr + interaction_order_current
-
-    # carry = [incr]
-    # while carry[-1] > 0:
-    #     interaction_order_current_max = np.min([order, interaction_order_max])
-    #
-    #     carry.append(carry[-1] - (interaction_order_current_max - interaction_order_current))
-    #
-    #     if carry[-1] > 0:
-    #         order += 1
-    #         interaction_order_current = 0
-    #
-    #         if carry[-1] == 0:
-    #             interaction_order = interaction_order_current_max
-    #         else:
-    #             interaction_order = carry[-1]
-
-
 def compute_chunks(seq, num):
     """
     Splits up a sequence _seq_ into _num_ chunks of similar size.
@@ -1096,3 +1092,45 @@ def compute_chunks(seq, num):
     out += [[]] * n_empty
 
     return out
+
+
+def t_averaged_mutual_coherence(array, t=0.2):
+    """
+    Computes the t-averaged mutual coherence.
+
+    Parameters
+    ----------
+    array : ndarray of float [m x n]
+        Matrix
+    t : float
+        Threshold
+
+    Returns
+    -------
+    res : float
+        t-averaged mutual coherence
+    """
+    array = np.abs(array)
+    mask = array > t
+
+    return np.sum(array[mask]) / np.sum(mask)
+
+
+def average_cross_correlation_gram(array):
+    """
+    Computes the average cross correlation of the gram matrix.
+
+    Parameters
+    ----------
+    array : ndarray of float [m x n]
+        Gram matrix
+
+    Returns
+    -------
+    res : float
+        cross correlation
+    """
+    n = array.shape[1]
+    k = n * (n - 1)
+
+    return (1 / k) * (np.linalg.norm(np.identity(n) - array) ** 2)

@@ -7,7 +7,7 @@ from .misc import get_all_combinations
 def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
                  gradient_results_present=None, gradient_idx_skip=None,
                  i_iter=None, i_subiter=None, print_func_time=False,
-                 dx=1e-3, distance_weight=-1):
+                 dx=1e-3, distance_weight=-1, verbose=False):
     """
     Determines the gradient of the model function in the grid points (self.grid.coords).
     The method to determine the gradient can be specified in self.options["gradient_calculation"].
@@ -52,6 +52,8 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
     distance_weight : float, optional, default: 1
         Distance weight factor (exponent) for methods "FD_1st" and "FD_2nd".
         Defines the importance of the adjacent grid points to estimate the gradient by their distance.
+    verbose : bool, optional, default: False
+        Print progress
 
     Returns
     -------
@@ -98,7 +100,8 @@ def get_gradient(model, problem, grid, results, com,  method="FD_fwd",
                                            i_subiter=i_subiter,
                                            fn_results=None,
                                            print_func_time=print_func_time,
-                                           increment_grid=False)
+                                           increment_grid=False,
+                                           verbose=verbose)
 
             # distance tensor
             delta = np.repeat(np.linalg.norm(

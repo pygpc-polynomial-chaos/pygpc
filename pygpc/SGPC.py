@@ -373,12 +373,10 @@ class SGPC(GPC):
             if self.p_matrix is not None:
                 grid = Random(parameters_random=self.problem_original.parameters_random,
                               n_grid=n_samples,
-                              seed=None,
                               options=None)
             else:
                 grid = Random(parameters_random=self.problem.parameters_random,
                               n_grid=n_samples,
-                              seed=None,
                               options=None)
 
             local_sens = self.get_local_sens(coeffs, grid.coords_norm)

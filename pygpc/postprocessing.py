@@ -130,7 +130,6 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
     if algorithm == "sampling":
         grid = Random(parameters_random=session.parameters_random,
                       n_grid=n_samples,
-                      seed=None,
                       options=None)
 
     # start prostprocessing depending on gPC type

@@ -233,6 +233,44 @@ class Beta(RandomParameter):
 
         return x
 
+    def cdf_norm(self, x):
+        """
+        Cumulative density function defined in normalized parameter space [-1, 1].
+
+        Parameters
+        ----------
+        x: ndarray of float [n_x]
+            Values of random variable (normalized) [-1, 1]
+
+        Returns
+        -------
+        cdf: ndarray of float [n_x]
+            Cumulative density at values x [0, 1]
+        """
+        b = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
+        c = b.cdf((x.flatten() + 1) / 2)
+
+        return c
+
+    def cdf(self, x):
+        """
+        Cumulative density function.
+
+        Parameters
+        ----------
+        x: ndarray of float [n_x]
+            Values of random variable
+
+        Returns
+        -------
+        cdf: ndarray of float [n_x]
+            Cumulative density at values x [0, 1]
+        """
+        b = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
+        c = b.cdf((x.flatten() - self.pdf_limits[0]) / (self.pdf_limits[1] - self.pdf_limits[0]))
+
+        return c
+
 
 class Norm(RandomParameter):
     """
@@ -361,6 +399,44 @@ class Norm(RandomParameter):
         x = n.ppf(p.flatten())
 
         return x
+
+    def cdf_norm(self, x):
+        """
+        Cumulative density function defined in normalized parameter space (mean=0, std=1).
+
+        Parameters
+        ----------
+        x: ndarray of float [n_x]
+            Values of random variable (normalized, mean=0, std=1)
+
+        Returns
+        -------
+        cdf: ndarray of float [n_x]
+            Cumulative density at values x [0, 1]
+        """
+        n = scipy.stats.norm()
+        c = n.cdf(x.flatten())
+
+        return c
+
+    def cdf(self, x):
+        """
+        Cumulative density function.
+
+        Parameters
+        ----------
+        x: ndarray of float [n_x]
+            Values of random variable
+
+        Returns
+        -------
+        cdf: ndarray of float [n_x]
+            Cumulative density at values x [0, 1]
+        """
+        n = scipy.stats.norm(loc=self.pdf_shape[0], scale=self.pdf_shape[1])
+        c = n.cdf(x.flatten())
+
+        return c
 
 
 class Gamma(RandomParameter):
@@ -502,3 +578,45 @@ class Gamma(RandomParameter):
                                   scale=1.)
 
         return x
+
+    def cdf_norm(self, x):
+        """
+        Cumulative density function defined in normalized parameter space [0, inf].
+
+        Parameters
+        ----------
+        x: ndarray of float [n_x]
+            Values of random variable (normalized) [0, inf]
+
+        Returns
+        -------
+        cdf: ndarray of float [n_x]
+            Cumulative density at values x [0, 1]
+        """
+        c = scipy.stats.gamma.cdf(x.flatten(),
+                                  a=self.pdf_shape[0],
+                                  loc=0.,
+                                  scale=1.)
+
+        return c
+
+    def cdf(self, x):
+        """
+        Cumulative density function.
+
+        Parameters
+        ----------
+        x: ndarray of float [n_x]
+            Values of random variable
+
+        Returns
+        -------
+        cdf: ndarray of float [n_x]
+            Cumulative density at values x [0, 1]
+        """
+        c = scipy.stats.gamma.cdf(x.flatten(),
+                                  a=self.pdf_shape[0],
+                                  scale=1/self.pdf_shape[1],
+                                  loc=self.pdf_shape[2])
+
+        return c
