@@ -84,12 +84,18 @@ class SGPC(GPC):
         - results: ndarray [n_grid x n_out] results
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options,
-                 interaction_order_current=None, validation=None):
+    def __init__(self, problem, order_max, interaction_order=None,
+                 order=None, options=None, order_max_norm=1.0, interaction_order_current=None, validation=None):
         """
         Constructor; Initializes the SGPC class
         """
         super(SGPC, self).__init__(problem, options, validation)
+
+        if order is None:
+            order = [order_max] * problem.dim
+
+        if interaction_order is None:
+            interaction_order = problem.dim
 
         self.order = order
         self.order_max = order_max
@@ -510,8 +516,8 @@ class Reg(SGPC):
         - 'NumInt' ... None
     """
 
-    def __init__(self, problem, order, order_max, order_max_norm, interaction_order, options,
-                 interaction_order_current=None, validation=None):
+    def __init__(self, problem, order_max, order=None, order_max_norm=1.0,
+                 interaction_order=None, options=None, interaction_order_current=None, validation=None):
         """
         Constructor; Initializes Regression SGPC class
         """
