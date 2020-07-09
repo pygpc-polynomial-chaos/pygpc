@@ -1605,7 +1605,7 @@ class LHS(RandomGrid):
             for i in range(0, self.dim):
                 for j in range(0, self.n_grid):
 
-                    if weight:
+                    if shift_outer:
                         if j == 0:
                             design[j, i] = j + 1
                             u[j, i] = 1 - 1/4 * u[j, i]
@@ -1706,7 +1706,7 @@ class LHS(RandomGrid):
 
         # Parameters
         t0 = None
-        P0 = self.lhs_initial(weight=True)
+        P0 = self.lhs_initial(shift_outer=True)
         J = 25
         tol = 1e-3
         p = 10
