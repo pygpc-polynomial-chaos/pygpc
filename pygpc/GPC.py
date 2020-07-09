@@ -146,7 +146,7 @@ class GPC(object):
         else:
             self.gradient = None
             self.fn_results = None
-            self.matlab_model = None
+            self.matlab_model = False
             self.backend = "python"
 
         self.solver = None

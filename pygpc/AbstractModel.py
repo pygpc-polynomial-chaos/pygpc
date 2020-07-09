@@ -14,14 +14,14 @@ class AbstractModel:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
         """
         Constructor; initialized the SimulationWrapper class
         The model is initialized once. The parameters are set with the set_parameters class.
         Depending on the model, the user may call here some functions to initialize the model like
-        starting a matlab engine etc...
+        starting a Matlab engine etc...
         """
-        pass
+        self.matlab_model = matlab_model
 
     def __copy__(self):
         return copy.deepcopy(self)

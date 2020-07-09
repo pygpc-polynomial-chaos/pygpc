@@ -159,7 +159,8 @@ class Ackley(AbstractModel):
     .. [4] https://www.sfu.ca/~ssurjano/ackley.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -242,7 +243,8 @@ class BukinFunctionNumber6(AbstractModel):
 
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -302,7 +304,8 @@ class CrossinTrayFunction(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/crossit.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -361,7 +364,8 @@ class BohachevskyFunction1(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/boha.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -420,7 +424,8 @@ class PermFunction(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/perm0db.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -498,7 +503,8 @@ class SixHumpCamelFunction(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/camel6.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -557,7 +563,8 @@ class RotatedHyperEllipsoid(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/rothyp.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -623,7 +630,8 @@ class SumOfDifferentPowersFunction(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/sumpow.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -690,7 +698,8 @@ class ZakharovFunction(AbstractModel):
 
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -763,7 +772,8 @@ class DropWaveFunction(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/drop.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -821,7 +831,8 @@ class DixonPriceFunction(AbstractModel):
 
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -903,7 +914,8 @@ class RosenbrockFunction(AbstractModel):
 
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -978,7 +990,8 @@ class MichalewiczFunction(AbstractModel):
 
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1049,7 +1062,8 @@ class DeJongFunctionFive(AbstractModel):
 
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1120,7 +1134,8 @@ class MatyasFunction(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/matya.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1180,7 +1195,8 @@ class GramacyLeeFunction(AbstractModel):
 
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1236,7 +1252,8 @@ class SchafferFunction4(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/schaffer4.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1298,7 +1315,8 @@ class SphereFunction(AbstractModel):
     .. [4]https://www.sfu.ca/~ssurjano/spheref.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1363,7 +1381,8 @@ class McCormickFunction(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/mccorm.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1418,7 +1437,8 @@ class BoothFunction(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/booth.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1474,7 +1494,8 @@ class Peaks(AbstractModel):
        plot("Peaks", parameters, constants)
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1550,7 +1571,8 @@ class DiscontinuousRidgeManufactureDecayGenzDiscontinuous(AbstractModel):
        plot("DiscontinuousRidgeManufactureDecayGenzDiscontinuous", parameters, output_idx=[0, 1])
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1604,7 +1626,8 @@ class HyperbolicTangent(AbstractModel):
        Journal of Turbomachinery, 104, 041004.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1676,7 +1699,8 @@ class MovingParticleFrictionForce(AbstractModel):
        Journal of Computational Physics, 197, 28-57.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1757,7 +1781,8 @@ class SurfaceCoverageSpecies(AbstractModel):
        Journal of Computational Physics, 197, 502-531.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1833,7 +1858,8 @@ class Franke(AbstractModel):
        Journal of Computational Physics, 371, 20-49.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1892,7 +1918,8 @@ class ManufactureDecay(AbstractModel):
        Journal of Computational Physics, 371, 20-49.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -1954,7 +1981,8 @@ class GenzContinuous(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/cont.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2027,7 +2055,8 @@ class GenzCornerPeak(AbstractModel):
        Journal of Computational Physics, 289, 18-34.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2094,7 +2123,8 @@ class GenzDiscontinuous(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/disc.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2170,7 +2200,8 @@ class GenzGaussianPeak(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/gaussian.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2238,7 +2269,8 @@ class GenzOscillatory(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/oscil.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2308,7 +2340,8 @@ class GenzProductPeak(AbstractModel):
     .. [2] https://www.sfu.ca/~ssurjano/prpeak.html
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2373,7 +2406,8 @@ class Ridge(AbstractModel):
        Journal of Computational Physics, 380, 29-47.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2439,7 +2473,8 @@ class Lim2002(AbstractModel):
        over the input space. Canadian Journal of Statistics, 30(1), 109-126.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2529,7 +2564,8 @@ class Ishigami(AbstractModel):
        Reliability Engineering & System Safety, 94(3), 742-751.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2622,7 +2658,8 @@ class GFunction(AbstractModel):
        Retrieved from SAMO 2007 website: http://samo2007.chem.elte.hu/lectures/Crestaux.pdf.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2681,7 +2718,8 @@ class BinaryDiscontinuousSphere(AbstractModel):
        plot("BinaryDiscontinuousSphere", parameters)
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2736,7 +2774,8 @@ class Cluster3Simple(AbstractModel):
        plot("Cluster3Simple", parameters)
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2796,7 +2835,8 @@ class ContinuousDiscontinuousSphere(AbstractModel):
        plot("ContinuousDiscontinuousSphere", parameters)
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2875,8 +2915,8 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
        plot("DiscontinuousRidgeManufactureDecay", parameters)
     """
 
-    def __init__(self):
-        super(DiscontinuousRidgeManufactureDecay, self).__init__()
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -2949,7 +2989,8 @@ class OakleyOhagan2004(AbstractModel):
        Society: Series B (Statistical Methodology), 66(3), 751-769.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -3008,7 +3049,8 @@ class Welch1992(AbstractModel):
        Screening, predicting, and computer experiments. Technometrics, 34(1), 15-25.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -3069,7 +3111,8 @@ class WingWeight(AbstractModel):
        Engineering design via surrogate modelling: a practical guide. John Wiley & Sons.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -3119,9 +3162,10 @@ class SphereModel(AbstractModel):
     .. [1] Rush, S., & Driscoll, D. A. (1969). EEG electrode sensitivity-an application of reciprocity.
        IEEE transactions on biomedical engineering, (1), 15-22.
     """
-    def __init__(self):
-        self.nbr_polynomials = 50
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
+        self.nbr_polynomials = 50
 
     def validate(self):
         pass
@@ -3264,7 +3308,8 @@ class PotentialHomogeneousDipole(AbstractModel):
        IEEE Transactions on Biomedical Engineering, 47(7), 964-966.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -3337,7 +3382,8 @@ class BfieldOutsideSphere(AbstractModel):
        Physics in Medicine & Biology, 32(1), 11.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -3405,7 +3451,8 @@ class TMSEfieldSphere(AbstractModel):
        theoretical aspects. Biophysical Journal, 63(1), 129-138.
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -3474,7 +3521,8 @@ class PotentialDipole3Layers(AbstractModel):
        eq. 2 and 2a
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
 
     def validate(self):
@@ -3583,34 +3631,19 @@ class ElectrodeModel(AbstractModel):
         Output
     """
 
-    def __init__(self):
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
-
-    def impedance(self, w, n_Qdl, Qdl, n_Qd, Qd, Rs, Rct, Rd):
-        return Rs + 1 / (1 / (1 / (Qdl * (w * 1j) ** n_Qdl)) +
-                         1 / (Rct + 1 / (1 / (1 / (Qd * (w * 1j) ** n_Qd)) + 1 / Rd)))
 
     def validate(self):
         pass
 
     def simulate(self, process_id=None, matlab_engine=None):
-        # set constants
-        p = copy.deepcopy(self.p)
-        w = self.p["w"]
-        # w = np.logspace(0, 9, 1000)
-        # w = 1000
-        # del p["w"]
 
-        # set parmeters
-        n_Qdl = self.p["n_Qdl"]
-        Qdl = self.p["Qdl"]
-        n_Qd = self.p["n_Qd"]
-        Qd = self.p["Qd"]
-        Rs = self.p["Rs"]
-        Rct = self.p["Rct"]
-        Rd = self.p["Rd"]
+        Z = self.p["Rs"] + 1 / (1 / (1 / (self.p["Qdl"] * (self.p["w"].T * 1j) ** self.p["n_Qdl"])) +
+                  1 / (self.p["Rct"] + 1 / (1 / (1 / (self.p["Qd"] * (self.p["w"].T * 1j) ** self.p["n_Qd"]))
+                                            + 1 / self.p["Rd"])))
 
-        Z = self.impedance(w=w.T, n_Qdl=n_Qdl, Qdl=Qdl, n_Qd=n_Qd, Qd=Qd, Rs=Rs, Rct=Rct, Rd=Rd)
         Z = np.concatenate((np.real(Z.T), np.imag(Z.T)), axis=1)
 
         return Z

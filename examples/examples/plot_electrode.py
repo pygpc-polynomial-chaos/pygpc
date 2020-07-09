@@ -50,6 +50,7 @@ model = pygpc.testfunctions.ElectrodeModel()
 
 # define problem
 parameters = OrderedDict()
+
 # Set parameters
 mu_n_Qdl = 0.67
 parameters["n_Qdl"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[mu_n_Qdl*0.9, mu_n_Qdl*1.1])
@@ -104,7 +105,7 @@ n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
 
 grid = pygpc.Random(parameters_random=problem.parameters_random,
                     n_grid=options["matrix_ratio"] * n_coeffs,
-                    seed=1)
+                    options={"seed": 1})
 # Define algorithm
 algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
 
