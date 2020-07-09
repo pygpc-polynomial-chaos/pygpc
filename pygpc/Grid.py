@@ -1341,7 +1341,7 @@ class LHS(RandomGrid):
         Parameters
         ----------
         n_grid : ndarray of float [n]
-            The number of needed sampes points
+            The number of needed sampling points
 
         Returns
         -------
@@ -1529,7 +1529,7 @@ class LHS(RandomGrid):
             # initialize perc_mask
             self.perc_mask = np.zeros((self.coords_norm_reservoir.shape[0], self.dim)).astype(bool)
 
-            #sample normal LHS for last 2 points to reduce computation time
+            # sample normal LHS for last 2 points to reduce computation time
             if n_resample < 3:
                 self.coords_norm_lhs = self.lhs_initial()
             else:
@@ -1565,15 +1565,22 @@ class LHS(RandomGrid):
 
         self.coords_norm = self.coords_norm_reservoir[0:self.n_grid, :]
 
-    def lhs_initial(self):
+    def lhs_initial(self, weight=False):
         """
         Construct an initial LHS grid
+
+        Parameters:
+
+        weight: bool, optional, default: False
+            gives the option to weight the last sample added to each row in Latin Hypercube Sampling such that samples
+            lie denser on the borders of the sampling space (0,1)
 
         Returns
         -------
         design : ndarray of float [n, n_dim]
             LHS grid points
         """
+
         if np.sum(self.coords_norm_reservoir_perced) != 0 and self.coords_norm_reservoir_perced is not None:
             pre_coords_lhs = self.coords_norm_reservoir_perced
 
@@ -1596,6 +1603,14 @@ class LHS(RandomGrid):
 
             for i in range(0, self.dim):
                 for j in range(0, self.n_grid):
+
+                    if weight:
+                        if (j + 1) == self.n_grid:
+                            design[j, i] = j + 1
+                            u[j, i] = 1/2 * u[j, i]
+                        else:
+                            design[j, i] = j + 1 + (j/2 * self.n_grid)
+
                     design[j, i] = j + 1
                 np.random.shuffle(design[:, i])
 
@@ -1684,7 +1699,7 @@ class LHS(RandomGrid):
 
         # Parameters
         t0 = None
-        P0 = self.lhs_initial()
+        P0 = self.lhs_initial(weight=True)
         J = 25
         tol = 1e-3
         p = 10
@@ -1758,6 +1773,12 @@ class LHS(RandomGrid):
                     T = T / 0.7
                 else:
                     T = 0.9 * T
+
+        import matplotlib.pyplot as plt
+        plt.scatter(P_best[:, 0], P_best[:, 1])
+        plt.grid()
+        plt.show()
+
         return P_best
 
 
