@@ -12,7 +12,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from pygpc.AbstractModel import AbstractModel
 
 
-def plot_testfunction(testfunction_name: object, parameters: object, constants: object = None, output_idx: object = 0)\
+def plot_testfunction(testfunction_name: object, parameters: object, constants: object = None, output_idx: object = 0 ,
+                      plot_3d=True)\
                       -> object:
     """
     Plot 1D or 2D testfunctions for documentation.
@@ -63,26 +64,31 @@ def plot_testfunction(testfunction_name: object, parameters: object, constants: 
     fig = plt.figure(figsize=(6, ((n_qoi-1)*0.85+1) * 5))
 
     for i, o in enumerate(output_idx):
-        ax = fig.add_subplot(n_qoi, 1, i+1, projection='3d')
+        if plot_3d:
+            ax = fig.add_subplot(n_qoi, 1, i+1, projection='3d')
+        else:
+            ax = fig.add_subplot(n_qoi, 1, i+1)
 
         # omit "additional_data" if present
         if type(y) is tuple:
             y = y[0]
 
         if len(p_names) == 2:
-            # im = ax.pcolor(x1,
-            #                x2,
-            #                np.reshape(y[:, o],
-            #                           (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
-            #                           order='c'),
-            #                cmap="jet")
+            if plot_3d:
+                im = ax.plot_surface(x1,
+                                     x2,
+                                     np.reshape(y[:, o],
+                                                (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
+                                                order='c'),
+                                     cmap="jet")
+            else:
+                im = ax.pcolor(x1,
+                               x2,
+                               np.reshape(y[:, o],
+                                          (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
+                                          order='c'),
+                               cmap="jet")
 
-            im = ax.plot_surface(x1,
-                                 x2,
-                                 np.reshape(y[:, o],
-                                            (len(parameters[p_names[1]]), len(parameters[p_names[0]])),
-                                            order='c'),
-                                 cmap="jet")
 
             ax.set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
             fig.colorbar(im, ax=ax, orientation='vertical')
