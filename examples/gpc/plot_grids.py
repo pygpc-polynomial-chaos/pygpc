@@ -137,10 +137,27 @@ plt.tight_layout()
 # dictionary. In the following, we are going to create different LHS designs for 2 random variables with 100
 # sampling points:
 
-grid_lhs_std = pygpc.LHS(parameters_random=parameters, n_grid=100, options={"criterion": None,      "seed": None})
-grid_lhs_cor = pygpc.LHS(parameters_random=parameters, n_grid=100, options={"criterion": "corr",    "seed": None})
-grid_lhs_max = pygpc.LHS(parameters_random=parameters, n_grid=100, options={"criterion": "maximin", "seed": None})
-grid_lhs_ese = pygpc.LHS(parameters_random=parameters, n_grid=100, options={"criterion": "ese",     "seed": None})
+import pygpc
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from collections import OrderedDict
+
+# define model
+model = pygpc.testfunctions.RosenbrockFunction()
+
+# define parameters
+parameters = OrderedDict()
+parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+
+# define problem
+problem = pygpc.Problem(model, parameters)
+
+grid_lhs_std = pygpc.LHS(parameters_random=parameters, n_grid=7, options={"criterion": None,      "seed": None})
+grid_lhs_cor = pygpc.LHS(parameters_random=parameters, n_grid=7, options={"criterion": "corr",    "seed": None})
+grid_lhs_max = pygpc.LHS(parameters_random=parameters, n_grid=7, options={"criterion": "maximin", "seed": None})
+grid_lhs_ese = pygpc.LHS(parameters_random=parameters, n_grid=7, options={"criterion": "ese",     "seed": None})
 
 # plot
 fig, ax = plt.subplots(nrows=1, ncols=4, squeeze=True, figsize=(12.7, 3.2))
@@ -155,8 +172,10 @@ title = ['LHS (standard)', 'LHS (corr opt)', 'LHS (Phi-P opt)', 'LHS (ese)']
 for i in range(len(ax)):
     ax[i].set_xlabel("$x_1$", fontsize=12)
     ax[i].set_ylabel("$x_2$", fontsize=12)
-    ax[i].set_xticks(np.linspace(-1, 1, 5))
-    ax[i].set_yticks(np.linspace(-1, 1, 5))
+    # ax[i].set_xticks(np.linspace(-1, 1, 5))
+    # ax[i].set_yticks(np.linspace(-1, 1, 5))
+    ax[i].set_xticks([-1] + np.linspace(-1+2/grid_lhs_std.n_grid/4, 1-2/grid_lhs_std.n_grid/4, grid_lhs_std.n_grid).tolist() + [1])
+    ax[i].set_yticks([-1] + np.linspace(-1+2/grid_lhs_std.n_grid/4, 1-2/grid_lhs_std.n_grid/4, grid_lhs_std.n_grid).tolist() + [1])
     ax[i].set_xlim([-1, 1])
     ax[i].set_ylim([-1, 1])
     ax[i].set_title(title[i])

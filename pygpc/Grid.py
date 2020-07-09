@@ -1565,15 +1565,16 @@ class LHS(RandomGrid):
 
         self.coords_norm = self.coords_norm_reservoir[0:self.n_grid, :]
 
-    def lhs_initial(self, weight=False):
+    def lhs_initial(self, shift_outer=False):
         """
-        Construct an initial LHS grid
+        Construct an initial LHS grid.
 
-        Parameters:
-
-        weight: bool, optional, default: False
-            gives the option to weight the last sample added to each row in Latin Hypercube Sampling such that samples
-            lie denser on the borders of the sampling space (0,1)
+        Parameters
+        ----------
+        shift_outer: bool, optional, default: False
+            gives the option to place the outer samples in Latin Hypercube Sampling such that samples
+            lie denser on the borders of the sampling space (0,1); reduces hypercube to 1/4th of the original size and
+            stretches the inner ones accordingly.
 
         Returns
         -------
@@ -1605,18 +1606,24 @@ class LHS(RandomGrid):
                 for j in range(0, self.n_grid):
 
                     if weight:
-                        if (j + 1) == self.n_grid:
+                        if j == 0:
                             design[j, i] = j + 1
-                            u[j, i] = 1/2 * u[j, i]
-                        else:
-                            design[j, i] = j + 1 + (j/2 * self.n_grid)
-
-                    design[j, i] = j + 1
-                np.random.shuffle(design[:, i])
+                            u[j, i] = 1 - 1/4 * u[j, i]
+                        elif (j + 1) == self.n_grid:
+                            design[j, i] = j + 1
+                            u[j, i] = 1/4 * u[j, i]
+                        elif j <= self.n_grid/2:
+                            design[j, i] = j + 1 - (j/2 - j)/(self.n_grid - 2) - (j/2 - j)/(self.n_grid - 2)/2
+                        elif j > self.n_grid/2:
+                            design[j, i] = j + 1 + (j - j/2)/(self.n_grid - 2) + (j - j/2)/(self.n_grid - 2)/2
+                    else:
+                        design[j, i] = j + 1
 
             for i in range(0, self.dim):
                 for j in range(0, self.n_grid):
                     design[j, i] = (design[j, i] - u[j, i]) / self.n_grid
+
+                np.random.shuffle(design[:, i])
 
             return design
 
@@ -1773,11 +1780,6 @@ class LHS(RandomGrid):
                     T = T / 0.7
                 else:
                     T = 0.9 * T
-
-        import matplotlib.pyplot as plt
-        plt.scatter(P_best[:, 0], P_best[:, 1])
-        plt.grid()
-        plt.show()
 
         return P_best
 
