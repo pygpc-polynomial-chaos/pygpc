@@ -866,7 +866,9 @@ class RandomGrid(Grid):
                                          coords_id=coords_id,
                                          coords_gradient_id=coords_gradient_id)
 
-        self.n_grid = int(n_grid)
+        if n_grid is not None:
+            self.n_grid = int(n_grid)
+
         self.options = options
         self.seed = None
 
@@ -2002,7 +2004,7 @@ class L1(RandomGrid):
         Unique IDs of grid points
     """
 
-    def __init__(self, parameters_random, n_grid=None, seed=None, options=None, coords=None, coords_norm=None,
+    def __init__(self, parameters_random, n_grid=None, options=None, coords=None, coords_norm=None,
                  coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None, gpc=None,
                  grid_pre=None):
         """
@@ -2055,10 +2057,10 @@ class L1(RandomGrid):
 
         self.weights = options["weights"]
 
-        if self.method == "greedy" and self.n_grid > 0:
+        if self.method == "greedy" and self.n_grid > 0 and self.coords is None:
             self.coords_norm = self.get_optimal_mu_greedy(grid_pre=self.grid_pre)
 
-        elif (self.method == 'iteration' or self.method == 'iter') and self.n_grid > 0:
+        elif (self.method == 'iteration' or self.method == 'iter') and self.n_grid > 0 and self.coords is None:
             self.coords_norm = self.get_optimal_mu_iteration(grid_pre=self.grid_pre)
 
         # Denormalize grid to original parameter space

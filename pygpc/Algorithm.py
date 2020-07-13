@@ -3317,7 +3317,6 @@ class RegAdaptiveProjection(Algorithm):
         else:
             fn_results = None
 
-        grid = self.options["grid"]
         grad_res_3D = None
         gradient_idx = None
 
@@ -3328,10 +3327,15 @@ class RegAdaptiveProjection(Algorithm):
         nrmsd = []
         loocv = []
 
-        # make initial random grid to determine gradients and projection matrix
-        grid_original = Random(parameters_random=self.problem.parameters_random,
-                               n_grid=self.options["n_grid_gradient"],
-                               options=self.options["grid_options"])
+        # make initial grid to determine gradients and projection matrix. By default, it is an LHS (ese) grid
+        if self.options["grid"] == Random:
+            grid_original = Random(parameters_random=self.problem.parameters_random,
+                                   n_grid=self.options["n_grid_gradient"],
+                                   options=None)
+        else:
+            grid_original = LHS(parameters_random=self.problem.parameters_random,
+                                n_grid=self.options["n_grid_gradient"],
+                                options={"criterion": "ese"})
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -3458,19 +3462,20 @@ class RegAdaptiveProjection(Algorithm):
             gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
             gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
 
-            # TODO: Implement new grid types here
-            # if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
-            #     gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
-            #                                     n_grid=n_grid_init,
-            #                                     options=self.options["grid_options"],
-            #                                     gpc=gpc)
-            #
-            # else:
-            #     gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
-            #                                     n_grid=n_grid_init,
-            #                                     options=self.options["grid_options"])
+            # copy global grid, passing it from qoi to qoi but in the first iteration, we have to initialize a new
+            # grid in case of L1, L1_LHS, LHS_L1 and FIM because they depend on the gpc object which can be different
+            # for every QOI due to different projections and termination criteria. We are passing the coordinates
+            # of the initial LHS (ese) grid to it
+            # TODO: this does not work here :)
+            if i_qoi == 0 and self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
+                grid_original = self.options["grid"](parameters_random=self.problem_reduced[i_qoi].parameters_random,
+                                                     coords=grid_original.coords,
+                                                     coords_norm=grid_original.coords_norm,
+                                                     coords_gradient=grid_original.coords_gradient,
+                                                     coords_gradient_norm=grid_original.coords_gradient_norm,
+                                                     options=self.options["grid_options"],
+                                                     gpc=gpc[i_qoi])
 
-            # transformed grid
             grid[i_qoi] = copy.deepcopy(grid_original)
 
             # transform variables of original grid to reduced parameter space
@@ -3661,6 +3666,11 @@ class RegAdaptiveProjection(Algorithm):
                                     gpc[i_qoi].error = error
                                     gpc[i_qoi].relative_error_nrmsd = nrmsd
                                     gpc[i_qoi].relative_error_loocv = loocv
+
+                                    # in case of L1, L1-LHS, LHS-L1 or FIM grids copy new gpc object into it
+                                    if isinstance(grid[i_qoi], L1) or isinstance(grid[i_qoi], L1_LHS) or \
+                                        isinstance(grid[i_qoi], LHS_L1) or isinstance(grid[i_qoi], FIM):
+                                        grid[i_qoi].gpc = gpc[i_qoi]
 
                     # transformed grid
                     grid[i_qoi] = copy.deepcopy(grid_original)
