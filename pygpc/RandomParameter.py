@@ -45,6 +45,7 @@ class RandomParameter(object):
         self.mean = None
         self.std = None
         self.var = None
+        self.p_perc = None
 
     def pdf(self, x=None):
         pass
@@ -302,19 +303,20 @@ class Norm(RandomParameter):
         """
         Constructor; Initializes normal distributed random variable
         """
-        self.p_perc = p_perc
+
         self.x_perc = [None, None]
-        self.x_perc[0] = scipy.stats.norm().ppf(0.5*(1-self.p_perc)) * pdf_shape[1] + pdf_shape[0]
-        self.x_perc[1] = scipy.stats.norm().ppf(0.5*(1+self.p_perc)) * pdf_shape[1] + pdf_shape[0]
+        self.x_perc[0] = scipy.stats.norm().ppf(0.5*(1-p_perc)) * pdf_shape[1] + pdf_shape[0]
+        self.x_perc[1] = scipy.stats.norm().ppf(0.5*(1+p_perc)) * pdf_shape[1] + pdf_shape[0]
 
         self.x_perc_norm = [None, None]
-        self.x_perc_norm[0] = scipy.stats.norm().ppf(0.5 * (1 - self.p_perc))
-        self.x_perc_norm[1] = scipy.stats.norm().ppf(0.5 * (1 + self.p_perc))
+        self.x_perc_norm[0] = scipy.stats.norm().ppf(0.5 * (1 - p_perc))
+        self.x_perc_norm[1] = scipy.stats.norm().ppf(0.5 * (1 + p_perc))
 
         super(Norm, self).__init__(pdf_type='norm',
                                    pdf_shape=pdf_shape,
                                    pdf_limits=[self.x_perc[0], self.x_perc[1]])
 
+        self.p_perc = p_perc
         self.mean = self.pdf_shape[0]
         self.std = self.pdf_shape[1]
         self.var = self.std ** 2
@@ -395,7 +397,13 @@ class Norm(RandomParameter):
             Sample value of the random variable such that the probability of the variable being less than or equal
             to that value equals the given probability.
         """
+        # transform probabilities to perc constraint
+        p = self.p_perc * p + (1 - self.p_perc)/2
+
+        # make normal distrubted random variable
         n = scipy.stats.norm()
+
+        # icdf
         x = n.ppf(p.flatten())
 
         return x
@@ -469,13 +477,12 @@ class Gamma(RandomParameter):
         Constructor; Initializes gamma distributed random variable
         """
 
-        self.p_perc = p_perc
-        self.x_perc = scipy.stats.gamma.ppf(self.p_perc,
+        self.x_perc = scipy.stats.gamma.ppf(p_perc,
                                             a=pdf_shape[0],
                                             loc=pdf_shape[2],
                                             scale=1 / pdf_shape[1])
 
-        self.x_perc_norm = scipy.stats.gamma.ppf(self.p_perc,
+        self.x_perc_norm = scipy.stats.gamma.ppf(p_perc,
                                                  a=pdf_shape[0],
                                                  loc=0.,
                                                  scale=1.)
@@ -483,6 +490,8 @@ class Gamma(RandomParameter):
         super(Gamma, self).__init__(pdf_type='gamma',
                                     pdf_shape=pdf_shape,
                                     pdf_limits=[pdf_shape[2], self.x_perc])
+
+        self.p_perc = p_perc
 
         self.mean = self.pdf_shape[0] / self.pdf_shape[1] + self.pdf_shape[2]
 
@@ -572,6 +581,10 @@ class Gamma(RandomParameter):
             to that value equals the given probability.
         """
 
+        # transform probabilities to perc constraint
+        p = self.p_perc * p
+
+        # icdf
         x = scipy.stats.gamma.ppf(p.flatten(),
                                   a=self.pdf_shape[0],
                                   loc=0.,

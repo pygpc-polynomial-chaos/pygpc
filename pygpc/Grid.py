@@ -908,6 +908,11 @@ class RandomGrid(Grid):
             Optional initial grid, which gets extended
         """
 
+        # increase seed if needed to avoid creation of same grid points
+        if "seed" in self.options.keys() and self.options["seed"] is not None:
+            self.options["seed"] += 1
+            self.seed = self.options["seed"]
+
         if n_grid_new is not None:
             # Number of new grid points
             n_grid_add = int(n_grid_new - self.n_grid)
@@ -1035,6 +1040,7 @@ class RandomGrid(Grid):
         n_new = n_old + n_extend
         i = 1
         n_new_loop = n_new
+        np.random.seed(seed=self.seed)
 
         while i > 0:
             a_new = np.zeros([n_new_loop, dim]) - 1
@@ -1062,7 +1068,7 @@ class RandomGrid(Grid):
                 for d in range(dim):
                     np.random.shuffle(a_new[:, d])
 
-                a_extend = a_new[np.random.default_rng().choice(a_new.shape[0], size=n_extend, replace=False), :]
+                a_extend = a_new[np.random.choice(a_new.shape[0], size=n_extend, replace=False), :]
 
         coords_ = np.insert(array, n_old, a_extend, axis=0)
 
@@ -1326,6 +1332,13 @@ class LHS(RandomGrid):
                                   coords_id=coords_id,
                                   coords_gradient_id=coords_gradient_id)
 
+        self.shift_outer = False
+
+        if self.criterion == ["ese"]:
+            for p in parameters_random:
+                if parameters_random[p].p_perc is None:
+                    self.shift_outer = True
+
         if coords is not None and coords_norm is not None:
             grid_present = True
         else:
@@ -1524,42 +1537,20 @@ class LHS(RandomGrid):
         .. [1] McKay, M. D., Beckman, R. J., & Conover, W. J. (2000). A comparison of three methods for selecting
            values of input variables in the analysis of output from a computer code. Technometrics, 42(1), 55-61.
         """
-        n_resample = self.n_grid
-        n_grid_init = self.n_grid
 
-        while n_resample > 0:
-            # initialize perc_mask
-            self.perc_mask = np.zeros((self.coords_norm_reservoir.shape[0], self.dim)).astype(bool)
+        # create sample points in icdf space using specified criteria
+        if self.criterion[0] is 'corr':
+            self.coords_norm_lhs = self.lhs_corr()
+        elif self.criterion[0] is 'maximin' or self.criterion is 'm':
+            self.coords_norm_lhs = self.lhs_maximin()
+        elif self.criterion[0] is 'ese':
+            self.coords_norm_lhs = self.lhs_ese()
+        else:
+            self.coords_norm_lhs = self.lhs_initial()
 
-            # sample normal LHS for last 2 points to reduce computation time
-            if n_resample < 3:
-                self.coords_norm_lhs = self.lhs_initial()
-            else:
-                # create sample points in icdf space using specified criteria
-                if self.criterion[0] is 'corr':
-                    self.coords_norm_lhs = self.lhs_corr()
-                elif self.criterion[0] is 'maximin' or self.criterion is 'm':
-                    self.coords_norm_lhs = self.lhs_maximin()
-                elif self.criterion[0] is 'ese':
-                    self.coords_norm_lhs = self.lhs_ese()
-                else:
-                    self.coords_norm_lhs = self.lhs_initial()
-
-            # transform sample points from icdf to pdf space
-            for i_p, p in enumerate(self.parameters_random):
-                self.coords_norm_reservoir[:, i_p] = self.parameters_random[p].icdf(self.coords_norm_lhs[:, i_p])
-                self.perc_mask[:, i_p] = np.logical_and(
-                    self.parameters_random[p].pdf_limits_norm[0] <= self.coords_norm_reservoir[:, i_p],
-                    self.coords_norm_reservoir[:, i_p] <= self.parameters_random[p].pdf_limits_norm[1])
-
-            # get points all satisfying perc constraints
-            self.perc_mask = self.perc_mask.all(axis=1)
-            self.coords_norm_reservoir_perced = self.coords_norm_lhs[self.perc_mask]
-            n_resample = np.sum(np.logical_not(self.perc_mask))
-            self.n_grid = n_resample
-
-        self.n_grid = n_grid_init
-        self.coords_norm_reservoir = self.coords_norm_reservoir[self.perc_mask, :]
+        # transform sample points from icdf to pdf space
+        for i_p, p in enumerate(self.parameters_random):
+            self.coords_norm_reservoir[:, i_p] = self.parameters_random[p].icdf(self.coords_norm_lhs[:, i_p])
 
         if self.grid_pre is not None:
             self.coords_norm_reservoir = get_different_rows_from_matrices(self.grid_pre.coords_norm,
@@ -1567,16 +1558,9 @@ class LHS(RandomGrid):
 
         self.coords_norm = self.coords_norm_reservoir[0:self.n_grid, :]
 
-    def lhs_initial(self, shift_outer=False):
+    def lhs_initial(self):
         """
         Construct an initial LHS grid.
-
-        Parameters
-        ----------
-        shift_outer: bool, optional, default: False
-            gives the option to place the outer samples in Latin Hypercube Sampling such that samples
-            lie denser on the borders of the sampling space (0,1); reduces hypercube to 1/4th of the original size and
-            stretches the inner ones accordingly.
 
         Returns
         -------
@@ -1584,12 +1568,7 @@ class LHS(RandomGrid):
             LHS grid points
         """
 
-        if np.sum(self.coords_norm_reservoir_perced) != 0 and self.coords_norm_reservoir_perced is not None:
-            pre_coords_lhs = self.coords_norm_reservoir_perced
-
-            return self.lhs_extend(pre_coords_lhs, self.n_grid)
-
-        elif self.grid_pre is not None:
+        if self.grid_pre is not None:
             # transform normalized coordinates back to LHS-Space (0, 1)
             pre_coords_lhs = np.zeros(self.grid_pre.coords_norm.shape)
 
@@ -1607,7 +1586,7 @@ class LHS(RandomGrid):
             for i in range(0, self.dim):
                 for j in range(0, self.n_grid):
 
-                    if shift_outer:
+                    if self.shift_outer:
                         if j == 0:
                             design[j, i] = j + 1
                             u[j, i] = 1 - 1/4 * u[j, i]
@@ -1708,7 +1687,7 @@ class LHS(RandomGrid):
 
         # Parameters
         t0 = None
-        P0 = self.lhs_initial(shift_outer=True)
+        P0 = self.lhs_initial()
         J = 25
         tol = 1e-3
         p = 10
@@ -2084,12 +2063,17 @@ class L1(RandomGrid):
             Normalized sample coordinates in range [-1, 1]
         """
         n_cpu = multiprocessing.cpu_count()
-        random_pool = Random(parameters_random=self.gpc.problem.parameters_random,
+        random_pool = Random(parameters_random=self.parameters_random,
                              n_grid=self.n_pool,
                              options=self.options)
 
         index_list = []
-        psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool.coords_norm, gradient=False)
+        if self.gpc.p_matrix is not None:
+            random_pool_trans = project_grid(grid=random_pool, p_matrix=self.gpc.p_matrix, mode="reduce")
+            psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool_trans.coords_norm, gradient=False)
+        else:
+            psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool.coords_norm, gradient=False)
+
         psy_pool = psy_pool / np.abs(psy_pool).max(axis=0)
         m = int(self.n_grid)
         m_p = int(np.shape(psy_pool)[0])
@@ -2108,7 +2092,11 @@ class L1(RandomGrid):
             psy_opt[0, :] = psy_pool[idx, :]
             i_start = 1
         else:
-            psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre.coords_norm, gradient=False)
+            if self.gpc.p_matrix is not None:
+                grid_pre_trans = project_grid(grid=grid_pre, p_matrix=self.gpc.p_matrix, mode="reduce")
+                psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre_trans.coords_norm, gradient=False)
+            else:
+                psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre.coords_norm, gradient=False)
             i_start = 1
 
         # loop over grid points
@@ -2350,16 +2338,15 @@ class FIM(RandomGrid):
         n_cpu = multiprocessing.cpu_count()
         pool = multiprocessing.Pool(n_cpu)
 
-        seed_random = self.seed
-
         for i in range(n_grid_add):
             if self.seed is not None:
-                seed_random += 1
+                self.seed += 1
+                self.options["seed"] += 1
 
             fim_matrix = self.calc_fim_matrix()
             grid_test = Random(parameters_random=self.gpc.problem.parameters_random,
                                n_grid=self.n_pool,
-                               options={"seed": seed_random})
+                               options={"seed": self.seed})
 
             workhorse_partial = partial(workhorse_get_det_updated_fim_matrix, gpc=self.gpc, fim_matrix=fim_matrix)
             coords_norm_list_chunks = compute_chunks([c for c in grid_test.coords_norm], n_cpu)
@@ -2572,7 +2559,8 @@ class L1_LHS(RandomGrid):
             self.grid_LHS = LHS(parameters_random=self.gpc.problem.parameters_random,
                                 n_grid=self.n_grid_LHS,
                                 grid_pre=self.grid_pre,
-                                options={"criterion": ["ese"]})
+                                options={"criterion": ["ese"],
+                                         "seed": self.seed})
 
         if self.grid_L1 is None and self.grid_LHS is not None:
             self.coords_norm = self.grid_LHS.coords_norm
@@ -2723,7 +2711,8 @@ class LHS_L1(RandomGrid):
             self.grid_LHS = LHS(parameters_random=self.gpc.problem.parameters_random,
                                 n_grid=self.n_grid_LHS,
                                 grid_pre=grid_pre,
-                                options={"criterion": ["ese"]})
+                                options={"criterion": ["ese"],
+                                         "seed": self.seed})
 
             if self.grid_pre is not None:
                 self.grid_pre.coords_norm = np.vstack((self.grid_pre.coords_norm, self.grid_LHS.coords_norm))
@@ -2757,6 +2746,43 @@ class LHS_L1(RandomGrid):
 
         # Generate unique IDs of grid points
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+
+def project_grid(grid, p_matrix, mode="reduce"):
+    """
+    Transforms grid from original to reduced parameter space or vice versa.
+
+    Parameters
+    ----------
+    grid : Grid object
+        Grid object to transform
+    p_matrix : ndarray of float [n_reduced, n_original]
+        Projection matrix
+    mode : str
+        Direction of transformation ("reduce", "expand")
+
+    Returns
+    -------
+    grid_trans : Grid object
+        Transformed grid object
+    """
+    grid_trans = copy.deepcopy(grid)
+    p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
+
+    if mode == "reduce":
+        p = p_matrix.transpose()
+        p_n = p / p_matrix_norm[np.newaxis, :]
+    elif mode == "expand":
+        p = p_matrix
+        p_n = p / p_matrix_norm[:, np.newaxis]
+    else:
+        raise ValueError("Specified mode not implemented... ('reduce', 'expand')")
+
+    # transform variables of original grid to reduced parameter space
+    grid_trans.coords = np.matmul(grid.coords, p)
+    grid_trans.coords_norm = np.matmul(grid.coords_norm, p_n)
+
+    return grid_trans
 
 
 def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
@@ -2825,8 +2851,12 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
     crit = np.ones((len(idx_list), len(criterion))) * 1e6
 
     for i in range(len(idx_list)):
-        test_grid = Random(parameters_random=gpc.problem.parameters_random,
-                           n_grid=n_grid)
+        if gpc.p_matrix is not None:
+            test_grid = Random(parameters_random=gpc.problem_original.parameters_random,
+                               n_grid=n_grid)
+        else:
+            test_grid = Random(parameters_random=gpc.problem.parameters_random,
+                               n_grid=n_grid)
 
         # save current coords norm
         coords_norm_list.append(test_grid.coords_norm)
@@ -2839,7 +2869,15 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
         # get the normalized gpc matrix
         backend_backup = gpc.backend
         gpc.backend = "cpu"
-        psy_pool = gpc.create_gpc_matrix(b=gpc.basis.b, x=coords_norm, gradient=False)
+
+        if gpc.p_matrix is not None:
+            psy_pool = gpc.create_gpc_matrix(b=gpc.basis.b,
+                                             x=np.matmul(coords_norm, gpc.p_matrix.transpose() /
+                                                         gpc.p_matrix_norm[np.newaxis, :]),
+                                             gradient=False)
+        else:
+            psy_pool = gpc.create_gpc_matrix(b=gpc.basis.b, x=coords_norm, gradient=False)
+
         gpc.backend = backend_backup
         psy_pool_norm = psy_pool / np.abs(psy_pool).max(axis=0)
 

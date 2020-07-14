@@ -19,7 +19,7 @@ folder = 'tmp'                  # output folder
 plot = False                    # plot and save output
 matlab = False                  # test Matlab functionality
 save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
-seed = None                     # random seed for grids
+seed = 1                        # random seed for grids
 
 # temporary folder
 try:
@@ -608,7 +608,7 @@ class TestPygpcMethods(unittest.TestCase):
     #                                 random_vars=list(problem.parameters_random.keys()),
     #                                 n_grid=[51, 51],
     #                                 output_idx=0,
-    #                                 fn_out=options["fn_results"],
+    #                                 fn_out=None,
     #                                 folder="gpc_vs_original_plot",
     #                                 n_cpu=options["n_cpu"])
     #
@@ -679,7 +679,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
         options["n_grid_gradient"] = 5
         options["qoi"] = 0
-        options["error_type"] = "loocv"
+        options["error_type"] = "nrmsd"
         options["eps"] = 1e-3
         options["grid"] = pygpc.L1
         options["grid_options"] = {"method": "iter",
@@ -688,7 +688,8 @@ class TestPygpcMethods(unittest.TestCase):
                                    "seed": None}
 
         # options["grid"] = pygpc.LHS
-        # options["grid_options"] = {"criterion": "ese"}
+        # options["grid_options"] = {"criterion": None,
+        #                            "seed": None}
 
         # define algorithm
         algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
@@ -1011,8 +1012,13 @@ class TestPygpcMethods(unittest.TestCase):
     #     self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
     #
     #     # extend grid
-    #     grid.extend_random_grid(n_grid_new=n_grid+n_grid_extend)
-    #     self.expect_true(grid.n_grid == n_grid+n_grid_extend, "Size of random grid does not fit after extending it.")
+    #     for i in range(2):
+    #         grid.extend_random_grid(n_grid_new=n_grid + (i+1)*n_grid_extend)
+    #         self.expect_true(grid.n_grid == n_grid + (i+1)*n_grid_extend,
+    #                          f"Size of random grid does not fit after extending it {i+1}. time.")
+    #         self.expect_true(pygpc.get_different_rows_from_matrices(
+    #             grid.coords_norm[0:n_grid + i*n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                          f"Extended grid points are matching the initial grid after extending it {i+1}. time.")
     #
     #     # generate grid with percentile constraint
     #     ##########################################
@@ -1031,16 +1037,21 @@ class TestPygpcMethods(unittest.TestCase):
     #     self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
     #
     #     # extend grid
-    #     grid.extend_random_grid(n_grid_new=n_grid+n_grid_extend)
+    #     for i in range(2):
+    #         grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
     #
-    #     perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+    #         perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
     #
-    #     for i_p, p in enumerate(problem_2.parameters_random):
-    #         perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-    #                           (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+    #         for i_p, p in enumerate(problem_2.parameters_random):
+    #             perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+    #                               (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
     #
-    #     self.expect_true(grid.n_grid == n_grid+n_grid_extend, "Size of random grid does not fit after extending it.")
-    #     self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+    #         self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+    #         self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                          "Size of random grid does not fit after extending it.")
+    #         self.expect_true(pygpc.get_different_rows_from_matrices(
+    #             grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                          f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #     # perform static gpc
     #     ###############################
@@ -1117,8 +1128,8 @@ class TestPygpcMethods(unittest.TestCase):
     #     problem_1 = pygpc.Problem(model, parameters_1)
     #
     #     parameters_2 = OrderedDict()
-    #     parameters_2["x1"] = pygpc.Norm(pdf_shape=[0, 1], p_perc=0.8)
-    #     parameters_2["x2"] = pygpc.Norm(pdf_shape=[1, 2], p_perc=0.8)
+    #     parameters_2["x1"] = pygpc.Norm(pdf_shape=[0, 1], p_perc=0.7)
+    #     parameters_2["x2"] = pygpc.Norm(pdf_shape=[1, 2], p_perc=0.7)
     #     parameters_2["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
     #     problem_2 = pygpc.Problem(model, parameters_2)
     #
@@ -1130,22 +1141,34 @@ class TestPygpcMethods(unittest.TestCase):
     #                     "standard": {"criterion": None, "seed": seed}}
     #
     #     for i_c, c in enumerate(options_dict):
+    #         print(f"- criterion: {c} -")
+    #
     #         # generate grid w/o percentile constraint
     #         #########################################
+    #         print("- generate grid w/o percentile constraint -")
     #         n_grid = 20
     #
     #         # initialize grid
+    #         print("  > init")
     #         grid = pygpc.LHS(parameters_random=problem_1.parameters_random,
     #                          n_grid=n_grid,
     #                          options=options_dict[c])
     #         self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
     #
     #         # extend grid
-    #         grid.extend_random_grid(n_grid_new=n_grid+n_grid_extend)
-    #         self.expect_true(grid.n_grid == n_grid+n_grid_extend, "Size of random grid does not fit after extending it.")
+    #         print("  > extend")
+    #         for i in range(2):
+    #             grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
+    #             self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                              f"Size of random grid does not fit after extending it {i + 1}. time.")
+    #             self.expect_true(pygpc.get_different_rows_from_matrices(
+    #                 grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                              f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #         # generate grid with percentile constraint
     #         ##########################################
+    #         print("- generate grid with percentile constraint -")
+    #         print("  > init")
     #         n_grid = 100
     #
     #         # initialize grid
@@ -1163,19 +1186,26 @@ class TestPygpcMethods(unittest.TestCase):
     #         self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
     #
     #         # extend grid
-    #         grid.extend_random_grid(n_grid_new=n_grid+n_grid_extend)
+    #         print("  > extend")
+    #         for i in range(2):
+    #             grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
     #
-    #         perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+    #             perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
     #
-    #         for i_p, p in enumerate(problem_2.parameters_random):
-    #             perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-    #                               (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+    #             for i_p, p in enumerate(problem_2.parameters_random):
+    #                 perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+    #                                   (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
     #
-    #         self.expect_true(grid.n_grid == n_grid+n_grid_extend, "Size of random grid does not fit after extending it.")
-    #         self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+    #             self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+    #             self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                              "Size of random grid does not fit after extending it.")
+    #             self.expect_true(pygpc.get_different_rows_from_matrices(
+    #                 grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                              f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #         # perform static gpc
     #         ###############################
+    #         print("- Static gpc -")
     #         # gPC options
     #         options = dict()
     #         options["method"] = "reg"
@@ -1215,6 +1245,7 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #         # perform adaptive gpc
     #         ##############################
+    #         print("- Adaptive gpc -")
     #         options["matrix_ratio"] = 2
     #         options["n_grid"] = None
     #
@@ -1290,8 +1321,10 @@ class TestPygpcMethods(unittest.TestCase):
     #                     "seed": seed}
     #
     #     for i_m, method in enumerate(method_list):
-    #         for i_c, criterion in enumerate(criterion_list):
+    #         print(f"- method: {method} -")
     #
+    #         for i_c, criterion in enumerate(criterion_list):
+    #             print(f"- criterion: {criterion} -")
     #             grid_options["criterion"] = criterion
     #             grid_options["method"] = method
     #             grid_options["n_iter"] = 100
@@ -1299,6 +1332,8 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #             # generate grid w/o percentile constraint
     #             #########################################
+    #             print("- generate grid w/o percentile constraint -")
+    #             print("  > init")
     #             n_grid = 20
     #             grid_options["n_pool"] = 5 * n_grid
     #
@@ -1321,12 +1356,19 @@ class TestPygpcMethods(unittest.TestCase):
     #             self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
     #
     #             # extend grid
-    #             grid.extend_random_grid(n_grid_new=n_grid+n_grid_extend)
-    #             self.expect_true(grid.n_grid == n_grid+n_grid_extend,
-    #                              "Size of random grid does not fit after extending it.")
+    #             print("  > extend")
+    #             for i in range(2):
+    #                 grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
+    #                 self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                                  f"Size of random grid does not fit after extending it {i + 1}. time.")
+    #                 self.expect_true(pygpc.get_different_rows_from_matrices(
+    #                     grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                                  f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #             # generate grid with percentile constraint
     #             ##########################################
+    #             print("- generate grid with percentile constraint -")
+    #             print("  > init")
     #             n_grid = 100
     #             grid_options["n_pool"] = 2 * n_grid
     #
@@ -1358,21 +1400,27 @@ class TestPygpcMethods(unittest.TestCase):
     #                              "Grid points do not fulfill percentile constraint.")
     #
     #             # extend grid
-    #             grid.extend_random_grid(n_grid_new=n_grid+n_grid_extend)
+    #             print("  > extend")
+    #             for i in range(2):
+    #                 grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
     #
-    #             perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+    #                 perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
     #
-    #             for i_p, p in enumerate(problem_2.parameters_random):
-    #                 perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-    #                                   (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+    #                 for i_p, p in enumerate(problem_2.parameters_random):
+    #                     perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[
+    #                         0]).all() and \
+    #                                       (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
     #
-    #             self.expect_true(grid.n_grid == n_grid+n_grid_extend,
-    #                              "Size of random grid does not fit after extending it.")
-    #             self.expect_true(perc_check.all(),
-    #                              "Grid points do not fulfill percentile constraint.")
+    #                 self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+    #                 self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                                  "Size of random grid does not fit after extending it.")
+    #                 self.expect_true(pygpc.get_different_rows_from_matrices(
+    #                     grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                                  f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #             # perform static gpc
     #             ###############################
+    #             print("  > Perform Static gpc")
     #             options["n_grid"] = None
     #             options["matrix_ratio"] = 2
     #             grid_options["n_pool"] = 500
@@ -1392,6 +1440,7 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #             # perform adaptive gpc
     #             ##############################
+    #             print("  > Perform Adaptive gpc")
     #             # define algorithm
     #             algorithm = pygpc.RegAdaptive(problem=problem_1, options=options)
     #
@@ -1469,6 +1518,7 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #         # generate grid w/o percentile constraint
     #         #########################################
+    #         print("- generate grid w/o percentile constraint -")
     #         n_grid = 20
     #         # create gpc object of some order for problem_1
     #         gpc = pygpc.Reg(problem=problem_1,
@@ -1481,6 +1531,7 @@ class TestPygpcMethods(unittest.TestCase):
     #                         validation=None)
     #
     #         # initialize grid
+    #         print("  > init")
     #         grid = pygpc.L1_LHS(parameters_random=problem_1.parameters_random,
     #                             n_grid=n_grid,
     #                             options=grid_options,
@@ -1489,12 +1540,18 @@ class TestPygpcMethods(unittest.TestCase):
     #         self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
     #
     #         # extend grid
-    #         grid.extend_random_grid(n_grid_new=n_grid + n_grid_extend)
-    #         self.expect_true(grid.n_grid == n_grid + n_grid_extend,
-    #                          "Size of random grid does not fit after extending it.")
+    #         print("  > extend")
+    #         for i in range(2):
+    #             grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
+    #             self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                              f"Size of random grid does not fit after extending it {i + 1}. time.")
+    #             self.expect_true(pygpc.get_different_rows_from_matrices(
+    #                 grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                              f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #         # generate grid with percentile constraint
     #         ##########################################
+    #         print("- generate grid with percentile constraint -")
     #         n_grid = 100
     #         # create gpc object of some order for problem_2
     #         gpc = pygpc.Reg(problem=problem_2,
@@ -1507,6 +1564,7 @@ class TestPygpcMethods(unittest.TestCase):
     #                         validation=None)
     #
     #         # initialize grid
+    #         print("  > init")
     #         grid = pygpc.L1_LHS(parameters_random=problem_2.parameters_random,
     #                             n_grid=n_grid,
     #                             options=grid_options,
@@ -1524,21 +1582,26 @@ class TestPygpcMethods(unittest.TestCase):
     #                          "Grid points do not fulfill percentile constraint.")
     #
     #         # extend grid
-    #         grid.extend_random_grid(n_grid_new=n_grid + n_grid_extend)
+    #         print("  > extend")
+    #         for i in range(2):
+    #             grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
     #
-    #         perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+    #             perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
     #
-    #         for i_p, p in enumerate(problem_2.parameters_random):
-    #             perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-    #                               (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+    #             for i_p, p in enumerate(problem_2.parameters_random):
+    #                 perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+    #                                   (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
     #
-    #         self.expect_true(grid.n_grid == n_grid + n_grid_extend,
-    #                          "Size of random grid does not fit after extending it.")
-    #         self.expect_true(perc_check.all(),
-    #                          "Grid points do not fulfill percentile constraint.")
+    #             self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+    #             self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                              "Size of random grid does not fit after extending it.")
+    #             self.expect_true(pygpc.get_different_rows_from_matrices(
+    #                 grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                              f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #         # perform static gpc
     #         ###############################
+    #         print("- Perform Static gpc -")
     #         options["n_grid"] = None
     #         options["matrix_ratio"] = 2
     #         options["grid_options"] = grid_options
@@ -1556,6 +1619,7 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #         # perform adaptive gpc
     #         ##############################
+    #         print("- Perform Adaptive gpc -")
     #         # define algorithm
     #         algorithm = pygpc.RegAdaptive(problem=problem_1, options=options)
     #
@@ -1632,6 +1696,7 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #         # generate grid w/o percentile constraint
     #         #########################################
+    #         print(" - generate grid w/o percentile constraint -")
     #         n_grid = 20
     #
     #         # create gpc object of some order for problem_1
@@ -1645,6 +1710,7 @@ class TestPygpcMethods(unittest.TestCase):
     #                         validation=None)
     #
     #         # initialize grid
+    #         print("  > init")
     #         grid = pygpc.LHS_L1(parameters_random=problem_1.parameters_random,
     #                             n_grid=20,
     #                             options=grid_options,
@@ -1653,12 +1719,18 @@ class TestPygpcMethods(unittest.TestCase):
     #         self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
     #
     #         # extend grid
-    #         grid.extend_random_grid(n_grid_new=n_grid + n_grid_extend)
-    #         self.expect_true(grid.n_grid == n_grid + n_grid_extend,
-    #                          "Size of random grid does not fit after extending it.")
+    #         print("  > extend")
+    #         for i in range(2):
+    #             grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
+    #             self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                              f"Size of random grid does not fit after extending it {i + 1}. time.")
+    #             self.expect_true(pygpc.get_different_rows_from_matrices(
+    #                 grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                              f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #         # generate grid with percentile constraint
     #         ##########################################
+    #         print(" - generate grid with percentile constraint -")
     #         # create gpc object of some order for problem_2
     #         n_grid = 100
     #         gpc = pygpc.Reg(problem=problem_2,
@@ -1671,6 +1743,7 @@ class TestPygpcMethods(unittest.TestCase):
     #                         validation=None)
     #
     #         # initialize grid
+    #         print("  > init")
     #         grid = pygpc.LHS_L1(parameters_random=problem_2.parameters_random,
     #                             n_grid=n_grid,
     #                             options=grid_options,
@@ -1688,21 +1761,26 @@ class TestPygpcMethods(unittest.TestCase):
     #                          "Grid points do not fulfill percentile constraint.")
     #
     #         # extend grid
-    #         grid.extend_random_grid(n_grid_new=n_grid + n_grid_extend)
+    #         print("  > extend")
+    #         for i in range(2):
+    #             grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
     #
-    #         perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+    #             perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
     #
-    #         for i_p, p in enumerate(problem_2.parameters_random):
-    #             perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-    #                               (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+    #             for i_p, p in enumerate(problem_2.parameters_random):
+    #                 perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+    #                                   (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
     #
-    #         self.expect_true(grid.n_grid == n_grid + n_grid_extend,
-    #                          "Size of random grid does not fit after extending it.")
-    #         self.expect_true(perc_check.all(),
-    #                          "Grid points do not fulfill percentile constraint.")
+    #             self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+    #             self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                              "Size of random grid does not fit after extending it.")
+    #             self.expect_true(pygpc.get_different_rows_from_matrices(
+    #                 grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                              f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #         # perform static gpc
     #         ###############################
+    #         print("- Perform Static gpc -")
     #         options["n_grid"] = None
     #         options["matrix_ratio"] = 2
     #         options["grid_options"] = grid_options
@@ -1720,6 +1798,7 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #         # perform adaptive gpc
     #         ##############################
+    #         print("- Perform Adaptive gpc -")
     #         # define algorithm
     #         algorithm = pygpc.RegAdaptive(problem=problem_1, options=options)
     #
@@ -1786,6 +1865,8 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #     # generate grid w/o percentile constraint
     #     #########################################
+    #     print("- generate grid w/o percentile constraint -")
+    #     print("  > init")
     #     n_grid = 20
     #
     #     # create gpc object of some order for problem_1
@@ -1807,12 +1888,19 @@ class TestPygpcMethods(unittest.TestCase):
     #     self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
     #
     #     # extend grid
-    #     grid.extend_random_grid(n_grid_new=n_grid+n_grid_extend)
-    #     self.expect_true(grid.n_grid == n_grid+n_grid_extend,
-    #                      "Size of random grid does not fit after extending it.")
+    #     print("  > extend")
+    #     for i in range(2):
+    #         grid.extend_random_grid(n_grid_new=n_grid + (i+1)*n_grid_extend)
+    #         self.expect_true(grid.n_grid == n_grid + (i+1)*n_grid_extend,
+    #                          f"Size of random grid does not fit after extending it {i+1}. time.")
+    #         self.expect_true(pygpc.get_different_rows_from_matrices(
+    #             grid.coords_norm[0:n_grid + i*n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                          f"Extended grid points are matching the initial grid after extending it {i+1}. time.")
     #
     #     # generate grid with percentile constraint
     #     ##########################################
+    #     print("- generate grid with percentile constraint -")
+    #     print("  > init")
     #     n_grid = 50
     #
     #     # create gpc object of some order for problem_2
@@ -1843,21 +1931,26 @@ class TestPygpcMethods(unittest.TestCase):
     #                      "Grid points do not fulfill percentile constraint.")
     #
     #     # extend grid
-    #     grid.extend_random_grid(n_grid_new=n_grid+n_grid_extend)
+    #     print("  > extend")
+    #     for i in range(2):
+    #         grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
     #
-    #     perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+    #         perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
     #
-    #     for i_p, p in enumerate(problem_2.parameters_random):
-    #         perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-    #                           (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+    #         for i_p, p in enumerate(problem_2.parameters_random):
+    #             perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+    #                               (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
     #
-    #     self.expect_true(grid.n_grid == n_grid+n_grid_extend,
-    #                      "Size of random grid does not fit after extending it.")
-    #     self.expect_true(perc_check.all(),
-    #                      "Grid points do not fulfill percentile constraint.")
+    #         self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+    #         self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+    #                          "Size of random grid does not fit after extending it.")
+    #         self.expect_true(pygpc.get_different_rows_from_matrices(
+    #             grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+    #                          f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
     #
     #     # perform static gpc
     #     ###############################
+    #     print("- Perform Static gpc -")
     #     options["n_grid"] = None
     #     options["matrix_ratio"] = 1.5
     #
@@ -1874,6 +1967,7 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #     # perform adaptive gpc
     #     ###############################
+    #     print("- Perform Adaptive gpc -")
     #     options["grid_options"]["n_pool"] = 10
     #
     #     # define algorithm

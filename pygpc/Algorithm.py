@@ -279,13 +279,14 @@ class Static(Algorithm):
     >>> gpc, coeffs, results = algorithm.run()
     """
 
-    def __init__(self, problem, options, grid=None, validation=None):
+    def __init__(self, problem, options, grid=None, validation=None, gpc=None):
         """
         Constructor; Initializes static gPC algorithm
         """
         super(Static, self).__init__(problem=problem, options=options, validation=validation)
         self.grid = grid
         self.qoi_specific = False
+        self.gpc = gpc
 
         # check contents of settings dict and set defaults
         if "method" not in self.options.keys():
@@ -330,14 +331,19 @@ class Static(Algorithm):
 
         # Create gPC object
         if self.options["method"] == "reg":
-            gpc = Reg(problem=self.problem,
-                      order=self.options["order"],
-                      order_max=self.options["order_max"],
-                      order_max_norm=self.options["order_max_norm"],
-                      interaction_order=self.options["interaction_order"],
-                      interaction_order_current=self.options["interaction_order"],
-                      options=self.options,
-                      validation=self.validation)
+            if self.gpc is None:
+                gpc = Reg(problem=self.problem,
+                          order=self.options["order"],
+                          order_max=self.options["order_max"],
+                          order_max_norm=self.options["order_max_norm"],
+                          interaction_order=self.options["interaction_order"],
+                          interaction_order_current=self.options["interaction_order"],
+                          options=self.options,
+                          validation=self.validation)
+            else:
+                gpc = self.gpc
+                gpc.options["fn_results"] = self.options["fn_results"]
+                gpc.fn_results = self.options["fn_results"]
 
         elif self.options["method"] == "quad":
             gpc = Quad(problem=self.problem,
@@ -1036,8 +1042,8 @@ class StaticProjection(Algorithm):
                 hdf5_subfolder = "/qoi_" + str(q_idx)
 
             # Determine projection matrix
-            p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
-                                                   lambda_eps=self.options["lambda_eps_gradient"])
+            p_matrix, p_matrix_complete = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
+                                                                      lambda_eps=self.options["lambda_eps_gradient"])
             p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
 
             dim_reduced = p_matrix.shape[0]
@@ -1454,7 +1460,7 @@ class MEStaticProjection(Algorithm):
 
             # Determine projection matrices for sub gPCs
             for d in np.unique(megpc[i_qoi].domains):
-                p_matrix[d] = determine_projection_matrix(
+                p_matrix[d], _ = determine_projection_matrix(
                     gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == d, q_idx, :],
                     lambda_eps=self.options["lambda_eps_gradient"])
 
@@ -2346,7 +2352,7 @@ class MERegAdaptiveProjection(Algorithm):
             for d in np.unique(megpc[i_qoi].domains):
 
                 if self.options["projection"]:
-                    p_matrix[d] = determine_projection_matrix(
+                    p_matrix[d], _ = determine_projection_matrix(
                         gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == d, q_idx, :],
                         lambda_eps=self.options["lambda_eps_gradient"])
 
@@ -2649,7 +2655,7 @@ class MERegAdaptiveProjection(Algorithm):
                     problem = [0 for _ in range(megpc[i_qoi].n_gpc)]
 
                     for d in np.unique(megpc[i_qoi].domains):
-                        p_matrix[d] = determine_projection_matrix(
+                        p_matrix[d], _ = determine_projection_matrix(
                             gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == d, q_idx, :],
                             lambda_eps=self.options["lambda_eps_gradient"])
 
@@ -2902,7 +2908,7 @@ class MERegAdaptiveProjection(Algorithm):
 
                                         for dd in np.unique(megpc[i_qoi].domains):
 
-                                            p_matrix[dd] = determine_projection_matrix(
+                                            p_matrix[dd], _ = determine_projection_matrix(
                                                 gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] ==
                                                                                  dd, q_idx, :],
                                                 lambda_eps=self.options["lambda_eps_gradient"])
@@ -3331,11 +3337,12 @@ class RegAdaptiveProjection(Algorithm):
         if self.options["grid"] == Random:
             grid_original = Random(parameters_random=self.problem.parameters_random,
                                    n_grid=self.options["n_grid_gradient"],
-                                   options=None)
+                                   options={"seed": self.options["seed"]})
         else:
             grid_original = LHS(parameters_random=self.problem.parameters_random,
                                 n_grid=self.options["n_grid_gradient"],
-                                options={"criterion": "ese"})
+                                options={"criterion": "ese",
+                                         "seed": self.options["seed"]})
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -3398,7 +3405,6 @@ class RegAdaptiveProjection(Algorithm):
         self.problem_reduced = [None for _ in range(n_qoi)]
         gpc = [None for _ in range(n_qoi)]
         coeffs = [None for _ in range(n_qoi)]
-        grid = [None for _ in range(n_qoi)]
         self.options["order_max"] = None
 
         # loop over qoi (projection is qoi specific)
@@ -3430,8 +3436,8 @@ class RegAdaptiveProjection(Algorithm):
 
             # Set up initial reduced problem
             # Determine projection matrix
-            p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
-                                                   lambda_eps=self.options["lambda_eps_gradient"])
+            p_matrix, p_matrix_complete = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
+                                                                      lambda_eps=self.options["lambda_eps_gradient"])
             p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
 
             # Set up initial reduced problem
@@ -3466,9 +3472,8 @@ class RegAdaptiveProjection(Algorithm):
             # grid in case of L1, L1_LHS, LHS_L1 and FIM because they depend on the gpc object which can be different
             # for every QOI due to different projections and termination criteria. We are passing the coordinates
             # of the initial LHS (ese) grid to it
-            # TODO: this does not work here :)
-            if i_qoi == 0 and self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
-                grid_original = self.options["grid"](parameters_random=self.problem_reduced[i_qoi].parameters_random,
+            if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
+                grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
                                                      coords=grid_original.coords,
                                                      coords_norm=grid_original.coords_norm,
                                                      coords_gradient=grid_original.coords_gradient,
@@ -3476,17 +3481,8 @@ class RegAdaptiveProjection(Algorithm):
                                                      options=self.options["grid_options"],
                                                      gpc=gpc[i_qoi])
 
-            grid[i_qoi] = copy.deepcopy(grid_original)
-
-            # transform variables of original grid to reduced parameter space
-            grid[i_qoi].coords = np.matmul(grid_original.coords,
-                                           gpc[i_qoi].p_matrix.transpose())
-            grid[i_qoi].coords_norm = np.matmul(grid_original.coords_norm,
-                                                gpc[i_qoi].p_matrix.transpose() /
-                                                gpc[i_qoi].p_matrix_norm[np.newaxis, :])
-
             # assign transformed grid
-            gpc[i_qoi].grid = copy.deepcopy(grid[i_qoi])
+            gpc[i_qoi].grid = project_grid(grid=grid_original, p_matrix=p_matrix, mode="reduce")
 
             # Initialize gpc matrix
             gpc[i_qoi].init_gpc_matrix(gradient_idx=gradient_idx)
@@ -3565,6 +3561,7 @@ class RegAdaptiveProjection(Algorithm):
                             iprint("Extending grid from {} to {} by {} sampling points".format(
                                 gpc[i_qoi].grid.n_grid, n_grid_new, n_grid_new - gpc[i_qoi].grid.n_grid),
                                 tab=0, verbose=self.options["verbose"])
+
                             grid_original.extend_random_grid(n_grid_new=n_grid_new)
 
                             # run simulations
@@ -3617,8 +3614,8 @@ class RegAdaptiveProjection(Algorithm):
                                        tab=0, verbose=self.options["verbose"])
 
                                 # Determine projection matrix
-                                p_matrix = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
-                                                                       lambda_eps=self.options["lambda_eps_gradient"])
+                                p_matrix, p_matrix_complete = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
+                                                                                          lambda_eps=self.options["lambda_eps_gradient"])
                                 p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
 
                                 # save projection matrix in gPC object
@@ -3667,23 +3664,12 @@ class RegAdaptiveProjection(Algorithm):
                                     gpc[i_qoi].relative_error_nrmsd = nrmsd
                                     gpc[i_qoi].relative_error_loocv = loocv
 
-                                    # in case of L1, L1-LHS, LHS-L1 or FIM grids copy new gpc object into it
-                                    if isinstance(grid[i_qoi], L1) or isinstance(grid[i_qoi], L1_LHS) or \
-                                        isinstance(grid[i_qoi], LHS_L1) or isinstance(grid[i_qoi], FIM):
-                                        grid[i_qoi].gpc = gpc[i_qoi]
-
-                    # transformed grid
-                    grid[i_qoi] = copy.deepcopy(grid_original)
-
-                    # transform variables of original grid to reduced parameter space
-                    grid[i_qoi].coords = np.matmul(grid_original.coords,
-                                                   gpc[i_qoi].p_matrix.transpose())
-                    grid[i_qoi].coords_norm = np.matmul(grid_original.coords_norm,
-                                                        gpc[i_qoi].p_matrix.transpose() /
-                                                        gpc[i_qoi].p_matrix_norm[np.newaxis, :])
-
                     # assign transformed grid
-                    gpc[i_qoi].grid = copy.deepcopy(grid[i_qoi])
+                    gpc[i_qoi].grid = project_grid(grid=grid_original, p_matrix=p_matrix, mode="reduce")
+
+                    # in case of L1, L1-LHS, LHS-L1 or FIM grids copy new gpc object into it
+                    if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
+                        gpc[i_qoi].grid.gpc = gpc[i_qoi]
 
                     # crop results to considered qoi
                     if self.options["qoi"] != "all":
@@ -3871,7 +3857,11 @@ class RegAdaptiveProjection(Algorithm):
                                      maxshape=None, dtype="float64")
                     f.create_dataset("validation/grid/coords_norm", data=gpc[0].validation.grid.coords_norm,
                                      maxshape=None, dtype="float64")
-                    f.create_dataset("misc/error_type", data=self.options["error_type"])
+                    try:
+                        f.create_dataset("misc/error_type", data=self.options["error_type"])
+                    except RuntimeError:
+                        del f["misc/error_type"]
+                        f.create_dataset("misc/error_type", data=self.options["error_type"])
 
         com.close()
 

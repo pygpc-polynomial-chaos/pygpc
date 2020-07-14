@@ -876,7 +876,9 @@ def determine_projection_matrix(gradient_results, lambda_eps=0.95):
     Returns
     -------
     p_matrix : ndarray of float [dim_reduced x dim]
-        Projection matrix for QOI.
+        Reduced projection matrix for QOI.
+    p_matrix_complete : ndarray of float [dim_reduced x dim]
+        Complete projection matrix for QOI.
     """
 
     # Determine projection matrices by SVD of gradients
@@ -896,8 +898,9 @@ def determine_projection_matrix(gradient_results, lambda_eps=0.95):
     s_filt = s[s_mask]
     v_filt = v[np.append(s_mask, [False]*(v.shape[0]-u.shape[1])) > 0, :]
     p_matrix = v_filt
+    p_matrix_complete = v
 
-    return p_matrix
+    return p_matrix, p_matrix_complete
 
 
 def get_indices_of_k_smallest(arr, k):

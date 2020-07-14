@@ -118,7 +118,7 @@ class ValidationSet(object):
                         f.create_dataset(folder + "/model_evaluations/gradient_results_idx",
                                          data=self.gradient_idx)
 
-    def read(self, fname, folder, coords_key=None, coords_norm_key=None, results_key=None, gradient_results_key=None,
+    def read(self, fname, folder=None, coords_key=None, coords_norm_key=None, results_key=None, gradient_results_key=None,
              gradient_idx_key=None):
         """ Load Validation set from .hdf5 format
 
@@ -144,6 +144,8 @@ class ValidationSet(object):
         val : ValidationSet Object
             ValidationSet object containing the grid points and the results data
         """
+        if folder is None:
+            folder = ""
 
         if coords_key is None:
             coords_key = folder + "/grid/coords"
