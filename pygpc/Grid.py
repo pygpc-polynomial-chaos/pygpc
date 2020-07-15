@@ -2068,6 +2068,8 @@ class L1(RandomGrid):
                              options=self.options)
 
         index_list = []
+
+        # project grid in case of projection approach
         if self.gpc.p_matrix is not None:
             random_pool_trans = project_grid(grid=random_pool, p_matrix=self.gpc.p_matrix, mode="reduce")
             psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool_trans.coords_norm, gradient=False)
@@ -2078,26 +2080,30 @@ class L1(RandomGrid):
         m = int(self.n_grid)
         m_p = int(np.shape(psy_pool)[0])
 
-        # get random row of psy to start
-        idx = np.random.randint(m_p)
-        index_list.append(idx)
-        index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
-
         # set up multiprocessing
         pool = multiprocessing.Pool(n_cpu)
 
         # set starting point for iteration
         if grid_pre is None or grid_pre.n_grid == 0:
+            # get random row of psy to start
+            idx = np.random.randint(m_p)
+            index_list.append(idx)
+            index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
             psy_opt = np.zeros((1, psy_pool.shape[1]))
             psy_opt[0, :] = psy_pool[idx, :]
             i_start = 1
         else:
+
+            # project grid in case of projection approach
             if self.gpc.p_matrix is not None:
                 grid_pre_trans = project_grid(grid=grid_pre, p_matrix=self.gpc.p_matrix, mode="reduce")
                 psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre_trans.coords_norm, gradient=False)
             else:
                 psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre.coords_norm, gradient=False)
-            i_start = 1
+
+            index_list = []
+            index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
+            i_start = 0
 
         # loop over grid points
         for i in range(i_start, m):
@@ -2886,12 +2892,10 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
             crit[i, criterion.index("mc")] = mutual_coherence(psy_pool_norm)
 
         if "tmc" in criterion:
-            crit[i, criterion.index("tmc")] = t_averaged_mutual_coherence(
-                np.matmul(psy_pool_norm.T, psy_pool_norm))
+            crit[i, criterion.index("tmc")] = t_averaged_mutual_coherence(np.matmul(psy_pool_norm.T, psy_pool_norm))
 
         if "cc" in criterion:
-            crit[i, criterion.index("cc")] = average_cross_correlation_gram(
-                np.matmul(psy_pool_norm.T, psy_pool_norm))
+            crit[i, criterion.index("cc")] = average_cross_correlation_gram(np.matmul(psy_pool_norm.T, psy_pool_norm))
 
     return crit, coords_norm_list
 
