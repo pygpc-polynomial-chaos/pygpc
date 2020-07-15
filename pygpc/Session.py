@@ -127,6 +127,11 @@ class Session(object):
 
         self.grid = self.gpc[-1].grid
 
+        try:
+            self.grid_original = self.gpc[-1].grid_original
+        except AttributeError:
+            pass
+
         if self.fn_session is not None:
             if os.path.splitext(self.fn_session)[1] == ".hdf5":
                 write_session(self, fname=self.fn_session, folder=self.fn_session_folder, overwrite=False)

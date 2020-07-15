@@ -968,10 +968,16 @@ class StaticProjection(Algorithm):
         grad_res_3D = None
         gradient_idx = None
 
-        # make initial random grid to determine gradients and projection matrix
-        grid_original = grid(parameters_random=self.problem.parameters_random,
-                             n_grid=self.options["n_grid_gradient"],
-                             options=self.options["grid_options"])
+        # make initial grid to determine gradients and projection matrix. By default, it is an LHS (ese) grid
+        if self.options["grid"] == Random:
+            grid_original = Random(parameters_random=self.problem.parameters_random,
+                                   n_grid=self.options["n_grid_gradient"],
+                                   options={"seed": self.options["seed"]})
+        else:
+            grid_original = LHS(parameters_random=self.problem.parameters_random,
+                                n_grid=self.options["n_grid_gradient"],
+                                options={"criterion": "ese",
+                                         "seed": self.options["seed"]})
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -1078,6 +1084,16 @@ class StaticProjection(Algorithm):
                                              dim=dim_reduced)
 
             n_grid_new = n_coeffs * self.options["matrix_ratio"]
+
+            # re-initialize grid in case of [L1, L1_LHS, LHS_L1, FIM] because initial grid was Random or LHS (ese)
+            if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
+                grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                                     coords=grid_original.coords,
+                                                     coords_norm=grid_original.coords_norm,
+                                                     coords_gradient=grid_original.coords_gradient,
+                                                     coords_gradient_norm=grid_original.coords_gradient_norm,
+                                                     options=self.options["grid_options"],
+                                                     gpc=gpc[i_qoi])
 
             if n_grid_new > grid_original.n_grid:
                 iprint("Extending grid from {} to {} grid points ...".format(grid_original.n_grid, n_grid_new),
@@ -1829,10 +1845,7 @@ class RegAdaptive(Algorithm):
                                       n_cpu=self.options["n_cpu"])
 
         # Initialize Grid object
-        if self.options["solver"] == "Moore-Penrose":
-            n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
-        else:
-            n_grid_init = gpc.basis.n_basis
+        n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
 
         if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
@@ -1883,11 +1896,10 @@ class RegAdaptive(Algorithm):
                                                interaction_order_current=basis_order[1],
                                                problem=gpc.problem)
 
-            print_str = "Order/Interaction order: {}/{}".format(basis_order[0], basis_order[1])
-            iprint(print_str, tab=0, verbose=self.options["verbose"])
-            iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
-
             if b_added is not None:
+                print_str = "Order/Interaction order: {}/{}".format(basis_order[0], basis_order[1])
+                iprint(print_str, tab=0, verbose=self.options["verbose"])
+                iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
                 extended_basis = True
 
             if self.options["adaptive_sampling"]:
@@ -3503,8 +3515,9 @@ class RegAdaptiveProjection(Algorithm):
                 # increase basis
                 basis_order[0], basis_order[1] = increment_basis(order_current=basis_order[0],
                                                                  interaction_order_current=basis_order[1],
-                                                                 interaction_order_max=self.options[
-                                                                     "interaction_order"],
+                                                                 interaction_order_max=np.min([
+                                                                     self.options["interaction_order"],
+                                                                     self.problem_reduced[i_qoi].dim]),
                                                                  incr=basis_increment)
 
                 if basis_order[0] > self.options["order_end"]:
@@ -3806,6 +3819,9 @@ class RegAdaptiveProjection(Algorithm):
                                              solver=gpc[i_qoi].solver,
                                              settings=gpc[i_qoi].settings,
                                              verbose=self.options["verbose"])
+
+            # save original grid
+            gpc[i_qoi].grid_original = copy.deepcopy(grid_original)
 
             # save gpc object gpc coeffs and projection matrix
             if self.options["fn_results"] is not None:

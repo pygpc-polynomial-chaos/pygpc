@@ -2290,16 +2290,42 @@ class FIM(RandomGrid):
                                   coords_gradient_id=coords_gradient_id)
 
         if coords_norm is not None:
-            self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=coords_norm, gradient=False)
+            self.gpc.grid = Random(parameters_random=parameters_random,
+                                   coords_norm=coords_norm,
+                                   coords=coords,
+                                   options=self.options)
+
+            if self.gpc.p_matrix is not None:
+                self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
+                                                                 x=np.matmul(coords_norm,
+                                                                             self.gpc.p_matrix.transpose() /
+                                                                             self.gpc.p_matrix_norm[np.newaxis, :]),
+                                                                 gradient=False)
+            else:
+                self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
+                                                                 x=coords_norm,
+                                                                 gradient=False)
         elif self.grid_pre is not None:
-            self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.grid_pre.coords_norm, gradient=False)
+            self.gpc.grid = self.grid_pre
+
+            if self.gpc.p_matrix is not None:
+                self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
+                                                                 x=np.matmul(self.grid_pre.coords_norm,
+                                                                             self.gpc.p_matrix.transpose() /
+                                                                             self.gpc.p_matrix_norm[np.newaxis, :]),
+                                                                 gradient=False)
+            else:
+                self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
+                                                                 x=self.grid_pre.coords_norm,
+                                                                 gradient=False)
         else:
             self.gpc.grid = Random(parameters_random=self.gpc.problem.parameters_random,
                                    n_grid=self.gpc.basis.n_basis,
                                    options=self.options)
             self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.gpc.grid.coords_norm, gradient=False)
 
-        self.coords_norm = self.get_fim_optiomal_grid_points(n_grid_add=self.n_grid)
+        self.coords_norm = self.get_fim_optiomal_grid_points(parameters_random=parameters_random,
+                                                             n_grid_add=self.n_grid)
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -2307,13 +2333,15 @@ class FIM(RandomGrid):
         # Generate unique IDs of grid points
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
-    def get_fim_optiomal_grid_points(self, n_grid_add):
+    def get_fim_optiomal_grid_points(self, parameters_random, n_grid_add):
         """
         This function adds grid points (one by one) to the set of points by maximizing the Fisher-information matrix
         in a D-optimal sense.
 
         Parameters
         ----------
+        parameters_random : OrderedDict of RandomParameter [dim]
+            Random parameters (in case of projection, provide the original random parameters)
         n_grid_add : int
             Number of grid points to add
 
@@ -2350,7 +2378,7 @@ class FIM(RandomGrid):
                 self.options["seed"] += 1
 
             fim_matrix = self.calc_fim_matrix()
-            grid_test = Random(parameters_random=self.gpc.problem.parameters_random,
+            grid_test = Random(parameters_random=parameters_random,
                                n_grid=self.n_pool,
                                options={"seed": self.seed})
 
@@ -2468,9 +2496,9 @@ class L1_LHS(RandomGrid):
         - n_iter: number of iterations
         - seed: random seed
     coords : ndarray of float [n_grid_add x dim]
-        Grid points to add (model space)
+        Grid points to add (model space), if coords are provided, no grid is generated
     coords_norm : ndarray of float [n_grid_add x dim]
-        Grid points to add (normalized space)
+        Grid points to add (normalized space), if coords are provided, no grid is generated
     coords_gradient : ndarray of float [n_grid x dim x dim]
         Denormalized coordinates xi
     coords_gradient_norm : ndarray of float [n_grid x dim x dim]
@@ -2537,11 +2565,16 @@ class L1_LHS(RandomGrid):
                                      coords_gradient_id=coords_gradient_id)
 
         self.weights = options["weights"]
-        self.n_grid_L1 = int(np.round(self.n_grid * self.weights[0]))
-        self.n_grid_LHS = self.n_grid - self.n_grid_L1
+
+        if coords_norm is None:
+            self.n_grid_L1 = int(np.round(self.n_grid * self.weights[0]))
+            self.n_grid_LHS = self.n_grid - self.n_grid_L1
+        else:
+            self.n_grid_L1 = None
+            self.n_grid_LHS = None
 
         # create L1 grid
-        if self.n_grid_L1 > 0:
+        if coords_norm is None and self.n_grid_L1 > 0:
             self.grid_L1 = L1(parameters_random=parameters_random,
                               n_grid=self.n_grid_L1,
                               gpc=gpc,
@@ -2561,8 +2594,8 @@ class L1_LHS(RandomGrid):
                 self.grid_pre = self.grid_L1
 
         # create LHS (ese) grid
-        if self.n_grid_LHS > 0:
-            self.grid_LHS = LHS(parameters_random=self.gpc.problem.parameters_random,
+        if coords_norm is None and self.n_grid_LHS > 0:
+            self.grid_LHS = LHS(parameters_random=parameters_random,
                                 n_grid=self.n_grid_LHS,
                                 grid_pre=self.grid_pre,
                                 options={"criterion": ["ese"],
@@ -2709,12 +2742,17 @@ class LHS_L1(RandomGrid):
                                      coords_gradient_id=coords_gradient_id)
 
         self.weights = options["weights"]
-        self.n_grid_LHS = int(np.round(self.n_grid * self.weights[0]))
-        self.n_grid_L1 = self.n_grid - self.n_grid_LHS
+
+        if coords_norm is None:
+            self.n_grid_LHS = int(np.round(self.n_grid * self.weights[0]))
+            self.n_grid_L1 = self.n_grid - self.n_grid_LHS
+        else:
+            self.n_grid_LHS = None
+            self.n_grid_L1 = None
 
         # create LHS (ese) grid
-        if self.n_grid_LHS > 0:
-            self.grid_LHS = LHS(parameters_random=self.gpc.problem.parameters_random,
+        if coords_norm is None and self.n_grid_LHS > 0:
+            self.grid_LHS = LHS(parameters_random=parameters_random,
                                 n_grid=self.n_grid_LHS,
                                 grid_pre=grid_pre,
                                 options={"criterion": ["ese"],
@@ -2728,7 +2766,7 @@ class LHS_L1(RandomGrid):
                 self.grid_pre = self.grid_LHS
 
         # create L1 grid
-        if self.n_grid_L1 > 0:
+        if coords_norm is None and self.n_grid_L1 > 0:
             self.grid_L1 = L1(parameters_random=parameters_random,
                               n_grid=self.n_grid_L1,
                               grid_pre=self.grid_pre,
@@ -2922,7 +2960,16 @@ def workhorse_get_det_updated_fim_matrix(coords_norm_list, fim_matrix, gpc):
     gpc.backend = "cpu"
 
     for i_c, c in enumerate(coords_norm_list):
-        new_row = gpc.create_gpc_matrix(b=gpc.basis.b, x=c[np.newaxis, :], gradient=False)
+        if gpc.p_matrix is not None:
+            new_row = gpc.create_gpc_matrix(b=gpc.basis.b,
+                                            x=np.matmul(c[np.newaxis, :],
+                                                        gpc.p_matrix.transpose() /
+                                                        gpc.p_matrix_norm[np.newaxis, :]),
+                                            gradient=False)
+        else:
+            new_row = gpc.create_gpc_matrix(b=gpc.basis.b,
+                                            x=c[np.newaxis, :],
+                                            gradient=False)
         fim_matrix += np.outer(new_row, new_row)
         det[i_c] = np.linalg.det(fim_matrix)
 
