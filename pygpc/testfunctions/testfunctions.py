@@ -4,17 +4,20 @@ import inspect
 import warnings
 import numpy as np
 import scipy.special
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 from collections import OrderedDict
-from mpl_toolkits.mplot3d import Axes3D
 from pygpc.AbstractModel import AbstractModel
 
+try:
+    import matplotlib
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+except ImportError:
+    pass
 
-def plot_testfunction(testfunction_name: object, parameters: object, constants: object = None, output_idx: object = 0 ,
-                      plot_3d=True)\
-                      -> object:
+
+def plot_testfunction(testfunction_name: object, parameters: object, constants: object = None, output_idx: object = 0,
+                      plot_3d=True) -> object:
     """
     Plot 1D or 2D testfunctions for documentation.
 
@@ -28,12 +31,21 @@ def plot_testfunction(testfunction_name: object, parameters: object, constants: 
         Dictionary containing the (remaining) parameters treated as constants
     output_idx : int or list of int
         Indices of output quantity to plot
+    plot_3d : bool, optional, default: True
+        Plot function in 3d or 2d
 
     Returns
     -------
     <plot> : matplotlib figure
         Plot showing the QoI of the testfunction in 1D or 2D
     """
+
+    font = {'family' : 'DejaVu Sans',
+            'weight' : 'normal',
+            'size'   : 12}
+
+    matplotlib.rc('font', **font)
+
     if type(output_idx) is not list:
         output_idx = [output_idx]
 
@@ -89,15 +101,14 @@ def plot_testfunction(testfunction_name: object, parameters: object, constants: 
                                           order='c'),
                                cmap="jet")
 
-
-            ax.set_ylabel(r"${}$".format(p_names[1]), fontsize=12)
+            ax.set_ylabel(r"${}$".format(p_names[1]), fontsize=13)
             fig.colorbar(im, ax=ax, orientation='vertical')
 
         else:
             ax.plot(parameters[p_names[0]], y)
-            ax.set_ylabel(r"$y({})$".format(p_names[0]), fontsize=12)
+            ax.set_ylabel(r"$y({})$".format(p_names[0]), fontsize=13)
 
-        ax.set_xlabel(r"${}$".format(p_names[0]), fontsize=12)
+        ax.set_xlabel(r"${}$".format(p_names[0]), fontsize=13)
 
     ax.set_title("{} function".format(model.__class__.__name__))
     plt.tight_layout()
