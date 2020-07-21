@@ -668,7 +668,7 @@ class MEGPC(object):
 
         grid = Random(parameters_random=self.problem.parameters_random,
                       n_grid=n_samples,
-                      options=None)
+                      options={"seed": self.options["seed"]})
 
         # Evaluate original model at grid points
         com = Computation(n_cpu=n_cpu, matlab_model=self.matlab_model)

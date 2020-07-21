@@ -872,12 +872,14 @@ class RandomGrid(Grid):
         self.options = options
         self.seed = None
 
-        if type(options) is dict:
-            if "seed" in options.keys():
-                self.seed = self.options["seed"]
+        if self.options is None:
+            self.options = dict()
 
-                # Seed of random grid (if necessary to reproduce random grid)
-                np.random.seed(self.seed)
+        if "seed" in self.options.keys():
+            self.seed = self.options["seed"]
+
+            # Seed of random grid (if necessary to reproduce random grid)
+            np.random.seed(self.seed)
 
     def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, classifier=None, domain=None,
                            gradient=False):
@@ -2686,8 +2688,8 @@ class LHS_L1(RandomGrid):
         Unique IDs of grid points
     """
 
-    def __init__(self, parameters_random, n_grid=None, options=None, coords=None, coords_norm=None,
-                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None, gpc=None,
+    def __init__(self, parameters_random, gpc, n_grid=None, options=None, coords=None, coords_norm=None,
+                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None,
                  grid_pre=None):
         """
         Constructor; Initializes Grid instance; Generates grid or copies provided content

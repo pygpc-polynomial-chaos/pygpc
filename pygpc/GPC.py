@@ -1072,7 +1072,8 @@ class GPC(object):
             problem = self.problem
 
         grid = Random(parameters_random=problem.parameters_random,
-                      n_grid=n_samples)
+                      n_grid=n_samples,
+                      options={"seed": self.options["seed"]})
 
         # Evaluate original model at grid points
         com = Computation(n_cpu=n_cpu, matlab_model=self.matlab_model)

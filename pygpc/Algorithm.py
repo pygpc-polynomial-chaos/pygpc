@@ -235,6 +235,9 @@ class Algorithm(object):
         if "n_grid" not in self.options.keys():
             self.options["n_grid"] = None
 
+        if "adaptive_sampling" not in self.options.keys():
+            self.options["adaptive_sampling"] = True
+
 
 class Static(Algorithm):
     """
@@ -395,68 +398,91 @@ class Static(Algorithm):
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
 
-        # Run simulations
-        iprint("Performing {} simulations!".format(gpc.grid.coords.shape[0]),
-               tab=0, verbose=self.options["verbose"])
+        eps = self.options["eps"] + 1
+        eps_pre = eps + 1
+        i_grid = 0
 
-        start_time = time.time()
+        res_list = []
 
-        res = com.run(model=self.problem.model,
-                      problem=self.problem,
-                      coords=gpc.grid.coords,
-                      coords_norm=gpc.grid.coords_norm,
-                      i_iter=gpc.order_max,
-                      i_subiter=gpc.interaction_order,
-                      fn_results=None,
-                      print_func_time=self.options["print_func_time"],
-                      verbose=self.options["verbose"])
-
-        iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-               tab=0, verbose=self.options["verbose"])
-
-        # Determine gradient [n_grid x n_out x dim]
-        if self.options["gradient_enhanced"]:
-            start_time = time.time()
-
-            grad_res_3D, gradient_idx = get_gradient(model=self.problem.model,
-                                                     problem=self.problem,
-                                                     grid=gpc.grid,
-                                                     results=res,
-                                                     com=com,
-                                                     method=self.options["gradient_calculation"],
-                                                     gradient_results_present=None,
-                                                     gradient_idx_skip=None,
-                                                     i_iter=gpc.order_max,
-                                                     i_subiter=gpc.interaction_order,
-                                                     print_func_time=self.options["print_func_time"],
-                                                     dx=self.options["gradient_calculation_options"]["dx"],
-                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
-                                                     verbose=self.options["verbose"])
-
-            iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+        # determine gpc approximation and determine error (increase grid size in case of adaptive sampling)
+        while eps > self.options["eps"]:
+            # Run simulations
+            iprint("Performing {} simulations!".format(gpc.grid.n_grid - i_grid),
                    tab=0, verbose=self.options["verbose"])
 
-        # Initialize gpc matrix
-        gpc.init_gpc_matrix(gradient_idx=gradient_idx)
+            start_time = time.time()
 
-        # Compute gpc coefficients
-        coeffs = gpc.solve(results=res,
-                           gradient_results=grad_res_3D,
-                           solver=self.options["solver"],
-                           settings=self.options["settings"],
-                           verbose=self.options["verbose"])
+            res_list.append(com.run(model=self.problem.model,
+                                    problem=self.problem,
+                                    coords=gpc.grid.coords[i_grid:gpc.grid.n_grid, :],
+                                    coords_norm=gpc.grid.coords_norm[i_grid:gpc.grid.n_grid, :],
+                                    i_iter=gpc.order_max,
+                                    i_subiter=gpc.interaction_order,
+                                    fn_results=None,
+                                    print_func_time=self.options["print_func_time"],
+                                    verbose=self.options["verbose"]))
+            res = np.vstack(res_list)
+            i_grid = gpc.grid.n_grid
 
-        # create validation set if necessary
-        if self.options["error_type"] == "nrmsd" and gpc.validation is None:
-            gpc.create_validation_set(n_samples=self.options["n_samples_validation"],
-                                      n_cpu=self.options["n_cpu"])
+            iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+                   tab=0, verbose=self.options["verbose"])
 
-        # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-        eps = gpc.validate(coeffs=coeffs, results=res, gradient_results=grad_res_3D)
+            # Determine gradient [n_grid x n_out x dim]
+            if self.options["gradient_enhanced"]:
+                start_time = time.time()
 
-        iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                            self.options["error_type"],
-                                            eps), tab=0, verbose=self.options["verbose"])
+                grad_res_3D, gradient_idx = get_gradient(model=self.problem.model,
+                                                         problem=self.problem,
+                                                         grid=gpc.grid,
+                                                         results=res,
+                                                         com=com,
+                                                         method=self.options["gradient_calculation"],
+                                                         gradient_results_present=None,
+                                                         gradient_idx_skip=None,
+                                                         i_iter=gpc.order_max,
+                                                         i_subiter=gpc.interaction_order,
+                                                         print_func_time=self.options["print_func_time"],
+                                                         dx=self.options["gradient_calculation_options"]["dx"],
+                                                         distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                         verbose=self.options["verbose"])
+
+                iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                       tab=0, verbose=self.options["verbose"])
+
+            # Initialize gpc matrix
+            gpc.init_gpc_matrix(gradient_idx=gradient_idx)
+
+            # Compute gpc coefficients
+            coeffs = gpc.solve(results=res,
+                               gradient_results=grad_res_3D,
+                               solver=self.options["solver"],
+                               settings=self.options["settings"],
+                               verbose=self.options["verbose"])
+
+            # create validation set if necessary
+            if self.options["error_type"] == "nrmsd" and gpc.validation is None:
+                gpc.create_validation_set(n_samples=self.options["n_samples_validation"],
+                                          n_cpu=self.options["n_cpu"])
+
+            # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+            eps = gpc.validate(coeffs=coeffs, results=res, gradient_results=grad_res_3D)
+
+            iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                self.options["error_type"],
+                                                eps), tab=0, verbose=self.options["verbose"])
+
+            if not self.options["adaptive_sampling"] or (0 < (eps_pre-eps)/eps < 0.01):
+                break
+
+            if eps > self.options["eps"]:
+                # extend grid by 5% of number of basis functions and restart loop
+                n_grid_new = int(np.ceil(gpc.grid.n_grid + 5e-2 * gpc.basis.n_basis))
+                iprint("Extending grid from {} to {} by {} sampling points".format(
+                    gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
+                    tab=0, verbose=self.options["verbose"])
+                gpc.grid.extend_random_grid(n_grid_new=n_grid_new)
+
+            eps_pre = eps
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"] is not None:
@@ -620,6 +646,7 @@ class MEStatic(Algorithm):
         grad_res_3D = None
         grad_res_3D_all = None
         gradient_idx = None
+        res_all_list = []
 
         if self.options["n_grid"] is not None:
             n_grid = self.options["n_grid"]
@@ -639,7 +666,8 @@ class MEStatic(Algorithm):
 
         elif self.options["grid"] == L1 or self.options["grid"] == L1_LHS or self.options["grid"] == LHS_L1 \
                 or self.options["grid"] == FIM:
-            raise NotImplementedError("Grid type not implemented yet for this algorithm.")
+            raise NotImplementedError("Grid type not possible for MEStatic algorithm."
+                                      "Please use either 'Random' or 'LHS'.")
 
         else:
             raise ValueError("Grid not provided and specified grid type not known!")
@@ -647,134 +675,173 @@ class MEStatic(Algorithm):
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
 
-        # Run simulations
-        iprint("Performing {} simulations!".format(grid.coords.shape[0]),
-               tab=0, verbose=self.options["verbose"])
+        megpc = []
+        coeffs = []
+        eps = self.options["eps"] + 1
+        i_grid = 0
+        i_qoi = 0
 
-        start_time = time.time()
-
-        res_all = com.run(model=self.problem.model,
-                          problem=self.problem,
-                          coords=grid.coords,
-                          coords_norm=grid.coords_norm,
-                          i_iter=self.options["order_max"],
-                          i_subiter=self.options["interaction_order"],
-                          fn_results=None,
-                          print_func_time=self.options["print_func_time"],
-                          verbose=self.options["verbose"])
-
-        iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-               tab=0, verbose=self.options["verbose"])
-
-        if self.options["qoi"] == "all":
-            qoi_idx = np.arange(res_all.shape[1])
-            n_qoi = len(qoi_idx)
+        if self.options["qoi"] is not None and self.options["qoi"] != "all":
+            q_idx = self.options["qoi"]
+            qoi_idx = [q_idx]
         else:
-            qoi_idx = [self.options["qoi"]]
-            n_qoi = 1
+            qoi_idx = np.arange(1)
+            q_idx = qoi_idx[0]
 
-        # Determine gradient [n_grid x n_out x dim]
-        if self.options["gradient_enhanced"]:
-            start_time = time.time()
+        n_qoi = len(qoi_idx)
 
-            grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
-                                                         problem=self.problem,
-                                                         grid=grid,
-                                                         results=res_all,
-                                                         com=com,
-                                                         method=self.options["gradient_calculation"],
-                                                         gradient_results_present=None,
-                                                         gradient_idx_skip=None,
-                                                         i_iter=self.options["order_max"],
-                                                         i_subiter=self.options["interaction_order"],
-                                                         print_func_time=self.options["print_func_time"],
-                                                         dx=self.options["gradient_calculation_options"]["dx"],
-                                                         distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
-                                                         verbose=self.options["verbose"])
-
-            iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-                   tab=0, verbose=self.options["verbose"])
-
-        megpc = [0 for _ in range(n_qoi)]
-        coeffs = [0 for _ in range(n_qoi)]
-
-        for i_qoi, q_idx in enumerate(qoi_idx):
-
-            # crop results to considered qoi
-            if self.options["qoi"] != "all":
-                res = copy.deepcopy(res_all)
-                grad_res_3D = copy.deepcopy(grad_res_3D_all)
-                hdf5_subfolder = ""
-                output_idx_passed_validation = None
-
-            else:
-                res = res_all[:, q_idx][:, np.newaxis]
-                hdf5_subfolder = "/qoi_" + str(q_idx)
-                output_idx_passed_validation = q_idx
-
-                if grad_res_3D_all is not None:
-                    grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+        while i_qoi < n_qoi:
+            q_idx = qoi_idx[i_qoi]
+            print_str = "Determining gPC approximation for QOI #{}:".format(q_idx)
+            iprint(print_str, tab=0, verbose=self.options["verbose"])
+            iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
+            megpc.append(0)
+            coeffs.append(0)
+            eps_pre = eps + 1
 
             # Create MEGPC object
             megpc[i_qoi] = MEGPC(problem=self.problem,
                                  options=self.options,
                                  validation=self.validation)
 
-            # Write grid in gpc object
-            megpc[i_qoi].grid = copy.deepcopy(grid)
+            # determine gpc approximation and determine error (increase grid size in case of adaptive sampling)
+            while eps > self.options["eps"]:
+                if i_grid < grid.n_grid:
+                    # run simulations
+                    iprint("Performing {} simulations!".format(grid.n_grid - i_grid),
+                           tab=0, verbose=self.options["verbose"])
 
-            # determine gpc domains
-            megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
-                                         results=res_all[:, q_idx][:, np.newaxis],
-                                         algorithm=self.options["classifier"],
-                                         options=self.options["classifier_options"])
+                    start_time = time.time()
 
-            # initialize sub-gPCs
-            for d in np.unique(megpc[i_qoi].domains):
-                megpc[i_qoi].add_sub_gpc(problem=megpc[i_qoi].problem,
-                                         order=[self.options["order"][0] for _ in range(megpc[i_qoi].problem.dim)],
-                                         order_max=self.options["order_max"],
-                                         order_max_norm=self.options["order_max_norm"],
-                                         interaction_order=self.options["interaction_order"],
-                                         interaction_order_current=self.options["interaction_order"],
-                                         options=self.options,
-                                         domain=d,
-                                         validation=None)
+                    res_all_list.append(com.run(model=self.problem.model,
+                                                problem=self.problem,
+                                                coords=grid.coords[i_grid:grid.n_grid, :],
+                                                coords_norm=grid.coords_norm[i_grid:grid.n_grid, :],
+                                                i_iter=self.options["order_max"],
+                                                i_subiter=self.options["interaction_order"],
+                                                fn_results=None,
+                                                print_func_time=self.options["print_func_time"],
+                                                verbose=self.options["verbose"]))
 
-            # assign grids to sub-gPCs (rotate sub-grids in case of projection)
-            megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
+                    res_all = np.vstack(res_all_list)
 
-            # Initialize gpc matrices
-            megpc[i_qoi].init_gpc_matrices()
+                    if i_qoi == 0 and i_grid == 0:
+                        if self.options["qoi"] == "all":
+                            qoi_idx = np.arange(res_all.shape[1])
+                            n_qoi = len(qoi_idx)
 
-            # Compute gpc coefficients
-            coeffs[i_qoi] = megpc[i_qoi].solve(results=res,
-                                               gradient_results=grad_res_3D,
-                                               solver=self.options["solver"],
-                                               settings=self.options["settings"],
-                                               verbose=self.options["verbose"])
+                    i_grid = grid.n_grid
 
-            # create validation set if necessary
-            if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
-                megpc[0].create_validation_set(n_samples=self.options["n_samples_validation"],
-                                               n_cpu=self.options["n_cpu"])
-            elif self.options["error_type"] == "nrmsd" and megpc[0].validation is not None:
-                megpc[i_qoi].validation = copy.deepcopy(megpc[0].validation)
+                    iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
+                           tab=0, verbose=self.options["verbose"])
 
-            # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-            eps = megpc[i_qoi].validate(coeffs=coeffs[i_qoi], results=res, gradient_results=grad_res_3D)
+                    # Determine gradient [n_grid x n_out x dim]
+                    if self.options["gradient_enhanced"]:
+                        start_time = time.time()
 
-            iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                                self.options["error_type"],
-                                                eps), tab=0, verbose=self.options["verbose"])
+                        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                     problem=self.problem,
+                                                                     grid=grid,
+                                                                     results=res_all,
+                                                                     com=com,
+                                                                     method=self.options["gradient_calculation"],
+                                                                     gradient_results_present=grad_res_3D_all,
+                                                                     gradient_idx_skip=gradient_idx,
+                                                                     i_iter=self.options["order_max"],
+                                                                     i_subiter=self.options["interaction_order"],
+                                                                     print_func_time=self.options["print_func_time"],
+                                                                     dx=self.options["gradient_calculation_options"]["dx"],
+                                                                     distance_weight=
+                                                                     self.options["gradient_calculation_options"][
+                                                                         "distance_weight"],
+                                                                     verbose=self.options["verbose"])
 
-            # domain specific error
-            eps_domain = [0 for _ in range(len(np.unique(megpc[i_qoi].domains)))]
-            for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
-                eps_domain[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
-                                                      results=res,
-                                                      domain=d,
-                                                      output_idx=output_idx_passed_validation)
+                        iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                               tab=0, verbose=self.options["verbose"])
+
+                # crop results to considered qoi
+                if self.options["qoi"] != "all":
+                    res = copy.deepcopy(res_all)
+                    grad_res_3D = copy.deepcopy(grad_res_3D_all)
+                    hdf5_subfolder = ""
+                    output_idx_passed_validation = None
+
+                else:
+                    res = res_all[:, q_idx][:, np.newaxis]
+                    hdf5_subfolder = "/qoi_" + str(q_idx)
+                    output_idx_passed_validation = q_idx
+
+                    if grad_res_3D_all is not None:
+                        grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+
+                # Write grid in gpc object
+                megpc[i_qoi].grid = copy.deepcopy(grid)
+
+                # determine gpc domains
+                megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                             results=res_all[:, q_idx][:, np.newaxis],
+                                             algorithm=self.options["classifier"],
+                                             options=self.options["classifier_options"])
+
+                # initialize sub-gPCs
+                for d in np.unique(megpc[i_qoi].domains):
+                    megpc[i_qoi].add_sub_gpc(problem=megpc[i_qoi].problem,
+                                             order=[self.options["order"][0] for _ in range(megpc[i_qoi].problem.dim)],
+                                             order_max=self.options["order_max"],
+                                             order_max_norm=self.options["order_max_norm"],
+                                             interaction_order=self.options["interaction_order"],
+                                             interaction_order_current=self.options["interaction_order"],
+                                             options=self.options,
+                                             domain=d,
+                                             validation=None)
+
+                # assign grids to sub-gPCs (rotate sub-grids in case of projection)
+                megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
+
+                # Initialize gpc matrices
+                megpc[i_qoi].init_gpc_matrices()
+
+                # Compute gpc coefficients
+                coeffs[i_qoi] = megpc[i_qoi].solve(results=res,
+                                                   gradient_results=grad_res_3D,
+                                                   solver=self.options["solver"],
+                                                   settings=self.options["settings"],
+                                                   verbose=self.options["verbose"])
+
+                # create validation set if necessary
+                if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
+                    megpc[0].create_validation_set(n_samples=self.options["n_samples_validation"],
+                                                   n_cpu=self.options["n_cpu"])
+                elif self.options["error_type"] == "nrmsd" and megpc[0].validation is not None:
+                    megpc[i_qoi].validation = copy.deepcopy(megpc[0].validation)
+
+                # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+                eps = megpc[i_qoi].validate(coeffs=coeffs[i_qoi], results=res, gradient_results=grad_res_3D)
+
+                iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                    self.options["error_type"],
+                                                    eps), tab=0, verbose=self.options["verbose"])
+
+                # domain specific error
+                eps_domain = [0 for _ in range(len(np.unique(megpc[i_qoi].domains)))]
+                for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
+                    eps_domain[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
+                                                          results=res,
+                                                          domain=d,
+                                                          output_idx=output_idx_passed_validation)
+
+                if not self.options["adaptive_sampling"] or (0 < (eps_pre-eps)/eps < 0.01):
+                    break
+
+                if eps > self.options["eps"]:
+                    # extend grid by 10% of number of grid points
+                    n_grid_new = int(np.ceil(1.1*grid.n_grid))
+                    iprint("Extending grid from {} to {} by {} sampling points".format(
+                        grid.n_grid, n_grid_new, n_grid_new - grid.n_grid),
+                        tab=0, verbose=self.options["verbose"])
+                    grid.extend_random_grid(n_grid_new=n_grid_new)
+
+                eps_pre = eps
 
             # save data
             if self.options["fn_results"] is not None:
@@ -814,6 +881,8 @@ class MEStatic(Algorithm):
                                                  data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
                                                  maxshape=None, dtype="float64")
 
+            i_qoi += 1
+
         if self.options["fn_results"] is not None:
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
@@ -832,7 +901,7 @@ class MEStatic(Algorithm):
                 f.create_dataset("grid/coords_norm", data=grid.coords_norm,
                                  maxshape=None, dtype="float64")
 
-                if megpc[i_qoi].grid.coords_gradient is not None:
+                if grid.coords_gradient is not None:
                     f.create_dataset("grid/coords_gradient",
                                      data=grid.coords_gradient,
                                      maxshape=None, dtype="float64")
@@ -892,7 +961,7 @@ class StaticProjection(Algorithm):
     options["qoi"] : int or str, optional, default: 0
         Choose for which QOI the projection is determined for. The other QOIs use the same projection.
         Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
-    options["n_grid_gradient"] : float, optional, default: 10
+    options["n_grid"] : float, optional, default: 10
         Number of initial grid points to determine gradient and projection matrix
 
     Notes
@@ -931,8 +1000,8 @@ class StaticProjection(Algorithm):
         if "order_max_norm" not in self.options.keys():
             self.options["order_max_norm"] = 1.
 
-        if "n_grid_gradient" not in self.options.keys():
-            self.options["n_grid_gradient"] = 10
+        if "n_grid" not in self.options.keys():
+            self.options["n_grid"] = 10
 
         if "qoi" not in self.options.keys():
             self.options["qoi"] = 0
@@ -950,8 +1019,8 @@ class StaticProjection(Algorithm):
         -------
         gpc : GPC object instance
             GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
-        coeffs: list ndarray of float [n_qoi][n_basis x n_out]
-            GPC coefficients of dofferent qoi
+        coeffs: list of ndarray of float [n_qoi][n_basis x n_out]
+            GPC coefficients for different qoi
         res : ndarray of float [n_grid x n_out]
             Simulation results at n_grid points of the n_out output variables
         """
@@ -964,167 +1033,86 @@ class StaticProjection(Algorithm):
         else:
             fn_results = None
 
-        grid = self.options["grid"]
         grad_res_3D = None
+        grad_res_3D_all = None
         gradient_idx = None
+        res_all_list = []
+
+        n_grid = self.options["n_grid"]
 
         # make initial grid to determine gradients and projection matrix. By default, it is an LHS (ese) grid
         if self.options["grid"] == Random:
             grid_original = Random(parameters_random=self.problem.parameters_random,
-                                   n_grid=self.options["n_grid_gradient"],
+                                   n_grid=n_grid,
                                    options={"seed": self.options["seed"]})
         else:
             grid_original = LHS(parameters_random=self.problem.parameters_random,
-                                n_grid=self.options["n_grid_gradient"],
+                                n_grid=n_grid,
                                 options={"criterion": "ese",
                                          "seed": self.options["seed"]})
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
 
-        # Run simulations
-        iprint("Performing {} simulations!".format(grid_original.coords.shape[0]),
-               tab=0, verbose=self.options["verbose"])
-
-        start_time = time.time()
-
-        res_all = com.run(model=self.problem.model,
-                          problem=self.problem,
-                          coords=grid_original.coords,
-                          coords_norm=grid_original.coords_norm,
-                          i_iter=self.options["order_max"],
-                          i_subiter=self.options["interaction_order"],
-                          fn_results=None,
-                          print_func_time=self.options["print_func_time"],
-                          verbose=self.options["verbose"])
-
-        iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
-               tab=0, verbose=self.options["verbose"])
-
-        # Determine gradient
-        start_time = time.time()
-
-        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
-                                                     problem=self.problem,
-                                                     grid=grid_original,
-                                                     results=res_all,
-                                                     com=com,
-                                                     method="FD_fwd",
-                                                     gradient_results_present=None,
-                                                     gradient_idx_skip=None,
-                                                     i_iter=self.options["order_max"],
-                                                     i_subiter=self.options["interaction_order"],
-                                                     print_func_time=self.options["print_func_time"],
-                                                     dx=1e-3,
-                                                     distance_weight=None,
-                                                     verbose=self.options["verbose"])
-
-        iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-               tab=0, verbose=self.options["verbose"])
-
-        if self.options["qoi"] == "all":
-            qoi_idx = np.arange(res_all.shape[1])
-            n_qoi = len(qoi_idx)
-        else:
-            qoi_idx = [self.options["qoi"]]
-            n_qoi = 1
-
         # Set up reduced gPC
-        self.problem_reduced = [0 for _ in range(n_qoi)]
-        gpc = [0 for _ in range(n_qoi)]
-        coeffs = [0 for _ in range(n_qoi)]
+        self.problem_reduced = []
+        gpc = []
+        coeffs = []
+        eps = self.options["eps"] + 1
+        i_grid = 0
+        i_qoi = 0
 
-        for i_qoi, q_idx in enumerate(qoi_idx):
+        if self.options["qoi"] is not None and self.options["qoi"] != "all":
+            q_idx = self.options["qoi"]
+            qoi_idx = [q_idx]
+        else:
+            qoi_idx = np.arange(1)
+            q_idx = qoi_idx[0]
 
-            # crop results to considered qoi
-            if self.options["qoi"] != "all":
-                res = copy.deepcopy(res_all)
-                grad_res_3D = copy.deepcopy(grad_res_3D_all)
-                hdf5_subfolder = ""
+        n_qoi = len(qoi_idx)
 
-            else:
-                res = res_all[:, q_idx][:, np.newaxis]
-                grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
-                hdf5_subfolder = "/qoi_" + str(q_idx)
+        while i_qoi < n_qoi:
+            q_idx = qoi_idx[i_qoi]
+            print_str = "Determining gPC approximation for QOI #{}:".format(q_idx)
+            iprint(print_str, tab=0, verbose=self.options["verbose"])
+            iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
+            self.problem_reduced.append(0)
+            gpc.append(0)
+            coeffs.append(0)
+            eps_pre = eps + 1
 
-            # Determine projection matrix
-            p_matrix, p_matrix_complete = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
-                                                                      lambda_eps=self.options["lambda_eps_gradient"])
-            p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
+            # determine gpc approximation and determine error (increase grid size in case of adaptive sampling)
+            while eps > self.options["eps"]:
+                # run simulations
+                if i_grid < grid_original.n_grid:
+                    iprint("Performing {} simulations!".format(grid_original.n_grid - i_grid),
+                           tab=0, verbose=self.options["verbose"])
 
-            dim_reduced = p_matrix.shape[0]
-            parameters_reduced = OrderedDict()
+                    start_time = time.time()
 
-            for i in range(dim_reduced):
-                parameters_reduced["n{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
+                    res_all_list.append(com.run(model=self.problem.model,
+                                                problem=self.problem,
+                                                coords=grid_original.coords[i_grid:grid_original.n_grid, :],
+                                                coords_norm=grid_original.coords_norm[i_grid:grid_original.n_grid, :],
+                                                i_iter=self.options["order_max"],
+                                                i_subiter=self.options["interaction_order"],
+                                                fn_results=None,
+                                                print_func_time=self.options["print_func_time"],
+                                                verbose=self.options["verbose"]))
 
-            self.problem_reduced[i_qoi] = Problem(model=self.problem.model, parameters=parameters_reduced)
+                    res_all = np.vstack(res_all_list)
 
-            # Create reduced gPC object
-            gpc[i_qoi] = Reg(problem=self.problem_reduced[i_qoi],
-                             order=[self.options["order"][0] for _ in range(dim_reduced)],
-                             order_max=self.options["order_max"],
-                             order_max_norm=self.options["order_max_norm"],
-                             interaction_order=self.options["interaction_order"],
-                             interaction_order_current=self.options["interaction_order"],
-                             options=self.options,
-                             validation=self.validation)
+                    if i_qoi == 0 and i_grid == 0:
+                        if self.options["qoi"] == "all":
+                            qoi_idx = np.arange(res_all.shape[1])
+                            n_qoi = len(qoi_idx)
 
-            # save original problem in gpc object
-            gpc[i_qoi].problem_original = self.problem
+                    i_grid = grid_original.n_grid
 
-            # save projection matrix in gPC object
-            gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
-            gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
+                    iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
+                           tab=0, verbose=self.options["verbose"])
 
-            # extend initial grid and perform additional simulations if necessary
-            n_coeffs = get_num_coeffs_sparse(order_dim_max=[self.options["order"][0] for _ in range(dim_reduced)],
-                                             order_glob_max=self.options["order_max"],
-                                             order_inter_max=self.options["interaction_order"],
-                                             dim=dim_reduced)
-
-            n_grid_new = n_coeffs * self.options["matrix_ratio"]
-
-            # re-initialize grid in case of [L1, L1_LHS, LHS_L1, FIM] because initial grid was Random or LHS (ese)
-            if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
-                grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
-                                                     coords=grid_original.coords,
-                                                     coords_norm=grid_original.coords_norm,
-                                                     coords_gradient=grid_original.coords_gradient,
-                                                     coords_gradient_norm=grid_original.coords_gradient_norm,
-                                                     options=self.options["grid_options"],
-                                                     gpc=gpc[i_qoi])
-
-            if n_grid_new > grid_original.n_grid:
-                iprint("Extending grid from {} to {} grid points ...".format(grid_original.n_grid, n_grid_new),
-                       tab=0, verbose=self.options["verbose"])
-
-                # extend grid
-                grid_original.extend_random_grid(n_grid_new=n_grid_new)
-
-                # Run simulations
-                iprint("Performing {} additional simulations!".format(grid_original.coords.shape[0]),
-                       tab=0, verbose=self.options["verbose"])
-
-                start_time = time.time()
-
-                res_new = com.run(model=self.problem.model,
-                                  problem=self.problem,
-                                  coords=grid_original.coords[self.options["n_grid_gradient"]:, :],
-                                  coords_norm=grid_original.coords_norm[self.options["n_grid_gradient"]:, :],
-                                  i_iter=self.options["order_max"],
-                                  i_subiter=self.options["interaction_order"],
-                                  fn_results=None,
-                                  print_func_time=self.options["print_func_time"],
-                                  verbose=self.options["verbose"])
-
-                res_all = np.vstack((res_all, res_new))
-
-                iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
-                       tab=0, verbose=self.options["verbose"])
-
-                # Determine gradient [n_grid x n_out x dim]
-                if self.options["gradient_enhanced"]:
+                    # Determine gradient [n_grid x n_out x dim]
                     start_time = time.time()
 
                     grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
@@ -1132,14 +1120,16 @@ class StaticProjection(Algorithm):
                                                                  grid=grid_original,
                                                                  results=res_all,
                                                                  com=com,
-                                                                 method=self.options["gradient_calculation"],
+                                                                 method="FD_fwd",
                                                                  gradient_results_present=grad_res_3D_all,
                                                                  gradient_idx_skip=gradient_idx,
                                                                  i_iter=self.options["order_max"],
                                                                  i_subiter=self.options["interaction_order"],
                                                                  print_func_time=self.options["print_func_time"],
                                                                  dx=self.options["gradient_calculation_options"]["dx"],
-                                                                 distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                                 distance_weight=
+                                                                 self.options["gradient_calculation_options"][
+                                                                     "distance_weight"],
                                                                  verbose=self.options["verbose"])
 
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
@@ -1149,55 +1139,99 @@ class StaticProjection(Algorithm):
                 if self.options["qoi"] != "all":
                     res = copy.deepcopy(res_all)
                     grad_res_3D = copy.deepcopy(grad_res_3D_all)
+                    hdf5_subfolder = ""
 
                 else:
                     res = res_all[:, q_idx][:, np.newaxis]
                     grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+                    hdf5_subfolder = "/qoi_" + str(q_idx)
 
-            # copy grid to gPC object and initialize transformed grid
-            gpc[i_qoi].grid_original = copy.deepcopy(grid_original)
-            gpc[i_qoi].grid = copy.deepcopy(grid_original)
+                # Determine projection matrix
+                p_matrix, p_matrix_complete = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
+                                                                          lambda_eps=self.options["lambda_eps_gradient"])
+                p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
 
-            # transform variables of original grid to reduced parameter space
-            gpc[i_qoi].grid.coords = np.matmul(gpc[i_qoi].grid_original.coords,
-                                            gpc[i_qoi].p_matrix.transpose())
-            gpc[i_qoi].grid.coords_norm = np.matmul(gpc[i_qoi].grid_original.coords_norm,
-                                                 gpc[i_qoi].p_matrix.transpose() /
-                                                 gpc[i_qoi].p_matrix_norm[np.newaxis, :])
+                dim_reduced = p_matrix.shape[0]
+                parameters_reduced = OrderedDict()
 
-            # gpc_red.interaction_order_current = 1
-            # self.options_red = copy.deepcopy(self.options)
-            # self.options_red["interaction_order"] = 1
-            gpc[i_qoi].options = copy.deepcopy(self.options)
+                for i in range(dim_reduced):
+                    parameters_reduced["n{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
 
-            # Initialize gpc matrix
-            gpc[i_qoi].init_gpc_matrix(gradient_idx=gradient_idx)
+                self.problem_reduced[i_qoi] = Problem(model=self.problem.model, parameters=parameters_reduced)
 
-            # Someone might not use the gradient to determine the gpc coeffs
-            if self.options["gradient_enhanced"]:
-                grad_res_3D_passed = grad_res_3D
-            else:
-                grad_res_3D_passed = None
+                # Create reduced gPC object
+                gpc[i_qoi] = Reg(problem=self.problem_reduced[i_qoi],
+                                 order=[self.options["order"][0] for _ in range(dim_reduced)],
+                                 order_max=self.options["order_max"],
+                                 order_max_norm=self.options["order_max_norm"],
+                                 interaction_order=self.options["interaction_order"],
+                                 interaction_order_current=self.options["interaction_order"],
+                                 options=self.options,
+                                 validation=self.validation)
 
-            # Compute gpc coefficients
-            coeffs[i_qoi] = gpc[i_qoi].solve(results=res,
-                                             gradient_results=grad_res_3D_passed,
-                                             solver=self.options["solver"],
-                                             settings=self.options["settings"],
-                                             verbose=self.options["verbose"])
+                # save original problem in gpc object
+                gpc[i_qoi].problem_original = self.problem
 
-            # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-            if self.options["error_type"] == "nrmsd" and gpc[0].validation is None:
-                gpc[0].create_validation_set(n_samples=self.options["n_samples_validation"],
-                                             n_cpu=self.options["n_cpu"])
-            elif self.options["error_type"] == "nrmsd" and gpc[0].validation is not None:
-                gpc[i_qoi].validation = copy.deepcopy(gpc[0].validation)
+                # save projection matrix in gPC object
+                gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
+                gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
 
-            eps = gpc[i_qoi].validate(coeffs=coeffs[i_qoi], results=res, gradient_results=grad_res_3D_passed)
+                # re-initialize grid in case of [L1, L1_LHS, LHS_L1, FIM] because initial grid was Random or LHS (ese)
+                if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
+                    grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                                         coords=grid_original.coords,
+                                                         coords_norm=grid_original.coords_norm,
+                                                         coords_gradient=grid_original.coords_gradient,
+                                                         coords_gradient_norm=grid_original.coords_gradient_norm,
+                                                         options=self.options["grid_options"],
+                                                         gpc=gpc[i_qoi])
 
-            iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                                self.options["error_type"],
-                                                eps), tab=0, verbose=self.options["verbose"])
+                # copy grid to gPC object and initialize transformed grid
+                gpc[i_qoi].grid_original = copy.deepcopy(grid_original)
+                gpc[i_qoi].grid = project_grid(grid=grid_original, p_matrix=p_matrix, mode="reduce")
+                gpc[i_qoi].options = copy.deepcopy(self.options)
+
+                # Initialize gpc matrix
+                gpc[i_qoi].init_gpc_matrix(gradient_idx=gradient_idx)
+
+                # Someone might not use the gradient to determine the gpc coeffs
+                if self.options["gradient_enhanced"]:
+                    grad_res_3D_passed = grad_res_3D
+                else:
+                    grad_res_3D_passed = None
+
+                # Compute gpc coefficients
+                coeffs[i_qoi] = gpc[i_qoi].solve(results=res,
+                                                 gradient_results=grad_res_3D_passed,
+                                                 solver=self.options["solver"],
+                                                 settings=self.options["settings"],
+                                                 verbose=self.options["verbose"])
+
+                # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+                if self.options["error_type"] == "nrmsd" and gpc[0].validation is None:
+                    gpc[0].create_validation_set(n_samples=self.options["n_samples_validation"],
+                                                 n_cpu=self.options["n_cpu"])
+                elif self.options["error_type"] == "nrmsd" and gpc[0].validation is not None:
+                    gpc[i_qoi].validation = copy.deepcopy(gpc[0].validation)
+
+                eps = gpc[i_qoi].validate(coeffs=coeffs[i_qoi], results=res, gradient_results=grad_res_3D_passed)
+
+                iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                    self.options["error_type"],
+                                                    eps), tab=0, verbose=self.options["verbose"])
+
+                if not self.options["adaptive_sampling"] or (0 < (eps_pre-eps)/eps < 0.01):
+                    break
+
+                if eps > self.options["eps"]:
+                    # extend grid by 5% of number of basis functions and restart loop
+                    n_grid_new = int(np.ceil(grid_original.n_grid + 5e-2 * gpc[i_qoi].basis.n_basis))
+                    iprint("Extending grid from {} to {} by {} sampling points".format(
+                        grid_original.n_grid, n_grid_new, n_grid_new - grid_original.n_grid),
+                        tab=0, verbose=self.options["verbose"])
+                    grid_original.extend_random_grid(n_grid_new=n_grid_new)
+
+                eps_pre = eps
 
             # save gpc objects and gpc coeffs
             if self.options["fn_results"] is not None:
@@ -1234,6 +1268,8 @@ class StaticProjection(Algorithm):
                                      data=gpc[i_qoi].p_matrix,
                                      maxshape=None, dtype="float64")
 
+            i_qoi += 1
+
         if self.options["fn_results"] is not None:
 
             with h5py.File(fn_results + ".hdf5", "a") as f:
@@ -1242,7 +1278,7 @@ class StaticProjection(Algorithm):
                 f.create_dataset("grid/coords_norm", data=grid_original.coords_norm,
                                  maxshape=None, dtype="float64")
 
-                if gpc[i_qoi].grid.coords_gradient is not None:
+                if grid_original.coords_gradient is not None:
                     f.create_dataset("grid/coords_gradient",
                                      data=grid_original.coords_gradient,
                                      maxshape=None, dtype="float64")
@@ -1379,265 +1415,227 @@ class MEStaticProjection(Algorithm):
         else:
             fn_results = None
 
+        grad_res_3D = None
+        grad_res_3D_all = None
+        gradient_idx = None
+        res_all_list = []
+
         grid = self.options["grid"]
 
         # make initial random grid to determine gradients and projection matrix
-        grid = grid(parameters_random=self.problem.parameters_random,
-                    n_grid=self.options["n_grid_gradient"],
-                    options=self.options["grid_options"])
+        if self.options["grid"] == Random or self.options["grid"] == LHS:
+            grid = grid(parameters_random=self.problem.parameters_random,
+                        n_grid=self.options["n_grid"],
+                        options=self.options["grid_options"])
+
+        elif self.options["grid"] == L1 or self.options["grid"] == L1_LHS or self.options["grid"] == LHS_L1 \
+                or self.options["grid"] == FIM:
+            raise NotImplementedError("Grid type not possible for MEStaticProjection algorithm."
+                                      "Please use either 'Random' or 'LHS'.")
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
 
-        # Run simulations
-        iprint("Performing {} simulations!".format(grid.coords.shape[0]),
-               tab=0, verbose=self.options["verbose"])
+        megpc = []
+        coeffs = []
+        eps = self.options["eps"] + 1
+        i_grid = 0
+        i_qoi = 0
 
-        start_time = time.time()
-
-        res_all = com.run(model=self.problem.model,
-                          problem=self.problem,
-                          coords=grid.coords,
-                          coords_norm=grid.coords_norm,
-                          i_iter=self.options["order_max"],
-                          i_subiter=self.options["interaction_order"],
-                          fn_results=None,
-                          print_func_time=self.options["print_func_time"],
-                          verbose=self.options["verbose"])
-
-        iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
-               tab=0, verbose=self.options["verbose"])
-
-        # Determine gradient
-        start_time = time.time()
-
-        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
-                                                     problem=self.problem,
-                                                     grid=grid,
-                                                     results=res_all,
-                                                     com=com,
-                                                     method="FD_fwd",
-                                                     gradient_results_present=None,
-                                                     i_iter=self.options["order_max"],
-                                                     i_subiter=self.options["interaction_order"],
-                                                     print_func_time=self.options["print_func_time"],
-                                                     dx=1e-3,
-                                                     distance_weight=None,
-                                                     verbose=self.options["verbose"])
-
-        iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-               tab=0, verbose=self.options["verbose"])
-
-        if self.options["qoi"] == "all":
-            qoi_idx = np.arange(res_all.shape[1])
-            n_qoi = len(qoi_idx)
+        if self.options["qoi"] is not None and self.options["qoi"] != "all":
+            q_idx = self.options["qoi"]
+            qoi_idx = [q_idx]
         else:
-            qoi_idx = [self.options["qoi"]]
-            n_qoi = 1
+            qoi_idx = np.arange(1)
+            q_idx = qoi_idx[0]
 
-        megpc = [0 for _ in range(n_qoi)]
-        coeffs = [0 for _ in range(n_qoi)]
+        n_qoi = len(qoi_idx)
 
-        for i_qoi, q_idx in enumerate(qoi_idx):
+        while i_qoi < n_qoi:
+            q_idx = qoi_idx[i_qoi]
+            print_str = "Determining gPC approximation for QOI #{}:".format(q_idx)
+            iprint(print_str, tab=0, verbose=self.options["verbose"])
+            iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
+            megpc.append(0)
+            coeffs.append(0)
 
-            # crop results to considered qoi
-            if self.options["qoi"] != "all":
-                res = copy.deepcopy(res_all)
-                grad_res_3D = copy.deepcopy(grad_res_3D_all)
-                hdf5_subfolder = ""
-                output_idx_passed_validation = None
-
-            else:
-                res = res_all[:, q_idx][:, np.newaxis]
-                grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
-                hdf5_subfolder = "/qoi_" + str(q_idx)
-                output_idx_passed_validation = q_idx
-
-            # Create reduced gPC object
+            # Create MEGPC object
             megpc[i_qoi] = MEGPC(problem=self.problem,
                                  options=self.options,
                                  validation=self.validation)
 
-            megpc[i_qoi].grid = copy.deepcopy(grid)
+            eps_pre = eps + 1
 
-            # determine gpc domains
-            megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
-                                         results=res_all[:, q_idx][:, np.newaxis],
-                                         algorithm=self.options["classifier"],
-                                         options=self.options["classifier_options"])
-
-            problem_reduced = [0 for _ in range(megpc[i_qoi].n_gpc)]
-            p_matrix = [0 for _ in range(megpc[i_qoi].n_gpc)]
-            p_matrix_norm = [0 for _ in range(megpc[i_qoi].n_gpc)]
-            dim_reduced = [0 for _ in range(megpc[i_qoi].n_gpc)]
-            parameters_reduced = [OrderedDict() for _ in range(megpc[i_qoi].n_gpc)]
-            megpc[i_qoi].gpc = [0 for _ in range(megpc[i_qoi].n_gpc)]
-            n_grid_new = [0 for _ in range(megpc[i_qoi].n_gpc)]
-
-            # Determine projection matrices for sub gPCs
-            for d in np.unique(megpc[i_qoi].domains):
-                p_matrix[d], _ = determine_projection_matrix(
-                    gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == d, q_idx, :],
-                    lambda_eps=self.options["lambda_eps_gradient"])
-
-                p_matrix_norm[d] = np.sum(np.abs(p_matrix[d]), axis=1)
-                dim_reduced[d] = p_matrix[d].shape[0]
-
-                for i in range(dim_reduced[d]):
-                    parameters_reduced[d]["n{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
-
-                problem_reduced[d] = Problem(model=self.problem.model, parameters=parameters_reduced[d])
-
-                # Set up reduced gPC for this domain
-                megpc[i_qoi].add_sub_gpc(problem=problem_reduced[d],
-                                         order=[self.options["order"][0] for _ in range(dim_reduced[d])],
-                                         order_max=self.options["order_max"],
-                                         order_max_norm=self.options["order_max_norm"],
-                                         interaction_order=self.options["interaction_order"],
-                                         interaction_order_current=self.options["interaction_order"],
-                                         options=self.options,
-                                         domain=d,
-                                         validation=None)
-
-                # save original problem in gpc object
-                megpc[i_qoi].gpc[d].problem_original = self.problem
-
-                # save projection matrix in gPC object
-                megpc[i_qoi].gpc[d].p_matrix = copy.deepcopy(p_matrix[d])
-                megpc[i_qoi].gpc[d].p_matrix_norm = copy.deepcopy(p_matrix_norm[d])
-
-                # extend initial grid and perform additional simulations if necessary
-                n_coeffs = get_num_coeffs_sparse(order_dim_max=[self.options["order"][0]
-                                                                for _ in range(dim_reduced[d])],
-                                                 order_glob_max=self.options["order_max"],
-                                                 order_inter_max=self.options["interaction_order"],
-                                                 order_inter_current=self.options["interaction_order"],
-                                                 dim=dim_reduced[d])
-
-                n_grid_new = n_coeffs * self.options["matrix_ratio"]
-                n_grid_domain = np.sum(megpc[i_qoi].domains == d)
-
-                # run additional simulations if n_grid_gradient was not sufficient for the selected order
-                if n_grid_new > n_grid_domain:
-                    iprint("Extending grid from {} to {} grid points in domain {} ...".format(n_grid_domain,
-                                                                                              n_grid_new,
-                                                                                              d),
-                           tab=0, verbose=self.options["verbose"])
-
-                    # extend grid
-                    grid.extend_random_grid(n_grid_new=grid.n_grid-n_grid_domain+n_grid_new,
-                                            classifier=megpc[i_qoi].classifier,
-                                            domain=d)
-
-                    # Run simulations
-                    iprint("Performing {} additional simulations!".format(n_grid_new-n_grid_domain),
+            # determine gpc approximation and determine error (increase grid size in case of adaptive sampling)
+            while eps > self.options["eps"]:
+                if i_grid < grid.n_grid:
+                    # run simulations
+                    iprint("Performing {} simulations!".format(grid.n_grid - i_grid),
                            tab=0, verbose=self.options["verbose"])
 
                     start_time = time.time()
 
-                    res_new = com.run(model=self.problem.model,
-                                      problem=self.problem,
-                                      coords=grid.coords[res_all.shape[0]:, :],
-                                      coords_norm=grid.coords_norm[self.options["n_grid_gradient"]:, :],
-                                      i_iter=self.options["order_max"],
-                                      i_subiter=self.options["interaction_order"],
-                                      fn_results=None,
-                                      print_func_time=self.options["print_func_time"],
-                                      verbose=self.options["verbose"])
+                    res_all_list.append(com.run(model=self.problem.model,
+                                                problem=self.problem,
+                                                coords=grid.coords[i_grid:grid.n_grid, :],
+                                                coords_norm=grid.coords_norm[i_grid:grid.n_grid, :],
+                                                i_iter=self.options["order_max"],
+                                                i_subiter=self.options["interaction_order"],
+                                                fn_results=None,
+                                                print_func_time=self.options["print_func_time"],
+                                                verbose=self.options["verbose"]))
 
-                    res_all = np.vstack((res_all, res_new))
+                    res_all = np.vstack(res_all_list)
+
+                    if i_qoi == 0 and i_grid == 0:
+                        if self.options["qoi"] == "all":
+                            qoi_idx = np.arange(res_all.shape[1])
+                            n_qoi = len(qoi_idx)
+
+                    i_grid = grid.n_grid
 
                     iprint('Total function evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
                     # Determine gradient [n_grid x n_out x dim]
-                    if self.options["gradient_enhanced"]:
-                        start_time = time.time()
+                    start_time = time.time()
 
-                        grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
-                                                                     problem=self.problem,
-                                                                     grid=grid,
-                                                                     results=res_all,
-                                                                     com=com,
-                                                                     method=self.options["gradient_calculation"],
-                                                                     gradient_results_present=grad_res_3D_all,
-                                                                     gradient_idx_skip=gradient_idx,
-                                                                     i_iter=self.options["order_max"],
-                                                                     i_subiter=self.options["interaction_order"],
-                                                                     print_func_time=self.options["print_func_time"],
-                                                                     dx=self.options["gradient_calculation_options"]["dx"],
-                                                                     distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
-                                                                     verbose=self.options["verbose"])
+                    grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                 problem=self.problem,
+                                                                 grid=grid,
+                                                                 results=res_all,
+                                                                 com=com,
+                                                                 method="FD_fwd",
+                                                                 gradient_results_present=grad_res_3D_all,
+                                                                 gradient_idx_skip=gradient_idx,
+                                                                 i_iter=self.options["order_max"],
+                                                                 i_subiter=self.options["interaction_order"],
+                                                                 print_func_time=self.options["print_func_time"],
+                                                                 dx=self.options["gradient_calculation_options"]["dx"],
+                                                                 distance_weight=
+                                                                 self.options["gradient_calculation_options"][
+                                                                     "distance_weight"],
+                                                                 verbose=self.options["verbose"])
 
-                        iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-                               tab=0, verbose=self.options["verbose"])
+                    iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                           tab=0, verbose=self.options["verbose"])
 
-                    # crop results to considered qoi
-                    if self.options["qoi"] != "all":
-                        res = copy.deepcopy(res_all)
-                        grad_res_3D = copy.deepcopy(grad_res_3D_all)
+                # crop results to considered qoi
+                if self.options["qoi"] != "all":
+                    res = copy.deepcopy(res_all)
+                    grad_res_3D = copy.deepcopy(grad_res_3D_all)
+                    hdf5_subfolder = ""
+                    output_idx_passed_validation = None
 
-                    else:
-                        res = res_all[:, q_idx][:, np.newaxis]
-                        grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+                else:
+                    res = res_all[:, q_idx][:, np.newaxis]
+                    grad_res_3D = grad_res_3D_all[:, q_idx, :][:, np.newaxis, :]
+                    hdf5_subfolder = "/qoi_" + str(q_idx)
+                    output_idx_passed_validation = q_idx
 
-                    # update classifier with new grid-points
-                    megpc[i_qoi].init_classifier(coords=grid.coords_norm,
-                                                 results=res_all[:, q_idx][:, np.newaxis],
-                                                 algorithm=self.options["classifier"],
-                                                 options=self.options["classifier_options"])
+                megpc[i_qoi].grid = copy.deepcopy(grid)
 
-            # update classifier with new grid-points
-            megpc[i_qoi].init_classifier(coords=grid.coords_norm,
-                                         results=res_all[:, q_idx][:, np.newaxis],
-                                         algorithm=self.options["classifier"],
-                                         options=self.options["classifier_options"])
+                # determine gpc domains
+                megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                             results=res_all[:, q_idx][:, np.newaxis],
+                                             algorithm=self.options["classifier"],
+                                             options=self.options["classifier_options"])
 
-            # copy grid to gPC object and initialize transformed grid
-            megpc[i_qoi].grid = copy.deepcopy(grid)
+                problem_reduced = [0 for _ in range(megpc[i_qoi].n_gpc)]
+                p_matrix = [0 for _ in range(megpc[i_qoi].n_gpc)]
+                p_matrix_norm = [0 for _ in range(megpc[i_qoi].n_gpc)]
+                dim_reduced = [0 for _ in range(megpc[i_qoi].n_gpc)]
+                parameters_reduced = [OrderedDict() for _ in range(megpc[i_qoi].n_gpc)]
+                megpc[i_qoi].gpc = [0 for _ in range(megpc[i_qoi].n_gpc)]
 
-            # copy options to MEGPC object
-            megpc[i_qoi].options = copy.deepcopy(self.options)
+                # Determine projection matrices for sub gPCs
+                for d in np.unique(megpc[i_qoi].domains):
+                    p_matrix[d], _ = determine_projection_matrix(
+                        gradient_results=grad_res_3D_all[megpc[i_qoi].domains[gradient_idx] == d, q_idx, :],
+                        lambda_eps=self.options["lambda_eps_gradient"])
 
-            # assign grids to sub-gPCs (rotate sub-grids in case of projection)
-            megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
+                    p_matrix_norm[d] = np.sum(np.abs(p_matrix[d]), axis=1)
+                    dim_reduced[d] = p_matrix[d].shape[0]
 
-            # Initialize gpc matrices
-            megpc[i_qoi].init_gpc_matrices()
+                    for i in range(dim_reduced[d]):
+                        parameters_reduced[d]["n{}".format(i)] = Beta(pdf_shape=[1., 1.], pdf_limits=[-1., 1.])
 
-            # Someone might not use the gradient to determine the gpc coeffs
-            if megpc[i_qoi].gradient:
-                grad_res_3D_passed = grad_res_3D
-            else:
-                grad_res_3D_passed = None
+                    problem_reduced[d] = Problem(model=self.problem.model, parameters=parameters_reduced[d])
 
-            # Compute gpc coefficients
-            coeffs[i_qoi] = megpc[i_qoi].solve(results=res,
-                                               gradient_results=grad_res_3D_passed,
-                                               solver=self.options["solver"],
-                                               settings=self.options["settings"],
-                                               verbose=self.options["verbose"])
+                    # Set up reduced gPC for this domain
+                    megpc[i_qoi].add_sub_gpc(problem=problem_reduced[d],
+                                             order=[self.options["order"][0] for _ in range(dim_reduced[d])],
+                                             order_max=self.options["order_max"],
+                                             order_max_norm=self.options["order_max_norm"],
+                                             interaction_order=self.options["interaction_order"],
+                                             interaction_order_current=self.options["interaction_order"],
+                                             options=self.options,
+                                             domain=d,
+                                             validation=None)
 
-            # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
-            if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
-                megpc[0].create_validation_set(n_samples=self.options["n_samples_validation"],
-                                               n_cpu=self.options["n_cpu"])
-            elif self.options["error_type"] == "nrmsd" and megpc[0].validation is not None:
-                megpc[i_qoi].validation = copy.deepcopy(megpc[0].validation)
+                    # save original problem in gpc object
+                    megpc[i_qoi].gpc[d].problem_original = self.problem
 
-            eps = megpc[i_qoi].validate(coeffs=coeffs[i_qoi], results=res, gradient_results=grad_res_3D_passed)
+                    # save projection matrix in gPC object
+                    megpc[i_qoi].gpc[d].p_matrix = copy.deepcopy(p_matrix[d])
+                    megpc[i_qoi].gpc[d].p_matrix_norm = copy.deepcopy(p_matrix_norm[d])
 
-            iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                                self.options["error_type"],
-                                                eps), tab=0, verbose=self.options["verbose"])
+                # copy options to MEGPC object
+                megpc[i_qoi].options = copy.deepcopy(self.options)
 
-            # domain specific error
-            eps_domain = [0 for _ in range(len(np.unique(megpc[i_qoi].domains)))]
-            for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
-                eps_domain[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
-                                                      results=res,
-                                                      domain=d,
-                                                      output_idx=output_idx_passed_validation)
+                # assign grids to sub-gPCs (rotate sub-grids in case of projection)
+                megpc[i_qoi].assign_grids(gradient_idx=gradient_idx)
+
+                # Initialize gpc matrices
+                megpc[i_qoi].init_gpc_matrices()
+
+                # Someone might not use the gradient to determine the gpc coeffs
+                if megpc[i_qoi].gradient:
+                    grad_res_3D_passed = grad_res_3D
+                else:
+                    grad_res_3D_passed = None
+
+                # Compute gpc coefficients
+                coeffs[i_qoi] = megpc[i_qoi].solve(results=res,
+                                                   gradient_results=grad_res_3D_passed,
+                                                   solver=self.options["solver"],
+                                                   settings=self.options["settings"],
+                                                   verbose=self.options["verbose"])
+
+                # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+                if self.options["error_type"] == "nrmsd" and megpc[0].validation is None:
+                    megpc[0].create_validation_set(n_samples=self.options["n_samples_validation"],
+                                                   n_cpu=self.options["n_cpu"])
+                elif self.options["error_type"] == "nrmsd" and megpc[0].validation is not None:
+                    megpc[i_qoi].validation = copy.deepcopy(megpc[0].validation)
+
+                eps = megpc[i_qoi].validate(coeffs=coeffs[i_qoi], results=res, gradient_results=grad_res_3D_passed)
+
+                iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                    self.options["error_type"],
+                                                    eps), tab=0, verbose=self.options["verbose"])
+
+                # domain specific error
+                eps_domain = [0 for _ in range(len(np.unique(megpc[i_qoi].domains)))]
+                for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
+                    eps_domain[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
+                                                          results=res,
+                                                          domain=d,
+                                                          output_idx=output_idx_passed_validation)
+
+                if not self.options["adaptive_sampling"] or (0 < (eps_pre-eps)/eps < 0.01):
+                    break
+
+                if eps > self.options["eps"]:
+                    # extend grid by 10% of number of grid points
+                    n_grid_new = int(np.ceil(1.1*grid.n_grid))
+                    iprint("Extending grid from {} to {} by {} sampling points".format(
+                        grid.n_grid, n_grid_new, n_grid_new - grid.n_grid),
+                        tab=0, verbose=self.options["verbose"])
+                    grid.extend_random_grid(n_grid_new=n_grid_new)
+
+                eps_pre = eps
+
             # save data
             if self.options["fn_results"] is not None:
 
@@ -1680,6 +1678,7 @@ class MEStaticProjection(Algorithm):
                         f.create_dataset("p_matrix" + hdf5_subfolder + "/dom_" + str(i_gpc),
                                          data=megpc[i_qoi].gpc[i_gpc].p_matrix,
                                          maxshape=None, dtype="float64")
+            i_qoi += 1
 
         if self.options["fn_results"] is not None:
 
@@ -1699,7 +1698,7 @@ class MEStaticProjection(Algorithm):
                 f.create_dataset("grid/coords_norm", data=grid.coords_norm,
                                  maxshape=None, dtype="float64")
 
-                if megpc[i_qoi].grid.coords_gradient is not None:
+                if grid.coords_gradient is not None:
                     f.create_dataset("grid/coords_gradient",
                                      data=grid.coords_gradient,
                                      maxshape=None, dtype="float64")
@@ -2234,9 +2233,15 @@ class MERegAdaptiveProjection(Algorithm):
         n_grid_init = self.options["n_grid_init"]
 
         # make initial random grid to determine number of output variables and to estimate projection
-        grid = Random(parameters_random=self.problem.parameters_random,
-                      n_grid=n_grid_init,
-                      options=self.options["grid"])
+        if self.options["grid"] == Random or self.options["grid"] == LHS:
+            grid = Random(parameters_random=self.problem.parameters_random,
+                          n_grid=n_grid_init,
+                          options=self.options["grid"])
+
+        elif self.options["grid"] == L1 or self.options["grid"] == L1_LHS or self.options["grid"] == LHS_L1 \
+                or self.options["grid"] == FIM:
+            raise NotImplementedError("Grid type not possible for MERegAdaptiveProjection algorithm."
+                                      "Please use either 'Random' or 'LHS'.")
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
