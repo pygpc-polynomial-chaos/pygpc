@@ -136,8 +136,23 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
 
         if smooth_pdf is not None:
             if smooth_pdf is not False:
-                pdf_y_gpc = savgol_filter(pdf_y_gpc, smooth_pdf[0], smooth_pdf[1])
-                pdf_y_orig = savgol_filter(pdf_y_orig, smooth_pdf[0], smooth_pdf[1])
+                # smooth gpc pdf
+                y_gpc_smoothed = False
+                while not y_gpc_smoothed:
+                    try:
+                        pdf_y_gpc = savgol_filter(pdf_y_gpc, smooth_pdf[0], smooth_pdf[1])
+                        y_gpc_smoothed = True
+                    except np.linalg.LinAlgError:
+                        smooth_pdf[1] += int(3*np.random.random(1))
+
+                # smooth original pdf
+                y_orig_smoothed = False
+                while not y_orig_smoothed:
+                    try:
+                        pdf_y_orig = savgol_filter(pdf_y_orig, smooth_pdf[0], smooth_pdf[1])
+                        y_orig_smoothed = True
+                    except np.linalg.LinAlgError:
+                        smooth_pdf[1] += int(3*np.random.random(1))
 
         # plot pdfs
         if plot:
