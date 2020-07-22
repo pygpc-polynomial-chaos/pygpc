@@ -57,7 +57,7 @@ by determining a gPC approximation with fixed basis of the Peaks function in the
     # generate grid
     grid = pygpc.Random(parameters_random=problem.parameters_random,
                         n_grid=options["matrix_ratio"] * n_coeffs,
-                        seed=1)
+                        options={"seed": 1})
 
     # initialize algorithm
     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
@@ -80,11 +80,10 @@ by determining a gPC approximation with fixed basis of the Peaks function in the
 
     Performing 110 simulations!
     It/Sub-it: 9/2 Performing simulation 001 from 110 [                                        ] 0.9%
-    Total parallel function evaluation: 0.00035834312438964844 sec
-    Gradient evaluation: 0.0027620792388916016 sec
+    Total parallel function evaluation: 0.0004165172576904297 sec
+    Gradient evaluation: 0.005318403244018555 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
-    It/Sub-it: N/A/N/A Performing simulation 0001 from 1000 [                                        ] 0.1%
-    -> relative nrmsd error = 1.285591969665802e-07
+    -> relative nrmsd error = 1.293417559733095e-07
 
 
 
@@ -114,14 +113,6 @@ sphinx_gallery_thumbnail_number = 2
 .. image:: /auto_gpc/images/sphx_glr_plot_gpc_validation_001.png
     :class: sphx-glr-single-img
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    It/Sub-it: N/A/N/A Performing simulation 0001 from 2601 [                                        ] 0.0%
 
 
 
@@ -167,7 +158,6 @@ the gPC and the original. This can be done by calling the function pygpc.validat
 
  .. code-block:: none
 
-    It/Sub-it: N/A/N/A Performing simulation 000001 from 100000 [                                        ] 0.0%
     > Maximum NRMSD (gpc vs original): 1.3e-07%
 
 
@@ -180,9 +170,27 @@ Similar to the previous function, the results can be saved into an .hdf5 file sp
 *fn_out* within a subfolder *folder*. The plots can be supressed by setting the *plot* to False.
 
 
+.. code-block:: default
+
+
+
+    # On Windows subprocesses will import (i.e. execute) the main module at start.
+    # You need to insert an if __name__ == '__main__': guard in the main module to avoid
+    # creating subprocesses recursively.
+    #
+    # if __name__ == '__main__':
+    #     main()
+
+
+
+
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.677 seconds)
+   **Total running time of the script:** ( 0 minutes  2.623 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_gpc_validation.py:

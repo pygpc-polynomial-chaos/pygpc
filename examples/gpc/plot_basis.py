@@ -2,7 +2,8 @@
 Polynomial basis functions
 ==========================
 """
-
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 #%%
 # Test problem
 # ------------
@@ -159,3 +160,10 @@ for i in range(n_iter):
     if i != (n_iter-1):
         display.clear_output(wait=True)
         plt.close()
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

@@ -1137,3 +1137,30 @@ def average_cross_correlation_gram(array):
     k = n * (n - 1)
 
     return (1 / k) * (np.linalg.norm(np.identity(n) - array) ** 2)
+
+
+def PhiP(x, p=10):
+    """
+    Calculates the Phi-p criterion of the design x with power p [1].
+
+    Parameters
+    ----------
+    x : ndarray of float [n x m]
+        The design to calculate Phi-p for
+    p : int, optional, default: 10
+        The power used for the calculation of PhiP
+
+    Returns
+    -------
+    phip : float
+        Phi-p criterion
+
+    Notes
+    -----
+    .. [1] Morris, M. D., & Mitchell, T. J. (1995). Exploratory designs for computational experiments.
+       Journal of statistical planning and inference, 43(3), 381-402.
+    """
+
+    phip = ((scipy.spatial.distance.pdist(x) ** (-p)).sum()) ** (1.0 / p)
+
+    return phip

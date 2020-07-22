@@ -3657,10 +3657,13 @@ class ElectrodeModel(AbstractModel):
 
     def simulate(self, process_id=None, matlab_engine=None):
 
-        Z = self.p["Rs"] + 1 / (1 / (1 / (self.p["Qdl"] * (self.p["w"].T * 1j) ** self.p["n_Qdl"])) +
-                  1 / (self.p["Rct"] + 1 / (1 / (1 / (self.p["Qd"] * (self.p["w"].T * 1j) ** self.p["n_Qd"]))
-                                            + 1 / self.p["Rd"])))
+        # Z = self.p["Rs"] + 1 / (1 / (1 / (self.p["Qdl"] * (self.p["w"].T * 1j) ** self.p["n_Qdl"])) +
+        #           1 / (self.p["Rct"] + 1 / (1 / (1 / (self.p["Qd"] * (self.p["w"].T * 1j) ** self.p["n_Qd"]))
+        #                                     + 1 / self.p["Rd"])))
 
+        Z = self.p["Rs"] + \
+            ((self.p["Rct"] + (self.p["Rd"]*1/(self.p["Qd"]*(1j*self.p["w"].T)**(self.p["n_Qd"])))/(self.p["Rd"]+1/(self.p["Qd"]*(1j*self.p["w"].T)**(self.p["n_Qd"]))))*1/(self.p["Qdl"]*(1j*self.p["w"].T)**(self.p["n_Qdl"])))/\
+            (self.p["Rct"] + (self.p["Rd"]*1/(self.p["Qd"]*(1j*self.p["w"].T)**(self.p["n_Qd"]))/(self.p["Rd"]+1/(self.p["Qd"]*(1j*self.p["w"].T)**(self.p["n_Qd"]))) + 1/(self.p["Qdl"]*(1j*self.p["w"].T)**(self.p["n_Qdl"]))))
         Z = np.concatenate((np.real(Z.T), np.imag(Z.T)), axis=1)
 
         return Z

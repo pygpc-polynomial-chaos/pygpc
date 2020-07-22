@@ -2,11 +2,13 @@
 Algorithm: Static (Regression)
 ==============================
 """
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 import pygpc
 from collections import OrderedDict
 
 fn_results = 'tmp/static_reg'   # filename of output
-save_session_format = ".hdf5"   # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 #%%
 # Loading the model and defining the problem
@@ -45,20 +47,11 @@ options["gradient_calculation"] = "FD_1st2nd"
 options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
 options["backend"] = "omp"
 options["grid"] = pygpc.Random
-options["grid_options"] = None
-
-# determine number of basis functions
-n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-                                       order_glob_max=options["order_max"],
-                                       order_inter_max=options["interaction_order"],
-                                       dim=problem.dim)
-# generate grid
-grid = pygpc.Random(parameters_random=problem.parameters_random,
-                    n_grid=options["matrix_ratio"] * n_coeffs,
-                    seed=1)
+options["grid_options"] = {"seed": 1}
+options["n_grid"] = 1000
 
 # initialize algorithm
-algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+algorithm = pygpc.Static(problem=problem, options=options)
 
 #%%
 # Running the gpc
@@ -112,3 +105,10 @@ nrmsd = pygpc.validate_gpc_mc(session=session,
                               n_cpu=session.n_cpu)
 
 print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

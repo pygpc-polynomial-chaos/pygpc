@@ -129,6 +129,26 @@ Generalized Polynomial Chaos
    :hidden:
 
    /auto_gpc/plot_grid_random_vs_lhs
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Choosing a sampling scheme --------------------------">
+
+.. only:: html
+
+ .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_grids_thumb.png
+
+     :ref:`sphx_glr_auto_gpc_plot_grids.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_gpc/plot_grids
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>
@@ -143,13 +163,13 @@ Generalized Polynomial Chaos
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_gpc_python.zip <//home/kporzig/py/pygpc/doc/source/auto_gpc/auto_gpc_python.zip>`
+    :download:`Download all examples in Python source code: auto_gpc_python.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_gpc/auto_gpc_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip <//home/kporzig/py/pygpc/doc/source/auto_gpc/auto_gpc_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_gpc/auto_gpc_jupyter.zip>`
 
 
 .. only:: html

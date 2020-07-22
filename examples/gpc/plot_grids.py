@@ -137,6 +137,9 @@ plt.tight_layout()
 # dictionary. In the following, we are going to create different LHS designs for 2 random variables with 100
 # sampling points:
 
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
+
 import pygpc
 import numpy as np
 import seaborn as sns
@@ -424,3 +427,16 @@ plt.tight_layout()
 # Grid comparison
 # ^^^^^^^^^^^^^^^
 # Add a figure (.png) showing some results from our grid paper
+
+
+
+
+
+
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

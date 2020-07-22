@@ -41,13 +41,13 @@ Examples
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//Users/burbflyer/projects/pygpc/doc/source/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//Users/burbflyer/projects/pygpc/doc/source/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

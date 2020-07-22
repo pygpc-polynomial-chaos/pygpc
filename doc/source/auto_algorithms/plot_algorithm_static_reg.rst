@@ -13,11 +13,13 @@ Algorithm: Static (Regression)
 
 .. code-block:: default
 
+    # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+    # def main():
     import pygpc
     from collections import OrderedDict
 
     fn_results = 'tmp/static_reg'   # filename of output
-    save_session_format = ".hdf5"   # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+    save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 
 
@@ -76,20 +78,11 @@ Setting up the algorithm
     options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
     options["backend"] = "omp"
     options["grid"] = pygpc.Random
-    options["grid_options"] = None
-
-    # determine number of basis functions
-    n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-                                           order_glob_max=options["order_max"],
-                                           order_inter_max=options["interaction_order"],
-                                           dim=problem.dim)
-    # generate grid
-    grid = pygpc.Random(parameters_random=problem.parameters_random,
-                        n_grid=options["matrix_ratio"] * n_coeffs,
-                        seed=1)
+    options["grid_options"] = {"seed": 1}
+    options["n_grid"] = 1000
 
     # initialize algorithm
-    algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+    algorithm = pygpc.Static(problem=problem, options=options)
 
 
 
@@ -121,13 +114,19 @@ Running the gpc
 
  .. code-block:: none
 
-    Performing 1100 simulations!
-    It/Sub-it: 9/2 Performing simulation 0001 from 1100 [                                        ] 0.1%
+    Performing 1000 simulations!
+    It/Sub-it: 9/2 Performing simulation 0001 from 1000 [                                        ] 0.1%
     Total parallel function evaluation: 0.0006158351898193359 sec
-    Gradient evaluation: 0.15166187286376953 sec
+    Gradient evaluation: 0.18607640266418457 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
-    It/Sub-it: N/A/N/A Performing simulation 0001 from 1000 [                                        ] 0.1%
-    -> relative nrmsd error = 0.002465797911172747
+    -> relative nrmsd error = 0.001260059497119485
+    Extending grid from 1000 to 1003 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0005822181701660156 sec
+    Gradient evaluation: 0.2162613868713379 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.0012592677313095098
 
 
 
@@ -161,7 +160,7 @@ Postprocessing
 
  .. code-block:: none
 
-    > Loading gpc session object: tmp/static_reg.hdf5
+    > Loading gpc session object: tmp/static_reg.pkl
     > Loading gpc coeffs: tmp/static_reg.hdf5
     > Adding results to: tmp/static_reg.hdf5
 
@@ -191,14 +190,6 @@ Validate gPC vs original model function (2D-surface)
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    It/Sub-it: N/A/N/A Performing simulation 0001 from 2601 [                                        ] 0.0%
-
 
 
 
@@ -219,6 +210,14 @@ Validate gPC vs original model function (Monte Carlo)
 
     print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
 
+    # On Windows subprocesses will import (i.e. execute) the main module at start.
+    # You need to insert an if __name__ == '__main__': guard in the main module to avoid
+    # creating subprocesses recursively.
+    #
+    # if __name__ == '__main__':
+    #     main()
+
+
 
 .. image:: /auto_algorithms/images/sphx_glr_plot_algorithm_static_reg_002.png
     :class: sphx-glr-single-img
@@ -230,8 +229,7 @@ Validate gPC vs original model function (Monte Carlo)
 
  .. code-block:: none
 
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.0024%
+    > Maximum NRMSD (gpc vs original): 0.0012%
 
 
 
@@ -239,7 +237,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.898 seconds)
+   **Total running time of the script:** ( 0 minutes  1.952 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_static_reg.py:

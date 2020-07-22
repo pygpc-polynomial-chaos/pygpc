@@ -43,13 +43,18 @@ Then install pygpc with:
 .. code-block:: bash
 
   CC=gcc-9 CXX=g++-9 python setup.py install
+  
+**Troubleshooting for Windows:**
+
+On windows you might need a compiler to install pygpc. To install the `Visual C++ Build Tools`, please refer to: http://go.microsoft.com/fwlink/?LinkId=691126&fixForIE=.exe.
 
 Setting up benchmark parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We define the number of samples, the dimensionality of the parameter space and the maximum number of basis functions.
 This will determine the size of the gPC matrix and therefore the compute time.
 """
-
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 n_dim = 4               # number of random variables (defines total number of basis functions)
 n_basis_order = 8       # polynomial approximation order (defines total number of basis functions with n_dim)
 n_samples = 100000      # number of random samples (number of rows in gPC matrix))
@@ -169,3 +174,10 @@ plt.ylabel("Computation time in s")
 plt.xticks(range(len(labels)), labels)
 plt.title("Number of samples: {}, Number of basis functions: {}".format(n_samples, n_basis))
 _ = plt.legend(handles=patches_pastel + patches_muted)
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

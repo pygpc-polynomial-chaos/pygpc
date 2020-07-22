@@ -46,7 +46,7 @@ n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
 # generate grid
 grid = pygpc.Random(parameters_random=problem.parameters_random,
                     n_grid=options["matrix_ratio"] * n_coeffs,
-                    seed=1)
+                    options={"seed": 1})
 
 # initialize algorithm
 algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
@@ -105,3 +105,11 @@ print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
 # If you want to conduct the comparison for a specific QOI, you can define it with the parameter *output_idx*.
 # Similar to the previous function, the results can be saved into an .hdf5 file specified with the parameter
 # *fn_out* within a subfolder *folder*. The plots can be supressed by setting the *plot* to False.
+
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

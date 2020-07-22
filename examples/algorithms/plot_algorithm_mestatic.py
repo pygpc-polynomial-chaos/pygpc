@@ -2,11 +2,13 @@
 Algorithm: MEStatic
 ===================
 """
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 import pygpc
 from collections import OrderedDict
 
 fn_results = 'tmp/mestatic'       # filename of output
-save_session_format = ".hdf5"     # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+save_session_format = ".pkl"     # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 #%%
 # Loading the model and defining the problem
@@ -41,7 +43,6 @@ options["gradient_calculation"] = "FD_2nd"
 options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
 options["error_type"] = "loocv"
 options["qoi"] = "all"
-options["n_grid_gradient"] = 5
 options["classifier"] = "learning"
 options["classifier_options"] = {"clusterer": "KMeans",
                                  "n_clusters": 2,
@@ -50,15 +51,12 @@ options["classifier_options"] = {"clusterer": "KMeans",
 options["fn_results"] = fn_results
 options["save_session_format"] = save_session_format
 options["grid"] = pygpc.Random
-options["grid_options"] = None
-
-# generate grid
-grid = pygpc.Random(parameters_random=problem.parameters_random,
-                    n_grid=1000,  # options["matrix_ratio"] * n_coeffs
-                    seed=1)
+options["grid_options"] = {"seed": 1}
+options["n_grid"] = 1000
+options["adaptive_sampling"] = False
 
 # define algorithm
-algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
+algorithm = pygpc.MEStatic(problem=problem, options=options)
 
 #%%
 # Running the gpc
@@ -112,3 +110,10 @@ nrmsd = pygpc.validate_gpc_mc(session=session,
                               n_cpu=session.n_cpu)
 
 print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

@@ -129,14 +129,14 @@ _ = plt.axis('off')
 #         '''
 #
 #         def __init__(self, fname_matlab):
+#             super(type(self), self).__init__(matlab_model=True)
 #             self.fname_matlab = fname_matlab                        # filename of matlab function
 #             self.fname = inspect.getfile(inspect.currentframe())    # filename of python function
 #
 #         def validate(self):
 #             pass
 #
-#         def simulate(self, matlab_engine, process_id=None):
-#
+#         def simulate(self, matlab_engine, process_id=None):#
 #             # add path of Matlab function
 #             matlab_engine.addpath(self.fname_matlab, nargout=0)
 #

@@ -26,7 +26,8 @@ and one variable :math:`\\omega`.
 The model returns an array of containing the real and imaginary part of every frequency point. Every element of this
 array is a quantity of interest (**Qoi**) and a gPC is computed for every quantity of interest.
 """
-
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 import matplotlib.pyplot as plt
 
 _ = plt.figure(figsize=[15, 7])
@@ -142,10 +143,10 @@ pygpc.get_sensitivities_hdf5(fn_gpc=session.fn_results,
 # Validate gPC vs original model function
 pygpc.validate_gpc_plot(session=session,
                         coeffs=coeffs,
-                        random_vars=["Rd", "n_Qd"],
+                        random_vars=["Qdl", "Qd"],
                         n_grid=[51, 51],
                         output_idx=500,
-                        fn_out=fn_results,
+                        fn_out=None,
                         n_cpu=session.n_cpu)
 
 #%%
@@ -354,3 +355,10 @@ ylim_bottom, ylim_top = plt.ylim()
 _ = plt.ylim([ylim_bottom, 10])
 _ = plt.yticks(np.flip(np.logspace(np.int(np.floor(np.log10(ylim_bottom))), 0,
                                    np.int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()
