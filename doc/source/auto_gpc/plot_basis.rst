@@ -10,6 +10,18 @@
 Polynomial basis functions
 ==========================
 
+
+.. code-block:: default
+
+    # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+    # def main():
+
+
+
+
+
+
+
 Test problem
 ------------
 
@@ -219,6 +231,13 @@ simulations to determine the gPC coefficients!
             display.clear_output(wait=True)
             plt.close()
 
+    # On Windows subprocesses will import (i.e. execute) the main module at start.
+    # You need to insert an if __name__ == '__main__': guard in the main module to avoid
+    # creating subprocesses recursively.
+    #
+    # if __name__ == '__main__':
+    #     main()
+
 
 
 .. image:: /auto_gpc/images/sphx_glr_plot_basis_004.png
@@ -248,7 +267,7 @@ simulations to determine the gPC coefficients!
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  10.410 seconds)
+   **Total running time of the script:** ( 0 minutes  14.534 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_basis.py:

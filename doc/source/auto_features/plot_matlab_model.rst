@@ -149,14 +149,14 @@ The example shown below can be found in the templates folder of pygpc (`/templat
         '''
 
         def __init__(self, fname_matlab):
+            super(type(self), self).__init__(matlab_model=True)
             self.fname_matlab = fname_matlab                        # filename of matlab function
             self.fname = inspect.getfile(inspect.currentframe())    # filename of python function
 
         def validate(self):
             pass
 
-        def simulate(self, matlab_engine, process_id=None):
-
+        def simulate(self, matlab_engine, process_id=None):#
             # add path of Matlab function
             matlab_engine.addpath(self.fname_matlab, nargout=0)
 
@@ -214,7 +214,7 @@ processing capabilities of pygpc is given in this
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.353 seconds)
+   **Total running time of the script:** ( 0 minutes  0.389 seconds)
 
 
 .. _sphx_glr_download_auto_features_plot_matlab_model.py:

@@ -237,14 +237,14 @@ Setting up the problem
 
     # grids to compare
     grids = [pygpc.Random, pygpc.LHS, pygpc.LHS, pygpc.LHS, pygpc.LHS]
-    grids_options = [{"seed": 1},
-                     {"criterion": None, "seed": 1},
-                     {"criterion": "corr", "seed": 1},
-                     {"criterion": "maximin", "seed": 1},
-                     {"criterion": "ese", "seed": 1}]
+    grids_options = [{"seed": None},
+                     {"criterion": None, "seed": None},
+                     {"criterion": "corr", "seed": None},
+                     {"criterion": "maximin", "seed": None},
+                     {"criterion": "ese", "seed": None}]
     grid_legend = ["Random", "LHS (standard)", "LHS (corr opt)", "LHS (Phi-P opt)", "LHS (ESE)"]
-    n_grid = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-    repetitions = 3
+    n_grid = [10, 20, 30, 40, 50, 60, 70]
+    repetitions = 5
 
     err = np.zeros((len(grids), len(n_grid), repetitions))
 
@@ -312,7 +312,7 @@ Running the analysis
                 err[i_g, i_n_g, i_n] = pygpc.validate_gpc_mc(session=session,
                                                              coeffs=coeffs,
                                                              n_samples=int(1e4),
-                                                             n_cpu=0,
+                                                             n_cpu=options["n_cpu"],
                                                              output_idx=0,
                                                              fn_out=None,
                                                              plot=False)
@@ -332,754 +332,879 @@ Running the analysis
 
     Performing 10 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.000331878662109375 sec
+    Total parallel function evaluation: 0.0003485679626464844 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.4260202559264827
+    -> relative nrmsd error = 0.19755365265299765
     Performing 10 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0003032684326171875 sec
+    Total parallel function evaluation: 0.00029969215393066406 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.422094186235923
+    -> relative nrmsd error = 0.2945476760289986
     Performing 10 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0003256797790527344 sec
+    Total parallel function evaluation: 0.00030541419982910156 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.4262335885572447
+    -> relative nrmsd error = 0.3464050390361741
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.0002956390380859375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.17706765737224972
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00030422210693359375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.38325856931194713
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.00032138824462890625 sec
+    Total parallel function evaluation: 0.0003063678741455078 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.032034987306079676
+    -> relative nrmsd error = 0.12604037445812322
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0004220008850097656 sec
+    Total parallel function evaluation: 0.00032782554626464844 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.0317765261472653
+    -> relative nrmsd error = 0.11735421636764806
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.00031638145446777344 sec
+    Total parallel function evaluation: 0.00031304359436035156 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.03172299128251933
-    Performing 30 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0003197193145751953 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.0007214028567693966
-    Performing 30 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0003228187561035156 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.0007267414297315524
-    Performing 30 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.00032591819763183594 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.0007145379842093909
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.000316619873046875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 8.47189101420577e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.0004918575286865234 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 8.641668464166989e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.0003066062927246094 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 8.387042191632727e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0004792213439941406 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.584474889775224e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0003361701965332031 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.751010064445245e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0003609657287597656 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.6118692556715895e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.0003199577331542969 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.462449293110859e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.00032019615173339844 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.5259871556401493e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.0003552436828613281 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.437060316682357e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003178119659423828 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.480643303352494e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00038123130798339844 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.5891326719088285e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003097057342529297 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.5648482718662643e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0003275871276855469 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.006488321279553e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0004432201385498047 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.0567497231897054e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.00030803680419921875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.997580569695608e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003657341003417969 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.768109944139084e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003752708435058594 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.7682762073084395e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00032138824462890625 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.7666967374968137e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0005676746368408203 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.736115109706e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0003104209899902344 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.7291421506679874e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0003333091735839844 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.728906493688456e-05
-    Performing 10 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.00031828880310058594 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.33784712798249866
-    Performing 10 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0002949237823486328 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.33875586404443897
-    Performing 10 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0004134178161621094 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.3368284088899952
+    -> relative nrmsd error = 0.40663944858200735
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0004162788391113281 sec
+    Total parallel function evaluation: 0.000301361083984375 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.12946851339711798
+    -> relative nrmsd error = 0.041485463601710945
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.00029015541076660156 sec
+    Total parallel function evaluation: 0.00030541419982910156 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.13475203039050104
-    Performing 20 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0003151893615722656 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.13202576255035775
+    -> relative nrmsd error = 0.1412459978710678
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0002830028533935547 sec
+    Total parallel function evaluation: 0.00039005279541015625 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.02133634939674418
+    -> relative nrmsd error = 6.854401553692866e-05
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.00029397010803222656 sec
+    Total parallel function evaluation: 0.0003864765167236328 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.02140166085045133
+    -> relative nrmsd error = 0.10182872889239372
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.00041985511779785156 sec
+    Total parallel function evaluation: 0.0003058910369873047 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.02123634641465256
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.00029468536376953125 sec
+    -> relative nrmsd error = 0.00025602198162659765
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0003592967987060547 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.4400079913807906e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.0002918243408203125 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.4098770540174096e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.000286102294921875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.400851217317341e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.00039196014404296875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.25582749541967e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0002913475036621094 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.252253274542509e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0002999305725097656 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.241449164788153e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.0003495216369628906 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.0433857529797296e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.0005078315734863281 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.06015703748343e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.00041747093200683594 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.1440995862787676e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003077983856201172 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.154068087856755e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00028514862060546875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.1000072705144816e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0003788471221923828 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.073021107667178e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.00028824806213378906 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.504562112366034e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0002980232238769531 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.4290277280776734e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.00030612945556640625 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.4877814032678e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00029277801513671875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.723680730531488e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00036835670471191406 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.6839311448223464e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003235340118408203 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.7398131253667044e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002944469451904297 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.19676613524469e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002949237823486328 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.249854338338043e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002906322479248047 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.185677638262436e-05
-    Performing 10 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0002713203430175781 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.30981750927687335
-    Performing 10 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    -> relative nrmsd error = 0.00015048895556008492
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
     Total parallel function evaluation: 0.0003123283386230469 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.31459643983145374
+    -> relative nrmsd error = 7.02681490638806e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0005488395690917969 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.5306782112980576e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00034689903259277344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.864217429702191e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0003228187561035156 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.159027811469723e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0004477500915527344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.00025340173161749027
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00031757354736328125 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 6.214541697068508e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00033736228942871094 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 8.029689834290589e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00031447410583496094 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.144351281684398e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00031495094299316406 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.25026354225531e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00032138824462890625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.5874062734349996e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.000331878662109375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.961213542892071e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0004730224609375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 8.084476183804018e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00033020973205566406 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 7.059031318747449e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00031185150146484375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.5556083147620654e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00038552284240722656 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.974085752300046e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0003483295440673828 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.3024903114834415e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003154277801513672 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.292115508161578e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003132820129394531 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.661661997605614e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003001689910888672 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.258795894840553e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00045752525329589844 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.83451507161631e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0004305839538574219 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 6.258987731487619e-05
     Performing 10 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0002732276916503906 sec
+    Total parallel function evaluation: 0.00028705596923828125 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.32304627997659596
+    -> relative nrmsd error = 0.19585803179810599
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.0003070831298828125 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.2153511355205322
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.0003960132598876953 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.3272894618309138
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00036716461181640625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.27398543743938303
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00034046173095703125 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.39463530300001876
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.00027632713317871094 sec
+    Total parallel function evaluation: 0.0005154609680175781 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.10126363174920293
+    -> relative nrmsd error = 0.0018699569238093414
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.000274658203125 sec
+    Total parallel function evaluation: 0.0004134178161621094 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.10166494927048546
+    -> relative nrmsd error = 0.051894870254133904
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0002796649932861328 sec
+    Total parallel function evaluation: 0.00027823448181152344 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.1023984181557152
+    -> relative nrmsd error = 0.00020943737528189143
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.00030231475830078125 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.12370575014991285
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0003578662872314453 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.14514782520737318
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0002701282501220703 sec
+    Total parallel function evaluation: 0.000408172607421875 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.00013203059593634828
+    -> relative nrmsd error = 0.0012597221063081145
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0002741813659667969 sec
+    Total parallel function evaluation: 0.0003178119659423828 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.0001299565394407675
+    -> relative nrmsd error = 5.729612097386835e-05
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.00030040740966796875 sec
+    Total parallel function evaluation: 0.0002865791320800781 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.00012771304743606644
+    -> relative nrmsd error = 5.8701669268386844e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0003669261932373047 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.00020547030621017332
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0002875328063964844 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 7.63031778572795e-05
     Performing 40 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00033783912658691406 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.146210934125938e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0004887580871582031 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.2611987559345384e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0003266334533691406 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.202043453410942e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00030159950256347656 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.064185120786438e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00028824806213378906 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.576664552289412e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00028896331787109375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.444491013568837e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00029969215393066406 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.1938866618468085e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00031828880310058594 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.6925289906080596e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00033593177795410156 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.120007007745794e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00038814544677734375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.8368352444854256e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0002892017364501953 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.842957231441179e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0003638267517089844 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.7765936992249355e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00028824806213378906 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.823012957270837e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0003066062927246094 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.596875058744001e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0003604888916015625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.615257949402974e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00032067298889160156 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.5219294503029856e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003409385681152344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.719527419664532e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002968311309814453 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.8473576826690866e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00038695335388183594 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.8709812425891045e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002903938293457031 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.402093902263666e-05
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00027060508728027344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.18046469322361958
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00027060508728027344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.34883960898421934
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00027561187744140625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.3365312131312721
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00027060508728027344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.1603314193963193
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00027251243591308594 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.2585507210664835
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002770423889160156 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.022106419796904017
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002703666687011719 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.014686219343160858
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
     Total parallel function evaluation: 0.00027298927307128906 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 6.329476053799148e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.0002765655517578125 sec
+    -> relative nrmsd error = 0.0020399432077401396
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.00026988983154296875 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 6.0994245194195784e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.0002753734588623047 sec
+    -> relative nrmsd error = 0.00176127619705257
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002739429473876953 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 6.603643099521361e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0002727508544921875 sec
+    -> relative nrmsd error = 0.04731353047531475
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.000270843505859375 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.904247675128103e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0002751350402832031 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.646073368391517e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.00029659271240234375 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.897615832956632e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.00027370452880859375 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.140418296364698e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    -> relative nrmsd error = 4.50250378181648e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
     Total parallel function evaluation: 0.0002734661102294922 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.022139749097405e-05
+    -> relative nrmsd error = 7.236593759403834e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.00028967857360839844 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.959474899978603e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0002739429473876953 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.810729144901875e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0002734661102294922 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 6.577964284994818e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00027489662170410156 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.175660119524946e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00027370452880859375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.187127846531518e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.000274658203125 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.7692194981087025e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00027179718017578125 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.222884508263286e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0002815723419189453 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 6.351520575149752e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00027179718017578125 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.96533002884418e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00027251243591308594 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.314615798719763e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00027108192443847656 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.504699747837628e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00027632713317871094 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.990701166229657e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.0002741813659667969 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.545016593492322e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0002713203430175781 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.3725583383835827e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00032401084899902344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.413982714550449e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0002758502960205078 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.954204354236297e-05
     Performing 60 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
     Total parallel function evaluation: 0.00027489662170410156 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.144191851272719e-05
+    -> relative nrmsd error = 3.7767160184887604e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00027489662170410156 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.860706510210362e-05
     Performing 70 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0002791881561279297 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.482404749825158e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00027942657470703125 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.648058913794643e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0002751350402832031 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.816427387822623e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.000278472900390625 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.1931826089838607e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.00027942657470703125 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.151187763190365e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0002753734588623047 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.185424731679513e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0002810955047607422 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.429544232017448e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0002777576446533203 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.404725485471132e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00027751922607421875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.428345344395716e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002777576446533203 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.1666753431272197e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002810955047607422 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.4085205109482075e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002779960632324219 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.384551854024696e-05
-    Performing 10 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.00030517578125 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.1715548484114736
-    Performing 10 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.00028228759765625 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.1694900332160488
-    Performing 10 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0002944469451904297 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.16922956618457013
-    Performing 20 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
     Total parallel function evaluation: 0.0002827644348144531 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.04012620214132834
-    Performing 20 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.00027751922607421875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.039799047946877525
-    Performing 20 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0002779960632324219 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.03925414881878154
-    Performing 30 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.00027751922607421875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.822498050185848e-05
-    Performing 30 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.00027561187744140625 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.9575581449128664e-05
-    Performing 30 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.000278472900390625 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.879940319199146e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.0002789497375488281 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.291037775639837e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.0002734661102294922 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.242432801932218e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.00027823448181152344 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.201487667661247e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0002751350402832031 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.460847204055828e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.00028395652770996094 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.447292303710735e-05
-    Performing 50 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0002777576446533203 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.54550706237947e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.0002834796905517578 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.8352113560132246e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.0003185272216796875 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.90179856034802e-05
-    Performing 60 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.0002803802490234375 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.869841389218998e-05
+    -> relative nrmsd error = 3.785437897573601e-05
     Performing 70 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0002918243408203125 sec
+    Total parallel function evaluation: 0.00027632713317871094 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.320900532261367e-05
+    -> relative nrmsd error = 4.125595043272911e-05
     Performing 70 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0002803802490234375 sec
+    Total parallel function evaluation: 0.0002760887145996094 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.373092756034332e-05
+    -> relative nrmsd error = 4.0191205523632627e-05
     Performing 70 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0002849102020263672 sec
+    Total parallel function evaluation: 0.00027632713317871094 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.418196377848246e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0002834796905517578 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.458004754222035e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.00028133392333984375 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.4450391380589244e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0002853870391845703 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.4100949062037226e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0002846717834472656 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.6616446230966005e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0002827644348144531 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.44710224149509e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
+    -> relative nrmsd error = 3.775404204784432e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
     Total parallel function evaluation: 0.00028204917907714844 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.7070331840531346e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002880096435546875 sec
+    -> relative nrmsd error = 4.075696858625546e-05
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.0002853870391845703 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.456005653481151e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002846717834472656 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.2510779899802866e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002865791320800781 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.3420524849124836e-05
+    -> relative nrmsd error = 0.419769441628686
     Performing 10 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
     Total parallel function evaluation: 0.0002770423889160156 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.40738533421903356
+    -> relative nrmsd error = 0.13863811712653648
     Performing 10 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0002815723419189453 sec
+    Total parallel function evaluation: 0.0003724098205566406 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.4114913964194423
+    -> relative nrmsd error = 0.3261045918642647
     Performing 10 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
-    Total parallel function evaluation: 0.0002868175506591797 sec
+    Total parallel function evaluation: 0.0002989768981933594 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.4010143687766864
+    -> relative nrmsd error = 0.17552134659358748
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.0003592967987060547 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.2514788138408687
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.0002830028533935547 sec
+    Total parallel function evaluation: 0.00029778480529785156 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.02127981397326073
-    Performing 20 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total parallel function evaluation: 0.00027251243591308594 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.020969694549018137
+    -> relative nrmsd error = 0.07761467648028422
     Performing 20 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
     Total parallel function evaluation: 0.0002796649932861328 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 0.02122873101530851
+    -> relative nrmsd error = 0.010162134854044004
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002808570861816406 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.001980268056206882
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002758502960205078 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.011855059774983504
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002818107604980469 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.09030046647235833
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0002799034118652344 sec
+    Total parallel function evaluation: 0.0002772808074951172 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 6.035940045574909e-05
+    -> relative nrmsd error = 0.00020770120466713239
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0002789497375488281 sec
+    Total parallel function evaluation: 0.00027751922607421875 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 5.985468050973058e-05
+    -> relative nrmsd error = 5.5198890360038805e-05
     Performing 30 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
-    Total parallel function evaluation: 0.0002753734588623047 sec
+    Total parallel function evaluation: 0.00027823448181152344 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 6.0072261265130966e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.0002849102020263672 sec
+    -> relative nrmsd error = 5.188055725929686e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.00028228759765625 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.66525688580501e-05
-    Performing 40 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Total parallel function evaluation: 0.00028133392333984375 sec
+    -> relative nrmsd error = 0.00010649255273154102
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.00027632713317871094 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.605597267778891e-05
+    -> relative nrmsd error = 0.0018825615741467343
     Performing 40 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
     Total parallel function evaluation: 0.00027871131896972656 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.682235536433076e-05
+    -> relative nrmsd error = 7.407144406422104e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.000278472900390625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.301335848590408e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00028014183044433594 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.9553489769847343e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00031495094299316406 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.423163612305177e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0003104209899902344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.4095362236615984e-05
     Performing 50 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.00028204917907714844 sec
+    Total parallel function evaluation: 0.0002791881561279297 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.993524408092161e-05
+    -> relative nrmsd error = 4.232335724406371e-05
     Performing 50 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
-    Total parallel function evaluation: 0.0002818107604980469 sec
+    Total parallel function evaluation: 0.00027871131896972656 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.013498319642327e-05
+    -> relative nrmsd error = 4.471596927493795e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.000278472900390625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.111521122570672e-05
     Performing 50 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
     Total parallel function evaluation: 0.0002796649932861328 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.965057114969233e-05
+    -> relative nrmsd error = 3.998507632454414e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.0002868175506591797 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.0722951453154396e-05
     Performing 60 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.0002999305725097656 sec
+    Total parallel function evaluation: 0.00028324127197265625 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.02940460360737e-05
+    -> relative nrmsd error = 4.2176801293064084e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0002865791320800781 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.7943681944503314e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0002810955047607422 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.05780006947807e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00028228759765625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.858135349007465e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00028586387634277344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.645622240964408e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002815723419189453 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.035119193486365e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002753734588623047 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.0655565335614066e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002887248992919922 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.2151050891350775e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002837181091308594 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.6634886704787985e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00027942657470703125 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.9433198284319086e-05
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00028228759765625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.5281952949593232
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00032138824462890625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.19902331664744713
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.0002799034118652344 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.29920649781606545
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.0002834796905517578 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.44722742944117155
+    Performing 10 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.0002777576446533203 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.4602219009750048
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.00028252601623535156 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.012377646930363351
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002789497375488281 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.003722930035213273
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002963542938232422 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.0015932163814298917
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.00028061866760253906 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.01609744390845806
+    Performing 20 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total parallel function evaluation: 0.0002803802490234375 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 0.021187241017291577
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0003333091735839844 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.42728680543644e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0002841949462890625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.9301314733618725e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0002887248992919922 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 5.7523158310613626e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0002810955047607422 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.488546231208406e-05
+    Performing 30 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 30 [=                                       ] 3.3%
+    Total parallel function evaluation: 0.0003097057342529297 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.10555364518406e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0003006458282470703 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.709639646758685e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00027489662170410156 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.002756236629629e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0002830028533935547 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.436178815996952e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.00027751922607421875 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.0648700176037e-05
+    Performing 40 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Total parallel function evaluation: 0.0002791881561279297 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.736302259820427e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.0002796649932861328 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.14137154237145e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.0002949237823486328 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.949702127257142e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.0002779960632324219 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.8746436117926025e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.00027632713317871094 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.188663194972195e-05
+    Performing 50 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 50 [                                        ] 2.0%
+    Total parallel function evaluation: 0.0002789497375488281 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.07485928780507e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0002841949462890625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 4.2602547478396287e-05
     Performing 60 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
     Total parallel function evaluation: 0.00028061866760253906 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.085392953798704e-05
+    -> relative nrmsd error = 3.785930220456604e-05
     Performing 60 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
-    Total parallel function evaluation: 0.00028395652770996094 sec
+    Total parallel function evaluation: 0.0002956390380859375 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.1349510132108315e-05
+    -> relative nrmsd error = 3.27756513452918e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.00028324127197265625 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.6773933355606096e-05
+    Performing 60 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 60 [                                        ] 1.7%
+    Total parallel function evaluation: 0.0002796649932861328 sec
+    Determine gPC coefficients using 'LarsLasso' solver ...
+    -> relative nrmsd error = 3.568803596175786e-05
     Performing 70 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.00028228759765625 sec
+    Total parallel function evaluation: 0.0002884864807128906 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.535463256358389e-05
-    Performing 70 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
-    Total parallel function evaluation: 0.0002856254577636719 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.5504655669156695e-05
+    -> relative nrmsd error = 3.771095651296478e-05
     Performing 70 simulations!
     It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
     Total parallel function evaluation: 0.0002791881561279297 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.5044204571554146e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0002849102020263672 sec
+    -> relative nrmsd error = 3.717909025601475e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.00029850006103515625 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.973348538823735e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0002810955047607422 sec
+    -> relative nrmsd error = 3.898804617363668e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0003018379211425781 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.838346695065073e-05
-    Performing 80 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 80 [                                        ] 1.2%
-    Total parallel function evaluation: 0.00028896331787109375 sec
+    -> relative nrmsd error = 3.50473442918947e-05
+    Performing 70 simulations!
+    It/Sub-it: 12/2 Performing simulation 01 from 70 [                                        ] 1.4%
+    Total parallel function evaluation: 0.0002875328063964844 sec
     Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.9543366019067943e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00028586387634277344 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.2508813465832435e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.00028824806213378906 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.390645437458072e-05
-    Performing 90 simulations!
-    It/Sub-it: 12/2 Performing simulation 01 from 90 [                                        ] 1.1%
-    Total parallel function evaluation: 0.0003199577331542969 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 4.3176754560790086e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002956390380859375 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.502413871553474e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.0002942085266113281 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.602261719235864e-05
-    Performing 100 simulations!
-    It/Sub-it: 12/2 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total parallel function evaluation: 0.00029158592224121094 sec
-    Determine gPC coefficients using 'LarsLasso' solver ...
-    -> relative nrmsd error = 3.4407153283322244e-05
+    -> relative nrmsd error = 3.892007021583865e-05
 
 
 
@@ -1107,6 +1232,7 @@ grid points, while also having a consistently small standard deviation.
         a.set_xlabel("$N_g$", fontsize=12)
         a.grid()
 
+    ax[0].set_yscale("log")
     ax[0].set_ylabel("$\epsilon$", fontsize=12)
     ax[1].set_ylabel("std($\epsilon$)", fontsize=12)
 
@@ -1133,7 +1259,7 @@ grid points, while also having a consistently small standard deviation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 3 minutes  1.623 seconds)
+   **Total running time of the script:** ( 3 minutes  31.022 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_grid_random_vs_lhs.py:

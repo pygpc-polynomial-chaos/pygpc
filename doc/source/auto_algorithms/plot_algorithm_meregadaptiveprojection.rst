@@ -13,12 +13,14 @@ Algorithm: MERegAdaptiveProjection
 
 .. code-block:: default
 
+    # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+    # def main():
     import pygpc
     import numpy as np
     from collections import OrderedDict
 
     fn_results = 'tmp/meregadaptiveprojection'   # filename of output
-    save_session_format = ".hdf5"                # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+    save_session_format = ".pkl"                # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 
 
@@ -88,7 +90,7 @@ Setting up the algorithm
     options["fn_results"] = fn_results
     options["save_session_format"] = save_session_format
     options["grid"] = pygpc.Random
-    options["grid_options"] = None
+    options["grid_options"] = {"seed": 1}
 
     # define algorithm
     algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
@@ -125,26 +127,24 @@ Running the gpc
 
     Performing 20 initial simulations!
     It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total function evaluation: 0.0028040409088134766 sec
+    Total function evaluation: 0.006393909454345703 sec
     It/Sub-it: 3/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Gradient evaluation: 0.0011909008026123047 sec
+    Gradient evaluation: 0.0010640621185302734 sec
     Determining gPC approximation for QOI #0:
     =========================================
     Determining gPC domains ...
     Determining validation set of size 10000 for NRMSD error calculation ...
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 20000 [                                        ] 0.0%
     Refining domain boundary ...
     Performing 12 simulations to refine discontinuity location!
     It/Sub-it: Domain boundary/N/A Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total function evaluation: 0.0027463436126708984 sec
+    Total function evaluation: 0.008487462997436523 sec
     It/Sub-it: Domain boundary/N/A Performing simulation 01 from 24 [=                                       ] 4.2%
-    Gradient evaluation: 0.0005946159362792969 sec
+    Gradient evaluation: 0.0006842613220214844 sec
     Updating classifier ...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    -> Domain: 0 absolute nrmsd error = 0.0009263193023522684
-    -> Domain: 1 absolute nrmsd error = 0.7011856648518827
+    -> Domain: 0 absolute nrmsd error = 0.5265864517311108
+    -> Domain: 1 absolute nrmsd error = 0.6688101402146892
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
 
@@ -180,7 +180,7 @@ Postprocessing
 
  .. code-block:: none
 
-    > Loading gpc session object: tmp/meregadaptiveprojection.hdf5
+    > Loading gpc session object: tmp/meregadaptiveprojection.pkl
     > Loading gpc coeffs: tmp/meregadaptiveprojection.hdf5
     > Adding results to: tmp/meregadaptiveprojection.hdf5
 
@@ -210,14 +210,6 @@ Validate gPC vs original model function (2D-surface)
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    It/Sub-it: N/A/N/A Performing simulation 0001 from 2601 [                                        ] 0.0%
-
 
 
 
@@ -238,6 +230,14 @@ Validate gPC vs original model function (Monte Carlo)
 
     print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
 
+    # On Windows subprocesses will import (i.e. execute) the main module at start.
+    # You need to insert an if __name__ == '__main__': guard in the main module to avoid
+    # creating subprocesses recursively.
+    #
+    # if __name__ == '__main__':
+    #     main()
+
+
 
 .. image:: /auto_algorithms/images/sphx_glr_plot_algorithm_meregadaptiveprojection_002.png
     :class: sphx-glr-single-img
@@ -249,8 +249,7 @@ Validate gPC vs original model function (Monte Carlo)
 
  .. code-block:: none
 
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.084%
+    > Maximum NRMSD (gpc vs original): 0.1%
 
 
 
@@ -258,7 +257,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.056 seconds)
+   **Total running time of the script:** ( 0 minutes  6.134 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_meregadaptiveprojection.py:

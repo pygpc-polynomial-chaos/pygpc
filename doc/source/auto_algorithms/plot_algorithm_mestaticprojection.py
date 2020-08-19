@@ -2,11 +2,13 @@
 Algorithm: MEStaticProjection
 =============================
 """
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 import pygpc
 from collections import OrderedDict
 
 fn_results = 'tmp/mestaticprojection'   # filename of output
-save_session_format = ".hdf5"           # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+save_session_format = ".pkl"           # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 #%%
 # Loading the model and defining the problem
@@ -33,12 +35,10 @@ options["settings"] = None
 options["order"] = [3, 3]
 options["order_max"] = 3
 options["interaction_order"] = 2
-options["matrix_ratio"] = 2
 options["n_cpu"] = 0
 options["gradient_enhanced"] = True
 options["gradient_calculation"] = "FD_fwd"
 options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
-options["n_grid_gradient"] = 5
 options["error_type"] = "nrmsd"
 options["n_samples_validation"] = 1e3
 options["qoi"] = "all"
@@ -50,7 +50,9 @@ options["classifier_options"] = {"clusterer": "KMeans",
 options["fn_results"] = fn_results
 options["save_session_format"] = save_session_format
 options["grid"] = pygpc.Random
-options["grid_options"] = None
+options["grid_options"] = {"seed": 1}
+options["n_grid"] = 1000
+options["adaptive_sampling"] = False
 
 # define algorithm
 algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
@@ -107,3 +109,10 @@ nrmsd = pygpc.validate_gpc_mc(session=session,
                               n_cpu=session.n_cpu)
 
 print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

@@ -13,7 +13,8 @@ controlled by the algorithm options "n_cpu":
 - n_cpu > 1 : A multiprocessing.Pool will be opened and n_cpu sampling points are calculated in parallel.
   In each thread, a single floating point number is passed for each parameter.
 """
-
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 #%%
 # Example
 # ^^^^^^^
@@ -60,3 +61,10 @@ plt.ylabel("Computation time in s", fontsize=11)
 plt.xticks(range(len(t_eval)), t_eval.keys())
 plt.title("Parallel model evaluation", fontsize=12)
 plt.tight_layout()
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

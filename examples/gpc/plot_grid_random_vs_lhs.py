@@ -203,14 +203,14 @@ import matplotlib.pyplot as plt
 
 # grids to compare
 grids = [pygpc.Random, pygpc.LHS, pygpc.LHS, pygpc.LHS, pygpc.LHS]
-grids_options = [{"seed": 1},
-                 {"criterion": None, "seed": 1},
-                 {"criterion": "corr", "seed": 1},
-                 {"criterion": "maximin", "seed": 1},
-                 {"criterion": "ese", "seed": 1}]
+grids_options = [{"seed": None},
+                 {"criterion": None, "seed": None},
+                 {"criterion": "corr", "seed": None},
+                 {"criterion": "maximin", "seed": None},
+                 {"criterion": "ese", "seed": None}]
 grid_legend = ["Random", "LHS (standard)", "LHS (corr opt)", "LHS (Phi-P opt)", "LHS (ESE)"]
-n_grid = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-repetitions = 3
+n_grid = [10, 20, 30, 40, 50, 60, 70]
+repetitions = 5
 
 err = np.zeros((len(grids), len(n_grid), repetitions))
 
@@ -268,7 +268,7 @@ for i_g, g in enumerate(grids):
             err[i_g, i_n_g, i_n] = pygpc.validate_gpc_mc(session=session,
                                                          coeffs=coeffs,
                                                          n_samples=int(1e4),
-                                                         n_cpu=0,
+                                                         n_cpu=options["n_cpu"],
                                                          output_idx=0,
                                                          fn_out=None,
                                                          plot=False)
@@ -296,6 +296,7 @@ for a in ax:
     a.set_xlabel("$N_g$", fontsize=12)
     a.grid()
 
+ax[0].set_yscale("log")
 ax[0].set_ylabel("$\epsilon$", fontsize=12)
 ax[1].set_ylabel("std($\epsilon$)", fontsize=12)
 
