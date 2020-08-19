@@ -266,6 +266,9 @@ Comparison between the gradient estimation techniques
 .. code-block:: default
 
 
+    # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+    # def main():
+
     import pygpc
     from collections import OrderedDict
     import matplotlib.pyplot as plt
@@ -333,7 +336,7 @@ Here, we use 100 random sampling points in the parameter space defined before.
     n_grid = 100
     grid = pygpc.Random(parameters_random=problem.parameters_random,
                         n_grid=n_grid,
-                        seed=1)
+                        options={"seed": 1})
 
 
 
@@ -364,14 +367,6 @@ We are setting up a Computation instance to evaluate the model function in the 1
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    It/Sub-it: N/A/N/A Performing simulation 001 from 100 [                                        ] 1.0%
 
 
 
@@ -418,14 +413,6 @@ only return the gradient in grid points if they have sufficient number of neighb
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    It/Sub-it: N/A/N/A Performing simulation 001 from 200 [                                        ] 0.5%
 
 
 
@@ -499,14 +486,6 @@ Plotting the results
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 62500 [                                        ] 0.0%
-
 
 
 
@@ -523,6 +502,16 @@ This is reflected in the lower coverage
     print(df)
 
 
+    # On Windows subprocesses will import (i.e. execute) the main module at start.
+    # You need to insert an if __name__ == '__main__': guard in the main module to avoid
+    # creating subprocesses recursively.
+    #
+    # if __name__ == '__main__':
+    #     main()
+
+
+
+
 
 
 .. rst-class:: sphx-glr-script-out
@@ -531,9 +520,9 @@ This is reflected in the lower coverage
 
  .. code-block:: none
 
-       method                                         nrmsd coverage
-    1  FD_1st   [0.037228266490919294, 0.04457181241337922]     0.15
-    2  FD_2nd  [0.004782517660427091, 0.016680268495961412]     0.06
+       method                                        nrmsd coverage
+    1  FD_1st  [0.037228266490919294, 0.04457181241337924]     0.15
+    2  FD_2nd  [0.004782517660427248, 0.01668026849596016]     0.06
 
 
 
@@ -541,7 +530,7 @@ This is reflected in the lower coverage
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.917 seconds)
+   **Total running time of the script:** ( 0 minutes  1.312 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_gradient_enhanced_gpc.py:

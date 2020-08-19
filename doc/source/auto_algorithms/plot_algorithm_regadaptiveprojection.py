@@ -2,12 +2,14 @@
 Algorithm: RegAdaptiveProjection
 ================================
 """
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 import pygpc
 import numpy as np
 from collections import OrderedDict
 
 fn_results = 'tmp/regadaptiveprojection'   # filename of output
-save_session_format = ".hdf5"              # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+save_session_format = ".pkl"              # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 #%%
 # Loading the model and defining the problem
@@ -47,7 +49,7 @@ options["qoi"] = 0
 options["error_type"] = "loocv"
 options["eps"] = 1e-3
 options["grid"] = pygpc.Random
-options["grid_options"] = None
+options["grid_options"] = {"seed": 1}
 
 # define algorithm
 algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
@@ -104,3 +106,10 @@ nrmsd = pygpc.validate_gpc_mc(session=session,
                               n_cpu=session.n_cpu)
 
 print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

@@ -256,6 +256,9 @@ and :math:`[\\mathbf{Q}] = [\\mathbf{R}]^\\mathrm{T}[\\tilde{\\mathbf{Q}}]` exac
 # Comparison between the gradient estimation techniques
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
+
 import pygpc
 from collections import OrderedDict
 import matplotlib.pyplot as plt
@@ -293,7 +296,7 @@ problem = pygpc.Problem(model, parameters)
 n_grid = 100
 grid = pygpc.Random(parameters_random=problem.parameters_random,
                     n_grid=n_grid,
-                    seed=1)
+                    options={"seed": 1})
 
 #%%
 # We are setting up a Computation instance to evaluate the model function in the 100 grid points
@@ -414,3 +417,13 @@ ax1.set_aspect(1.0)
 
 # show summary
 print(df)
+
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()
+
+

@@ -13,11 +13,13 @@ Algorithm: Static (Quadrature)
 
 .. code-block:: default
 
+    # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+    # def main():
     import pygpc
     from collections import OrderedDict
 
     fn_results = 'tmp/static_quad'   # filename of output
-    save_session_format = ".hdf5"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+    save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 
 
@@ -71,12 +73,12 @@ Setting up the algorithm
     options["fn_results"] = fn_results
     options["save_session_format"] = save_session_format
     options["backend"] = "omp"
-    options["grid"] = pygpc.Random
-    options["grid_options"] = None
+    options["grid"] = None
+    options["grid_options"] = {"grid_type": ["jacobi", "jacobi"], "n_dim": [9, 9]}
 
     # generate grid
     grid = pygpc.TensorGrid(parameters_random=problem.parameters_random,
-                            options={"grid_type": ["jacobi", "jacobi"], "n_dim": [9, 9]})
+                            options=options["grid_options"])
 
     # initialize algorithm
     algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
@@ -113,10 +115,9 @@ Running the gpc
 
     Performing 81 simulations!
     It/Sub-it: 9/2 Performing simulation 01 from 81 [                                        ] 1.2%
-    Total parallel function evaluation: 0.0003802776336669922 sec
+    Total parallel function evaluation: 0.0004096031188964844 sec
     Determine gPC coefficients using 'NumInt' solver ...
-    It/Sub-it: N/A/N/A Performing simulation 0001 from 1000 [                                        ] 0.1%
-    -> relative nrmsd error = 3.7153767043303724e-08
+    -> relative nrmsd error = 3.410388047395797e-08
 
 
 
@@ -150,7 +151,7 @@ Postprocessing
 
  .. code-block:: none
 
-    > Loading gpc session object: tmp/static_quad.hdf5
+    > Loading gpc session object: tmp/static_quad.pkl
     > Loading gpc coeffs: tmp/static_quad.hdf5
     > Adding results to: tmp/static_quad.hdf5
 
@@ -180,14 +181,6 @@ Validate gPC vs original model function (2D-surface)
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    It/Sub-it: N/A/N/A Performing simulation 0001 from 2601 [                                        ] 0.0%
-
 
 
 
@@ -208,6 +201,14 @@ Validate gPC vs original model function (Monte Carlo)
 
     print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
 
+    # On Windows subprocesses will import (i.e. execute) the main module at start.
+    # You need to insert an if __name__ == '__main__': guard in the main module to avoid
+    # creating subprocesses recursively.
+    #
+    # if __name__ == '__main__':
+    #     main()
+
+
 
 .. image:: /auto_algorithms/images/sphx_glr_plot_algorithm_static_quad_002.png
     :class: sphx-glr-single-img
@@ -219,8 +220,7 @@ Validate gPC vs original model function (Monte Carlo)
 
  .. code-block:: none
 
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 3.5e-08%
+    > Maximum NRMSD (gpc vs original): 3.6e-08%
 
 
 
@@ -228,7 +228,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.506 seconds)
+   **Total running time of the script:** ( 0 minutes  1.372 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_static_quad.py:

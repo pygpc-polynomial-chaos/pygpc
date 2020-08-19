@@ -42,6 +42,9 @@ where :math:`P` is a :math:`d \\times n` matrix of randomly perturbed integers
 # We are going to create a simple LHS design for 2 random variables with 5 sampling points:
 # sphinx_gallery_thumbnail_number = 3:
 
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
+
 import pygpc
 import matplotlib.pyplot as plt
 import numpy as np
@@ -52,15 +55,12 @@ parameters = OrderedDict()
 parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 
-# define grid
-lhs = pygpc.LHS(parameters_random=parameters, n_grid=0)
-
-# draw samples
-pi = lhs.get_lhs_grid(dim=2, n=25)
+# create LHS grid
+grid = pygpc.LHS(parameters_random=parameters, n_grid=25, options={"seed": 1})
 
 # plot
 fig = plt.figure(figsize=(4, 4))
-plt.scatter(pi[:,0], pi[:,1])
+plt.scatter(grid.coords_norm[:, 0], grid.coords_norm[:, 1])
 plt.xlabel("$x_1$", fontsize=12)
 plt.ylabel("$x_2$", fontsize=12)
 plt.xlim([0, 1])
@@ -142,21 +142,12 @@ parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 
 # define grids for each criteria
-lhs_basic = pygpc.LHS(parameters_random=parameters, n_grid=0)
-lhs_corr = pygpc.LHS(parameters_random=parameters, n_grid=0)
-lhs_maximin = pygpc.LHS(parameters_random=parameters, n_grid=0, options='maximin')
-lhs_ese = pygpc.LHS(parameters_random=parameters, n_grid=0, options='ese')
-
-# draw samples
-dim = 5
-n = 30
-samples = []
-
-samples.append(np.random.rand(n, dim))
-samples.append(lhs_basic.get_lhs_grid(dim, n))
-samples.append(lhs_corr.get_lhs_grid(dim, n, crit='corr'))
-samples.append(lhs_maximin.get_lhs_grid(dim, n, crit='maximin'))
-samples.append(lhs_ese.get_lhs_grid(dim, n, crit='ese'))
+grids = []
+grids.append(pygpc.Random(parameters_random=parameters, n_grid=30, options={"seed": 1}))
+grids.append(pygpc.LHS(parameters_random=parameters, n_grid=30, options={"criterion": None, "seed": 1}))
+grids.append(pygpc.LHS(parameters_random=parameters, n_grid=30, options={"criterion": "corr", "seed": 1}))
+grids.append(pygpc.LHS(parameters_random=parameters, n_grid=30, options={"criterion": "maximin", "seed": 1}))
+grids.append(pygpc.LHS(parameters_random=parameters, n_grid=30, options={"criterion": "ese", "seed": 1}))
 
 # calculate criteria
 corrs = []
@@ -164,13 +155,10 @@ phis = []
 name = []
 variables = []
 
-for i in range(5):
-    corr = spearmanr(samples[i][:, 0], samples[i][:, 1])[0]
+for i_g, g in enumerate(grids):
+    corr = spearmanr(g.coords_norm[:, 0], g.coords_norm[:, 1])[0]
     corrs.append(corr)
-
-for i in range(5):
-    phip = lhs_basic.PhiP(samples[i])
-    phis.append(phip)
+    phis.append(pygpc.PhiP(g.coords_norm))
 
 variables.append(corrs)
 name.append('corr')
@@ -181,14 +169,14 @@ name.append('phi')
 fig = plt.figure(figsize=(16, 3))
 titles = ['Random', 'LHS (standard)', 'LHS (corr opt)', 'LHS (Phi-P opt)', 'LHS (ESE)']
 
-for i in range(5):
-    text = name[0] + ' = {:0.2f} '.format(variables[0][i]) + "\n" + \
-           name[1] + ' = {:0.2f}'.format(variables[1][i])
-    plot_index = 151 + i
-    plt.gcf().text((0.15 + i * 0.16), 0.08, text, fontsize=14)
+for i_g, g in enumerate(grids):
+    text = name[0] + ' = {:0.2f} '.format(variables[0][i_g]) + "\n" + \
+           name[1] + ' = {:0.2f}'.format(variables[1][i_g])
+    plot_index = 151 + i_g
+    plt.gcf().text((0.15 + i_g * 0.16), 0.08, text, fontsize=14)
     plt.subplot(plot_index)
-    plt.scatter(samples[i][:, 0], samples[i][:, 1], color=sns.color_palette("bright", 5)[i])
-    plt.title(titles[i])
+    plt.scatter(g.coords_norm[:, 0], g.coords_norm[:, 1], color=sns.color_palette("bright", 5)[i_g])
+    plt.title(titles[i_g])
     plt.gca().set_aspect('equal', adjustable='box')
 plt.subplots_adjust(bottom=0.3)
 
@@ -215,13 +203,16 @@ import matplotlib.pyplot as plt
 
 # grids to compare
 grids = [pygpc.Random, pygpc.LHS, pygpc.LHS, pygpc.LHS, pygpc.LHS]
-grids_options = [None, None, "corr", "maximin", "ese"]
+grids_options = [{"seed": None},
+                 {"criterion": None, "seed": None},
+                 {"criterion": "corr", "seed": None},
+                 {"criterion": "maximin", "seed": None},
+                 {"criterion": "ese", "seed": None}]
 grid_legend = ["Random", "LHS (standard)", "LHS (corr opt)", "LHS (Phi-P opt)", "LHS (ESE)"]
-order = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+n_grid = [10, 20, 30, 40, 50, 60, 70]
 repetitions = 5
 
-err = np.zeros((len(grids), len(order), repetitions))
-n_grid = np.zeros(len(order))
+err = np.zeros((len(grids), len(n_grid), repetitions))
 
 # Model
 model = pygpc.testfunctions.Ishigami()
@@ -239,7 +230,7 @@ problem = pygpc.Problem(model, parameters)
 # gPC options
 options = dict()
 options["method"] = "reg"
-options["solver"] = "Moore-Penrose"
+options["solver"] = "LarsLasso"
 options["interaction_order"] = problem.dim
 options["order_max_norm"] = 1
 options["n_cpu"] = 0
@@ -248,33 +239,25 @@ options["gradient_enhanced"] = False
 options["fn_results"] = None
 options["error_type"] = "nrmsd"
 options["error_norm"] = "relative"
-options["matrix_ratio"] = 2
+options["matrix_ratio"] = None
 options["eps"] = 0.001
 options["backend"] = "omp"
+options["order"] = [12] * problem.dim
+options["order_max"] = 12
 
 #%%
 # Running the analysis
 # ^^^^^^^^^^^^^^^^^^^^
 for i_g, g in enumerate(grids):
-    for i_o, o in enumerate(order):
+    for i_n_g, n_g in enumerate(n_grid):
         for i_n, n in enumerate(range(repetitions)):
 
-            options["order"] = [o] * problem.dim
-            options["order_max"] = o
             options["grid"] = g
             options["grid_options"] = grids_options[i_g]
-
-            n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
-                                                   order_glob_max=options["order_max"],
-                                                   order_inter_max=options["interaction_order"],
-                                                   dim=problem.dim)
-
-            grid = g(parameters_random=problem.parameters_random,
-                     n_grid=options["matrix_ratio"] * n_coeffs,
-                     options=options["grid_options"])
+            options["n_grid"] = n_g
 
             # define algorithm
-            algorithm = pygpc.Static(problem=problem, options=options, grid=grid)
+            algorithm = pygpc.Static(problem=problem, options=options)
 
             # Initialize gPC Session
             session = pygpc.Session(algorithm=algorithm)
@@ -282,15 +265,13 @@ for i_g, g in enumerate(grids):
             # run gPC session
             session, coeffs, results = session.run()
 
-            err[i_g, i_o, i_n] = pygpc.validate_gpc_mc(session=session,
-                                                       coeffs=coeffs,
-                                                       n_samples=int(1e4),
-                                                       n_cpu=0,
-                                                       output_idx=0,
-                                                       fn_out=None,
-                                                       plot=False)
-
-        n_grid[i_o] = grid.n_grid
+            err[i_g, i_n_g, i_n] = pygpc.validate_gpc_mc(session=session,
+                                                         coeffs=coeffs,
+                                                         n_samples=int(1e4),
+                                                         n_cpu=options["n_cpu"],
+                                                         output_idx=0,
+                                                         fn_out=None,
+                                                         plot=False)
 
 err_mean = np.mean(err, axis=2)
 err_std = np.std(err, axis=2)
@@ -304,7 +285,7 @@ err_std = np.std(err, axis=2)
 # :math:`\varepsilon` by using the ESE algorithm compared to completely random sampling the
 # grid points, while also having a consistently small standard deviation.
 
-fig, ax = plt.subplots(1, 2, figsize=[12,5])
+fig, ax = plt.subplots(1, 2, figsize=[12, 5])
 
 for i in range(len(grids)):
     ax[0].errorbar(n_grid, err_mean[i, :], err_std[i, :], capsize=3, elinewidth=.5)
@@ -315,8 +296,17 @@ for a in ax:
     a.set_xlabel("$N_g$", fontsize=12)
     a.grid()
 
+ax[0].set_yscale("log")
 ax[0].set_ylabel("$\epsilon$", fontsize=12)
 ax[1].set_ylabel("std($\epsilon$)", fontsize=12)
 
 ax[0].set_title("gPC error vs original model (mean and std)")
 _ = ax[1].set_title("gPC error vs original model (std)")
+
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()

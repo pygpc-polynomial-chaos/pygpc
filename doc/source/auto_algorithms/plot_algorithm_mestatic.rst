@@ -13,11 +13,13 @@ Algorithm: MEStatic
 
 .. code-block:: default
 
+    # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+    # def main():
     import pygpc
     from collections import OrderedDict
 
     fn_results = 'tmp/mestatic'       # filename of output
-    save_session_format = ".hdf5"     # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+    save_session_format = ".pkl"     # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 
 
@@ -72,7 +74,6 @@ Setting up the algorithm
     options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
     options["error_type"] = "loocv"
     options["qoi"] = "all"
-    options["n_grid_gradient"] = 5
     options["classifier"] = "learning"
     options["classifier_options"] = {"clusterer": "KMeans",
                                      "n_clusters": 2,
@@ -81,15 +82,12 @@ Setting up the algorithm
     options["fn_results"] = fn_results
     options["save_session_format"] = save_session_format
     options["grid"] = pygpc.Random
-    options["grid_options"] = None
-
-    # generate grid
-    grid = pygpc.Random(parameters_random=problem.parameters_random,
-                        n_grid=1000,  # options["matrix_ratio"] * n_coeffs
-                        seed=1)
+    options["grid_options"] = {"seed": 1}
+    options["n_grid"] = 1000
+    options["adaptive_sampling"] = False
 
     # define algorithm
-    algorithm = pygpc.MEStatic(problem=problem, options=options, grid=grid)
+    algorithm = pygpc.MEStatic(problem=problem, options=options)
 
 
 
@@ -121,10 +119,12 @@ Running the gpc
 
  .. code-block:: none
 
+    Determining gPC approximation for QOI #0:
+    =========================================
     Performing 1000 simulations!
     It/Sub-it: 10/2 Performing simulation 0001 from 1000 [                                        ] 0.1%
-    Total parallel function evaluation: 0.7621402740478516 sec
-    Gradient evaluation: 0.049759626388549805 sec
+    Total function evaluation: 1.298065185546875 sec
+    Gradient evaluation: 0.0721883773803711 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
     LOOCV 01 from 25 [=                                       ] 4.0%
@@ -152,8 +152,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.11038446426391602 sec
-    -> relative loocv error = 0.01297424649105885
+    LOOCV computation time: 0.1267223358154297 sec
+    -> relative loocv error = 0.018999762367704152
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
     LOOCV 03 from 25 [====                                    ] 12.0%
@@ -179,7 +179,7 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.1106407642364502 sec
+    LOOCV computation time: 0.12355804443359375 sec
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
     LOOCV 03 from 25 [====                                    ] 12.0%
@@ -205,7 +205,7 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.08616757392883301 sec
+    LOOCV computation time: 0.10218286514282227 sec
 
 
 
@@ -239,7 +239,7 @@ Postprocessing
 
  .. code-block:: none
 
-    > Loading gpc session object: tmp/mestatic.hdf5
+    > Loading gpc session object: tmp/mestatic.pkl
     > Loading gpc coeffs: tmp/mestatic.hdf5
     > Adding results to: tmp/mestatic.hdf5
 
@@ -269,14 +269,6 @@ Validate gPC vs original model function (2D-surface)
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    It/Sub-it: N/A/N/A Performing simulation 0001 from 2601 [                                        ] 0.0%
-
 
 
 
@@ -297,6 +289,14 @@ Validate gPC vs original model function (Monte Carlo)
 
     print("> Maximum NRMSD (gpc vs original): {:.2}%".format(max(nrmsd)))
 
+    # On Windows subprocesses will import (i.e. execute) the main module at start.
+    # You need to insert an if __name__ == '__main__': guard in the main module to avoid
+    # creating subprocesses recursively.
+    #
+    # if __name__ == '__main__':
+    #     main()
+
+
 
 .. image:: /auto_algorithms/images/sphx_glr_plot_algorithm_mestatic_002.png
     :class: sphx-glr-single-img
@@ -308,8 +308,7 @@ Validate gPC vs original model function (Monte Carlo)
 
  .. code-block:: none
 
-    It/Sub-it: N/A/N/A Performing simulation 00001 from 10000 [                                        ] 0.0%
-    > Maximum NRMSD (gpc vs original): 0.0074%
+    > Maximum NRMSD (gpc vs original): 0.0078%
 
 
 
@@ -317,7 +316,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  45.974 seconds)
+   **Total running time of the script:** ( 0 minutes  25.172 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_mestatic.py:

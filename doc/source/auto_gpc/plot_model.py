@@ -34,8 +34,10 @@ class MyModel(AbstractModel):
         If multiple grid-points are evaluated in one function call, return a dict for every grid-point in a list
     """
 
-    def __init__(self):
+    def __init__(self, fname_matlab=None, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
         self.fname = inspect.getfile(inspect.currentframe())
+        self.fname_matlab = fname_matlab
 
     def validate(self):
         pass
@@ -67,6 +69,9 @@ class MyModel(AbstractModel):
 #
 # Testing the model
 # ^^^^^^^^^^^^^^^^^
+
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 
 import pygpc
 import numpy as np
@@ -122,3 +127,10 @@ ax.set_xlabel(r"$x_1$", fontsize=16)
 fig.colorbar(im, ax=ax, orientation='vertical')
 ax.set_title("MyModel function")
 plt.tight_layout()
+
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
+#
+# if __name__ == '__main__':
+#     main()
