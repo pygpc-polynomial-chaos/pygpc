@@ -1596,9 +1596,9 @@ class LHS(RandomGrid):
                             design[j, i] = j + 1
                             u[j, i] = 1/4 * u[j, i]
                         elif j <= self.n_grid/2:
-                            design[j, i] = j + 1 - ((j*3/4) / (self.n_grid - 2) * self.n_grid)
+                            design[j, i] = j + 1 - ((j*3/4) / ((self.n_grid - 2) * self.n_grid))
                         elif j > self.n_grid/2:
-                            design[j, i] = j + 1 + ((j*3/4)/(self.n_grid - 2) * self.n_grid)
+                            design[j, i] = j + 1 + ((j*3/4) / ((self.n_grid - 2) * self.n_grid))
                     else:
                         design[j, i] = j + 1
 
