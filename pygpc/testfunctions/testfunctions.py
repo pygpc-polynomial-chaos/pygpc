@@ -161,7 +161,7 @@ class Ackley(AbstractModel):
        constants["b"] = 0.2
        constants["c"] = 0.5*np.pi
 
-       plot("Ackley", parameters, constants)
+       plot("Ackley", parameters, constants, plot_3d=False)
 
     .. [1] Adorio, E. P., & Diliman, U. P. MVF - Multivariate Test Functions Library in C
        for Unconstrained Global Optimization (2005). Retrieved June 2013,
@@ -251,7 +251,7 @@ class BukinFunctionNumber6(AbstractModel):
 
        constants = None
 
-       plot("BukinFunctionNumber6", parameters, constants)
+       plot("BukinFunctionNumber6", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization Test Functions Index. Retrieved June 2013, from
        http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
@@ -314,7 +314,7 @@ class CrossinTrayFunction(AbstractModel):
 
        constants = None
 
-       plot("CrossinTrayFunction", parameters, constants)
+       plot("CrossinTrayFunction", parameters, constants, plot_3d=False)
 
     .. [1] Test functions for optimization. In Wikipedia. Retrieved June 2013, from
        https://en.wikipedia.org/wiki/Test_functions_for_optimization.
@@ -374,7 +374,7 @@ class BohachevskyFunction1(AbstractModel):
 
        constants = None
 
-       plot("BohachevskyFunction1", parameters, constants)
+       plot("BohachevskyFunction1", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization x_1 **2 + 2x_2 **2 - 0.3 * cos(3pi * x_1) - 0.4 * cos(4pi * x_2) + 0.7 Test Problems.
        Retrieved June 2013, from http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
@@ -434,7 +434,7 @@ class PermFunction(AbstractModel):
        constants = OrderedDict()
        constants["b"] = 10
 
-       plot("PermFunction", parameters, constants)
+       plot("PermFunction", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization Test Problems. Retrieved June 2013, from
        http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
@@ -513,7 +513,7 @@ class SixHumpCamelFunction(AbstractModel):
 
        constants = None
 
-       plot("SixHumpCamelFunction", parameters, constants)
+       plot("SixHumpCamelFunction", parameters, constants, plot_3d=False)
 
     .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005). Retrieved June 2013, from
        http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
@@ -573,7 +573,7 @@ class RotatedHyperEllipsoid(AbstractModel):
 
        constants = None
 
-       plot("RotatedHyperEllipsoid", parameters, constants)
+       plot("RotatedHyperEllipsoid", parameters, constants, plot_3d=False)
 
     .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
        Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
@@ -640,7 +640,7 @@ class SumOfDifferentPowersFunction(AbstractModel):
 
        constants = None
 
-       plot("SumOfDifferentPowersFunction", parameters, constants)
+       plot("SumOfDifferentPowersFunction", parameters, constants, plot_3d=False)
 
     .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
        Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
@@ -706,7 +706,7 @@ class ZakharovFunction(AbstractModel):
 
        constants = None
 
-       plot("ZakharovFunction", parameters, constants)
+       plot("ZakharovFunction", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization Test Problems. Retrieved June 2013, from
        http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
@@ -781,7 +781,7 @@ class DropWaveFunction(AbstractModel):
 
        constants = None
 
-       plot("DropWaveFunction", parameters, constants)
+       plot("DropWaveFunction", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization Test Functions Index.
        Retrieved June 2013, from http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
@@ -839,7 +839,7 @@ class DixonPriceFunction(AbstractModel):
 
        constants = None
 
-       plot("DixonPriceFunction ", parameters, constants)
+       plot("DixonPriceFunction ", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization Test Functions Index.
        Retrieved June 2013, from http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
@@ -913,7 +913,7 @@ class RosenbrockFunction(AbstractModel):
 
        constants = None
 
-       plot("RosenbrockFunction ", parameters, constants)
+       plot("RosenbrockFunction ", parameters, constants, plot_3d=False)
 
     .. [1] Dixon, L. C. W., & Szego, G. P. (1978). The global optimization problem: an introduction.
        Towards global optimization, 2, 1-15.
@@ -927,7 +927,7 @@ class RosenbrockFunction(AbstractModel):
     .. [4] Picheny, V., Wagner, T., & Ginsbourger, D. (2012).
        A benchmark of kriging-based infill criteria for noisy optimization.
 
-    .. [5]https://www.sfu.ca/~ssurjano/rosen.html
+    .. [5] https://www.sfu.ca/~ssurjano/rosen.html
 
     """
 
@@ -992,7 +992,7 @@ class MichalewiczFunction(AbstractModel):
        constants = OrderedDict()
        constants["m"] = 10.
 
-       plot("MichalewiczFunction", parameters, constants)
+       plot("MichalewiczFunction", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization Test Functions Index.
        Retrieved June 2013, from http://infinity77.net/global_optimization/test_functions.html#test-functions-index.
@@ -1071,7 +1071,7 @@ class DeJongFunctionFive(AbstractModel):
 
        constants = None
 
-       plot("DeJongFunctionFive", parameters, constants)
+       plot("DeJongFunctionFive", parameters, constants, plot_3d=False)
 
     .. [1] Molga, M., & Smutnicki, C. Test functions for optimization needs (2005).
        Retrieved June 2013, from http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf.
@@ -1143,7 +1143,7 @@ class MatyasFunction(AbstractModel):
 
        constants = None
 
-       plot("MatyasFunction", parameters, constants)
+       plot("MatyasFunction", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization Test Problems. Retrieved June 2013, from
        http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
@@ -1201,7 +1201,7 @@ class GramacyLeeFunction(AbstractModel):
 
        constants = None
 
-       plot("GramacyLeeFunction", parameters, constants)
+       plot("GramacyLeeFunction", parameters, constants, plot_3d=False)
 
     .. [1] Gramacy, R. B., & Lee, H. K. (2012). Cases for the nugget in modeling computer experiments.
        Statistics and Computing, 22(3), 713-722.
@@ -1261,7 +1261,7 @@ class SchafferFunction4(AbstractModel):
 
        constants = None
 
-       plot("SchafferFunction4", parameters, constants)
+       plot("SchafferFunction4", parameters, constants, plot_3d=False)
 
     .. [1] Test functions for optimization. In Wikipedia.
        Retrieved June 2013, from https://en.wikipedia.org/wiki/Test_functions_for_optimization.
@@ -1321,7 +1321,7 @@ class SphereFunction(AbstractModel):
 
        constants = None
 
-       plot("SphereFunction", parameters, constants)
+       plot("SphereFunction", parameters, constants, plot_3d=False)
 
     .. [1]Dixon, L. C. W., & Szego, G. P. (1978). The global optimization problem: an introduction.
        Towards global optimization, 2, 1-15.
@@ -1351,6 +1351,73 @@ class SphereFunction(AbstractModel):
 
         for i, i_key in enumerate(keys):
                y += self.p[i_key] ** 2
+
+        y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class Lin2Coupled(AbstractModel):
+    """
+    d-dimensional Lin2Coupled Function.
+    The Lin2Coupled function is continuous, convex and unimodal.
+    The plot shows its two-dimensional form.
+
+    .. math::
+         y = \\sum_{i=1}^{d}x_i x_{i+1}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-1, 1]
+    p["x2"]: float or ndarray of float [n_grid]
+        second parameter defined in [-1, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-1, 1, 100)
+       parameters["x2"] = np.linspace(-1, 1, 100)
+
+       constants = None
+
+       plot("Lin2Coupled", parameters, constants, plot_3d=False)
+
+    .. [1] Alemazkoor, N., & Meidani, H. (2018). A near-optimal sampling strategy for sparse recovery of
+       polynomial chaos expansions. Journal of Computational Physics, 371, 137-151.
+    """
+
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for i, key in enumerate(self.p.keys()):
+            if type(self.p[key]) is np.ndarray:
+                self.p[key] = self.p[key].flatten()
+
+        # determine sum
+        y = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+        keys = list(self.p.keys())
+
+        for i, i_key in enumerate(keys):
+            if i < (len(keys)-1):
+                y += self.p[keys[i]] * self.p[keys[i+1]]
 
         y_out = y[:, np.newaxis]
 
@@ -1390,7 +1457,7 @@ class McCormickFunction(AbstractModel):
 
        constants = None
 
-       plot("McCormickFunction", parameters, constants)
+       plot("McCormickFunction", parameters, constants, plot_3d=False)
 
     .. [1] Adorio, E. P., & Diliman, U. P. MVF - Multivariate Test Functions Library in C for Unconstrained
        Global Optimization (2005). Retrieved June 2013, from http://http://www.geocities.ws/eadorio/mvf.pdf.
@@ -1447,7 +1514,7 @@ class BoothFunction(AbstractModel):
 
        constants = None
 
-       plot("BoothFunction", parameters, constants)
+       plot("BoothFunction", parameters, constants, plot_3d=False)
 
     .. [1] Global Optimization Test Problems. Retrieved June 2013, from
        http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO.htm.
@@ -1508,7 +1575,7 @@ class Peaks(AbstractModel):
 
        constants = OrderedDict()
        constants["x3"] = 0.
-       plot("Peaks", parameters, constants)
+       plot("Peaks", parameters, constants, plot_3d=False)
     """
 
     def __init__(self, matlab_model=False):
@@ -1791,7 +1858,7 @@ class SurfaceCoverageSpecies(AbstractModel):
        constants = OrderedDict()
        constants["alpha"] = 1.
 
-       plot("SurfaceCoverageSpecies", parameters, constants)
+       plot("SurfaceCoverageSpecies", parameters, constants, plot_3d=False)
 
     .. [1] Le Maitre, O.P., Najm, H.N., Ghanem, R.G., Knio, O.M., (2004).
        Multi-resolution analysis of Wiener-type uncertainty propagation schemes.
@@ -2561,7 +2628,7 @@ class Ishigami(AbstractModel):
        constants["b"] = 0.1
        constants["x3"] = 0.
 
-       plot("Ishigami", parameters, constants)
+       plot("Ishigami", parameters, constants, plot_3d=False)
 
     .. [1] Ishigami, T., Homma, T. (1990, December). An importance quantification
        technique in uncertainty analysis for computer models. In Uncertainty
@@ -2664,7 +2731,7 @@ class GFunction(AbstractModel):
        constants = OrderedDict()
        constants["a"] =  (np.arange(2)+1-2.)/2.
 
-       plot("GFunction", parameters, constants)
+       plot("GFunction", parameters, constants, plot_3d=False)
 
     .. [1] Saltelli, Andrea; Sobol, I. M. (1995): Sensitivity analysis for nonlinear
        mathematical models: numerical experience. In: Mathematical models and

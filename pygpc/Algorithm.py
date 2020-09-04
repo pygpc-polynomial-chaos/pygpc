@@ -471,12 +471,12 @@ class Static(Algorithm):
                                                 self.options["error_type"],
                                                 eps), tab=0, verbose=self.options["verbose"])
 
-            if not self.options["adaptive_sampling"] or (0 < (eps_pre-eps)/eps < 0.01):
+            if not self.options["adaptive_sampling"] or False:  # (0 < (eps_pre-eps)/eps < 0.01):
                 break
 
             if eps > self.options["eps"]:
                 # extend grid by 5% of number of basis functions and restart loop
-                n_grid_new = int(np.ceil(gpc.grid.n_grid + 5e-2 * gpc.basis.n_basis))
+                n_grid_new = gpc.grid.n_grid + 1  # int(np.ceil(gpc.grid.n_grid + 5e-2 * gpc.basis.n_basis))
                 iprint("Extending grid from {} to {} by {} sampling points".format(
                     gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
                     tab=0, verbose=self.options["verbose"])
