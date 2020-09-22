@@ -1541,11 +1541,11 @@ class LHS(RandomGrid):
         """
 
         # create sample points in icdf space using specified criteria
-        if self.criterion[0] is 'corr':
+        if self.criterion[0] == 'corr':
             self.coords_norm_lhs = self.lhs_corr()
-        elif self.criterion[0] is 'maximin' or self.criterion is 'm':
+        elif self.criterion[0] == 'maximin' or self.criterion == 'm':
             self.coords_norm_lhs = self.lhs_maximin()
-        elif self.criterion[0] is 'ese':
+        elif self.criterion[0] == 'ese':
             self.coords_norm_lhs = self.lhs_ese()
         else:
             self.coords_norm_lhs = self.lhs_initial()

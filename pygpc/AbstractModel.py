@@ -171,7 +171,7 @@ class AbstractModel:
                             ds = f[d]
                             # append
                             # for strings, the whole array has to be rewritten
-                            if dtype is "str":
+                            if dtype == "str":
                                 # ds = f[d][:]
                                 ds = f[d]
                                 del f[d]
@@ -193,7 +193,7 @@ class AbstractModel:
                             except KeyError:
                                 pass
 
-                            if dtype is "str":
+                            if dtype == "str":
                                 f.create_dataset(d, data=data_dict[d].astype("|S"))
                             else:
                                 ds = f.create_dataset(d, (require_size, data_dict[d].shape[1]),
