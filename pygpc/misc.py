@@ -1076,20 +1076,31 @@ def compute_chunks(seq, num):
     """
     assert len(seq) > 0
     assert num > 0
+    # assert isinstance(seq, list), f"{type(seq)} can't be chunked. Provide list."
 
     avg = len(seq) / float(num)
     n_empty = 0  # if len(seg) < num, how many empty lists to append to return?
 
     if avg < 1:
-        # raise ValueError("seq/num ration too small: " + str(avg))
         avg = 1
         n_empty = num - len(seq)
 
     out = []
     last = 0.0
+
     while last < len(seq):
-        out.append(seq[int(last):int(last + avg)])
-        last += avg
+        # if only one element would be left in the last run, add it to the current
+        if (int(last + avg) + 1) == len(seq):
+            last_append_idx = int(last + avg) + 1
+        else:
+            last_append_idx = int(last + avg)
+
+        out.append(seq[int(last):last_append_idx])
+
+        if (int(last + avg) + 1) == len(seq):
+            last += avg + 1
+        else:
+            last += avg
 
     # append empty lists if len(seq) < num
     out += [[]] * n_empty
