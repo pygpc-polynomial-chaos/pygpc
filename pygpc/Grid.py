@@ -1923,13 +1923,14 @@ class L1(RandomGrid):
         OrderedDict containing the RandomParameter instances the grids are generated for
     n_grid: int
         Number of random samples to generate
-    seed: float
-        Seeding point to replicate random grids
     options: dict, optional, default=None
         Grid options:
-        - 'corr'            : optimizes design points in their spearman correlation coefficients
-        - 'maximin' or 'm'  : optimizes design points in their maximum minimal distance using the Phi-P criterion
-        - 'ese'             : uses an enhanced evolutionary algorithm to optimize the Phi-P criterion
+        - method: "greedy", "iteration"
+        - criterion: ["mc"], ["tmc", "cc"], ["D"]
+        - weights: [1], [0.5, 0.5], [1]
+        - n_pool: size of samples in pool to choose greedy results from
+        - n_iter: number of iterations
+        - seed: random seed
     coords : ndarray of float [n_grid_add x dim]
         Grid points to add (model space)
     coords_norm : ndarray of float [n_grid_add x dim]
@@ -1942,13 +1943,16 @@ class L1(RandomGrid):
         Unique IDs of grid points
     coords_gradient_id : list of UUID objects (version 4) [n_grid]
         Unique IDs of grid points
+    gpc : GPC object instance
+        GPC object
+    grid_pre : Grid object instance, optional, default: None
+        Existent grid, which will be extended.
 
     Examples
     --------
     >>> import pygpc
     >>> grid = pygpc.L1(parameters_random=parameters_random,
     >>>                 n_grid=100,
-    >>>                 seed=1,
     >>>                 options={"method": "greedy",
     >>>                          "criterion": ["mc"],
     >>>                          "weights": [1],
@@ -1966,8 +1970,8 @@ class L1(RandomGrid):
     options: dict, optional, default=None
         Grid options:
         - method: "greedy", "iteration"
-        - criterion: ["mc"], ["tmc", "cc"]
-        - weights: [1], [0.5, 0.5]
+        - criterion: ["mc"], ["tmc", "cc"], ["D"]
+        - weights: [1], [0.5, 0.5], [1]
         - n_pool: size of samples in pool to choose greedy results from
         - n_iter: number of iterations
         - seed: random seed
@@ -1983,6 +1987,10 @@ class L1(RandomGrid):
         Unique IDs of grid points
     coords_gradient_id : list of UUID objects (version 4) [n_grid]
         Unique IDs of grid points
+    gpc : GPC Object instance
+        GPC object
+    grid_pre : Grid object instance, optional, default: None
+        Existent grid, which will be extended.
     """
 
     def __init__(self, parameters_random, n_grid=None, options=None, coords=None, coords_norm=None,
@@ -2119,8 +2127,9 @@ class L1(RandomGrid):
             crit[index_list_remaining, :] = crit_tmp
 
             # set 1e6 dummy values to max values
-            for k in range(crit.shape[1]):
-                crit[crit[:, k] == 1e6, k] = np.max(crit[crit[:, k] != 1e6, k])
+            if self.criterion != "D":
+                for k in range(crit.shape[1]):
+                    crit[crit[:, k] == 1e6, k] = np.max(crit[crit[:, k] != 1e6, k])
 
             # normalize optimality criteria to [0, 1]
             crit = (crit - np.min(crit, axis=0)) / (np.max(crit, axis=0) - np.min(crit, axis=0))
@@ -2865,6 +2874,10 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
 
         if "cc" in criterion:
             crit[j, criterion.index("cc")] = average_cross_correlation_gram(np.matmul(psy_test.T, psy_test))
+
+        if "D" in criterion:
+            # determinant of inverse of Gram is the inverse of the determinant
+            crit[j, criterion.index("D")] = 1/np.linalg.det(np.matmul(psy_test.T, psy_test))
 
     return crit
 
