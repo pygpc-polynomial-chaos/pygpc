@@ -106,7 +106,7 @@ class AbstractModel:
                             else:
                                 return None
 
-                    except (KeyError, ValueError):
+                    except (KeyError, ValueError, IndexError):
                         return None
             finally:
                 if self.lock:
@@ -186,7 +186,7 @@ class AbstractModel:
                                 else:
                                     ds[self.i_grid, :] = data_dict[d]
 
-                        except (KeyError, ValueError, TypeError):
+                        except (KeyError, ValueError, TypeError, IndexError):
                             # create
                             try:
                                 del f[d]

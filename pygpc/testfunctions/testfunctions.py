@@ -2249,6 +2249,8 @@ class GenzGaussianPeak(AbstractModel):
 
     .. math:: y = \exp\\left( - \sum_{i=1}^{N} a_i ^2 (x_i - u_i)^2\\right)
 
+    By default u_i = 0.5 and a_i = 5.
+
     Parameters
     ----------
     p["x1"]: float or ndarray of float [n_grid]
