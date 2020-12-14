@@ -2132,13 +2132,13 @@ class L1(RandomGrid):
                     crit[crit[:, k] == 1e6, k] = np.max(crit[crit[:, k] != 1e6, k])
 
             # normalize optimality criteria to [0, 1]
-            crit = (crit - np.min(crit, axis=0)) / (np.max(crit, axis=0) - np.min(crit, axis=0))
+            crit = (crit - np.nanmin(crit, axis=0)) / (np.nanmax(crit, axis=0) - np.nanmin(crit, axis=0))
 
             # apply weights
             crit = np.sum(crit * np.array(self.weights), axis=1)
 
             # find best index
-            index_list.append(np.argmin(crit))
+            index_list.append(np.nanargmin(crit))
 
             # add row with best minimal coherence and cross correlation properties to the matrix
             psy_opt = np.vstack((psy_opt, psy_pool[index_list[-1], :]))
@@ -2876,8 +2876,11 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
             crit[j, criterion.index("cc")] = average_cross_correlation_gram(np.matmul(psy_test.T, psy_test))
 
         if "D" in criterion:
+            # for n_grid < n_basis only consider the first n_grid basis functions because of determinant
+            n_basis_det = np.min((psy_test.shape[0], psy_test.shape[1]))
+
             # determinant of inverse of Gram is the inverse of the determinant
-            sign, logdet = np.linalg.slogdet(np.matmul(psy_test.T, psy_test))
+            sign, logdet = np.linalg.slogdet(np.matmul(psy_test[:, :n_basis_det].T, psy_test[:, :n_basis_det]))
             crit[j, criterion.index("D")] = sign * -1 * logdet
 
     return crit
@@ -2950,6 +2953,14 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
 
         if "cc" in criterion:
             crit[i, criterion.index("cc")] = average_cross_correlation_gram(np.matmul(psy_pool_norm.T, psy_pool_norm))
+
+        if "D" in criterion:
+            # for n_grid < n_basis only consider the first n_grid basis functions because of determinant
+            n_basis_det = np.min((n_grid, gpc.basis.n_basis))
+
+            # determinant of inverse of Gram is the inverse of the determinant
+            sign, logdet = np.linalg.slogdet(np.matmul(psy_pool_norm[:, :n_basis_det].T, psy_pool_norm[:, :n_basis_det]))
+            crit[i, criterion.index("D")] = sign * -1 * logdet
 
     return crit, coords_norm_list
 
