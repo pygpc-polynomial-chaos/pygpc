@@ -138,6 +138,31 @@ class Beta(RandomParameter):
 
         self.pdf_limits_norm = [-1, 1]
 
+    def sample(self, n_samples, normalized=True):
+        """
+        Samples random variable
+
+        Parameters
+        ----------
+        n_samples : int
+            Number of samples to draw
+        normalized : bool, optional, default: True
+            Return normalized value
+
+        Returns
+        -------
+        sample : ndarray of float [n_sample]
+            Sampling points
+        """
+
+        b = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
+        samples = 2 * b.rvs(size=n_samples) - 1
+
+        if not normalized:
+            samples = samples * (self.pdf_limits[1] - self.pdf_limits[0]) + self.pdf_limits[0]
+
+        return samples
+
     def init_basis_function(self, order):
         """
         Initializes Jacobi BasisFunction of Beta RandomParameter
@@ -182,7 +207,7 @@ class Beta(RandomParameter):
 
         y = np.zeros(x.shape)
 
-        mask = np.logical_and(self.pdf_limits[0] < x, x < self.pdf_limits[1])
+        mask = np.logical_and(a < x, x < b)
 
         y[mask] = (scipy.special.gamma(p) * scipy.special.gamma(q) / scipy.special.gamma(p + q)
                    * (b - a) ** (p + q - 1)) ** (-1) * (x[mask] - a) ** (p - 1) * (b - x[mask]) ** (q - 1)
@@ -210,7 +235,7 @@ class Beta(RandomParameter):
         if x is None:
             x = np.linspace(-1, 1, 200)
 
-        y = self.pdf(x, a=-1., b=1.)
+        x, y = self.pdf(x, a=-1., b=1.)
 
         return x, y
 
@@ -323,6 +348,31 @@ class Norm(RandomParameter):
         self.pdf_limits_norm = [self.x_perc_norm[0], self.x_perc_norm[1]]
 
 
+    def sample(self, n_samples, normalized=True):
+        """
+        Samples random variable
+
+        Parameters
+        ----------
+        n_samples : int
+            Number of samples to draw
+        normalized : bool, optional, default: True
+            Return normalized value
+
+        Returns
+        -------
+        sample : ndarray of float [n_sample]
+            Sampling points
+        """
+
+        n = scipy.stats.norm()
+        samples = n.rvs(size=n_samples)
+
+        if not normalized:
+            samples = samples * self.pdf_shape[1] + self.pdf_shape[0]
+
+        return samples
+
     @staticmethod
     def init_basis_function(order):
         """
@@ -400,7 +450,7 @@ class Norm(RandomParameter):
         # transform probabilities to perc constraint
         p = self.p_perc * p + (1 - self.p_perc)/2
 
-        # make normal distrubted random variable
+        # make normal distributed random variable
         n = scipy.stats.norm()
 
         # icdf
@@ -500,6 +550,33 @@ class Gamma(RandomParameter):
         self.var = self.std**2
 
         self.pdf_limits_norm = [0, self.x_perc_norm]
+
+    def sample(self, n_samples, normalized=True):
+        """
+        Samples random variable
+
+        Parameters
+        ----------
+        n_samples : int
+            Number of samples to draw
+        normalized : bool, optional, default: True
+            Return normalized value
+
+        Returns
+        -------
+        sample : ndarray of float [n_sample]
+            Sampling points
+        """
+
+        samples = scipy.stats.gamma.rvs(size=n_samples,
+                                        a=self.pdf_shape[0],
+                                        loc=0.,
+                                        scale=1.)
+
+        if not normalized:
+            samples = samples + self.pdf_shape[2]
+
+        return samples
 
     def init_basis_function(self, order):
         """

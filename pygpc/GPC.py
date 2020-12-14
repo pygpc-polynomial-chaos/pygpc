@@ -951,11 +951,11 @@ class GPC(object):
         else:
             results_complete = results
 
-        # if(isinstance(self.grid, L1OPT)):# or isinstance(self.grid, LHS)  ):
-        #     a = 1 / np.abs(matrix).max(axis=0)
-        #
-        #     matrix = a * matrix
-        #     results_complete = a * results_complete
+        # weight gpc matrix and rhs
+        if isinstance(self.grid, CO):
+            w = np.diag(1/np.linalg.norm(matrix, axis=1))
+            matrix = np.matmul(w, matrix)
+            results_complete = np.matmul(w, results_complete)
 
         self.coherence_matrix = matrix
 
@@ -1010,7 +1010,6 @@ class GPC(object):
             else:
                 coeffs = coeffs.transpose()
 
-        # TODO: @Lucas: add GPU support
         #########################
         # Numerical Integration #
         #########################
