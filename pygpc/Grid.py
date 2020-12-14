@@ -2877,7 +2877,8 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
 
         if "D" in criterion:
             # determinant of inverse of Gram is the inverse of the determinant
-            crit[j, criterion.index("D")] = 1/np.linalg.det(np.matmul(psy_test.T, psy_test))
+            sign, logdet = np.linalg.slogdet(np.matmul(psy_test.T, psy_test))
+            crit[j, criterion.index("D")] = sign * -1 * logdet
 
     return crit
 
