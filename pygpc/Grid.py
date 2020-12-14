@@ -1769,7 +1769,7 @@ class LHS(RandomGrid):
 
 class MCMC(RandomGrid):
     """
-    LHS grid object
+    MCMC grid object
 
     Parameters
     ----------
@@ -1800,7 +1800,7 @@ class MCMC(RandomGrid):
     Examples
     --------
     >>> import pygpc
-    >>> grid = pygpc.LHS(parameters_random=parameters_random, n_grid=100, seed=1, options=options)
+    >>> grid = pygpc.MCMC(parameters_random=parameters_random, n_grid=100, seed=1, options=options)
 
     Attributes
     ----------
@@ -1881,35 +1881,44 @@ class MCMC(RandomGrid):
         # Generate unique IDs of grid points
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
+    def f(self,x):
+        return 1
+
+    def w(self,x):
+        return 1
+
+    def B(self,x):
+        return 1
+
+    def g(self,x):
+        return 1
+
     def Metropolis_Hastings(self):
 
-        def f(x):
-            return 1
-        def w(x):
-            return 1
-        def g(x):
-            return 1
-
-        n = max(2 * self.n_grid, 10000)
-        # draw n samples from the proposal distribution
-        samples = np.random.beta(.5, .5, size=[n, self.dim])
+        n = self.n_grid
+        # draw n samples from the proposal distribution  (Chebyshev for Legendre Polynomials)
+        samples = np.random.beta(.5, .5, size=[1000, self.dim])
 
         # Metropolis-Hastings with 10,000 iterations.
+        # alternative: x_start = samples[0, :], chain until x_ accepted restart with x_start
+        # x_ = samples[i, :]
         for i in range(n):
             u = np.random.rand(self.dim)
-            # 'iterate' over a number of burn in Samples
+            # 'iterate' over a number of burn-in Samples
             for j in range(10):
+                #higher amount of burn-in here
                 x = samples[i, :]
                 x_ = np.random.beta(.5, .5, size=self.dim)
                 rho = np.zeros(self.dim)
 
                 for k in range(self.dim):
-                    rho[k] = np.min((g(x[k]) * f(x_[k]) * (w(x_) ** (-2))/(g(x_[k]) * f(x[k]) * (w(x) ** (-2)))))
+                    #change to B(x) instead, canonically to paper p.84
+                    rho[k] = np.min((self.g(x[k]) * self.f(x_[k]) * (self.w(x_) ** (-2))/(self.g(x_[k]) * self.f(x[k]) * (self.w(x) ** (-2)))))
                 # draw a uniform sample from [0, 1]
                 if (u.sum() < rho.sum()):
                     samples[i, :] = x_
                     u = rho
-        samples = samples[len(samples)-n: len(samples)]
+        samples = samples[index_best]
         return samples
 
 

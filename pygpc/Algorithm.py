@@ -476,7 +476,7 @@ class Static(Algorithm):
 
             if eps > self.options["eps"]:
                 # extend grid by 5% of number of basis functions and restart loop
-                n_grid_new = gpc.grid.n_grid + 1  # int(np.ceil(gpc.grid.n_grid + 5e-2 * gpc.basis.n_basis))
+                n_grid_new = int(np.ceil(gpc.grid.n_grid + 5e-2 * gpc.basis.n_basis)) #gpc.grid.n_grid + 1
                 iprint("Extending grid from {} to {} by {} sampling points".format(
                     gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
                     tab=0, verbose=self.options["verbose"])
