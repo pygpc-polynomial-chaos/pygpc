@@ -7,7 +7,7 @@ import scipy.special
 from scipy.integrate import odeint
 from collections import OrderedDict
 from pygpc.AbstractModel import AbstractModel
-from pygpc.testfunctions.euber_libV3 import*
+# from pygpc.testfunctions.euber_libV3 import*
 
 try:
     import matplotlib
@@ -3737,62 +3737,62 @@ class ElectrodeModel(AbstractModel):
 
         return Z
 
-class Euber(AbstractModel):
-    """
-    Euler-Bernouli Model for multi-layered beam
-
-
-    Parameters
-    ----------
-    p["x1"]: float or ndarray of float [n_grid]
-        First parameter defined in [n, n]
-
-    Returns
-    -------
-    y: ndarray of float [n_grid x 1]
-        Output data
-    """
-
-    def __init__(self, matlab_model=False):
-        super(type(self), self).__init__(matlab_model=matlab_model)
-        self.fname = inspect.getfile(inspect.currentframe())
-
-    def validate(self):
-        pass
-
-    def simulate(self, process_id=None, matlab_engine=None):
-
-
-        # Platin
-        rho_pt = 21450  # kg/m³
-        E_pt = 126.8e9  # Pa
-        # Scandiumaluminiumnitrit
-        rho_scaln = 3318  # kg/m³
-        E_scaln = 315.2e9  # Pa
-        # Nickel
-        rho_ni = 8908  # kg/m³
-        E_ni = 200e9  # Pa
-
-        mat_param = [E_pt, E_scaln, E_ni,
-                     rho_pt, rho_scaln, rho_ni]
-
-        y = np.zeros(len(self.p["x1"]))
-
-        for i in range(len(self.p["x1"])):
-            bndmiddl = [self.p["x1"][i], self.p["x2"][i], self.p["x3"][i], self.p["x4"][i], self.p["x5"][i], self.p["x6"][i], self.p["x7"][i]]
-
-            beam = euber()
-            beam.prec = 600
-            beam.lyrd_beam_reduced_params(*bndmiddl, *mat_param, N=100)
-            try:
-                y[i] = beam.get_first_n_ekf_bruteforce(n=1, om=80, stepsize=70)[0][0] / 2 / np.pi
-            except IndexError:
-                a = 0
-
-
-        if type(y) is not np.ndarray:
-            y = np.array([y])
-
-        y_out = y[:, np.newaxis]
-
-        return y_out
+# class Euber(AbstractModel):
+#     """
+#     Euler-Bernouli Model for multi-layered beam
+#
+#
+#     Parameters
+#     ----------
+#     p["x1"]: float or ndarray of float [n_grid]
+#         First parameter defined in [n, n]
+#
+#     Returns
+#     -------
+#     y: ndarray of float [n_grid x 1]
+#         Output data
+#     """
+#
+#     def __init__(self, matlab_model=False):
+#         super(type(self), self).__init__(matlab_model=matlab_model)
+#         self.fname = inspect.getfile(inspect.currentframe())
+#
+#     def validate(self):
+#         pass
+#
+#     def simulate(self, process_id=None, matlab_engine=None):
+#
+#
+#         # Platin
+#         rho_pt = 21450  # kg/m³
+#         E_pt = 126.8e9  # Pa
+#         # Scandiumaluminiumnitrit
+#         rho_scaln = 3318  # kg/m³
+#         E_scaln = 315.2e9  # Pa
+#         # Nickel
+#         rho_ni = 8908  # kg/m³
+#         E_ni = 200e9  # Pa
+#
+#         mat_param = [E_pt, E_scaln, E_ni,
+#                      rho_pt, rho_scaln, rho_ni]
+#
+#         y = np.zeros(len(self.p["x1"]))
+#
+#         for i in range(len(self.p["x1"])):
+#             bndmiddl = [self.p["x1"][i], self.p["x2"][i], self.p["x3"][i], self.p["x4"][i], self.p["x5"][i], self.p["x6"][i], self.p["x7"][i]]
+#
+#             beam = euber()
+#             beam.prec = 600
+#             beam.lyrd_beam_reduced_params(*bndmiddl, *mat_param, N=100)
+#             try:
+#                 y[i] = beam.get_first_n_ekf_bruteforce(n=1, om=80, stepsize=70)[0][0] / 2 / np.pi
+#             except IndexError:
+#                 a = 0
+#
+#
+#         if type(y) is not np.ndarray:
+#             y = np.array([y])
+#
+#         y_out = y[:, np.newaxis]
+#
+#         return y_out

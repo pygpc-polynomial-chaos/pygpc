@@ -97,11 +97,13 @@ class Grid(object):
     @coords.setter
     def coords(self, value):
         self._coords = value
-        self.n_grid = self._coords.shape[0]
 
-        # Generate unique IDs of grid points
-        if self.coords_id is None:
-            self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+        if value is not None:
+            self.n_grid = self._coords.shape[0]
+
+            # Generate unique IDs of grid points
+            if self.coords_id is None:
+                self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
     @property
     def coords_norm(self):
@@ -110,11 +112,13 @@ class Grid(object):
     @coords_norm.setter
     def coords_norm(self, value):
         self._coords_norm = value
-        self.n_grid = self._coords_norm.shape[0]
 
-        # Generate unique IDs of grid points
-        if self.coords_id is None:
-            self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+        if value is not None:
+            self.n_grid = self._coords_norm.shape[0]
+
+            # Generate unique IDs of grid points
+            if self.coords_id is None:
+                self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
     @property
     def coords_gradient(self):
@@ -123,11 +127,13 @@ class Grid(object):
     @coords_gradient.setter
     def coords_gradient(self, value):
         self._coords_gradient = value
-        self.n_grid_gradient = self._coords_gradient.shape[0]
 
-        # Generate unique IDs of grid gradient points
-        if self.coords_gradient_id is None:
-            self.coords_gradient_id = [uuid.uuid4() for _ in range(self.n_grid_gradient)]
+        if value is not None:
+            self.n_grid_gradient = self._coords_gradient.shape[0]
+
+            # Generate unique IDs of grid gradient points
+            if self.coords_gradient_id is None:
+                self.coords_gradient_id = [uuid.uuid4() for _ in range(self.n_grid_gradient)]
 
     @property
     def coords_gradient_norm(self):
@@ -136,11 +142,13 @@ class Grid(object):
     @coords_gradient_norm.setter
     def coords_gradient_norm(self, value):
         self._coords_gradient_norm = value
-        self.n_grid_gradient = self._coords_gradient_norm.shape[0]
 
-        # Generate unique IDs of grid gradient points
-        if self.coords_gradient_id is None:
-            self.coords_gradient_id = [uuid.uuid4() for _ in range(self.n_grid_gradient)]
+        if value is not None:
+            self.n_grid_gradient = self._coords_gradient_norm.shape[0]
+
+            # Generate unique IDs of grid gradient points
+            if self.coords_gradient_id is None:
+                self.coords_gradient_id = [uuid.uuid4() for _ in range(self.n_grid_gradient)]
 
     @property
     def weights(self):
@@ -1148,7 +1156,7 @@ class Random(RandomGrid):
                                      coords_id=coords_id,
                                      coords_gradient_id=coords_gradient_id)
 
-        if coords is not None and coords_norm is not None:
+        if coords is not None or coords_norm is not None:
             grid_present = True
         else:
             grid_present = False
@@ -1236,6 +1244,32 @@ class Random(RandomGrid):
             # Generate unique IDs of grid points
             self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
+        else:
+            self.coords = coords
+            self.coords_norm = coords_norm
+
+            self.coords_gradient = coords_gradient
+            self.coords_gradient_norm = coords_gradient_norm
+
+            self.coords_id = coords_id
+            self.coords_gradient_id = coords_gradient_id
+
+            if self.coords is None:
+                # Denormalize grid to original parameter space
+                self.coords = self.get_denormalized_coordinates(self.coords_norm)
+
+            if self.coords_norm is None:
+                # Normalize grid to original parameter space
+                self.coords = self.get_normalized_coordinates(self.coords)
+
+            if self.coords_gradient is None and self.coords_gradient_norm is not None:
+                # Denormalize grid to original parameter space
+                self.coords_gradient = self.get_denormalized_coordinates(self.coords_gradient_norm)
+
+            if self.coords_gradient_norm is None and self.coords_gradient is not None:
+                # Normalize grid to original parameter space
+                self.coords_gradient_norm = self.get_normalized_coordinates(self.coords_gradient)
+
 
 class LHS(RandomGrid):
     """
@@ -1270,7 +1304,7 @@ class LHS(RandomGrid):
     Examples
     --------
     >>> import pygpc
-    >>> grid = pygpc.LHS(parameters_random=parameters_random, n_grid=100, options=options)
+    >>> grid = pygpc.LHS(parameters_random=parameters_random, n_grid=100, options={"seed": None, "criterion": "ese"})
 
     Attributes
     ----------
@@ -1767,9 +1801,9 @@ class LHS(RandomGrid):
         return P_best
 
 
-class MCMC(RandomGrid):
+class CO(RandomGrid):
     """
-    MCMC grid object
+    Coherence Optimal grid object
 
     Parameters
     ----------
@@ -1781,9 +1815,7 @@ class MCMC(RandomGrid):
         Seeding point to replicate random grids
     options: dict, optional, default=None
         Grid options:
-        - 'corr'            : optimizes design points in their spearman correlation coefficients
-        - 'maximin' or 'm'  : optimizes design points in their maximum minimal distance using the Phi-P criterion
-        - 'ese'             : uses an enhanced evolutionary algorithm to optimize the Phi-P criterion
+        - 'seed'            : Seeding point
     coords : ndarray of float [n_grid_add x dim]
         Grid points to add (model space)
     coords_norm : ndarray of float [n_grid_add x dim]
@@ -1800,7 +1832,7 @@ class MCMC(RandomGrid):
     Examples
     --------
     >>> import pygpc
-    >>> grid = pygpc.MCMC(parameters_random=parameters_random, n_grid=100, seed=1, options=options)
+    >>> grid = pygpc.CO(parameters_random=parameters_random, n_grid=100, options={"seed": None})
 
     Attributes
     ----------
@@ -1829,7 +1861,7 @@ class MCMC(RandomGrid):
     def __init__(self, parameters_random, n_grid=None, seed=None, options=None, coords=None, coords_norm=None,
                  coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None):
         """
-        Constructor; Initializes RandomGrid instance; Generates grid or copies provided content
+        Constructor; Initializes CO instance; Generates grid or copies provided content
         """
 
         self.lhs_reservoir = None
@@ -1837,26 +1869,15 @@ class MCMC(RandomGrid):
         self.coords_reservoir = None
         self.coords_norm_reservoir = None
 
-        super(MCMC, self).__init__(parameters_random,
-                                   n_grid=n_grid,
-                                   seed=seed,
-                                   options=options,
-                                   coords=coords,
-                                   coords_norm=coords_norm,
-                                   coords_gradient=coords_gradient,
-                                   coords_gradient_norm=coords_gradient_norm,
-                                   coords_id=coords_id,
-                                   coords_gradient_id=coords_gradient_id)
-
-
-        self.coords_reservoir = np.zeros((self.n_grid, self.dim))
-        self.coords_norm_reservoir = np.zeros((self.n_grid, self.dim))
-        self.perc_mask = np.zeros((self.n_grid, self.dim)).astype(bool)
-
-
-
-        # Generate random samples for each random input variable [n_grid x dim]
-        self.coords_norm = np.zeros([self.n_grid, self.dim])
+        super(CO, self).__init__(parameters_random,
+                                 n_grid=n_grid,
+                                 options=options,
+                                 coords=coords,
+                                 coords_norm=coords_norm,
+                                 coords_gradient=coords_gradient,
+                                 coords_gradient_norm=coords_gradient_norm,
+                                 coords_id=coords_id,
+                                 coords_gradient_id=coords_gradient_id)
 
         # generate LHS grid in icdf space (seed of random grid (if necessary to reproduce random grid)
         self.lhs_reservoir = self.Metropolis_Hastings()
@@ -1867,12 +1888,6 @@ class MCMC(RandomGrid):
             self.perc_mask[:, i_p] = np.logical_and(
                 self.parameters_random[p].pdf_limits_norm[0] < self.coords_norm_reservoir[:, i_p],
                 self.coords_norm_reservoir[:, i_p] < self.parameters_random[p].pdf_limits_norm[1])
-
-        # get points all satisfying perc constraints
-        self.perc_mask = self.perc_mask.all(axis=1)
-        self.coords_norm_reservoir = self.coords_norm_reservoir[self.perc_mask, :]
-
-        self.coords_norm = self.coords_norm_reservoir[0:self.n_grid, :]
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -2132,7 +2147,22 @@ class L1(RandomGrid):
             idx_list_chunks = compute_chunks(index_list_remaining, n_cpu)
 
             crit_tmp = pool.map(workhorse_partial, idx_list_chunks)
-            crit_tmp = np.concatenate(crit_tmp)
+
+            if "D" not in self.criterion:
+                crit_tmp = np.concatenate(crit_tmp)
+            else:
+                sign = []
+                neg_logdet = []
+
+                for res in crit_tmp:
+                    sign.append(res[0])
+                    neg_logdet.append(res[1])
+
+                sign = np.concatenate(sign)
+                neg_logdet = np.concatenate(neg_logdet)
+                neg_logdet_norm = neg_logdet / np.max(np.abs(neg_logdet))
+                crit_tmp = sign * np.exp(neg_logdet_norm)
+
             crit[index_list_remaining, :] = crit_tmp
 
             # set 1e6 dummy values to max values
@@ -2192,11 +2222,25 @@ class L1(RandomGrid):
 
         for j in range(len(res)):
             if j == 0:
-                crit = res[j][0]
-                coords_norm_list = res[j][1]
+                if "D" not in self.criterion:
+                    crit = res[j][0]
+                    coords_norm_list = res[j][1]
+                else:
+                    sign = res[j][0]
+                    neg_logdet = res[j][1]
+                    neg_logdet_norm = neg_logdet / np.max(np.abs(neg_logdet))
+                    crit = sign * np.exp(neg_logdet_norm)
+                    coords_norm_list = res[j][2]
             else:
-                crit = np.vstack((crit, res[j][0]))
-                coords_norm_list = coords_norm_list + res[j][1]
+                if "D" not in self.criterion:
+                    crit = np.vstack((crit, res[j][0]))
+                    coords_norm_list = coords_norm_list + res[j][1]
+                else:
+                    sign = res[j][0]
+                    neg_logdet = res[j][1]
+                    neg_logdet_norm = neg_logdet / np.max(np.abs(neg_logdet))
+                    crit = np.vstack((crit, sign * np.exp(neg_logdet_norm)))
+                    coords_norm_list = coords_norm_list + res[j][2]
 
         # normalize optimality criteria to [0, 1]
         crit = (crit - np.min(crit, axis=0)) / (np.max(crit, axis=0) - np.min(crit, axis=0))
@@ -2338,11 +2382,6 @@ class FIM(RandomGrid):
                 self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
                                                                  x=self.grid_pre.coords_norm,
                                                                  gradient=False)
-        else:
-            self.gpc.grid = Random(parameters_random=self.gpc.problem.parameters_random,
-                                   n_grid=self.gpc.basis.n_basis,
-                                   options=self.options)
-            self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.gpc.grid.coords_norm, gradient=False)
 
         self.coords_norm = self.get_fim_optiomal_grid_points(parameters_random=parameters_random,
                                                              n_grid_add=self.n_grid)
@@ -2392,44 +2431,142 @@ class FIM(RandomGrid):
         n_cpu = multiprocessing.cpu_count()
         pool = multiprocessing.Pool(n_cpu)
 
+        grid_pool = Random(parameters_random=parameters_random,
+                           n_grid=self.n_pool,
+                           options={"seed": self.seed})
+
+        if self.gpc.p_matrix is not None:
+            gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
+                                                         x=np.matmul(self.grid_pool.coords_norm,
+                                                                     self.gpc.p_matrix.transpose() /
+                                                                     self.gpc.p_matrix_norm[np.newaxis, :]),
+                                                         gradient=False)
+        else:
+            gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
+                                                         x=grid_pool.coords_norm,
+                                                         gradient=False)
+
+        if self.gpc.gpc_matrix is not None:
+            fim_matrix = self.calc_fim_matrix()
+        else:
+            fim_matrix = None
+
+        index_list = []
+
         for i in range(n_grid_add):
+            det = np.zeros((self.n_pool))
+
             if self.seed is not None:
                 self.seed += 1
                 self.options["seed"] += 1
 
-            fim_matrix = self.calc_fim_matrix()
-            grid_test = Random(parameters_random=parameters_random,
-                               n_grid=self.n_pool,
-                               options={"seed": self.seed})
+            # select random starting point
+            if self.gpc.gpc_matrix is None:
+                coords_opt = grid_pool.coords_norm[0, :][np.newaxis, ]
+                self.gpc.grid = Random(parameters_random=parameters_random,
+                                       options={"seed": self.seed},
+                                       coords_norm=coords_opt)
 
-            workhorse_partial = partial(workhorse_get_det_updated_fim_matrix, gpc=self.gpc, fim_matrix=fim_matrix)
-            coords_norm_list_chunks = compute_chunks([c for c in grid_test.coords_norm], n_cpu)
+                self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
+                                                                 x=self.gpc.grid.coords_norm[-1, :][np.newaxis, ],
+                                                                 gradient=False)
 
-            det = pool.map(workhorse_partial, coords_norm_list_chunks)
-            det = np.concatenate(det)
+                index_list.append(0)
 
-            coords_opt = grid_test.coords_norm[np.argmax(det), :]
-            self.gpc.grid.coords_norm = np.vstack((self.gpc.grid.coords_norm, coords_opt))
-            self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.gpc.grid.coords_norm, gradient=False)
+            else:
+                index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
+                index_list_chunks = compute_chunks(index_list_remaining, n_cpu)
 
-            coords_norm_opt[i, :] = coords_opt
+                workhorse_partial = partial(workhorse_get_det_updated_fim_matrix,
+                                            gpc_matrix_pool=gpc_matrix_pool,
+                                            fim_matrix=fim_matrix,
+                                            n_basis_limit=n_basis_limit)
+
+                res = pool.map(workhorse_partial, index_list_chunks)
+
+                sign = []
+                logdet = []
+
+                for r in res:
+                    sign.append(r[0])
+                    logdet.append(r[1])
+
+                sign = np.concatenate(sign)
+                logdet = np.concatenate(logdet)
+
+                logdet_norm = logdet / np.max(np.abs(logdet))
+                det[index_list_remaining] = (sign * np.exp(logdet_norm)).flatten()
+                index_list.append(np.nanargmax(det))
+
+                coords_opt = grid_pool.coords_norm[index_list[-1], :]
+
+                # add optimal grid point
+                self.gpc.grid.coords_norm = np.vstack((self.gpc.grid.coords_norm, coords_opt))
+
+                # update gpc matrix
+                self.gpc.gpc_matrix = np.vstack((self.gpc.gpc_matrix,
+                                                 self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
+                                                                            x=self.gpc.grid.coords_norm[-1, :][np.newaxis, ],
+                                                                            gradient=False)))
+
+            # update FIM matrix
+            n_basis_limit = np.min((self.gpc.grid.n_grid, self.gpc.basis.n_basis))
+
+            if n_basis_limit == (self.gpc.basis.n_basis+1):
+                fim_matrix = self.update_fim_matrix(fim_matrix=fim_matrix,
+                                                    gpc_matrix_new_rows=self.gpc.gpc_matrix[-1, :][np.newaxis, ])
+            else:
+                fim_matrix = self.calc_fim_matrix(n_basis_limit=n_basis_limit)
 
         pool.close()
 
-        return coords_norm_opt
+        return self.gpc.grid.coords_norm
 
-    def calc_fim_matrix(self):
+    def calc_fim_matrix(self, n_basis_limit=None):
         """
         Calculates Fisher-Information matrix based on the present grid.
+
+        Parameters
+        ----------
+        n_basis_limit : int
+            Index of column the FIM matrix is calculated
 
         Returns
         -------
         fim_matrix : ndarray of float [n_basis x n_basis]
             Fisher information matrix
         """
-        fim_matrix = np.zeros((self.gpc.gpc_matrix.shape[1], self.gpc.gpc_matrix.shape[1]))
+        if n_basis_limit is None:
+            n_basis_limit = self.gpc.gpc_matrix.shape[1]
+
+        fim_matrix = np.zeros((n_basis_limit, n_basis_limit))
 
         for row in self.gpc.gpc_matrix:
+            fim_matrix += np.outer(row[:n_basis_limit], row[:n_basis_limit])
+
+        return fim_matrix
+
+    @staticmethod
+    def update_fim_matrix(fim_matrix, gpc_matrix_new_rows):
+        """
+        Updates Fisher-Information matrix based on the present grid.
+
+        Parameters
+        ----------
+        fim_matrix : ndarray of float [n_basis x n_basis]
+            Fisher information matrix
+        gpc_matrix_new_rows : ndarray of float [n_new_rows x n_basis]
+            New rows of gpc matrix to add to FIM matrix
+
+        Returns
+        -------
+        fim_matrix : ndarray of float [n_basis x n_basis]
+            Updated Fisher information matrix
+        """
+        if fim_matrix is None:
+            fim_matrix = np.zeros((gpc_matrix_new_rows.shape[1], gpc_matrix_new_rows.shape[1]))
+
+        for row in gpc_matrix_new_rows:
             fim_matrix += np.outer(row, row)
 
         return fim_matrix
@@ -2872,6 +3009,10 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
 
     crit = np.ones((len(idx_list), len(criterion))) * 1e6
 
+    if "D" in criterion:
+        sign = np.zeros((len(idx_list), 1))
+        logdet = np.zeros((len(idx_list), 1))
+
     for j in range(len(idx_list)):
         psy_test = np.vstack((psy_opt, psy_pool[idx_list[j], :]))
 
@@ -2889,10 +3030,13 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
             n_basis_det = np.min((psy_test.shape[0], psy_test.shape[1]))
 
             # determinant of inverse of Gram is the inverse of the determinant
-            sign, logdet = np.linalg.slogdet(np.matmul(psy_test[:, :n_basis_det].T, psy_test[:, :n_basis_det]))
-            crit[j, criterion.index("D")] = sign * -1 * logdet
+            sign[j], logdet[j] = np.linalg.slogdet(np.matmul(psy_test[:, :n_basis_det].T, psy_test[:, :n_basis_det]))
+            logdet[j] = -logdet[j]
 
-    return crit
+    if "D" not in criterion:
+        return crit
+    else:
+        return sign, logdet
 
 
 def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
@@ -2921,6 +3065,10 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
     """
     coords_norm_list = []
     crit = np.ones((len(idx_list), len(criterion))) * 1e6
+
+    if "D" in criterion:
+        sign = np.zeros((len(idx_list), 1))
+        neg_logdet = np.zeros((len(idx_list), 1))
 
     for i in range(len(idx_list)):
         if gpc.p_matrix is not None:
@@ -2968,45 +3116,39 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
             n_basis_det = np.min((n_grid, gpc.basis.n_basis))
 
             # determinant of inverse of Gram is the inverse of the determinant
-            sign, logdet = np.linalg.slogdet(np.matmul(psy_pool_norm[:, :n_basis_det].T, psy_pool_norm[:, :n_basis_det]))
-            crit[i, criterion.index("D")] = sign * -1 * logdet
+            sign[i], neg_logdet[i] = np.linalg.slogdet(np.matmul(psy_pool_norm[:, :n_basis_det].T, psy_pool_norm[:, :n_basis_det]))
+            neg_logdet[i] = -neg_logdet[i]
 
-    return crit, coords_norm_list
+    if "D" not in criterion:
+        return crit, coords_norm_list
+    else:
+        return sign, neg_logdet, coords_norm_list
 
 
-def workhorse_get_det_updated_fim_matrix(coords_norm_list, fim_matrix, gpc):
+def workhorse_get_det_updated_fim_matrix(index_list, gpc_matrix_pool, fim_matrix, n_basis_limit):
     """
     Workhorse to determine the determinant of the Fisher Information matrix
 
     Parameters
     ----------
-    coords_norm_list : list of ndarray [1 x dim]
-        List containing the grid point candidates
+    index_list : list of int
+        Indices of coordinates to test
+    gpc_matrix_pool : ndarray of float [n_grid_pool x n_basis]
+        Gpc matrix of large pool
     fim_matrix : ndarray of float [n_basis x n_basis]
         Fisher information matrix
-    gpc : GPC object
-        GPC object
 
     Returns
     -------
     det : float
         Determinant of updated Fisher Information matrix
     """
-    det = np.zeros(len(coords_norm_list))
-    gpc.backend = "cpu"
+    sign = np.zeros(len(index_list))
+    logdet = np.zeros(len(index_list))
 
-    for i_c, c in enumerate(coords_norm_list):
-        if gpc.p_matrix is not None:
-            new_row = gpc.create_gpc_matrix(b=gpc.basis.b,
-                                            x=np.matmul(c[np.newaxis, :],
-                                                        gpc.p_matrix.transpose() /
-                                                        gpc.p_matrix_norm[np.newaxis, :]),
-                                            gradient=False)
-        else:
-            new_row = gpc.create_gpc_matrix(b=gpc.basis.b,
-                                            x=c[np.newaxis, :],
-                                            gradient=False)
-        fim_matrix += np.outer(new_row, new_row)
-        det[i_c] = np.linalg.det(fim_matrix)
+    for i, idx in enumerate(index_list):
+        fim_matrix_test = fim_matrix + np.outer(gpc_matrix_pool[idx, :n_basis_limit],
+                                                gpc_matrix_pool[idx, :n_basis_limit])
+        sign[i], logdet[i] = np.linalg.slogdet(fim_matrix_test)
 
-    return det
+    return sign, logdet
