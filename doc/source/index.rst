@@ -151,6 +151,9 @@ Examples Gallery
    auto_algorithms/index.rst
 
 .. include::
+   auto_sampling/index.rst
+
+.. include::
    auto_features/index.rst
 
 .. include::
@@ -165,6 +168,7 @@ Table of contents
    auto_introduction/index
    auto_gpc/index
    auto_algorithms/index
+   auto_sampling/index
    auto_features/index
 
 Indices and tables

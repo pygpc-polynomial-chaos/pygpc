@@ -2210,48 +2210,50 @@ class TestPygpcMethods(unittest.TestCase):
 
         gpc = pygpc.Reg(problem=problem, order_max=2)
 
-        # Random
-        print("Testing reproducibility of Random grid ...")
-        grid = [0 for _ in range(2)]
-        for i in range(2):
-            # initialize grid
-            grid[i] = pygpc.Random(parameters_random=problem.parameters_random,
-                                   n_grid=10,
-                                   options={"seed": 1})
-
-            # extend grid
-            grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-        # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                         "Random grid is not reproducible when seeding")
-
-        # LHS
-        print("Testing reproducibility of LHS grids ...")
-        criterion_list = [None, "maximin", "ese"]
-
-        for criterion in criterion_list:
-            print(f"\t > criterion: {criterion}")
-            grid = [0 for _ in range(2)]
-
-            for i in range(2):
-                # initialize grid
-                grid[i] = pygpc.LHS(parameters_random=problem.parameters_random,
-                                    n_grid=10,
-                                    options={"criterion": criterion,
-                                             "seed": 1})
-
-                # extend grid
-                grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-            # compare
-            self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                             f"LHS ({criterion}) grid is not reproducible when seeding")
+        # # Random
+        # print("Testing reproducibility of Random grid ...")
+        # grid = [0 for _ in range(2)]
+        # for i in range(2):
+        #     # initialize grid
+        #     grid[i] = pygpc.Random(parameters_random=problem.parameters_random,
+        #                            n_grid=10,
+        #                            options={"seed": 1})
+        #
+        #     # extend grid
+        #     grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+        #
+        # # compare
+        # self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        #                  "Random grid is not reproducible when seeding")
+        #
+        # # LHS
+        # print("Testing reproducibility of LHS grids ...")
+        # criterion_list = [None, "maximin", "ese"]
+        #
+        # for criterion in criterion_list:
+        #     print(f"\t > criterion: {criterion}")
+        #     grid = [0 for _ in range(2)]
+        #
+        #     for i in range(2):
+        #         # initialize grid
+        #         grid[i] = pygpc.LHS(parameters_random=problem.parameters_random,
+        #                             n_grid=10,
+        #                             options={"criterion": criterion,
+        #                                      "seed": 1})
+        #
+        #         # extend grid
+        #         grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+        #
+        #     # compare
+        #     self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        #                      f"LHS ({criterion}) grid is not reproducible when seeding")
 
         # L1
         print("Testing reproducibility of L1 grids ...")
-        criterion_list = [["mc"], ["tmc", "cc"], ["D"], ["D-coh"]]
-        method_list = ["greedy", "iter"]
+        # criterion_list = [["mc"], ["tmc", "cc"], ["D"], ["D-coh"]]
+        criterion_list = [["D-coh"]]
+        # method_list = ["greedy", "iter"]
+        method_list = ["iter"]
 
         for criterion in criterion_list:
             print(f"\t > criterion: {criterion}")
@@ -2277,99 +2279,99 @@ class TestPygpcMethods(unittest.TestCase):
                 self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
                                  f"L1 ({criterion}, {method}) grid is not reproducible when seeding")
 
-        # L1_LHS
-        print("Testing reproducibility of L1-LHS grids ...")
-        criterion_list = [["mc"], ["tmc", "cc"]]
-        method_list = ["greedy", "iter"]
-
-        for criterion in criterion_list:
-            print(f"\t > criterion: {criterion}")
-            for method in method_list:
-                print(f"\t\t > method: {method}")
-                grid = [0 for _ in range(2)]
-
-                for i in range(2):
-                    # initialize grid
-                    grid[i] = pygpc.L1_LHS(parameters_random=problem.parameters_random,
-                                           n_grid=10,
-                                           options={"weights": [0.5, 0.5],
-                                                    "criterion": criterion,
-                                                    "method": method,
-                                                    "seed": 1,
-                                                    "n_pool": 100,
-                                                    "n_iter": 100},
-                                           gpc=gpc)
-
-                    # extend grid
-                    grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-                # compare
-                self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                                 f"L1_LHS ({criterion}, {method}) grid is not reproducible when seeding")
-
-        # LHS_L1
-        print("Testing reproducibility of LHS-L1 grids ...")
-        criterion_list = [["mc"], ["tmc", "cc"]]
-        method_list = ["greedy", "iter"]
-
-        for criterion in criterion_list:
-            print(f"\t > criterion: {criterion}")
-            for method in method_list:
-                print(f"\t\t > method: {method}")
-                grid = [0 for _ in range(2)]
-
-                for i in range(2):
-                    # initialize grid
-                    grid[i] = pygpc.LHS_L1(parameters_random=problem.parameters_random,
-                                           n_grid=10,
-                                           options={"weights": [0.5, 0.5],
-                                                    "criterion": criterion,
-                                                    "method": method,
-                                                    "seed": 1,
-                                                    "n_pool": 100,
-                                                    "n_iter": 100},
-                                           gpc=gpc)
-
-                    # extend grid
-                    grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-                # compare
-                self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                                 f"LHS_L1 ({criterion}, {method}) grid is not reproducible when seeding")
-
-        # FIM
-        print("Testing reproducibility of FIM grid ...")
-        grid = [0 for _ in range(2)]
-        for i in range(2):
-            # initialize grid
-            grid[i] = pygpc.FIM(parameters_random=problem.parameters_random,
-                                n_grid=10,
-                                options={"seed": 1},
-                                gpc=gpc)
-
-            # extend grid
-            grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-        # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                         "FIM grid is not reproducible when seeding")
-
-        # CO
-        print("Testing reproducibility of CO grid ...")
-        grid = [0 for _ in range(2)]
-        for i in range(2):
-            # initialize grid
-            grid[i] = pygpc.CO(parameters_random=problem.parameters_random,
-                               n_grid=10,
-                               options={"seed": 1, "n_warmup": 10},
-                               gpc=gpc)
-
-            # extend grid
-            grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-        # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                         "CO grid is not reproducible when seeding")
+        # # L1_LHS
+        # print("Testing reproducibility of L1-LHS grids ...")
+        # criterion_list = [["mc"], ["tmc", "cc"]]
+        # method_list = ["greedy", "iter"]
+        #
+        # for criterion in criterion_list:
+        #     print(f"\t > criterion: {criterion}")
+        #     for method in method_list:
+        #         print(f"\t\t > method: {method}")
+        #         grid = [0 for _ in range(2)]
+        #
+        #         for i in range(2):
+        #             # initialize grid
+        #             grid[i] = pygpc.L1_LHS(parameters_random=problem.parameters_random,
+        #                                    n_grid=10,
+        #                                    options={"weights": [0.5, 0.5],
+        #                                             "criterion": criterion,
+        #                                             "method": method,
+        #                                             "seed": 1,
+        #                                             "n_pool": 100,
+        #                                             "n_iter": 100},
+        #                                    gpc=gpc)
+        #
+        #             # extend grid
+        #             grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+        #
+        #         # compare
+        #         self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        #                          f"L1_LHS ({criterion}, {method}) grid is not reproducible when seeding")
+        #
+        # # LHS_L1
+        # print("Testing reproducibility of LHS-L1 grids ...")
+        # criterion_list = [["mc"], ["tmc", "cc"]]
+        # method_list = ["greedy", "iter"]
+        #
+        # for criterion in criterion_list:
+        #     print(f"\t > criterion: {criterion}")
+        #     for method in method_list:
+        #         print(f"\t\t > method: {method}")
+        #         grid = [0 for _ in range(2)]
+        #
+        #         for i in range(2):
+        #             # initialize grid
+        #             grid[i] = pygpc.LHS_L1(parameters_random=problem.parameters_random,
+        #                                    n_grid=10,
+        #                                    options={"weights": [0.5, 0.5],
+        #                                             "criterion": criterion,
+        #                                             "method": method,
+        #                                             "seed": 1,
+        #                                             "n_pool": 100,
+        #                                             "n_iter": 100},
+        #                                    gpc=gpc)
+        #
+        #             # extend grid
+        #             grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+        #
+        #         # compare
+        #         self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        #                          f"LHS_L1 ({criterion}, {method}) grid is not reproducible when seeding")
+        #
+        # # FIM
+        # print("Testing reproducibility of FIM grid ...")
+        # grid = [0 for _ in range(2)]
+        # for i in range(2):
+        #     # initialize grid
+        #     grid[i] = pygpc.FIM(parameters_random=problem.parameters_random,
+        #                         n_grid=10,
+        #                         options={"seed": 1},
+        #                         gpc=gpc)
+        #
+        #     # extend grid
+        #     grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+        #
+        # # compare
+        # self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        #                  "FIM grid is not reproducible when seeding")
+        #
+        # # CO
+        # print("Testing reproducibility of CO grid ...")
+        # grid = [0 for _ in range(2)]
+        # for i in range(2):
+        #     # initialize grid
+        #     grid[i] = pygpc.CO(parameters_random=problem.parameters_random,
+        #                        n_grid=10,
+        #                        options={"seed": 1, "n_warmup": 10},
+        #                        gpc=gpc)
+        #
+        #     # extend grid
+        #     grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+        #
+        # # compare
+        # self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        #                  "CO grid is not reproducible when seeding")
 
     # def test_019_Matlab_gpc(self):
     #     """

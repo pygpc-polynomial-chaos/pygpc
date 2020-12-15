@@ -135,27 +135,6 @@ Generalized Polynomial Chaos
    :hidden:
 
    /auto_gpc/plot_grid_random_vs_lhs
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Choosing a sampling scheme --------------------------">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_grids_thumb.png
-     :alt: The different grid types
-
-     :ref:`sphx_glr_auto_gpc_plot_grids.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_gpc/plot_grids
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

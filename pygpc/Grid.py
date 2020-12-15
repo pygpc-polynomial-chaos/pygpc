@@ -2572,6 +2572,7 @@ class FIM(RandomGrid):
                 index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
                 index_list_chunks = compute_chunks(index_list_remaining, n_cpu)
 
+                n_basis_limit = np.min((self.gpc.grid.n_grid, self.gpc.basis.n_basis))
                 workhorse_partial = partial(workhorse_get_det_updated_fim_matrix,
                                             gpc_matrix_pool=gpc_matrix_pool,
                                             fim_matrix=fim_matrix,
