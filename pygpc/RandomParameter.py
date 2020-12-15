@@ -135,6 +135,7 @@ class Beta(RandomParameter):
                    (self.pdf_limits[1] - self.pdf_limits[0])
 
         self.var = self.std**2
+        self.rv = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
 
         self.pdf_limits_norm = [-1, 1]
 
@@ -154,9 +155,7 @@ class Beta(RandomParameter):
         sample : ndarray of float [n_sample]
             Sampling points
         """
-
-        b = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
-        samples = 2 * b.rvs(size=n_samples) - 1
+        samples = 2 * self.rv.rvs(size=n_samples) - 1
 
         if not normalized:
             samples = samples * (self.pdf_limits[1] - self.pdf_limits[0]) + self.pdf_limits[0]
@@ -254,8 +253,7 @@ class Beta(RandomParameter):
             Sample value of the random variable such that the probability of the variable being less than or equal
             to that value equals the given probability.
         """
-        b = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
-        x = 2 * b.ppf(p.flatten()) - 1
+        x = 2 * self.rv.ppf(p.flatten()) - 1
 
         return x
 
@@ -273,8 +271,7 @@ class Beta(RandomParameter):
         cdf: ndarray of float [n_x]
             Cumulative density at values x [0, 1]
         """
-        b = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
-        c = b.cdf((x.flatten() + 1) / 2)
+        c = self.rv.cdf((x.flatten() + 1) / 2)
 
         return c
 
@@ -292,8 +289,7 @@ class Beta(RandomParameter):
         cdf: ndarray of float [n_x]
             Cumulative density at values x [0, 1]
         """
-        b = scipy.stats.beta(a=self.pdf_shape[0], b=self.pdf_shape[1])
-        c = b.cdf((x.flatten() - self.pdf_limits[0]) / (self.pdf_limits[1] - self.pdf_limits[0]))
+        c = self.rv.cdf((x.flatten() - self.pdf_limits[0]) / (self.pdf_limits[1] - self.pdf_limits[0]))
 
         return c
 
@@ -346,7 +342,7 @@ class Norm(RandomParameter):
         self.std = self.pdf_shape[1]
         self.var = self.std ** 2
         self.pdf_limits_norm = [self.x_perc_norm[0], self.x_perc_norm[1]]
-
+        self.rv = scipy.stats.norm()
 
     def sample(self, n_samples, normalized=True):
         """
@@ -364,9 +360,7 @@ class Norm(RandomParameter):
         sample : ndarray of float [n_sample]
             Sampling points
         """
-
-        n = scipy.stats.norm()
-        samples = n.rvs(size=n_samples)
+        samples = self.rv.rvs(size=n_samples)
 
         if not normalized:
             samples = samples * self.pdf_shape[1] + self.pdf_shape[0]
@@ -450,11 +444,8 @@ class Norm(RandomParameter):
         # transform probabilities to perc constraint
         p = self.p_perc * p + (1 - self.p_perc)/2
 
-        # make normal distributed random variable
-        n = scipy.stats.norm()
-
         # icdf
-        x = n.ppf(p.flatten())
+        x = self.rv.ppf(p.flatten())
 
         return x
 
@@ -472,8 +463,7 @@ class Norm(RandomParameter):
         cdf: ndarray of float [n_x]
             Cumulative density at values x [0, 1]
         """
-        n = scipy.stats.norm()
-        c = n.cdf(x.flatten())
+        c = self.rv.cdf(x.flatten())
 
         return c
 
