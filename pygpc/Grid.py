@@ -907,16 +907,12 @@ class RandomGrid(Grid):
             Grid points to add (model space)
         coords_norm : ndarray of float [n_grid_add x dim]
             Grid points to add (normalized space)
-        seed : float, optional, default=None
-            Seeding point to replicate random grid
         classifier : Classifier object, optional, default: None
             Classifier
         domain : int, optional, default: None
             Adds grid points only in specified domain (needs Classifier object including a predict() method)
         gradient : bool, optional, default: False
             Add corresponding gradient grid points
-        grid : RandomGrid Object, optional, default=None
-            Optional initial grid, which gets extended
         """
 
         # increase seed if needed to avoid creation of same grid points
@@ -952,7 +948,7 @@ class RandomGrid(Grid):
                         self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
 
                     elif isinstance(self, L1) or isinstance(self, L1_LHS) or isinstance(self, LHS_L1) \
-                            or isinstance(self, FIM):
+                            or isinstance(self, FIM) or isinstance(self, CO):
                         grid_pre = copy.deepcopy(self)
                         new_grid = self.__class__(parameters_random=self.parameters_random,
                                                   n_grid=n_grid_add,
@@ -1892,7 +1888,7 @@ class CO(RandomGrid):
             if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
                 self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
                                                            pdf_limits=[-1, 1])
-            elif rv.pdf_type == "norm":
+            elif self.parameters_random[rv].pdf_type == "norm":
                 self.parameters_random_proposal[rv] = Beta(pdf_shape=[1, 1],
                                                            pdf_limits=[-np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
                                                                        +np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)])
@@ -2199,7 +2195,7 @@ class L1(RandomGrid):
         coords_norm : ndarray of float [n_grid x dim]
             Normalized sample coordinates in range [-1, 1]
         """
-        n_cpu = multiprocessing.cpu_count()
+        n_cpu = np.min((1, multiprocessing.cpu_count()))
         if "D-coh" in self.criterion:
             random_pool = CO(parameters_random=self.parameters_random,
                              n_grid=self.n_pool,
@@ -2246,7 +2242,7 @@ class L1(RandomGrid):
 
             index_list = []
             index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
-            i_start = self.grid_pre.n_grid
+            i_start = 0
 
         # loop over grid points
         for i in range(i_start, m):
@@ -2294,11 +2290,7 @@ class L1(RandomGrid):
             # create list of remaining indices
             index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
 
-        if self.grid_pre is None or self.grid_pre.n_grid == 0:
-            coords_norm = random_pool.coords_norm[index_list, :]
-        else:
-            coords_norm = np.vstack((self.grid_pre.coords_norm,
-                                     random_pool.coords_norm[index_list, :]))
+        coords_norm = random_pool.coords_norm[index_list, :]
 
         pool.close()
 
@@ -2313,7 +2305,7 @@ class L1(RandomGrid):
         coords_norm : ndarray of float [n_grid x dim]
             Normalized sample coordinates in range [-1, 1]
         """
-        n_cpu = multiprocessing.cpu_count()
+        n_cpu = np.min((1, multiprocessing.cpu_count()))
         coords_norm_list = []
         crit = np.ones((self.n_iter, len(self.criterion))) * 1e6
 
@@ -3173,13 +3165,17 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
     """
     coords_norm_list = []
     crit = np.ones((len(idx_list), len(criterion))) * 1e6
-
-    if grid_pre is not None and grid_pre.n_grid != 0:
-        n_grid = n_grid - grid_pre.n_grid
+    backend_backup = gpc.backend
+    gpc.backend = "cpu"
 
     if "D" in criterion or "D-coh" in criterion:
         sign = np.zeros((len(idx_list), 1))
         neg_logdet = np.zeros((len(idx_list), 1))
+
+    if grid_pre is not None and grid_pre.n_grid > 0:
+        psy_pool_pre = gpc.create_gpc_matrix(b=gpc.basis.b, x=grid_pre.coords_norm, gradient=False)
+    else:
+        psy_pool_pre = None
 
     for i in range(len(idx_list)):
         if gpc.p_matrix is not None:
@@ -3199,18 +3195,12 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
                 test_grid = Random(parameters_random=gpc.problem.parameters_random,
                                    n_grid=n_grid)
 
-        if grid_pre is None or grid_pre.n_grid == 0:
-            coords_norm = test_grid.coords_norm
-        else:
-            coords_norm = np.vstack((grid_pre.coords_norm, test_grid.coords_norm))
+        coords_norm = test_grid.coords_norm
 
-            # save current coords norm
+        # save current coords norm
         coords_norm_list.append(coords_norm)
 
         # get the normalized gpc matrix
-        backend_backup = gpc.backend
-        gpc.backend = "cpu"
-
         if gpc.p_matrix is not None:
             psy_pool = gpc.create_gpc_matrix(b=gpc.basis.b,
                                              x=np.matmul(coords_norm, gpc.p_matrix.transpose() /
@@ -3219,7 +3209,9 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
         else:
             psy_pool = gpc.create_gpc_matrix(b=gpc.basis.b, x=coords_norm, gradient=False)
 
-        gpc.backend = backend_backup
+        if psy_pool_pre is not None:
+            psy_pool = np.vstack((psy_pool_pre, psy_pool))
+
         psy_pool_norm = psy_pool / np.abs(psy_pool).max(axis=0)
 
         # test current matrix
@@ -3239,6 +3231,8 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
             # determinant of inverse of Gram is the inverse of the determinant
             sign[i], neg_logdet[i] = np.linalg.slogdet(np.matmul(psy_pool_norm[:, :n_basis_det].T, psy_pool_norm[:, :n_basis_det]))
             neg_logdet[i] = -neg_logdet[i]
+
+    gpc.backend = backend_backup
 
     if "D" not in criterion and "D-coh" not in criterion:
         return crit, coords_norm_list
