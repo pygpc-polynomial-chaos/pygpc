@@ -1859,12 +1859,23 @@ class CO(RandomGrid):
         Unique IDs of grid points
     """
 
-    def __init__(self, parameters_random, n_grid=None, gpc=None, options=None, coords=None, coords_norm=None,
-                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None):
+    def __init__(self, parameters_random, n_grid=None, options=None, coords=None, coords_norm=None,
+                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None,
+                 gpc=None, grid_pre=None):
         """
         Constructor; Initializes CO instance; Generates grid or copies provided content
         """
+        if options is None:
+            options = dict()
+
+        if "seed" not in options.keys():
+            options["seed"] = None
+
+        if "n_warmup" not in options.keys():
+            options["n_warmup"] = 100
+
         self.gpc = gpc
+        self.grid_pre = grid_pre
 
         super(CO, self).__init__(parameters_random,
                                  n_grid=n_grid,
@@ -1889,8 +1900,17 @@ class CO(RandomGrid):
                 NotImplementedError("Coherence Optimal sampling only possible for uniform and normal "
                                     "distributed random variables")
 
+        # warmup
+        coords_norm_opt_warmup = self.warmup(n_warmup=options["n_warmup"])
+
         # get coherence optimal samples
-        self.coords_norm = self.get_coherence_optimal_samples()
+        if self.grid_pre is None:
+            self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid,
+                                                                  coords_norm_opt_init=coords_norm_opt_warmup[-1, ][np.newaxis, ])
+        else:
+            coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid-self.grid_pre.n_grid,
+                                                             coords_norm_opt_init=coords_norm_opt_warmup[-1, :])
+            self.coords_norm = np.vstack((self.grid_pre.coords_norm, coords_norm))
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -1947,49 +1967,78 @@ class CO(RandomGrid):
         gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
                                                 x=np.vstack((x1, x2)),
                                                 gradient=False)
-        B2 = np.linalg.norm(gpc_matrix, axis=1)**2
+        b2 = np.linalg.norm(gpc_matrix, axis=1)**2
 
         g_x1 = self.joint_pdf(x=x1, parameters_random=self.parameters_random_proposal)
         g_x2 = self.joint_pdf(x=x2, parameters_random=self.parameters_random_proposal)
         f_x1 = self.joint_pdf(x=x1, parameters_random=self.parameters_random)
         f_x2 = self.joint_pdf(x=x2, parameters_random=self.parameters_random)
 
-        rho = np.min((1, (g_x1*f_x2*B2[1])/(g_x2*f_x1*B2[0])))
+        rho = np.min((np.array([1.]), (g_x1*f_x2*b2[1])/(g_x2*f_x1*b2[0])))
 
         return rho
 
-    def get_coherence_optimal_samples(self):
+    def warmup(self, n_warmup):
         """
-        Determine coherence optimal samples
+        Warmup phase
+
+        Parameters
+        ----------
+        n_warmup : int
+            Number of warmup samples
+
+        Returns
+        -------
+        coords_norm_opt : ndarray of float [n_warmup x n_dim]
+            Optimal coordinates determined during warmup phase
+        """
+        coords_norm_opt = self.get_coherence_optimal_samples(n_grid=n_warmup, coords_norm_opt_init=None)
+
+        return coords_norm_opt
+
+    def get_coherence_optimal_samples(self, n_grid, coords_norm_opt_init=None):
+        """
+        Determine coherence optimal samples with Monte Carlo Markov Chain - Metropolis Hastings algorithm
+
+        Parameters
+        ----------
+        n_grid : int
+            Number of grid points
+        coords_norm_opt_init : ndarray of float [1, n_dim], optional, default: False
+            Initial sample to start algorithm with
 
         Returns
         -------
         coords_norm : ndarray of float [n_grid x n_dim]
             Coherence optimal samples
         """
-        coords_norm_opt = np.zeros((self.n_grid, self.dim))
-        x1 = np.zeros((1, self.dim))
+        coords_norm_opt = np.zeros((n_grid, self.dim))
 
-        # draw first sample
-        for i_rv, rv in enumerate(self.parameters_random_proposal):
-            x1[0, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=1)
-        i_grid = -10
+        if coords_norm_opt_init is None:
+            x1 = np.zeros((1, self.dim))
+            # draw first sample
+            for i_rv, rv in enumerate(self.parameters_random_proposal):
+                x1[0, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=1)
+
+        else:
+            x1 = coords_norm_opt_init
+
+        i_grid = 1
+
         coords_norm_opt[0, :] = x1
 
-        while i_grid < self.n_grid:
+        while i_grid < n_grid:
             # draw sample
             x2 = np.zeros((1, self.dim))
             for i_rv, rv in enumerate(self.parameters_random_proposal):
                 x2[0, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=1)
 
             # determine acceptance rate
-            rho = self.acceptance_rate(x1=x1,
-                                       x2=x2)
+            rho = self.acceptance_rate(x1=x1, x2=x2)
 
             # add point if acceptance rate is high
             if rho > np.random.rand(1):
-                if i_grid >= 1:
-                    coords_norm_opt[i_grid, :] = x2
+                coords_norm_opt[i_grid, :] = x2
                 i_grid += 1
                 x1 = x2
 
@@ -2130,10 +2179,10 @@ class L1(RandomGrid):
         self.weights = options["weights"]
 
         if self.method == "greedy" and self.n_grid > 0 and self.coords is None:
-            self.coords_norm = self.get_optimal_mu_greedy(grid_pre=self.grid_pre)
+            self.coords_norm = self.get_optimal_mu_greedy()
 
         elif (self.method == 'iteration' or self.method == 'iter') and self.n_grid > 0 and self.coords is None:
-            self.coords_norm = self.get_optimal_mu_iteration(grid_pre=self.grid_pre)
+            self.coords_norm = self.get_optimal_mu_iteration()
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -2141,14 +2190,9 @@ class L1(RandomGrid):
         # Generate unique IDs of grid points
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
-    def get_optimal_mu_greedy(self, grid_pre=None):
+    def get_optimal_mu_greedy(self):
         """
         This function computes a set of grid points with minimal mutual coherence using an greedy approach.
-
-        Parameters
-        ----------
-        grid_pre : Grid object, optional, default: None
-            Grid object, which is going to be extended.
 
         Returns
         -------
@@ -2182,7 +2226,7 @@ class L1(RandomGrid):
         pool = multiprocessing.Pool(n_cpu)
 
         # set starting point for iteration
-        if grid_pre is None or grid_pre.n_grid == 0:
+        if self.grid_pre is None or self.grid_pre.n_grid == 0:
             # get random row of psy to start
             idx = np.random.randint(m_p)
             index_list.append(idx)
@@ -2194,14 +2238,14 @@ class L1(RandomGrid):
 
             # project grid in case of projection approach
             if self.gpc.p_matrix is not None:
-                grid_pre_trans = project_grid(grid=grid_pre, p_matrix=self.gpc.p_matrix, mode="reduce")
+                grid_pre_trans = project_grid(grid=self.grid_pre, p_matrix=self.gpc.p_matrix, mode="reduce")
                 psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre_trans.coords_norm, gradient=False)
             else:
-                psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre.coords_norm, gradient=False)
+                psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.grid_pre.coords_norm, gradient=False)
 
             index_list = []
             index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
-            i_start = 0
+            i_start = self.grid_pre.n_grid
 
         # loop over grid points
         for i in range(i_start, m):
@@ -2249,20 +2293,19 @@ class L1(RandomGrid):
             # create list of remaining indices
             index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
 
-        coords_norm = random_pool.coords_norm[index_list, :]
+        if self.grid_pre is None or self.grid_pre.n_grid == 0:
+            coords_norm = random_pool.coords_norm[index_list, :]
+        else:
+            coords_norm = np.vstack((self.grid_pre.coords_norm,
+                                     random_pool.coords_norm[index_list, :]))
 
         pool.close()
 
         return coords_norm
 
-    def get_optimal_mu_iteration(self, grid_pre):
+    def get_optimal_mu_iteration(self):
         """
         This function computes a set of grid points with minimal mutual coherence using an iterative approach.
-
-        Parameters
-        ----------
-        grid_pre : Grid object, optional, default: None
-            Grid object, which is going to be extended.
 
         Returns
         -------
@@ -2279,7 +2322,7 @@ class L1(RandomGrid):
                                     gpc=self.gpc,
                                     n_grid=self.n_grid,
                                     criterion=self.criterion,
-                                    grid_pre=grid_pre)
+                                    grid_pre=self.grid_pre)
         idx_list_chunks = compute_chunks([k for k in range(self.n_iter)], n_cpu)
 
         res = pool.map(workhorse_partial, idx_list_chunks)
@@ -3130,6 +3173,9 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
     coords_norm_list = []
     crit = np.ones((len(idx_list), len(criterion))) * 1e6
 
+    if grid_pre is not None and grid_pre.n_grid != 0:
+        n_grid = n_grid - grid_pre.n_grid
+
     if "D" in criterion:
         sign = np.zeros((len(idx_list), 1))
         neg_logdet = np.zeros((len(idx_list), 1))
@@ -3150,13 +3196,13 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
                 test_grid = Random(parameters_random=gpc.problem.parameters_random,
                                    n_grid=n_grid)
 
-        # save current coords norm
-        coords_norm_list.append(test_grid.coords_norm)
-
         if grid_pre is None or grid_pre.n_grid == 0:
             coords_norm = test_grid.coords_norm
         else:
             coords_norm = np.vstack((grid_pre.coords_norm, test_grid.coords_norm))
+
+            # save current coords norm
+        coords_norm_list.append(coords_norm)
 
         # get the normalized gpc matrix
         backend_backup = gpc.backend
