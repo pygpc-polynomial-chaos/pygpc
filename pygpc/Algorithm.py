@@ -384,7 +384,7 @@ class Static(Algorithm):
                                             options=self.options["grid_options"])
 
         elif self.options["grid"] == L1 or self.options["grid"] == L1_LHS or self.options["grid"] == LHS_L1\
-                or self.options["grid"] == FIM:
+                or self.options["grid"] == FIM or self.options["grid"] == CO:
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                             n_grid=n_grid,
                                             options=self.options["grid_options"],
