@@ -2203,6 +2203,7 @@ class L1(RandomGrid):
         if "D-coh" in self.criterion:
             random_pool = CO(parameters_random=self.parameters_random,
                              n_grid=self.n_pool,
+                             gpc=self.gpc,
                              options=self.options)
         else:
             random_pool = Random(parameters_random=self.parameters_random,
@@ -2256,7 +2257,7 @@ class L1(RandomGrid):
 
             crit_tmp = pool.map(workhorse_partial, idx_list_chunks)
 
-            if "D" not in self.criterion:
+            if "D" not in self.criterion and "D-coh" not in self.criterion:
                 crit_tmp = np.concatenate(crit_tmp)
             else:
                 sign = []
@@ -2274,7 +2275,7 @@ class L1(RandomGrid):
             crit[index_list_remaining, :] = crit_tmp
 
             # set 1e6 dummy values to max values
-            if self.criterion != "D":
+            if "D" not in self.criterion and "D-coh" not in self.criterion:
                 for k in range(crit.shape[1]):
                     crit[crit[:, k] == 1e6, k] = np.max(crit[crit[:, k] != 1e6, k])
 
@@ -2329,7 +2330,7 @@ class L1(RandomGrid):
 
         for j in range(len(res)):
             if j == 0:
-                if "D" not in self.criterion:
+                if "D" not in self.criterion and "D-coh" not in self.criterion:
                     crit = res[j][0]
                     coords_norm_list = res[j][1]
                 else:
@@ -2339,7 +2340,7 @@ class L1(RandomGrid):
                     crit = sign * np.exp(neg_logdet_norm)
                     coords_norm_list = res[j][2]
             else:
-                if "D" not in self.criterion:
+                if "D" not in self.criterion and "D-coh" not in self.criterion:
                     crit = np.vstack((crit, res[j][0]))
                     coords_norm_list = coords_norm_list + res[j][1]
                 else:
@@ -3116,7 +3117,7 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
 
     crit = np.ones((len(idx_list), len(criterion))) * 1e6
 
-    if "D" in criterion:
+    if "D" in criterion or "D-coh" in criterion:
         sign = np.zeros((len(idx_list), 1))
         logdet = np.zeros((len(idx_list), 1))
 
@@ -3132,7 +3133,7 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
         if "cc" in criterion:
             crit[j, criterion.index("cc")] = average_cross_correlation_gram(np.matmul(psy_test.T, psy_test))
 
-        if "D" in criterion:
+        if "D" in criterion or "D-coh" in criterion:
             # for n_grid < n_basis only consider the first n_grid basis functions because of determinant
             n_basis_det = np.min((psy_test.shape[0], psy_test.shape[1]))
 
@@ -3140,7 +3141,7 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
             sign[j], logdet[j] = np.linalg.slogdet(np.matmul(psy_test[:, :n_basis_det].T, psy_test[:, :n_basis_det]))
             logdet[j] = -logdet[j]
 
-    if "D" not in criterion:
+    if "D" not in criterion and "D-coh" not in criterion:
         return crit
     else:
         return sign, logdet
@@ -3176,7 +3177,7 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
     if grid_pre is not None and grid_pre.n_grid != 0:
         n_grid = n_grid - grid_pre.n_grid
 
-    if "D" in criterion:
+    if "D" in criterion or "D-coh" in criterion:
         sign = np.zeros((len(idx_list), 1))
         neg_logdet = np.zeros((len(idx_list), 1))
 
@@ -3184,14 +3185,16 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
         if gpc.p_matrix is not None:
             if "D-coh" in criterion:
                 test_grid = CO(parameters_random=gpc.problem_original.parameters_random,
-                               n_grid=n_grid)
+                               n_grid=n_grid,
+                               gpc=gpc)
             else:
                 test_grid = Random(parameters_random=gpc.problem_original.parameters_random,
                                    n_grid=n_grid)
         else:
             if "D-coh" in criterion:
                 test_grid = CO(parameters_random=gpc.problem.parameters_random,
-                               n_grid=n_grid)
+                               n_grid=n_grid,
+                               gpc=gpc)
             else:
                 test_grid = Random(parameters_random=gpc.problem.parameters_random,
                                    n_grid=n_grid)
@@ -3229,7 +3232,7 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
         if "cc" in criterion:
             crit[i, criterion.index("cc")] = average_cross_correlation_gram(np.matmul(psy_pool_norm.T, psy_pool_norm))
 
-        if "D" in criterion:
+        if "D" in criterion or "D-coh" in criterion:
             # for n_grid < n_basis only consider the first n_grid basis functions because of determinant
             n_basis_det = np.min((n_grid, gpc.basis.n_basis))
 
@@ -3237,7 +3240,7 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
             sign[i], neg_logdet[i] = np.linalg.slogdet(np.matmul(psy_pool_norm[:, :n_basis_det].T, psy_pool_norm[:, :n_basis_det]))
             neg_logdet[i] = -neg_logdet[i]
 
-    if "D" not in criterion:
+    if "D" not in criterion and "D-coh" not in criterion:
         return crit, coords_norm_list
     else:
         return sign, neg_logdet, coords_norm_list
