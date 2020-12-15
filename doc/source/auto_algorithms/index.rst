@@ -17,6 +17,7 @@ Algorithms
 .. only:: html
 
  .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_regadaptive_thumb.png
+     :alt: Algorithm: RegAdaptive
 
      :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptive.py`
 
@@ -37,6 +38,7 @@ Algorithms
 .. only:: html
 
  .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_quad_thumb.png
+     :alt: Algorithm: Static (Quadrature)
 
      :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_quad.py`
 
@@ -57,6 +59,7 @@ Algorithms
 .. only:: html
 
  .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_reg_thumb.png
+     :alt: Algorithm: Static (Regression)
 
      :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_reg.py`
 
@@ -77,6 +80,7 @@ Algorithms
 .. only:: html
 
  .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_staticprojection_thumb.png
+     :alt: Algorithm: StaticProjection
 
      :ref:`sphx_glr_auto_algorithms_plot_algorithm_staticprojection.py`
 
@@ -97,6 +101,7 @@ Algorithms
 .. only:: html
 
  .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_regadaptiveprojection_thumb.png
+     :alt: Algorithm: RegAdaptiveProjection
 
      :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptiveprojection.py`
 
@@ -117,6 +122,7 @@ Algorithms
 .. only:: html
 
  .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestatic_thumb.png
+     :alt: Algorithm: MEStatic
 
      :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic.py`
 
@@ -137,6 +143,7 @@ Algorithms
 .. only:: html
 
  .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestaticprojection_thumb.png
+     :alt: Algorithm: MEStaticProjection
 
      :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestaticprojection.py`
 
@@ -157,6 +164,7 @@ Algorithms
 .. only:: html
 
  .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_meregadaptiveprojection_thumb.png
+     :alt: Algorithm: MERegAdaptiveProjection
 
      :ref:`sphx_glr_auto_algorithms_plot_algorithm_meregadaptiveprojection.py`
 
@@ -181,15 +189,15 @@ Algorithms
     :class: sphx-glr-footer-gallery
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
-    :download:`Download all examples in Python source code: auto_algorithms_python.zip <//data/hu_emueller/PycharmProjects/pygpc/doc/source/auto_algorithms/auto_algorithms_python.zip>`
+    :download:`Download all examples in Python source code: auto_algorithms_python.zip </auto_algorithms/auto_algorithms_python.zip>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-    :download:`Download all examples in Jupyter notebooks: auto_algorithms_jupyter.zip <//data/hu_emueller/PycharmProjects/pygpc/doc/source/auto_algorithms/auto_algorithms_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_algorithms_jupyter.zip </auto_algorithms/auto_algorithms_jupyter.zip>`
 
 
 .. only:: html

@@ -2310,7 +2310,8 @@ class L1(RandomGrid):
                                     gpc=self.gpc,
                                     n_grid=self.n_grid,
                                     criterion=self.criterion,
-                                    grid_pre=self.grid_pre)
+                                    grid_pre=self.grid_pre,
+                                    options={"seed": self.seed})
         idx_list_chunks = compute_chunks([k for k in range(self.n_iter)], n_cpu)
 
         res = pool.map(workhorse_partial, idx_list_chunks)
@@ -3135,7 +3136,7 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
         return sign, logdet
 
 
-def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
+def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None, options=None):
     """
     Workhorse for coherence calculation (iterative algorithm)
 
@@ -3151,6 +3152,8 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
         Optimality criteria
     grid_pre : Grid object, optional, default: None
         Grid object, which is going to be extended.
+    options : dict, optional, default: False
+        Dictionary containing the grid options
 
     Returns
     -------
@@ -3178,7 +3181,8 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
             if "D-coh" in criterion:
                 test_grid = CO(parameters_random=gpc.problem_original.parameters_random,
                                n_grid=n_grid,
-                               gpc=gpc)
+                               gpc=gpc,
+                               options=options)
             else:
                 test_grid = Random(parameters_random=gpc.problem_original.parameters_random,
                                    n_grid=n_grid)
@@ -3186,7 +3190,8 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None):
             if "D-coh" in criterion:
                 test_grid = CO(parameters_random=gpc.problem.parameters_random,
                                n_grid=n_grid,
-                               gpc=gpc)
+                               gpc=gpc,
+                               options=options)
             else:
                 test_grid = Random(parameters_random=gpc.problem.parameters_random,
                                    n_grid=n_grid)
