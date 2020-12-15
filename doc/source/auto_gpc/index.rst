@@ -17,6 +17,7 @@ Generalized Polynomial Chaos
 .. only:: html
 
  .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_problem_thumb.png
+     :alt: How to define a gPC problem
 
      :ref:`sphx_glr_auto_gpc_plot_problem.py`
 
@@ -37,6 +38,7 @@ Generalized Polynomial Chaos
 .. only:: html
 
  .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_gpc_validation_thumb.png
+     :alt: Validation of gPC approximation
 
      :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py`
 
@@ -57,6 +59,7 @@ Generalized Polynomial Chaos
 .. only:: html
 
  .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_basis_thumb.png
+     :alt: Polynomial basis functions
 
      :ref:`sphx_glr_auto_gpc_plot_basis.py`
 
@@ -77,6 +80,7 @@ Generalized Polynomial Chaos
 .. only:: html
 
  .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_model_thumb.png
+     :alt: Setting up your model
 
      :ref:`sphx_glr_auto_gpc_plot_model.py`
 
@@ -97,6 +101,7 @@ Generalized Polynomial Chaos
 .. only:: html
 
  .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_gradient_enhanced_gpc_thumb.png
+     :alt: Gradient enhanced gPC
 
      :ref:`sphx_glr_auto_gpc_plot_gradient_enhanced_gpc.py`
 
@@ -117,6 +122,7 @@ Generalized Polynomial Chaos
 .. only:: html
 
  .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_grid_random_vs_lhs_thumb.png
+     :alt: Grid: Random vs LHS
 
      :ref:`sphx_glr_auto_gpc_plot_grid_random_vs_lhs.py`
 
@@ -137,6 +143,7 @@ Generalized Polynomial Chaos
 .. only:: html
 
  .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_grids_thumb.png
+     :alt: The different grid types
 
      :ref:`sphx_glr_auto_gpc_plot_grids.py`
 
@@ -161,15 +168,15 @@ Generalized Polynomial Chaos
     :class: sphx-glr-footer-gallery
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
-    :download:`Download all examples in Python source code: auto_gpc_python.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_gpc/auto_gpc_python.zip>`
+    :download:`Download all examples in Python source code: auto_gpc_python.zip </auto_gpc/auto_gpc_python.zip>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip <//data/pt_01756/software/git/pygpc/doc/source/auto_gpc/auto_gpc_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip </auto_gpc/auto_gpc_jupyter.zip>`
 
 
 .. only:: html
