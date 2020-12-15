@@ -1846,7 +1846,7 @@ class RegAdaptive(Algorithm):
         # Initialize Grid object
         n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
 
-        if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM]:
+        if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM, CO]:
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                             n_grid=n_grid_init,
                                             options=self.options["grid_options"],

@@ -1900,13 +1900,8 @@ class CO(RandomGrid):
         coords_norm_opt_warmup = self.warmup(n_warmup=options["n_warmup"])
 
         # get coherence optimal samples
-        if self.grid_pre is None:
-            self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid,
-                                                                  coords_norm_opt_init=coords_norm_opt_warmup[-1, ][np.newaxis, ])
-        else:
-            coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid-self.grid_pre.n_grid,
-                                                             coords_norm_opt_init=coords_norm_opt_warmup[-1, :])
-            self.coords_norm = np.vstack((self.grid_pre.coords_norm, coords_norm))
+        self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid,
+                                                              coords_norm_opt_init=coords_norm_opt_warmup[-1, ][np.newaxis, ])
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
