@@ -17,7 +17,6 @@ Features
 .. only:: html
 
  .. figure:: /auto_features/images/thumb/sphx_glr_plot_matlab_model_thumb.png
-     :alt: Analyzing MATLAB models with pygpc
 
      :ref:`sphx_glr_auto_features_plot_matlab_model.py`
 
@@ -38,7 +37,6 @@ Features
 .. only:: html
 
  .. figure:: /auto_features/images/thumb/sphx_glr_plot_parallelization_thumb.png
-     :alt: Parallel processing capabilities of pygpc
 
      :ref:`sphx_glr_auto_features_plot_parallelization.py`
 
@@ -59,7 +57,6 @@ Features
 .. only:: html
 
  .. figure:: /auto_features/images/thumb/sphx_glr_plot_backends_thumb.png
-     :alt: OpenMP and CUDA
 
      :ref:`sphx_glr_auto_features_plot_backends.py`
 
@@ -84,15 +81,15 @@ Features
     :class: sphx-glr-footer-gallery
 
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_features_python.zip </auto_features/auto_features_python.zip>`
+    :download:`Download all examples in Python source code: auto_features_python.zip <//data/hu_emueller/PycharmProjects/pygpc/doc/source/auto_features/auto_features_python.zip>`
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_features_jupyter.zip </auto_features/auto_features_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_features_jupyter.zip <//data/hu_emueller/PycharmProjects/pygpc/doc/source/auto_features/auto_features_jupyter.zip>`
 
 
 .. only:: html

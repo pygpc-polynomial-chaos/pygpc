@@ -15,7 +15,6 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_plot_electrode_thumb.png
-     :alt: Example: Modelling of an electrode
 
      :ref:`sphx_glr_auto_examples_plot_electrode.py`
 
@@ -40,15 +39,15 @@ Examples
     :class: sphx-glr-footer-gallery
 
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//data/hu_emueller/PycharmProjects/pygpc/doc/source/auto_examples/auto_examples_python.zip>`
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//data/hu_emueller/PycharmProjects/pygpc/doc/source/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html
