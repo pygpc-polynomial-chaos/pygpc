@@ -1877,6 +1877,7 @@ class CO(RandomGrid):
         self.b2_pool = []
         self.g_pool = []
         self.f_pool = []
+        self.n_pool = []
 
         super(CO, self).__init__(parameters_random,
                                  n_grid=n_grid,
@@ -1925,6 +1926,7 @@ class CO(RandomGrid):
         n_samples : int
             Number of samples
         """
+        self.n_pool = n_samples
         self.coords_pool = np.zeros((n_samples, self.dim))
 
         for i_rv, rv in enumerate(self.parameters_random_proposal):
@@ -2032,6 +2034,12 @@ class CO(RandomGrid):
         idx2 = 1
 
         while i_grid < n_grid:
+            # create a new pool if it is empty
+            if idx2 >= self.n_pool:
+                self.create_pool(2*n_grid)
+                idx1 = 0
+                idx2 = 1
+
             # determine acceptance rate
             rho = self.acceptance_rate(idx1=idx1, idx2=idx2)
 
