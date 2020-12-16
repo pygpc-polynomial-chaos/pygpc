@@ -158,7 +158,7 @@ class Beta(RandomParameter):
         samples = 2 * self.rv.rvs(size=n_samples) - 1
 
         if not normalized:
-            samples = samples * (self.pdf_limits[1] - self.pdf_limits[0]) + self.pdf_limits[0]
+            samples = (samples + 1) / 2 * (self.pdf_limits[1] - self.pdf_limits[0]) + self.pdf_limits[0]
 
         return samples
 

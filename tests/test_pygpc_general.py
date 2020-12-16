@@ -1999,377 +1999,377 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #     print("done!\n")
 
-    # def test_018_CO_grid(self):
-    #     """
-    #     Testing Grids [CO]
-    #     """
-    #     global folder, plot, seed
-    #     test_name = 'pygpc_test_018_CO_grid'
-    #     print(test_name)
-    #
-    #     # define testfunction
-    #     model = pygpc.testfunctions.Peaks()
-    #
-    #     # define problems
-    #     parameters_1 = OrderedDict()
-    #     parameters_1["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-    #     parameters_1["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-    #     parameters_1["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-    #     problem_1 = pygpc.Problem(model, parameters_1)
-    #
-    #     parameters_2 = OrderedDict()
-    #     parameters_2["x1"] = pygpc.Norm(pdf_shape=[0, 1], p_perc=0.5)
-    #     parameters_2["x2"] = pygpc.Norm(pdf_shape=[1, 2], p_perc=0.5)
-    #     parameters_2["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-    #     problem_2 = pygpc.Problem(model, parameters_2)
-    #
-    #     # gPC options
-    #     options = dict()
-    #     options["method"] = "reg"
-    #     options["solver"] = "LarsLasso"
-    #     options["settings"] = None
-    #     options["order_start"] = 2
-    #     options["order_end"] = 5
-    #     options["order"] = [3, 3, 3]
-    #     options["order_max"] = 3
-    #     options["order_max_norm"] = 1
-    #     options["interaction_order"] = 2
-    #     options["error_type"] = "nrmsd"
-    #     options["n_samples_validation"] = 1e3
-    #     options["n_cpu"] = 0
-    #     options["fn_results"] = None
-    #     options["save_session_format"] = save_session_format
-    #     options["gradient_enhanced"] = False
-    #     options["gradient_calculation"] = "FD_1st2nd"
-    #     options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
-    #     options["backend"] = "omp"
-    #     options["eps"] = 0.05
-    #     options["adaptive_sampling"] = False
-    #     options["grid"] = pygpc.CO
-    #     options["grid_options"] = {"seed": seed, "n_warmup": 10}
-    #
-    #     n_grid = 100
-    #     n_grid_extend = 10
-    #
-    #     # generate grid w/o percentile constraint
-    #     #########################################
-    #     print("- generate grid with percentile constraint -")
-    #     print("  > init")
-    #
-    #     # create gpc object of some order for problem_1
-    #     gpc = pygpc.Reg(problem=problem_1,
-    #                     order=[2, 2, 2],
-    #                     order_max=2,
-    #                     order_max_norm=1,
-    #                     interaction_order=2,
-    #                     interaction_order_current=2,
-    #                     options=options,
-    #                     validation=None)
-    #
-    #     # initialize grid
-    #     grid = pygpc.CO(parameters_random=problem_1.parameters_random,
-    #                     n_grid=n_grid,
-    #                     gpc=gpc,
-    #                     options={"seed": seed, "n_warmup": 10})
-    #     self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
-    #
-    #     # extend grid
-    #     print("  > extend")
-    #     for i in range(2):
-    #         grid.extend_random_grid(n_grid_new=n_grid + (i+1)*n_grid_extend)
-    #         self.expect_true(grid.n_grid == n_grid + (i+1)*n_grid_extend,
-    #                          f"Size of random grid does not fit after extending it {i+1}. time.")
-    #         self.expect_true(pygpc.get_different_rows_from_matrices(
-    #             grid.coords_norm[0:n_grid + i*n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
-    #                          f"Extended grid points are matching the initial grid after extending it {i+1}. time.")
-    #
-    #     # generate grid with percentile constraint
-    #     ##########################################
-    #     print("- generate grid w/o percentile constraint -")
-    #     print("  > init")
-    #     # create gpc object of some order for problem_2
-    #     gpc = pygpc.Reg(problem=problem_2,
-    #                     order=[2, 2, 2],
-    #                     order_max=2,
-    #                     order_max_norm=1,
-    #                     interaction_order=2,
-    #                     interaction_order_current=2,
-    #                     options=options,
-    #                     validation=None)
-    #
-    #     # initialize grid
-    #     print("  > extend")
-    #     grid = pygpc.CO(parameters_random=problem_2.parameters_random,
-    #                     n_grid=n_grid,
-    #                     gpc=gpc,
-    #                     options={"seed": seed, "n_warmup": 10})
-    #
-    #     perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
-    #
-    #     for i_p, p in enumerate(problem_2.parameters_random):
-    #         perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-    #                           (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
-    #
-    #     self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
-    #     self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
-    #
-    #     # extend grid
-    #     for i in range(2):
-    #         grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
-    #
-    #         perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
-    #
-    #         for i_p, p in enumerate(problem_2.parameters_random):
-    #             perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-    #                               (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
-    #
-    #         self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
-    #         self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
-    #                          "Size of random grid does not fit after extending it.")
-    #         self.expect_true(pygpc.get_different_rows_from_matrices(
-    #             grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
-    #                          f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
-    #
-    #     # perform static gpc
-    #     ###############################
-    #     print("- Perform Static gpc -")
-    #
-    #     # gPC options
-    #     options = dict()
-    #     options["method"] = "reg"
-    #     options["solver"] = "LarsLasso"
-    #     options["settings"] = None
-    #     options["order"] = [9, 9, 9]
-    #     options["order_max"] = 9
-    #     options["interaction_order"] = 2
-    #     options["error_type"] = "nrmsd"
-    #     options["n_samples_validation"] = 1e3
-    #     options["n_cpu"] = 0
-    #     options["fn_results"] = None
-    #     options["save_session_format"] = save_session_format
-    #     options["gradient_enhanced"] = False
-    #     options["gradient_calculation"] = "FD_1st2nd"
-    #     options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
-    #     options["backend"] = "omp"
-    #     options["grid"] = pygpc.CO
-    #     options["grid_options"] = {"seed": seed, "n_warmup": 10}
-    #     options["matrix_ratio"] = None
-    #     options["n_grid"] = 100
-    #     options["order_start"] = 3
-    #     options["order_end"] = 11
-    #     options["eps"] = 0.001
-    #     options["adaptive_sampling"] = False
-    #
-    #     # define algorithm
-    #     algorithm = pygpc.Static(problem=problem_1, options=options)
-    #
-    #     # Initialize gPC Session
-    #     session = pygpc.Session(algorithm=algorithm)
-    #
-    #     # run gPC algorithm
-    #     session, coeffs, results = session.run()
-    #
-    #     self.expect_true(session.gpc[0].error[0] <= 0.01, "Error of static gpc too high.")
-    #
-    #     # perform adaptive gpc
-    #     ##############################
-    #     print("- Perform Adaptive gpc -")
-    #
-    #     options["matrix_ratio"] = 2
-    #
-    #     # define algorithm
-    #     algorithm = pygpc.RegAdaptive(problem=problem_1, options=options)
-    #
-    #     # Initialize gPC Session
-    #     session = pygpc.Session(algorithm=algorithm)
-    #
-    #     # run gPC algorithm
-    #     session, coeffs, results = session.run()
-    #
-    #     self.expect_true(session.gpc[0].error[-1] <= 0.01, "Error of adaptive gpc too high.")
-    #
-    #     print("done!\n")
-
-    def test_018_seed_grids_reproducibility(self):
+    def test_018_CO_grid(self):
         """
-        Test reproducibility of grids when seeding
+        Testing Grids [CO]
         """
-        global folder, plot, matlab, save_session_format
-        test_name = 'pygpc_test_018_seed_grids_reproducibility'
+        global folder, plot, seed
+        test_name = 'pygpc_test_018_CO_grid'
         print(test_name)
 
         # define testfunction
         model = pygpc.testfunctions.Peaks()
 
         # define problems
-        parameters = OrderedDict()
-        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-        parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-        problem = pygpc.Problem(model, parameters)
+        parameters_1 = OrderedDict()
+        parameters_1["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        parameters_1["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        parameters_1["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        problem_1 = pygpc.Problem(model, parameters_1)
 
-        gpc = pygpc.Reg(problem=problem, order_max=2)
+        parameters_2 = OrderedDict()
+        parameters_2["x1"] = pygpc.Norm(pdf_shape=[0, 1], p_perc=0.5)
+        parameters_2["x2"] = pygpc.Norm(pdf_shape=[1, 2], p_perc=0.5)
+        parameters_2["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        problem_2 = pygpc.Problem(model, parameters_2)
 
-        # Random
-        print("Testing reproducibility of Random grid ...")
-        grid = [0 for _ in range(2)]
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "LarsLasso"
+        options["settings"] = None
+        options["order_start"] = 2
+        options["order_end"] = 5
+        options["order"] = [3, 3, 3]
+        options["order_max"] = 3
+        options["order_max_norm"] = 1
+        options["interaction_order"] = 2
+        options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e3
+        options["n_cpu"] = 0
+        options["fn_results"] = None
+        options["save_session_format"] = save_session_format
+        options["gradient_enhanced"] = False
+        options["gradient_calculation"] = "FD_1st2nd"
+        options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
+        options["backend"] = "omp"
+        options["eps"] = 0.05
+        options["adaptive_sampling"] = False
+        options["grid"] = pygpc.CO
+        options["grid_options"] = {"seed": seed, "n_warmup": 10}
+
+        n_grid = 100
+        n_grid_extend = 10
+
+        # # generate grid w/o percentile constraint
+        # #########################################
+        # print("- generate grid w/o percentile constraint -")
+        # print("  > init")
+        #
+        # # create gpc object of some order for problem_1
+        # gpc = pygpc.Reg(problem=problem_1,
+        #                 order=[2, 2, 2],
+        #                 order_max=2,
+        #                 order_max_norm=1,
+        #                 interaction_order=2,
+        #                 interaction_order_current=2,
+        #                 options=options,
+        #                 validation=None)
+        #
+        # # initialize grid
+        # grid = pygpc.CO(parameters_random=problem_1.parameters_random,
+        #                 n_grid=n_grid,
+        #                 gpc=gpc,
+        #                 options={"seed": seed, "n_warmup": 10})
+        # self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
+        #
+        # # extend grid
+        # print("  > extend")
+        # for i in range(2):
+        #     grid.extend_random_grid(n_grid_new=n_grid + (i+1)*n_grid_extend)
+        #     self.expect_true(grid.n_grid == n_grid + (i+1)*n_grid_extend,
+        #                      f"Size of random grid does not fit after extending it {i+1}. time.")
+        #     self.expect_true(pygpc.get_different_rows_from_matrices(
+        #         grid.coords_norm[0:n_grid + i*n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+        #                      f"Extended grid points are matching the initial grid after extending it {i+1}. time.")
+
+        # generate grid with percentile constraint
+        ##########################################
+        print("- generate grid with percentile constraint -")
+        print("  > init")
+        # create gpc object of some order for problem_2
+        gpc = pygpc.Reg(problem=problem_2,
+                        order=[2, 2, 2],
+                        order_max=2,
+                        order_max_norm=1,
+                        interaction_order=2,
+                        interaction_order_current=2,
+                        options=options,
+                        validation=None)
+
+        # initialize grid
+        print("  > extend")
+        grid = pygpc.CO(parameters_random=problem_2.parameters_random,
+                        n_grid=n_grid,
+                        gpc=gpc,
+                        options={"seed": seed, "n_warmup": 10})
+
+        perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+
+        for i_p, p in enumerate(problem_2.parameters_random):
+            perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+                              (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+
+        self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
+        self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+
+        # extend grid
         for i in range(2):
-            # initialize grid
-            grid[i] = pygpc.Random(parameters_random=problem.parameters_random,
-                                   n_grid=10,
-                                   options={"seed": 1})
+            grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
 
-            # extend grid
-            grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+            perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
 
-        # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                         "Random grid is not reproducible when seeding")
+            for i_p, p in enumerate(problem_2.parameters_random):
+                perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+                                  (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
 
-        # LHS
-        print("Testing reproducibility of LHS grids ...")
-        criterion_list = [None, "maximin", "ese"]
+            self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+            self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+                             "Size of random grid does not fit after extending it.")
+            self.expect_true(pygpc.get_different_rows_from_matrices(
+                grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+                             f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
 
-        for criterion in criterion_list:
-            print(f"\t > criterion: {criterion}")
-            grid = [0 for _ in range(2)]
+        # # perform static gpc
+        # ###############################
+        # print("- Perform Static gpc -")
+        #
+        # # gPC options
+        # options = dict()
+        # options["method"] = "reg"
+        # options["solver"] = "LarsLasso"
+        # options["settings"] = None
+        # options["order"] = [9, 9, 9]
+        # options["order_max"] = 9
+        # options["interaction_order"] = 2
+        # options["error_type"] = "nrmsd"
+        # options["n_samples_validation"] = 1e3
+        # options["n_cpu"] = 0
+        # options["fn_results"] = None
+        # options["save_session_format"] = save_session_format
+        # options["gradient_enhanced"] = False
+        # options["gradient_calculation"] = "FD_1st2nd"
+        # options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
+        # options["backend"] = "omp"
+        # options["grid"] = pygpc.CO
+        # options["grid_options"] = {"seed": seed, "n_warmup": 10}
+        # options["matrix_ratio"] = None
+        # options["n_grid"] = 100
+        # options["order_start"] = 3
+        # options["order_end"] = 11
+        # options["eps"] = 0.001
+        # options["adaptive_sampling"] = False
+        #
+        # # define algorithm
+        # algorithm = pygpc.Static(problem=problem_1, options=options)
+        #
+        # # Initialize gPC Session
+        # session = pygpc.Session(algorithm=algorithm)
+        #
+        # # run gPC algorithm
+        # session, coeffs, results = session.run()
+        #
+        # self.expect_true(session.gpc[0].error[0] <= 0.01, "Error of static gpc too high.")
+        #
+        # # perform adaptive gpc
+        # ##############################
+        # print("- Perform Adaptive gpc -")
+        #
+        # options["matrix_ratio"] = 2
+        #
+        # # define algorithm
+        # algorithm = pygpc.RegAdaptive(problem=problem_1, options=options)
+        #
+        # # Initialize gPC Session
+        # session = pygpc.Session(algorithm=algorithm)
+        #
+        # # run gPC algorithm
+        # session, coeffs, results = session.run()
+        #
+        # self.expect_true(session.gpc[0].error[-1] <= 0.01, "Error of adaptive gpc too high.")
 
-            for i in range(2):
-                # initialize grid
-                grid[i] = pygpc.LHS(parameters_random=problem.parameters_random,
-                                    n_grid=10,
-                                    options={"criterion": criterion,
-                                             "seed": 1})
+        print("done!\n")
 
-                # extend grid
-                grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-            # compare
-            self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                             f"LHS ({criterion}) grid is not reproducible when seeding")
-
-        # L1
-        print("Testing reproducibility of L1 grids ...")
-        criterion_list = [["mc"], ["tmc", "cc"], ["D"], ["D-coh"]]
-        method_list = ["greedy", "iter"]
-
-        for criterion in criterion_list:
-            print(f"\t > criterion: {criterion}")
-            for method in method_list:
-                print(f"\t\t > method: {method}")
-                grid = [0 for _ in range(2)]
-
-                for i in range(2):
-                    # initialize grid
-                    grid[i] = pygpc.L1(parameters_random=problem.parameters_random,
-                                       n_grid=10,
-                                       options={"criterion": criterion,
-                                                "method": method,
-                                                "seed": 1,
-                                                "n_pool": 100,
-                                                "n_iter": 100},
-                                       gpc=gpc)
-
-                    # extend grid
-                    grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-                # compare
-                self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                                 f"L1 ({criterion}, {method}) grid is not reproducible when seeding")
-
-        # L1_LHS
-        print("Testing reproducibility of L1-LHS grids ...")
-        criterion_list = [["mc"], ["tmc", "cc"]]
-        method_list = ["greedy", "iter"]
-
-        for criterion in criterion_list:
-            print(f"\t > criterion: {criterion}")
-            for method in method_list:
-                print(f"\t\t > method: {method}")
-                grid = [0 for _ in range(2)]
-
-                for i in range(2):
-                    # initialize grid
-                    grid[i] = pygpc.L1_LHS(parameters_random=problem.parameters_random,
-                                           n_grid=10,
-                                           options={"weights": [0.5, 0.5],
-                                                    "criterion": criterion,
-                                                    "method": method,
-                                                    "seed": 1,
-                                                    "n_pool": 100,
-                                                    "n_iter": 100},
-                                           gpc=gpc)
-
-                    # extend grid
-                    grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-                # compare
-                self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                                 f"L1_LHS ({criterion}, {method}) grid is not reproducible when seeding")
-
-        # LHS_L1
-        print("Testing reproducibility of LHS-L1 grids ...")
-        criterion_list = [["mc"], ["tmc", "cc"]]
-        method_list = ["greedy", "iter"]
-
-        for criterion in criterion_list:
-            print(f"\t > criterion: {criterion}")
-            for method in method_list:
-                print(f"\t\t > method: {method}")
-                grid = [0 for _ in range(2)]
-
-                for i in range(2):
-                    # initialize grid
-                    grid[i] = pygpc.LHS_L1(parameters_random=problem.parameters_random,
-                                           n_grid=10,
-                                           options={"weights": [0.5, 0.5],
-                                                    "criterion": criterion,
-                                                    "method": method,
-                                                    "seed": 1,
-                                                    "n_pool": 100,
-                                                    "n_iter": 100},
-                                           gpc=gpc)
-
-                    # extend grid
-                    grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-                # compare
-                self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                                 f"LHS_L1 ({criterion}, {method}) grid is not reproducible when seeding")
-
-        # FIM
-        print("Testing reproducibility of FIM grid ...")
-        grid = [0 for _ in range(2)]
-        for i in range(2):
-            # initialize grid
-            grid[i] = pygpc.FIM(parameters_random=problem.parameters_random,
-                                n_grid=10,
-                                options={"seed": 1},
-                                gpc=gpc)
-
-            # extend grid
-            grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-        # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                         "FIM grid is not reproducible when seeding")
-
-        # CO
-        print("Testing reproducibility of CO grid ...")
-        grid = [0 for _ in range(2)]
-        for i in range(2):
-            # initialize grid
-            grid[i] = pygpc.CO(parameters_random=problem.parameters_random,
-                               n_grid=10,
-                               options={"seed": 1, "n_warmup": 10},
-                               gpc=gpc)
-
-            # extend grid
-            grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
-
-        # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
-                         "CO grid is not reproducible when seeding")
+    # def test_018_seed_grids_reproducibility(self):
+    #     """
+    #     Test reproducibility of grids when seeding
+    #     """
+    #     global folder, plot, matlab, save_session_format
+    #     test_name = 'pygpc_test_018_seed_grids_reproducibility'
+    #     print(test_name)
+    #
+    #     # define testfunction
+    #     model = pygpc.testfunctions.Peaks()
+    #
+    #     # define problems
+    #     parameters = OrderedDict()
+    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+    #     parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+    #     parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+    #     problem = pygpc.Problem(model, parameters)
+    #
+    #     gpc = pygpc.Reg(problem=problem, order_max=2)
+    #
+    #     # Random
+    #     print("Testing reproducibility of Random grid ...")
+    #     grid = [0 for _ in range(2)]
+    #     for i in range(2):
+    #         # initialize grid
+    #         grid[i] = pygpc.Random(parameters_random=problem.parameters_random,
+    #                                n_grid=10,
+    #                                options={"seed": 1})
+    #
+    #         # extend grid
+    #         grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+    #
+    #     # compare
+    #     self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+    #                      "Random grid is not reproducible when seeding")
+    #
+    #     # LHS
+    #     print("Testing reproducibility of LHS grids ...")
+    #     criterion_list = [None, "maximin", "ese"]
+    #
+    #     for criterion in criterion_list:
+    #         print(f"\t > criterion: {criterion}")
+    #         grid = [0 for _ in range(2)]
+    #
+    #         for i in range(2):
+    #             # initialize grid
+    #             grid[i] = pygpc.LHS(parameters_random=problem.parameters_random,
+    #                                 n_grid=10,
+    #                                 options={"criterion": criterion,
+    #                                          "seed": 1})
+    #
+    #             # extend grid
+    #             grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+    #
+    #         # compare
+    #         self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+    #                          f"LHS ({criterion}) grid is not reproducible when seeding")
+    #
+    #     # L1
+    #     print("Testing reproducibility of L1 grids ...")
+    #     criterion_list = [["mc"], ["tmc", "cc"], ["D"], ["D-coh"]]
+    #     method_list = ["greedy", "iter"]
+    #
+    #     for criterion in criterion_list:
+    #         print(f"\t > criterion: {criterion}")
+    #         for method in method_list:
+    #             print(f"\t\t > method: {method}")
+    #             grid = [0 for _ in range(2)]
+    #
+    #             for i in range(2):
+    #                 # initialize grid
+    #                 grid[i] = pygpc.L1(parameters_random=problem.parameters_random,
+    #                                    n_grid=10,
+    #                                    options={"criterion": criterion,
+    #                                             "method": method,
+    #                                             "seed": 1,
+    #                                             "n_pool": 100,
+    #                                             "n_iter": 100},
+    #                                    gpc=gpc)
+    #
+    #                 # extend grid
+    #                 grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+    #
+    #             # compare
+    #             self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+    #                              f"L1 ({criterion}, {method}) grid is not reproducible when seeding")
+    #
+    #     # L1_LHS
+    #     print("Testing reproducibility of L1-LHS grids ...")
+    #     criterion_list = [["mc"], ["tmc", "cc"]]
+    #     method_list = ["greedy", "iter"]
+    #
+    #     for criterion in criterion_list:
+    #         print(f"\t > criterion: {criterion}")
+    #         for method in method_list:
+    #             print(f"\t\t > method: {method}")
+    #             grid = [0 for _ in range(2)]
+    #
+    #             for i in range(2):
+    #                 # initialize grid
+    #                 grid[i] = pygpc.L1_LHS(parameters_random=problem.parameters_random,
+    #                                        n_grid=10,
+    #                                        options={"weights": [0.5, 0.5],
+    #                                                 "criterion": criterion,
+    #                                                 "method": method,
+    #                                                 "seed": 1,
+    #                                                 "n_pool": 100,
+    #                                                 "n_iter": 100},
+    #                                        gpc=gpc)
+    #
+    #                 # extend grid
+    #                 grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+    #
+    #             # compare
+    #             self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+    #                              f"L1_LHS ({criterion}, {method}) grid is not reproducible when seeding")
+    #
+    #     # LHS_L1
+    #     print("Testing reproducibility of LHS-L1 grids ...")
+    #     criterion_list = [["mc"], ["tmc", "cc"]]
+    #     method_list = ["greedy", "iter"]
+    #
+    #     for criterion in criterion_list:
+    #         print(f"\t > criterion: {criterion}")
+    #         for method in method_list:
+    #             print(f"\t\t > method: {method}")
+    #             grid = [0 for _ in range(2)]
+    #
+    #             for i in range(2):
+    #                 # initialize grid
+    #                 grid[i] = pygpc.LHS_L1(parameters_random=problem.parameters_random,
+    #                                        n_grid=10,
+    #                                        options={"weights": [0.5, 0.5],
+    #                                                 "criterion": criterion,
+    #                                                 "method": method,
+    #                                                 "seed": 1,
+    #                                                 "n_pool": 100,
+    #                                                 "n_iter": 100},
+    #                                        gpc=gpc)
+    #
+    #                 # extend grid
+    #                 grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+    #
+    #             # compare
+    #             self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+    #                              f"LHS_L1 ({criterion}, {method}) grid is not reproducible when seeding")
+    #
+    #     # FIM
+    #     print("Testing reproducibility of FIM grid ...")
+    #     grid = [0 for _ in range(2)]
+    #     for i in range(2):
+    #         # initialize grid
+    #         grid[i] = pygpc.FIM(parameters_random=problem.parameters_random,
+    #                             n_grid=10,
+    #                             options={"seed": 1},
+    #                             gpc=gpc)
+    #
+    #         # extend grid
+    #         grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+    #
+    #     # compare
+    #     self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+    #                      "FIM grid is not reproducible when seeding")
+    #
+    #     # CO
+    #     print("Testing reproducibility of CO grid ...")
+    #     grid = [0 for _ in range(2)]
+    #     for i in range(2):
+    #         # initialize grid
+    #         grid[i] = pygpc.CO(parameters_random=problem.parameters_random,
+    #                            n_grid=10,
+    #                            options={"seed": 1, "n_warmup": 10},
+    #                            gpc=gpc)
+    #
+    #         # extend grid
+    #         grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
+    #
+    #     # compare
+    #     self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+    #                      "CO grid is not reproducible when seeding")
 
     # def test_019_Matlab_gpc(self):
     #     """

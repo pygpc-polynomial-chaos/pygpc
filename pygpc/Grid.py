@@ -1896,10 +1896,13 @@ class CO(RandomGrid):
                                                            pdf_limits=[-1, 1])
             elif self.parameters_random[rv].pdf_type == "norm":
                 self.parameters_random_proposal[rv] = Beta(pdf_shape=[1, 1],
-                                                           pdf_limits=[-np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
-                                                                       +np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)])
+                                                           pdf_limits=
+                                                           [np.max((-np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
+                                                                    self.parameters_random[rv].pdf_limits_norm[0])),
+                                                            np.min((+np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
+                                                                    self.parameters_random[rv].pdf_limits_norm[1]))])
             else:
-                NotImplementedError("Coherence Optimal sampling only possible for uniform and normal "
+                NotImplementedError("Coherence optimal sampling only possible for uniform and normal "
                                     "distributed random variables")
 
         # draw sample pool for warmup
@@ -1930,7 +1933,8 @@ class CO(RandomGrid):
         self.coords_pool = np.zeros((n_samples, self.dim))
 
         for i_rv, rv in enumerate(self.parameters_random_proposal):
-            self.coords_pool[:, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=n_samples)
+            self.coords_pool[:, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=n_samples,
+                                                                                   normalized=False)
 
         self.gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.coords_pool)
 
