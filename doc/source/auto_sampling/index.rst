@@ -12,14 +12,14 @@ Sampling schemes
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="D-optimal sampling">
+    <div class="sphx-glr-thumbcontainer" tooltip="ADD RESULTS OF PAPER HERE">
 
 .. only:: html
 
- .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_D_thumb.png
-     :alt: D-optimal sampling
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_grid_comparison_thumb.png
+     :alt: Comparison of sampling schemes
 
-     :ref:`sphx_glr_auto_sampling_plot_D.py`
+     :ref:`sphx_glr_auto_sampling_plot_grid_comparison.py`
 
 .. raw:: html
 
@@ -29,74 +29,11 @@ Sampling schemes
 .. toctree::
    :hidden:
 
-   /auto_sampling/plot_D
+   /auto_sampling/plot_grid_comparison
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Coherence optimal sampling">
-
-.. only:: html
-
- .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_CO_thumb.png
-     :alt: Coherence optimal sampling
-
-     :ref:`sphx_glr_auto_sampling_plot_CO.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_sampling/plot_CO
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="L1 optimal sampling">
-
-.. only:: html
-
- .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_L1_thumb.png
-     :alt: L1 optimal sampling
-
-     :ref:`sphx_glr_auto_sampling_plot_L1.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_sampling/plot_L1
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Hybrid LHS-L1 sampling">
-
-.. only:: html
-
- .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_LHS-L1_thumb.png
-     :alt: Hybrid LHS-L1 sampling
-
-     :ref:`sphx_glr_auto_sampling_plot_LHS-L1.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_sampling/plot_LHS-L1
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Choosing a sampling scheme --------------------------">
+    <div class="sphx-glr-thumbcontainer" tooltip="To calculate the coefficients of the gPC matrix, a number of random samples needs to be picked ...">
 
 .. only:: html
 
@@ -117,7 +54,28 @@ Sampling schemes
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Latin Hypercube Sampling (LHS)">
+    <div class="sphx-glr-thumbcontainer" tooltip="ADD THEORY OF CO GRIDS HERE">
+
+.. only:: html
+
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_CO_thumb.png
+     :alt: Coherence optimal sampling
+
+     :ref:`sphx_glr_auto_sampling_plot_CO.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_sampling/plot_CO
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="To increase the information of each individual sampling point and to prevent undersampling, LHS...">
 
 .. only:: html
 
@@ -135,6 +93,90 @@ Sampling schemes
    :hidden:
 
    /auto_sampling/plot_LHS
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="ADD THEORY OF D-GRIDS HERE">
+
+.. only:: html
+
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_D_thumb.png
+     :alt: D-optimal sampling
+
+     :ref:`sphx_glr_auto_sampling_plot_D.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_sampling/plot_D
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example ------- In order to create a grid of sampling points, we have to define the random para...">
+
+.. only:: html
+
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_L1_thumb.png
+     :alt: L1 optimal sampling
+
+     :ref:`sphx_glr_auto_sampling_plot_L1.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_sampling/plot_L1
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example ------- In order to create a grid of sampling points, we have to define the random para...">
+
+.. only:: html
+
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_L1-LHS_thumb.png
+     :alt: Hybrid L1-LHS sampling
+
+     :ref:`sphx_glr_auto_sampling_plot_L1-LHS.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_sampling/plot_L1-LHS
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example ------- In order to create a grid of sampling points, we have to define the random para...">
+
+.. only:: html
+
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_LHS-L1_thumb.png
+     :alt: Hybrid LHS-L1 sampling
+
+     :ref:`sphx_glr_auto_sampling_plot_LHS-L1.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_sampling/plot_LHS-L1
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

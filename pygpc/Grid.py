@@ -12,6 +12,7 @@ from .misc import get_cartesian_product
 from .misc import t_averaged_mutual_coherence
 from .misc import average_cross_correlation_gram
 from .misc import get_different_rows_from_matrices
+from scipy.special import gamma
 
 import multiprocessing.pool
 from _functools import partial
@@ -1808,8 +1809,6 @@ class CO(RandomGrid):
         OrderedDict containing the RandomParameter instances the grids are generated for
     n_grid: int
         Number of random samples to generate
-    seed: float
-        Seeding point to replicate random grids
     options: dict, optional, default=None
         Grid options:
         - 'seed'            : Seeding point
@@ -1855,9 +1854,9 @@ class CO(RandomGrid):
         Unique IDs of grid points
     """
 
-    def __init__(self, parameters_random, n_grid=None, options=None, coords=None, coords_norm=None,
+    def __init__(self, parameters_random, gpc, n_grid=None, options=None, coords=None, coords_norm=None,
                  coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None,
-                 gpc=None, grid_pre=None):
+                 grid_pre=None):
         """
         Constructor; Initializes CO instance; Generates grid or copies provided content
         """
@@ -1878,6 +1877,7 @@ class CO(RandomGrid):
         self.g_pool = []
         self.f_pool = []
         self.n_pool = []
+        self.all_norm = []
 
         super(CO, self).__init__(parameters_random,
                                  n_grid=n_grid,
@@ -1889,18 +1889,32 @@ class CO(RandomGrid):
                                  coords_id=coords_id,
                                  coords_gradient_id=coords_gradient_id)
 
+        self.ball_volume = self.calc_ball_volume(dim=self.dim, radius=np.sqrt(2) * np.sqrt(2*self.gpc.order_max+1))
+        pdf_type = [self.parameters_random[rv].pdf_type for rv in self.parameters_random]
+        self.all_norm = np.array([True for p in pdf_type if p == "norm"]).all()
+        any_norm = np.array([True for p in pdf_type if p == "norm"]).any() and not self.all_norm
+
+        if any_norm:
+            raise AssertionError("Mixed distributions of beta and normal not possible for CO grids..."
+                                 "All variables have to be either normal or beta distributed!")
+
+        # create proposal distributed random variables
         self.parameters_random_proposal = dict()
         for rv in self.parameters_random:
             if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
                 self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
                                                            pdf_limits=[-1, 1])
+
             elif self.parameters_random[rv].pdf_type == "norm":
                 self.parameters_random_proposal[rv] = Beta(pdf_shape=[1, 1],
                                                            pdf_limits=
-                                                           [np.max((-np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
-                                                                    self.parameters_random[rv].pdf_limits_norm[0])),
-                                                            np.min((+np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
-                                                                    self.parameters_random[rv].pdf_limits_norm[1]))])
+                                                           [-np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
+                                                            +np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)])
+
+                # [np.max((-np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
+                #          self.parameters_random[rv].pdf_limits_norm[0])),
+                #  np.min((+np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
+                #          self.parameters_random[rv].pdf_limits_norm[1]))]
             else:
                 NotImplementedError("Coherence optimal sampling only possible for uniform and normal "
                                     "distributed random variables")
@@ -1932,9 +1946,17 @@ class CO(RandomGrid):
         self.n_pool = n_samples
         self.coords_pool = np.zeros((n_samples, self.dim))
 
-        for i_rv, rv in enumerate(self.parameters_random_proposal):
-            self.coords_pool[:, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=n_samples,
-                                                                                   normalized=False)
+        resample_mask = np.array([True] * self.n_pool)
+
+        while resample_mask.any():
+            for i_rv, rv in enumerate(self.parameters_random_proposal):
+                self.coords_pool[resample_mask, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=int(np.sum(resample_mask)),
+                                                                                                   normalized=False)
+            # resample in case of normal distributed random variables (samples have to lie inside n-ball)
+            if not self.all_norm:
+                resample_mask = np.array([False] * self.n_pool)
+            else:
+                resample_mask = np.linalg.norm(self.coords_pool, axis=1) > (np.sqrt(2) * np.sqrt(2*self.gpc.order_max+1))
 
         self.gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.coords_pool)
 
@@ -1943,7 +1965,27 @@ class CO(RandomGrid):
         self.f_pool = self.joint_pdf(x=self.coords_pool, parameters_random=self.parameters_random)
 
     @staticmethod
-    def joint_pdf(x, parameters_random):
+    def calc_ball_volume(dim, radius):
+        """
+        Volume of n-dimensional ball.
+
+        Parameters
+        ----------
+        dim : int
+            Number of random variables
+        radius : float
+            Radius
+
+        Returns
+        -------
+        vol : float
+            Volume of n-dimensional ball
+        """
+        vol = radius**dim * np.pi**(dim/2) / gamma(dim/2 + 1)
+
+        return vol
+
+    def joint_pdf(self, x, parameters_random):
         """
         Joint probability density function of random variables
 
@@ -1959,21 +2001,15 @@ class CO(RandomGrid):
         f : float
             Joint probability density
         """
-        f = 1
-        for i_rv, rv in enumerate(parameters_random):
-            f *= parameters_random[rv].pdf_norm(x=x[:, i_rv])[1]
+        f = np.ones(x.shape[0])
+
+        if np.array([True for p in parameters_random if parameters_random[p].pdf_type == "norm"]).all():
+            f *= 1/self.ball_volume
+        else:
+            for i_rv, rv in enumerate(parameters_random):
+                f *= parameters_random[rv].pdf_norm(x=x[:, i_rv])[1]
 
         return f
-
-    # def g_norm_sample(self, x):
-    #     """
-    #
-    #     :param x:
-    #     :return:
-    #     """
-    #     y = np.array([x/np.linalg.norm(x, axis=1) * np.sqrt(2) * np.sqrt(2 * self.gpc.order_max + 1) * np.random.rand(1)])
-    #
-    #     return y
 
     def acceptance_rate(self, idx1, idx2):
         """
@@ -2149,7 +2185,7 @@ class L1(RandomGrid):
 
         if type(options) is dict:
             if "method" not in options.keys():
-                options["method"] = "iteration"
+                options["method"] = "greedy"
 
             if "n_pool" not in options.keys():
                 options["n_pool"] = 10000

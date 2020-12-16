@@ -1999,57 +1999,51 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #     print("done!\n")
 
-    def test_018_CO_grid(self):
-        """
-        Testing Grids [CO]
-        """
-        global folder, plot, seed
-        test_name = 'pygpc_test_018_CO_grid'
-        print(test_name)
+    # def test_018_CO_grid(self):
+    #     """
+    #     Testing Grids [CO]
+    #     """
+    #     global folder, plot, seed
+    #     test_name = 'pygpc_test_018_CO_grid'
+    #     print(test_name)
+    #
+    #     # define testfunction
+    #     model = pygpc.testfunctions.Peaks()
+    #
+    #     # define problems
+    #     parameters_1 = OrderedDict()
+    #     parameters_1["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+    #     parameters_1["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+    #     parameters_1["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+    #     problem_1 = pygpc.Problem(model, parameters_1)
+    #
+    #     # gPC options
+    #     options = dict()
+    #     options["method"] = "reg"
+    #     options["solver"] = "LarsLasso"
+    #     options["settings"] = None
+    #     options["order_start"] = 2
+    #     options["order_end"] = 5
+    #     options["order"] = [3, 3, 3]
+    #     options["order_max"] = 3
+    #     options["order_max_norm"] = 1
+    #     options["interaction_order"] = 2
+    #     options["error_type"] = "nrmsd"
+    #     options["n_samples_validation"] = 1e3
+    #     options["n_cpu"] = 0
+    #     options["fn_results"] = None
+    #     options["save_session_format"] = save_session_format
+    #     options["gradient_enhanced"] = False
+    #     options["gradient_calculation"] = "FD_1st2nd"
+    #     options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
+    #     options["backend"] = "omp"
+    #     options["eps"] = 0.05
+    #     options["adaptive_sampling"] = False
+    #     options["grid"] = pygpc.CO
+    #     options["grid_options"] = {"seed": seed, "n_warmup": 10}
 
-        # define testfunction
-        model = pygpc.testfunctions.Peaks()
-
-        # define problems
-        parameters_1 = OrderedDict()
-        parameters_1["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-        parameters_1["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-        parameters_1["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-        problem_1 = pygpc.Problem(model, parameters_1)
-
-        parameters_2 = OrderedDict()
-        parameters_2["x1"] = pygpc.Norm(pdf_shape=[0, 1], p_perc=0.5)
-        parameters_2["x2"] = pygpc.Norm(pdf_shape=[1, 2], p_perc=0.5)
-        parameters_2["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
-        problem_2 = pygpc.Problem(model, parameters_2)
-
-        # gPC options
-        options = dict()
-        options["method"] = "reg"
-        options["solver"] = "LarsLasso"
-        options["settings"] = None
-        options["order_start"] = 2
-        options["order_end"] = 5
-        options["order"] = [3, 3, 3]
-        options["order_max"] = 3
-        options["order_max_norm"] = 1
-        options["interaction_order"] = 2
-        options["error_type"] = "nrmsd"
-        options["n_samples_validation"] = 1e3
-        options["n_cpu"] = 0
-        options["fn_results"] = None
-        options["save_session_format"] = save_session_format
-        options["gradient_enhanced"] = False
-        options["gradient_calculation"] = "FD_1st2nd"
-        options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
-        options["backend"] = "omp"
-        options["eps"] = 0.05
-        options["adaptive_sampling"] = False
-        options["grid"] = pygpc.CO
-        options["grid_options"] = {"seed": seed, "n_warmup": 10}
-
-        n_grid = 100
-        n_grid_extend = 10
+        # n_grid = 100
+        # n_grid_extend = 10
 
         # # generate grid w/o percentile constraint
         # #########################################
@@ -2082,53 +2076,6 @@ class TestPygpcMethods(unittest.TestCase):
         #     self.expect_true(pygpc.get_different_rows_from_matrices(
         #         grid.coords_norm[0:n_grid + i*n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
         #                      f"Extended grid points are matching the initial grid after extending it {i+1}. time.")
-
-        # generate grid with percentile constraint
-        ##########################################
-        print("- generate grid with percentile constraint -")
-        print("  > init")
-        # create gpc object of some order for problem_2
-        gpc = pygpc.Reg(problem=problem_2,
-                        order=[2, 2, 2],
-                        order_max=2,
-                        order_max_norm=1,
-                        interaction_order=2,
-                        interaction_order_current=2,
-                        options=options,
-                        validation=None)
-
-        # initialize grid
-        print("  > extend")
-        grid = pygpc.CO(parameters_random=problem_2.parameters_random,
-                        n_grid=n_grid,
-                        gpc=gpc,
-                        options={"seed": seed, "n_warmup": 10})
-
-        perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
-
-        for i_p, p in enumerate(problem_2.parameters_random):
-            perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-                              (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
-
-        self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
-        self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
-
-        # extend grid
-        for i in range(2):
-            grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
-
-            perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
-
-            for i_p, p in enumerate(problem_2.parameters_random):
-                perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
-                                  (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
-
-            self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
-            self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
-                             "Size of random grid does not fit after extending it.")
-            self.expect_true(pygpc.get_different_rows_from_matrices(
-                grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
-                             f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
 
         # # perform static gpc
         # ###############################
@@ -2188,14 +2135,14 @@ class TestPygpcMethods(unittest.TestCase):
         #
         # self.expect_true(session.gpc[0].error[-1] <= 0.01, "Error of adaptive gpc too high.")
 
-        print("done!\n")
+        # print("done!\n")
 
-    # def test_018_seed_grids_reproducibility(self):
+    # def test_019_seed_grids_reproducibility(self):
     #     """
     #     Test reproducibility of grids when seeding
     #     """
     #     global folder, plot, matlab, save_session_format
-    #     test_name = 'pygpc_test_018_seed_grids_reproducibility'
+    #     test_name = 'pygpc_test_019_seed_grids_reproducibility'
     #     print(test_name)
     #
     #     # define testfunction
@@ -2371,7 +2318,7 @@ class TestPygpcMethods(unittest.TestCase):
     #     self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
     #                      "CO grid is not reproducible when seeding")
 
-    # def test_019_Matlab_gpc(self):
+    # def test_020_Matlab_gpc(self):
     #     """
     #     Algorithm: RegAdaptive
     #     Method: Regression
@@ -2379,7 +2326,7 @@ class TestPygpcMethods(unittest.TestCase):
     #     Grid: Random
     #     """
     #     global folder, plot, matlab, save_session_format
-    #     test_name = 'pygpc_test_019_Matlab_gpc'
+    #     test_name = 'pygpc_test_020_Matlab_gpc'
     #     print(test_name)
     #
     #     if matlab:
@@ -2467,7 +2414,7 @@ class TestPygpcMethods(unittest.TestCase):
     #     else:
     #         print("Skipping Matlab test...")
     #
-    # def test_020_random_vars_postprocessing(self):
+    # def test_021_random_vars_postprocessing(self):
     #     """
     #     Algorithm: Static
     #     Method: Regression
@@ -2475,7 +2422,7 @@ class TestPygpcMethods(unittest.TestCase):
     #     Grid: Random
     #     """
     #     global folder, plot, save_session_format
-    #     test_name = 'pygpc_test_020_random_vars_postprocessing_sobol'
+    #     test_name = 'pygpc_test_021_random_vars_postprocessing_sobol'
     #     print(test_name)
     #
     #     # define model
@@ -2572,7 +2519,7 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #     print("done!\n")
     #
-    # def test_021_clustering_3_domains(self):
+    # def test_022_clustering_3_domains(self):
     #     """
     #     Algorithm: MERegAdaptiveprojection
     #     Method: Regression
@@ -2580,7 +2527,7 @@ class TestPygpcMethods(unittest.TestCase):
     #     Grid: Random
     #     """
     #     global folder, plot, save_session_format
-    #     test_name = 'pygpc_test_021_clustering_3_domains'
+    #     test_name = 'pygpc_test_022_clustering_3_domains'
     #     print(test_name)
     #
     #     # define model
@@ -2672,13 +2619,13 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #     print("done!\n")
     #
-    # def test_022_backends(self):
+    # def test_023_backends(self):
     #     """
     #     Test the different backends ["python", "cpu", "omp", "cuda"]
     #     """
     #
     #     global folder, gpu
-    #     test_name = 'pygpc_test_022_backends'
+    #     test_name = 'pygpc_test_023_backends'
     #     print(test_name)
     #
     #     backends = ["python", "cpu", "omp", "cuda"]
@@ -2775,13 +2722,13 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #     print("done!\n")
     #
-    # def test_023_save_and_load_session(self):
+    # def test_024_save_and_load_session(self):
     #     """
     #     Save and load a gPC Session
     #     """
     #
     #     global folder, plot, save_session_format
-    #     test_name = 'pygpc_test_023_save_and_load_session'
+    #     test_name = 'pygpc_test_024_save_and_load_session'
     #     print(test_name)
     #     # define model
     #     model = pygpc.testfunctions.Peaks()
@@ -2865,13 +2812,13 @@ class TestPygpcMethods(unittest.TestCase):
     #
     #     print("done!\n")
     #
-    # def test_024_gradient_estimation_methods(self):
+    # def test_025_gradient_estimation_methods(self):
     #     """
     #     Test gradient estimation methods
     #     """
     #
     #     global folder, plot, save_session_format
-    #     test_name = 'pygpc_test_024_gradient_estimation_methods'
+    #     test_name = 'pygpc_test_025_gradient_estimation_methods'
     #     print(test_name)
     #
     #     methods_options = dict()
