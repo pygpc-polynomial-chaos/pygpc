@@ -1872,6 +1872,11 @@ class CO(RandomGrid):
 
         self.gpc = gpc
         self.grid_pre = grid_pre
+        self.coords_pool = []
+        self.gpc_matrix_pool = []
+        self.b2_pool = []
+        self.g_pool = []
+        self.f_pool = []
 
         super(CO, self).__init__(parameters_random,
                                  n_grid=n_grid,
@@ -1896,15 +1901,40 @@ class CO(RandomGrid):
                 NotImplementedError("Coherence Optimal sampling only possible for uniform and normal "
                                     "distributed random variables")
 
+        # draw sample pool for warmup
+        self.create_pool(n_samples=2*options["n_warmup"])
+
         # warmup
-        coords_norm_opt_warmup = self.warmup(n_warmup=options["n_warmup"])
+        self.warmup(n_warmup=options["n_warmup"])
+
+        # draw sample pool for actual sampling
+        self.create_pool(n_samples=2*self.n_grid)
 
         # get coherence optimal samples
-        self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid,
-                                                              coords_norm_opt_init=coords_norm_opt_warmup[-1, ][np.newaxis, ])
+        self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid)
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
+
+    def create_pool(self, n_samples):
+        """
+        Creates a pool of samples together with the corresponding gPC matrix.
+
+        Parameters
+        ----------
+        n_samples : int
+            Number of samples
+        """
+        self.coords_pool = np.zeros((n_samples, self.dim))
+
+        for i_rv, rv in enumerate(self.parameters_random_proposal):
+            self.coords_pool[:, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=n_samples)
+
+        self.gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.coords_pool)
+
+        self.b2_pool = np.linalg.norm(self.gpc_matrix_pool, axis=1)**2
+        self.g_pool = self.joint_pdf(x=self.coords_pool, parameters_random=self.parameters_random_proposal)
+        self.f_pool = self.joint_pdf(x=self.coords_pool, parameters_random=self.parameters_random)
 
     @staticmethod
     def joint_pdf(x, parameters_random):
@@ -1913,7 +1943,7 @@ class CO(RandomGrid):
 
         Parameters
         ----------
-        x : ndarray of float [n_random_variables]
+        x : ndarray of float [n_samples x n_dim]
             Samples of random variables
         parameters_random : dict of RandomVariable instances
             Random variables of proposal distribution
@@ -1925,7 +1955,7 @@ class CO(RandomGrid):
         """
         f = 1
         for i_rv, rv in enumerate(parameters_random):
-            f *= parameters_random[rv].pdf_norm(x=np.array([x.flatten()[i_rv]]))[1]
+            f *= parameters_random[rv].pdf_norm(x=x[:, i_rv])[1]
 
         return f
 
@@ -1939,33 +1969,26 @@ class CO(RandomGrid):
     #
     #     return y
 
-    def acceptance_rate(self, x1, x2):
+    def acceptance_rate(self, idx1, idx2):
         """
         Calculate acceptance rate of Metropolis Hastings algorithm
 
         Parameters
         ----------
-        x1 : ndarray of float [n_dim]
-            Sampling points of previous sample
-        x2 : ndarray of float [n_dim]
-            Sampling points of current sample
+        idx1 : int
+            Index of sampling points of previous sample
+        idx2 : int
+            Index of sampling points of current sample
 
         Returns
         -------
         rho : float
             Acceptance rate
         """
-        gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
-                                                x=np.vstack((x1, x2)),
-                                                gradient=False)
-        b2 = np.linalg.norm(gpc_matrix, axis=1)**2
 
-        g_x1 = self.joint_pdf(x=x1, parameters_random=self.parameters_random_proposal)
-        g_x2 = self.joint_pdf(x=x2, parameters_random=self.parameters_random_proposal)
-        f_x1 = self.joint_pdf(x=x1, parameters_random=self.parameters_random)
-        f_x2 = self.joint_pdf(x=x2, parameters_random=self.parameters_random)
-
-        rho = np.min((np.array([1.]), (g_x1*f_x2*b2[1])/(g_x2*f_x1*b2[0])))
+        rho = np.min((1.,
+                     (self.g_pool[idx1]*self.f_pool[idx2]*self.b2_pool[idx2]) /
+                     (self.g_pool[idx2]*self.f_pool[idx1]*self.b2_pool[idx1])))
 
         return rho
 
@@ -1983,11 +2006,12 @@ class CO(RandomGrid):
         coords_norm_opt : ndarray of float [n_warmup x n_dim]
             Optimal coordinates determined during warmup phase
         """
-        coords_norm_opt = self.get_coherence_optimal_samples(n_grid=n_warmup, coords_norm_opt_init=None)
+
+        coords_norm_opt = self.get_coherence_optimal_samples(n_grid=n_warmup)
 
         return coords_norm_opt
 
-    def get_coherence_optimal_samples(self, n_grid, coords_norm_opt_init=None):
+    def get_coherence_optimal_samples(self, n_grid):
         """
         Determine coherence optimal samples with Monte Carlo Markov Chain - Metropolis Hastings algorithm
 
@@ -1995,8 +2019,6 @@ class CO(RandomGrid):
         ----------
         n_grid : int
             Number of grid points
-        coords_norm_opt_init : ndarray of float [1, n_dim], optional, default: False
-            Initial sample to start algorithm with
 
         Returns
         -------
@@ -2004,34 +2026,22 @@ class CO(RandomGrid):
             Coherence optimal samples
         """
         coords_norm_opt = np.zeros((n_grid, self.dim))
-
-        if coords_norm_opt_init is None:
-            x1 = np.zeros((1, self.dim))
-            # draw first sample
-            for i_rv, rv in enumerate(self.parameters_random_proposal):
-                x1[0, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=1)
-
-        else:
-            x1 = coords_norm_opt_init
-
+        coords_norm_opt[0, :] = self.coords_pool[0, :][np.newaxis, :]
         i_grid = 1
-
-        coords_norm_opt[0, :] = x1
+        idx1 = 0
+        idx2 = 1
 
         while i_grid < n_grid:
-            # draw sample
-            x2 = np.zeros((1, self.dim))
-            for i_rv, rv in enumerate(self.parameters_random_proposal):
-                x2[0, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=1)
-
             # determine acceptance rate
-            rho = self.acceptance_rate(x1=x1, x2=x2)
+            rho = self.acceptance_rate(idx1=idx1, idx2=idx2)
 
             # add point if acceptance rate is high
             if rho > np.random.rand(1):
-                coords_norm_opt[i_grid, :] = x2
+                coords_norm_opt[i_grid, :] = self.coords_pool[idx2, :]
                 i_grid += 1
-                x1 = x2
+                idx1 = idx2
+
+            idx2 += 1
 
         return coords_norm_opt
 
