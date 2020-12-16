@@ -49,6 +49,7 @@ static PyObject* create_gpc_matrix_cuda(PyObject* self, PyObject* args)
     Py_DECREF(coeffs);
     Py_DECREF(result);
 
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
@@ -100,7 +101,8 @@ static PyObject* get_approximation_cuda(PyObject* self, PyObject* args)
     Py_DECREF(poly_coeffs);
     Py_DECREF(gpc_coeffs);
     Py_DECREF(result);
-
+    
+    Py_INCREF(Py_None);
     return Py_None;
 }
 

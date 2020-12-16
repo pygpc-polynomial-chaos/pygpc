@@ -46,7 +46,8 @@ static PyObject* create_gpc_matrix_cpu(PyObject* self, PyObject* args)
     Py_DECREF(arguments);
     Py_DECREF(coeffs);
     Py_DECREF(result);
-
+    
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
@@ -88,7 +89,8 @@ static PyObject* create_gpc_matrix_omp(PyObject* self, PyObject* args)
     Py_DECREF(arguments);
     Py_DECREF(coeffs);
     Py_DECREF(result);
-
+    
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
