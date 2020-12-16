@@ -136,7 +136,7 @@ class GPC(object):
                 options["matlab_model"] = False
 
             if "backend" not in options.keys():
-                options["backend"] = "python"
+                options["backend"] = "omp"
 
             self.gradient = options["gradient_enhanced"]
             self.fn_results = options["fn_results"]
@@ -147,7 +147,7 @@ class GPC(object):
             self.gradient = None
             self.fn_results = None
             self.matlab_model = False
-            self.backend = "python"
+            self.backend = "omp"
 
         self.solver = None
         self.settings = None
