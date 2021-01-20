@@ -346,7 +346,9 @@ class ComputationFuncPar:
 
             else:
                 # copy constant parameters n_grid times
-                if type(problem.parameters[key]) == float or problem.parameters[key].size == 1:
+                if type(problem.parameters[key]) == str:
+                    parameters[key] = [problem.parameters[key] for _ in range(n_grid)]
+                elif type(problem.parameters[key]) == float or problem.parameters[key].size == 1:
                     parameters[key] = problem.parameters[key] * np.ones(n_grid)
                 else:
                     if str(type(problem.parameters[key])) == "<class 'matlab.engine.matlabengine.MatlabEngine'>":

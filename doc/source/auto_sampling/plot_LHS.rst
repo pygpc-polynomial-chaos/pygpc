@@ -59,7 +59,6 @@ where :math:`d` is the distance between two samples :math:`x_i` and :math:`x_j` 
 :math:`n` is the number of samples in a sample design.
 
 .. math::
-
     d(x_i,x_j) = d_{i,j} = [ \sum_{k=1}^{m}|x_{i,k} - x_{j,k}| ^ t]^\frac{1}{t}, t \in {1,2}
 
 There is however a more elegant way of computing this optimization criterion as shown by Morris and Mitchell (1995),
@@ -71,7 +70,7 @@ called the :math:`\varphi_P` criterion.
 where :math:`s` is the number of distinct distances, :math:`J` is an vector of indices of the distances
 and :math:`p` is an integer. With a very large :math:`p` this criterion is equivalent to the maximin criterion
 
-.. Morris, M. D. and Mitchell, T. J. (1995). Exploratory Designs for Computer Experiments. J. Statist. Plann.
+.. [2] Morris, M. D. and Mitchell, T. J. (1995). Exploratory Designs for Computer Experiments. J. Statist. Plann.
    Inference 43, 381-402.
 
 LHS with enhanced stochastic evolutionary algorithm (ESE)
@@ -82,7 +81,7 @@ the criteria over a number of repetitions **pygpc** can use an ESE for achieving
 [sth about the resulting error or std in a low sample size].
 This method originated from Jin et al. (2005).
 
-.. Jin, R., Chen, W., Sudjianto, A. (2005). An efficient algorithm for constructing optimal
+.. [3] Jin, R., Chen, W., Sudjianto, A. (2005). An efficient algorithm for constructing optimal
    design of computer experiments. Journal of statistical planning and inference, 134(1), 268-287.
 
 Example
@@ -200,7 +199,7 @@ The grid points are distributed as follows (in the normalized space):
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.127 seconds)
+   **Total running time of the script:** ( 0 minutes  1.161 seconds)
 
 
 .. _sphx_glr_download_auto_sampling_plot_LHS.py:

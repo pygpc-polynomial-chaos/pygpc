@@ -96,7 +96,7 @@ Sampling schemes
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="ADD THEORY OF D-GRIDS HERE">
+    <div class="sphx-glr-thumbcontainer" tooltip="The properties of the Gramian matrix such as the condition number or its deviation from the ide...">
 
 .. only:: html
 

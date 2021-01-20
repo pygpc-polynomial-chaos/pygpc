@@ -2,7 +2,29 @@
 D-optimal sampling
 ==================
 
-ADD THEORY OF D-GRIDS HERE
+The properties of the Gramian matrix such as the condition number or its deviation from the identity matrix
+play a central role when solving the gPC system. It is defined by:
+
+.. math::
+    [\\mathbf{G_\\Psi}] = [\\mathbf{\\Psi^T}] [\\mathbf{\\Psi}]
+
+However, a judicious choice of sampling points :math:`\\{\\bm{\\xi}^{(i)}\\}_{i}^{N_g}` allows us to improve these
+properties without any prior knowledge about the model under investigation. The selection of an appropriate
+optimization criteria and the identification of the corresponding optimal sampling locations is the core concept
+of optimal design of experiment (ODE). The most popular criterion is :math:`D`-optimality where it the goal to
+increase the information content from a given amount of sampling points by minimizing the determinant of the
+inverse of the Gramian:
+
+.. math::
+    \\phi_D = |[\\mathbf{G_\\Psi}]^{-1}|^{1/N_c}
+
+:math:`D`-optimal designs are focused on precise estimation of the coefficients. Besides :math:`D`-optimal designs,
+there exist are a lot of other alphabetic optimal designs such as :math:`A`-, :math:`E`-, :math:`I`-, or :math:`V`-
+optimal designs with different goals and criteria. A nice overview about them can be found in:
+
+.. [1] Pukelsheim, F. (2006). Optimal design of experiments. Society for Industrial and Applied Mathematics.
+.. [2] Atkinson, A., Donev, A., & Tobias, R. (2007). Optimum experimental designs, with SAS (Vol. 34).
+   Oxford University Press.
 
 Example
 -------
