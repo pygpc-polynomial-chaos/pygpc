@@ -5,6 +5,7 @@ import scipy.stats
 from .io import iprint
 from .Quadrature import *
 from .RandomParameter import Beta
+from .RandomParameter import Norm
 from .misc import compute_chunks
 from .misc import mutual_coherence
 from .misc import get_multi_indices
@@ -1901,20 +1902,17 @@ class CO(RandomGrid):
         # create proposal distributed random variables
         self.parameters_random_proposal = dict()
         for rv in self.parameters_random:
+            # uniform distributed random variables -> Chebyshev distribution
             if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
                 self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
                                                            pdf_limits=[-1, 1])
 
+            # normal distributed random variables -> sample uniformly from the d-dimensional ball of radius r
+            # here a standard normal distribution is created, the uniform sampling from the ball is considered in
+            # the method "create_pool"
             elif self.parameters_random[rv].pdf_type == "norm":
-                self.parameters_random_proposal[rv] = Beta(pdf_shape=[1, 1],
-                                                           pdf_limits=
-                                                           [-np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
-                                                            +np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)])
+                self.parameters_random_proposal[rv] = Norm(pdf_shape=[0, 1])
 
-                # [np.max((-np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
-                #          self.parameters_random[rv].pdf_limits_norm[0])),
-                #  np.min((+np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1),
-                #          self.parameters_random[rv].pdf_limits_norm[1]))]
             else:
                 NotImplementedError("Coherence optimal sampling only possible for uniform and normal "
                                     "distributed random variables")
@@ -1946,17 +1944,13 @@ class CO(RandomGrid):
         self.n_pool = n_samples
         self.coords_pool = np.zeros((n_samples, self.dim))
 
-        resample_mask = np.array([True] * self.n_pool)
+        for i_rv, rv in enumerate(self.parameters_random_proposal):
+            self.coords_pool[:, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=int(self.n_pool))
 
-        while resample_mask.any():
-            for i_rv, rv in enumerate(self.parameters_random_proposal):
-                self.coords_pool[resample_mask, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=int(np.sum(resample_mask)),
-                                                                                                   normalized=False)
-            # resample in case of normal distributed random variables (samples have to lie inside n-ball)
-            if not self.all_norm:
-                resample_mask = np.array([False] * self.n_pool)
-            else:
-                resample_mask = np.linalg.norm(self.coords_pool, axis=1) > (np.sqrt(2) * np.sqrt(2*self.gpc.order_max+1))
+        if self.all_norm:
+            # sample from d-dimensional ball of radius r (Hampton.2015, pp. 369)
+            r = np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)
+            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool, axis=1)) * r * np.random.rand(1) ** (1/self.dim)
 
         self.gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.coords_pool)
 
@@ -2332,7 +2326,7 @@ class L1(RandomGrid):
             crit = (crit - np.nanmin(crit, axis=0)) / (np.nanmax(crit, axis=0) - np.nanmin(crit, axis=0))
 
             # apply weights
-            crit = np.sum(crit * np.array(self.weights), axis=1)
+            crit = np.sum(crit**2 * np.array(self.weights), axis=1)
 
             # find best index
             index_list.append(np.nanargmin(crit))
@@ -2400,7 +2394,7 @@ class L1(RandomGrid):
         crit = (crit - np.min(crit, axis=0)) / (np.max(crit, axis=0) - np.min(crit, axis=0))
 
         # apply weights
-        crit = np.sum(crit * np.array(self.weights), axis=1)
+        crit = np.sum(crit**2 * np.array(self.weights), axis=1)
 
         coords_norm = coords_norm_list[np.argmin(crit)]
 

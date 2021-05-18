@@ -236,7 +236,7 @@ class Algorithm(object):
             self.options["n_grid"] = None
 
         if "adaptive_sampling" not in self.options.keys():
-            self.options["adaptive_sampling"] = True
+            self.options["adaptive_sampling"] = False
 
 
 class Static(Algorithm):
@@ -471,7 +471,7 @@ class Static(Algorithm):
                                                 self.options["error_type"],
                                                 eps), tab=0, verbose=self.options["verbose"])
 
-            if not self.options["adaptive_sampling"] or False:  # (0 < (eps_pre-eps)/eps < 0.01):
+            if not self.options["adaptive_sampling"]:  # (0 < (eps_pre-eps)/eps < 0.01):
                 break
 
             if eps > self.options["eps"]:

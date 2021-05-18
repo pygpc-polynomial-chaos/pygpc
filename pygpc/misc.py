@@ -1144,10 +1144,10 @@ def average_cross_correlation_gram(array):
     res : float
         cross correlation
     """
-    n = array.shape[1]
-    k = n * (n - 1)
+    k = array.shape[1]
+    n = k * (k - 1)
 
-    return (1 / k) * (np.linalg.norm(np.identity(n) - array) ** 2)
+    return (1 / n) * (np.linalg.norm(np.identity(n) - array) ** 2)
 
 
 def PhiP(x, p=10):

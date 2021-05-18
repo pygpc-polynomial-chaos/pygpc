@@ -951,9 +951,11 @@ class GPC(object):
         else:
             results_complete = results
 
+        # TODO: weight matrix
         # weight gpc matrix and rhs
         if isinstance(self.grid, CO):
             w = np.diag(1/np.linalg.norm(matrix, axis=1))
+            # w = np.diag(1/np.max(matrix, axis=1))
             matrix = np.matmul(w, matrix)
             results_complete = np.matmul(w, results_complete)
 
