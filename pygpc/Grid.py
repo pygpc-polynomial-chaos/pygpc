@@ -2235,7 +2235,7 @@ class L1(RandomGrid):
 
     def get_optimal_mu_greedy(self):
         """
-        This function computes a set of grid points with minimal mutual coherence using an greedy approach.
+        This function computes a set of grid points with minimal mutual coherence using an greedy approach. 
 
         Returns
         -------
