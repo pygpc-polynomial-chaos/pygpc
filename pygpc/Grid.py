@@ -2145,7 +2145,7 @@ class L1(RandomGrid):
     options: dict, optional, default=None
         Grid options:
         - method: "greedy", "iteration"
-        - criterion: ["mc"], ["tmc", "cc"], ["D"]
+        - criterion: ["mc"], ["tmc", "cc"], ["D"], ["D-coh"]
         - weights: [1], [0.5, 0.5], [1]
         - n_pool: size of samples in pool to choose greedy results from
         - n_iter: number of iterations
@@ -2243,15 +2243,17 @@ class L1(RandomGrid):
             Normalized sample coordinates in range [-1, 1]
         """
         n_cpu = np.min((1, multiprocessing.cpu_count()))
-        if "D-coh" in self.criterion:
+
+        # create pool (Standard random grid for D-optimal grids and CO else)
+        if "D" in self.criterion:
+            random_pool = Random(parameters_random=self.parameters_random,
+                                 n_grid=self.n_pool,
+                                 options=self.options)
+        else:
             random_pool = CO(parameters_random=self.parameters_random,
                              n_grid=self.n_pool,
                              gpc=self.gpc,
                              options=self.options)
-        else:
-            random_pool = Random(parameters_random=self.parameters_random,
-                                 n_grid=self.n_pool,
-                                 options=self.options)
 
         index_list = []
 
