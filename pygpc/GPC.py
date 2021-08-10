@@ -951,11 +951,12 @@ class GPC(object):
         else:
             results_complete = results
 
-        # TODO: weight matrix
-        # weight gpc matrix and rhs
-        if isinstance(self.grid, CO):
+        # weight gpc matrix and rhs according to:
+        # Hampton, J., & Doostan, A. (2015). Coherence motivated sampling and convergence analysis of least squares
+        # polynomial chaos regression. Computer Methods in Applied Mechanics and Engineering, 290, 73-97. (p. 83 eq. 36)
+        # L1 grids are based on CO grids and are therefore weighted in the same way
+        if isinstance(self.grid, CO) or isinstance(self.grid, L1):
             w = np.diag(1/np.linalg.norm(matrix, axis=1))
-            # w = np.diag(1/np.max(matrix, axis=1))
             matrix = np.matmul(w, matrix)
             results_complete = np.matmul(w, results_complete)
 

@@ -1892,16 +1892,17 @@ class CO(RandomGrid):
 
         self.ball_volume = self.calc_ball_volume(dim=self.dim, radius=np.sqrt(2) * np.sqrt(2*self.gpc.order_max+1))
         pdf_type = [self.parameters_random[rv].pdf_type for rv in self.parameters_random]
-        self.all_norm = np.array([True for p in pdf_type if p == "norm"]).all()
+        self.all_norm = np.array([p == "norm" for p in pdf_type]).all()
         any_norm = np.array([True for p in pdf_type if p == "norm"]).any() and not self.all_norm
 
         if any_norm:
-            raise AssertionError("Mixed distributions of beta and normal not possible for CO grids..."
+            raise AssertionError("Mixed distributions of beta and normal for CO grids not implemented..."
                                  "All variables have to be either normal or beta distributed!")
 
-        # create proposal distributed random variables
+        # create proposal distributions of random variables
         self.parameters_random_proposal = dict()
         for rv in self.parameters_random:
+
             # uniform distributed random variables -> Chebyshev distribution
             if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
                 self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
@@ -2235,7 +2236,7 @@ class L1(RandomGrid):
 
     def get_optimal_mu_greedy(self):
         """
-        This function computes a set of grid points with minimal mutual coherence using an greedy approach. 
+        This function computes a set of grid points with minimal mutual coherence using an greedy approach.
 
         Returns
         -------
@@ -3160,6 +3161,9 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
 
     crit = np.ones((len(idx_list), len(criterion))) * 1e6
 
+    # determine gram matrix of psy_opt
+    psy_opt_gram = np.matmul(psy_opt.T, psy_opt)
+
     if "D" in criterion or "D-coh" in criterion:
         sign = np.zeros((len(idx_list), 1))
         logdet = np.zeros((len(idx_list), 1))
@@ -3167,21 +3171,25 @@ def workhorse_greedy(idx_list, psy_opt, psy_pool, criterion):
     for j in range(len(idx_list)):
         psy_test = np.vstack((psy_opt, psy_pool[idx_list[j], :]))
 
+        # update gram matrix
+        psy_test_gram = psy_opt_gram + np.outer(psy_test[-1, :], psy_test[-1, :])
+
         if "mc" in criterion:
             crit[j, criterion.index("mc")] = mutual_coherence(psy_test)
 
         if "tmc" in criterion:
-            crit[j, criterion.index("tmc")] = t_averaged_mutual_coherence(np.matmul(psy_test.T, psy_test))
+            crit[j, criterion.index("tmc")] = t_averaged_mutual_coherence(psy_test_gram)
 
         if "cc" in criterion:
-            crit[j, criterion.index("cc")] = average_cross_correlation_gram(np.matmul(psy_test.T, psy_test))
+            crit[j, criterion.index("cc")] = average_cross_correlation_gram(psy_test_gram)
 
         if "D" in criterion or "D-coh" in criterion:
             # for n_grid < n_basis only consider the first n_grid basis functions because of determinant
             n_basis_det = np.min((psy_test.shape[0], psy_test.shape[1]))
 
             # determinant of inverse of Gram is the inverse of the determinant
-            sign[j], logdet[j] = np.linalg.slogdet(np.matmul(psy_test[:, :n_basis_det].T, psy_test[:, :n_basis_det]))
+            sign[j], logdet[j] = np.linalg.slogdet(psy_test_gram[:n_basis_det, :n_basis_det])
+            #sign[j], logdet[j] = np.linalg.slogdet(np.matmul(psy_test[:, :n_basis_det].T, psy_test[:, :n_basis_det]))
             logdet[j] = -logdet[j]
 
     if "D" not in criterion and "D-coh" not in criterion:
