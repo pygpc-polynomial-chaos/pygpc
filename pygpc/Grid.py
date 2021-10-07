@@ -19,7 +19,6 @@ import multiprocessing.pool
 from _functools import partial
 
 
-
 class Grid(object):
     """
     Grid class
@@ -40,8 +39,6 @@ class Grid(object):
         Normalized coordinates xi
     coords_id: list of UUID objects (version 4) [n_grid]
         Unique IDs of grid points
-    n_grid: int
-        Total number of nodes in grid.
 
     Attributes
     ----------
