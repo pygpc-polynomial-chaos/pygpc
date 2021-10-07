@@ -1946,6 +1946,7 @@ class CO(RandomGrid):
         n_samples : int
             Number of samples
         """
+
         self.n_pool = n_samples
         self.coords_pool = np.zeros((n_samples, self.dim))
 
