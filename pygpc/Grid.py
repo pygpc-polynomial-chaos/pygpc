@@ -1899,24 +1899,28 @@ class CO(RandomGrid):
             raise AssertionError("Mixed distributions of beta and normal for CO grids not implemented..."
                                  "All variables have to be either normal or beta distributed!")
 
-        # create proposal distributions of random variables
+        # create proposal distributed random variables
         self.parameters_random_proposal = dict()
         for rv in self.parameters_random:
+            # check the order > dimension criteria
+            if gpc.order_max > self.dim:
 
-            # uniform distributed random variables -> Chebyshev distribution
-            if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
-                self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
-                                                           pdf_limits=[-1, 1])
+                # uniform distributed random variables -> Chebyshev distribution
+                if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
+                    self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
+                                                               pdf_limits=[-1, 1])
 
-            # normal distributed random variables -> sample uniformly from the d-dimensional ball of radius r
-            # here a standard normal distribution is created, the uniform sampling from the ball is considered in
-            # the method "create_pool"
-            elif self.parameters_random[rv].pdf_type == "norm":
-                self.parameters_random_proposal[rv] = Norm(pdf_shape=[0, 1])
+                # normal distributed random variables -> sample uniformly from the d-dimensional ball of radius r
+                # here a standard normal distribution is created, the uniform sampling from the ball is considered in
+                # the method "create_pool"
+                elif self.parameters_random[rv].pdf_type == "norm":
+                    self.parameters_random_proposal[rv] = Norm(pdf_shape=[0, 1])
 
+                else:
+                    NotImplementedError("Coherence optimal sampling is only possible for uniform and normal "
+                                        "distributed random variables")
             else:
-                NotImplementedError("Coherence optimal sampling only possible for uniform and normal "
-                                    "distributed random variables")
+                self.parameters_random_proposal[rv] = self.parameters_random[rv]
 
         # draw sample pool for warmup
         self.create_pool(n_samples=2*options["n_warmup"])
@@ -1951,7 +1955,7 @@ class CO(RandomGrid):
         if self.all_norm:
             # sample from d-dimensional ball of radius r (Hampton.2015, pp. 369)
             r = np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)
-            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool, axis=1)) * r * np.random.rand(1) ** (1/self.dim)
+            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool)) * r * np.random.rand(1) ** (1/self.dim)
 
         self.gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.coords_pool)
 

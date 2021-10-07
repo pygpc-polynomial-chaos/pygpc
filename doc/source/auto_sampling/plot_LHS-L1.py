@@ -1,11 +1,7 @@
 """
 Hybrid LHS-L1 sampling
 ======================
-DESCRIBE GRIDS HERE
-
-Example
--------
-In order to create a grid of sampling points, we have to define the random parameters and create a gpc object.
+Before we are going to introduce the different LHS grids, we are going to define a test problem.
 """
 
 import pygpc
@@ -25,87 +21,163 @@ parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 # define problem
 problem = pygpc.Problem(model, parameters)
 
-# create gpc object
-gpc = pygpc.Reg(problem=problem,
-                order=[5]*problem.dim,
-                order_max=5,
-                order_max_norm=1,
-                interaction_order=2,
-                interaction_order_current=2,
-                options=None,
-                validation=None)
-
 ###############################################################################
-# LHS-L1 designs with different optimization criteria can be created using the "criterion" argument in the options
-# dictionary. Additionally it is possible to define the ratio between the number of LHS and L1 optimal sampling points
-# by the weights. In the following, we are going to create different LHS-L1 designs for 2 random variables with 200
-# sampling points:
-
-grid_025_075 = pygpc.LHS_L1(parameters_random=parameters,
-                            n_grid=200,
-                            gpc=gpc,
-                            options={"weights": [0.25, 0.75],
-                                     "criterion": ["mc", "cc"],
-                                     "method": "greedy",
-                                     "n_pool": 1000,
-                                     "seed": None})
-
-grid_050_050 = pygpc.LHS_L1(parameters_random=parameters,
-                            n_grid=200,
-                            gpc=gpc,
-                            options={"weights": [0.50, 0.50],
-                                     "criterion": ["mc", "cc"],
-                                     "method": "greedy",
-                                     "n_pool": 1000,
-                                     "seed": None})
-
-grid_075_025 = pygpc.LHS_L1(parameters_random=parameters,
-                            n_grid=200,
-                            gpc=gpc,
-                            options={"weights": [0.75, 0.25],
-                                     "criterion": ["mc", "cc"],
-                                     "method": "greedy",
-                                     "n_pool": 1000,
-                                     "seed": None})
-
-###############################################################################
-# The following options are available for LHS-L1-optimal grids:
+# Hybrid grids (LHS/L1)
+# ---------------------
+# Describe here that it makes a difference in which order the grids are generated and introduce the weighting factor
 #
-# - seed: set a seed to reproduce the results (default: None)
-# - weights: weights between LHS and L1 optimal grid points
-# - method:
-#    - "greedy": greedy algorithm (default, recommended)
-#    - "iter": iterative algorithm (faster but does not perform as good as "greedy")
-# - criterion:
-#    - ["mc"]: mutual coherence optimal
-#    - ["mc", "cc"]: mutual coherence and cross correlation optimal
-#    - ["tmc", "cc"]: t-averaged mutual coherence and cross correlation optimal
-# - n_pool: number of grid points in overall pool to select optimal points from (default: 10.000)
-#
-# The grid points are distributed as follows (in the normalized space):
+# L1-LHS grids
+# ^^^^^^^^^^^^
+# Describe L1-LHS grids
 
-fig, ax = plt.subplots(nrows=1, ncols=3, squeeze=True, figsize=(9.53, 3.2))
+gpc = pygpc.Reg(problem=problem, order_max=5)
 
-ax[0].scatter(grid_025_075.coords_norm[:grid_025_075.grid_LHS.n_grid, 0],
-              grid_025_075.coords_norm[:grid_025_075.grid_LHS.n_grid, 1],
+# weighting factor between L1 and LHS grid
+weights = [0.5, 0.5]
+
+grid_l1lhs_mc_greedy = pygpc.L1_LHS(parameters_random=parameters,
+                                    n_grid=100,
+                                    gpc=gpc,
+                                    options={"weights": weights,
+                                             "criterion": ["mc"],
+                                             "method": "greedy",
+                                             "n_pool": 1000,
+                                             "seed": None})
+
+grid_l1lhs_mc_iter = pygpc.L1_LHS(parameters_random=parameters,
+                                  n_grid=100,
+                                  gpc=gpc,
+                                  options={"weights": weights,
+                                           "criterion": ["mc"],
+                                           "method": "iter",
+                                           "n_iter": 1000,
+                                           "seed": None})
+
+grid_l1lhs_tmccc_greedy = pygpc.L1_LHS(parameters_random=parameters,
+                                       n_grid=100,
+                                       gpc=gpc,
+                                       options={"weights": weights,
+                                                "criterion": ["tmc", "cc"],
+                                                "method": "greedy",
+                                                "n_pool": 1000,
+                                                "seed": None})
+
+grid_l1lhs_tmccc_iter = pygpc.L1_LHS(parameters_random=parameters,
+                                     n_grid=100,
+                                     gpc=gpc,
+                                     options={"weights": weights,
+                                              "criterion": ["tmc", "cc"],
+                                              "method": "iter",
+                                              "n_iter": 1000,
+                                              "seed": None})
+
+# plot
+fig, ax = plt.subplots(nrows=1, ncols=4, squeeze=True, figsize=(12.7, 3.2))
+
+n_grid_l1 = grid_l1lhs_tmccc_iter.grid_L1.n_grid
+n_grid_lhs = grid_l1lhs_tmccc_iter.grid_LHS.n_grid
+
+ax[0].scatter(grid_l1lhs_mc_greedy.coords_norm[:n_grid_l1, 0], grid_l1lhs_mc_greedy.coords_norm[:n_grid_l1, 1],
               color=sns.color_palette("bright", 5)[0])
-ax[0].scatter(grid_025_075.coords_norm[grid_025_075.grid_LHS.n_grid:, 0],
-              grid_025_075.coords_norm[grid_025_075.grid_LHS.n_grid:, 1],
+ax[0].scatter(grid_l1lhs_mc_greedy.coords_norm[n_grid_l1:, 0], grid_l1lhs_mc_greedy.coords_norm[n_grid_l1:, 1],
               color=sns.color_palette("pastel", 5)[0], edgecolor="k", alpha=0.75)
-ax[1].scatter(grid_050_050.coords_norm[:grid_050_050.grid_LHS.n_grid, 0],
-              grid_050_050.coords_norm[:grid_050_050.grid_LHS.n_grid, 1],
+ax[1].scatter(grid_l1lhs_mc_iter.coords_norm[:n_grid_l1, 0], grid_l1lhs_mc_iter.coords_norm[:n_grid_l1, 1],
               color=sns.color_palette("bright", 5)[1])
-ax[1].scatter(grid_050_050.coords_norm[grid_050_050.grid_LHS.n_grid:, 0],
-              grid_050_050.coords_norm[grid_050_050.grid_LHS.n_grid:, 1],
+ax[1].scatter(grid_l1lhs_mc_iter.coords_norm[n_grid_l1:, 0], grid_l1lhs_mc_iter.coords_norm[n_grid_l1:, 1],
               color=sns.color_palette("pastel", 5)[1], edgecolor="k", alpha=0.75)
-ax[2].scatter(grid_075_025.coords_norm[:grid_075_025.grid_LHS.n_grid, 0],
-              grid_075_025.coords_norm[:grid_075_025.grid_LHS.n_grid, 1],
+ax[2].scatter(grid_l1lhs_tmccc_greedy.coords_norm[:n_grid_l1, 0], grid_l1lhs_tmccc_greedy.coords_norm[:n_grid_l1, 1],
               color=sns.color_palette("bright", 5)[2])
-ax[2].scatter(grid_075_025.coords_norm[grid_075_025.grid_LHS.n_grid:, 0],
-              grid_075_025.coords_norm[grid_075_025.grid_LHS.n_grid:, 1],
+ax[2].scatter(grid_l1lhs_tmccc_greedy.coords_norm[n_grid_l1:, 0], grid_l1lhs_tmccc_greedy.coords_norm[n_grid_l1:, 1],
               color=sns.color_palette("pastel", 5)[2], edgecolor="k", alpha=0.75)
+ax[3].scatter(grid_l1lhs_tmccc_iter.coords_norm[:n_grid_l1, 0], grid_l1lhs_tmccc_iter.coords_norm[:n_grid_l1, 1],
+              color=sns.color_palette("bright", 5)[3])
+ax[3].scatter(grid_l1lhs_tmccc_iter.coords_norm[n_grid_l1:, 0], grid_l1lhs_tmccc_iter.coords_norm[n_grid_l1:, 1],
+              color=sns.color_palette("pastel", 5)[3], edgecolor="k", alpha=0.75)
 
-title = ['LHS-L1 (weights: [0.25, 0.75])', 'LHS-L1 (weights: [0.50, 0.50])', 'LHS-L1 (weights: [0.75, 0.25])']
+title = ['L1-LHS-mc (greedy)', 'L1-LHS-mc (iter)', 'L1-LHS-tmc-cc (greedy)', 'L1-LHS-tmc-cc (iter)']
+
+for i in range(len(ax)):
+    ax[i].set_xlabel("$x_1$", fontsize=12)
+    ax[i].set_ylabel("$x_2$", fontsize=12)
+    ax[i].set_xticks(np.linspace(-1, 1, 5))
+    ax[i].set_yticks(np.linspace(-1, 1, 5))
+    ax[i].set_xlim([-1, 1])
+    ax[i].set_ylim([-1, 1])
+    ax[i].set_title(title[i])
+    ax[i].grid()
+    ax[i].legend(["L1", "LHS"], loc=1, fontsize=9, framealpha=1, facecolor=[0.95, 0.95, 0.95])
+
+plt.tight_layout()
+
+# LHS-L1 grids
+# ^^^^^^^^^^^^
+# Describe LHS-L1 grids
+
+gpc = pygpc.Reg(problem=problem, order_max=5)
+
+# weighting factor between L1 and LHS grid
+weights = [0.5, 0.5]
+
+grid_lhsl1_mc_greedy = pygpc.LHS_L1(parameters_random=parameters,
+                                    n_grid=100,
+                                    gpc=gpc,
+                                    options={"weights": weights,
+                                             "criterion": ["mc"],
+                                             "method": "greedy",
+                                             "n_pool": 1000,
+                                             "seed": None})
+
+grid_lhsl1_mc_iter = pygpc.LHS_L1(parameters_random=parameters,
+                                  n_grid=100,
+                                  gpc=gpc,
+                                  options={"weights": weights,
+                                           "criterion": ["mc"],
+                                           "method": "iter",
+                                           "n_iter": 1000,
+                                           "seed": None})
+
+grid_lhsl1_tmccc_greedy = pygpc.LHS_L1(parameters_random=parameters,
+                                       n_grid=100,
+                                       gpc=gpc,
+                                       options={"weights": weights,
+                                                "criterion": ["tmc", "cc"],
+                                                "method": "greedy",
+                                                "n_pool": 1000,
+                                                "seed": None})
+
+grid_lhsl1_tmccc_iter = pygpc.LHS_L1(parameters_random=parameters,
+                                     n_grid=100,
+                                     gpc=gpc,
+                                     options={"weights": weights,
+                                              "criterion": ["tmc", "cc"],
+                                              "method": "iter",
+                                              "n_iter": 1000,
+                                              "seed": None})
+
+# plot
+fig, ax = plt.subplots(nrows=1, ncols=4, squeeze=True, figsize=(12.7, 3.2))
+
+n_grid_lhs = grid_lhsl1_tmccc_iter.grid_LHS.n_grid
+n_grid_l1 = grid_lhsl1_tmccc_iter.grid_L1.n_grid
+
+ax[0].scatter(grid_lhsl1_mc_greedy.coords_norm[:n_grid_lhs, 0], grid_lhsl1_mc_greedy.coords_norm[:n_grid_lhs, 1],
+              color=sns.color_palette("pastel", 5)[0], edgecolor="k", alpha=0.75)
+ax[0].scatter(grid_lhsl1_mc_greedy.coords_norm[n_grid_lhs:, 0], grid_lhsl1_mc_greedy.coords_norm[n_grid_lhs:, 1],
+              color=sns.color_palette("bright", 5)[0])
+ax[1].scatter(grid_lhsl1_mc_iter.coords_norm[:n_grid_lhs, 0], grid_lhsl1_mc_iter.coords_norm[:n_grid_lhs, 1],
+              color=sns.color_palette("pastel", 5)[1], edgecolor="k", alpha=0.75)
+ax[1].scatter(grid_lhsl1_mc_iter.coords_norm[n_grid_lhs:, 0], grid_lhsl1_mc_iter.coords_norm[n_grid_lhs:, 1],
+              color=sns.color_palette("bright", 5)[1])
+ax[2].scatter(grid_lhsl1_tmccc_greedy.coords_norm[:n_grid_lhs, 0], grid_lhsl1_tmccc_greedy.coords_norm[:n_grid_lhs, 1],
+              color=sns.color_palette("pastel", 5)[2], edgecolor="k", alpha=0.75)
+ax[2].scatter(grid_lhsl1_tmccc_greedy.coords_norm[n_grid_lhs:, 0], grid_lhsl1_tmccc_greedy.coords_norm[n_grid_lhs:, 1],
+              color=sns.color_palette("bright", 5)[2])
+ax[3].scatter(grid_lhsl1_tmccc_iter.coords_norm[:n_grid_lhs, 0], grid_lhsl1_tmccc_iter.coords_norm[:n_grid_lhs, 1],
+              color=sns.color_palette("pastel", 5)[3], edgecolor="k", alpha=0.75)
+ax[3].scatter(grid_lhsl1_tmccc_iter.coords_norm[n_grid_lhs:, 0], grid_lhsl1_tmccc_iter.coords_norm[n_grid_lhs:, 1],
+              color=sns.color_palette("bright", 5)[3])
+
+title = ['LHS-L1-mc (greedy)', 'LHS-L1-mc (iter)', 'LHS-L1-tmc-cc (greedy)', 'LHS-L1-tmc-cc (iter)']
 
 for i in range(len(ax)):
     ax[i].set_xlabel("$x_1$", fontsize=12)
@@ -120,21 +192,10 @@ for i in range(len(ax)):
 
 plt.tight_layout()
 
-###############################################################################
-# The sampling method can be selected accordingly for each gPC algorithm by setting the following options
-# when setting up the algorithm:
-options = dict()
-...
-options["grid"] = pygpc.LHS_L1
-options["grid_options"] = {"seed": None,
-                           "weights": [0.75, 0.25],
-                           "method": "greedy",
-                           "criterion": ["mc", "cc"],
-                           "n_pool": 1000}
-...
 
-# When using Windows you need to encapsulate the code in a main function and insert an
-# if __name__ == '__main__': guard in the main module to avoid creating subprocesses recursively:
+# On Windows subprocesses will import (i.e. execute) the main module at start.
+# You need to insert an if __name__ == '__main__': guard in the main module to avoid
+# creating subprocesses recursively.
 #
 # if __name__ == '__main__':
 #     main()
