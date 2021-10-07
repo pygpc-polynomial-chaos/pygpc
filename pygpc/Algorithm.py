@@ -378,7 +378,6 @@ class Static(Algorithm):
         if self.grid is not None:
             gpc.grid = self.grid
 
-
         elif self.options["grid"] == Random or self.options["grid"] == LHS:
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                             n_grid=n_grid,

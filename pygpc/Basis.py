@@ -148,6 +148,7 @@ class Basis:
         """
 
         self.dim = problem.dim
+        assert self.dim == len(order), "gPC order does not fit to number of random variables"
 
         if self.dim == 1:
             self.multi_indices = np.linspace(0, order_max, order_max + 1, dtype=int)[:, np.newaxis]

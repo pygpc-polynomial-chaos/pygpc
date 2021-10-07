@@ -1953,7 +1953,8 @@ class CO(RandomGrid):
         if self.all_norm:
             # sample from d-dimensional ball of radius r (Hampton.2015, pp. 369)
             r = np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)
-            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool)) * r * np.random.rand(1) ** (1/self.dim)
+            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool, axis=1))[:, np.newaxis] * \
+                               r * np.random.rand(1) ** (1/self.dim)
 
         self.gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.coords_pool)
 
