@@ -896,6 +896,7 @@ class GPC(object):
             ws_alt = np.exp(np.linalg.norm(self.grid.coords_norm[:][:], axis=1)**2) / 4
             w_alt = np.diag(ws_alt)
             # else:
+
             #     raise NotImplementedError("CO grid weighting is only implemented for uniform sampling yet")
             w = np.diag(1/np.linalg.norm(self.gpc_matrix, axis=1))
             self.w = w_alt
