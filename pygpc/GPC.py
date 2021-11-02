@@ -184,7 +184,7 @@ class GPC(object):
             self.gpc_matrix_gradient_coords_id = copy.deepcopy(self.grid.coords_id)
             self.gpc_matrix_gradient_b_id = copy.deepcopy(self.basis.b_id)
 
-    def create_gpc_matrix(self, b, x, gradient=False, gradient_idx=None, verbose=False):
+    def create_gpc_matrix(self, b, x, gradient=False, gradient_idx=None, weighted=False, verbose=False):
         """
         Construct the gPC matrix or its derivative.
 
@@ -281,6 +281,10 @@ class GPC(object):
             gpc_matrix = gpc_matrix[np.newaxis, :]
         elif gpc_matrix.ndim == 1 and self.basis.n_basis == 1:
             gpc_matrix = gpc_matrix[:, np.newaxis]
+
+        if weighted:
+            self.get_weight_matrix()
+            gpc_matrix = np.matmul(self.w, gpc_matrix)
 
         return gpc_matrix
 
@@ -876,6 +880,27 @@ class GPC(object):
                                      maxshape=(None, None),
                                      dtype="float64",
                                      data=self.gpc_matrix_gradient)
+    def get_weight_matrix(self):
+        # weight gpc matrix and rhs according to:
+        # Hampton, J., & Doostan, A. (2015). Coherence motivated sampling and convergence analysis of least squares
+        # polynomial chaos regression. Computer Methods in Applied Mechanics and Engineering, 290, 73-97. (p. 83 eq. 36)
+        # L1 grids are based on CO grids and are therefore weighted in the same way
+        # w_alt is based of the explicit fomrulas from the paper
+        if isinstance(self.grid, CO) or isinstance(self.grid, L1):
+            ws_alt = np.zeros(self.grid.coords.shape[0])
+            # if self.problem.parameters_random["x1"] == RandomParameter.Norm:
+            # for w_i in range(self.grid.coords.shape[0]):
+            #     ws_alt[w_i] = np.prod((1 - self.grid.coords_norm[:][w_i]**2)**(1/4))
+            # if self.problem.parameters_random["x1"] == RandomParameter.Beta:
+
+            ws_alt = np.exp(np.linalg.norm(self.grid.coords_norm[:][:], axis=1)**2) / 4
+            w_alt = np.diag(ws_alt)
+            # else:
+            #     raise NotImplementedError("CO grid weighting is only implemented for uniform sampling yet")
+            w = np.diag(1/np.linalg.norm(self.gpc_matrix, axis=1))
+            self.w = w_alt
+        else:
+            self.w = np.identity(self.gpc_matrix.shape[0])
 
     def solve(self, results, gradient_results=None, solver=None, settings=None, matrix=None, verbose=False):
         """
@@ -951,14 +976,9 @@ class GPC(object):
         else:
             results_complete = results
 
-        # weight gpc matrix and rhs according to:
-        # Hampton, J., & Doostan, A. (2015). Coherence motivated sampling and convergence analysis of least squares
-        # polynomial chaos regression. Computer Methods in Applied Mechanics and Engineering, 290, 73-97. (p. 83 eq. 36)
-        # L1 grids are based on CO grids and are therefore weighted in the same way
-        if isinstance(self.grid, CO) or isinstance(self.grid, L1):
-            w = np.diag(1/np.linalg.norm(matrix, axis=1))
-            matrix = np.matmul(w, matrix)
-            results_complete = np.matmul(w, results_complete)
+        self.get_weight_matrix()
+        matrix = np.matmul(self.w, matrix)
+        results_complete = np.matmul(self.w, results_complete)
 
         self.coherence_matrix = matrix
 

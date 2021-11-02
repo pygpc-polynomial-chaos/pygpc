@@ -1886,53 +1886,55 @@ class CO(RandomGrid):
                                  coords_gradient_norm=coords_gradient_norm,
                                  coords_id=coords_id,
                                  coords_gradient_id=coords_gradient_id)
+        if n_grid == 0:
+            pass
+        else:
+            self.ball_volume = self.calc_ball_volume(dim=self.dim, radius=np.sqrt(2) * np.sqrt(2*self.gpc.order_max+1))
+            pdf_type = [self.parameters_random[rv].pdf_type for rv in self.parameters_random]
+            self.all_norm = np.array([p == "norm" for p in pdf_type]).all()
+            any_norm = np.array([True for p in pdf_type if p == "norm"]).any() and not self.all_norm
 
-        self.ball_volume = self.calc_ball_volume(dim=self.dim, radius=np.sqrt(2) * np.sqrt(2*self.gpc.order_max+1))
-        pdf_type = [self.parameters_random[rv].pdf_type for rv in self.parameters_random]
-        self.all_norm = np.array([p == "norm" for p in pdf_type]).all()
-        any_norm = np.array([True for p in pdf_type if p == "norm"]).any() and not self.all_norm
+            if any_norm:
+                raise AssertionError("Mixed distributions of beta and normal for CO grids not implemented..."
+                                     "All variables have to be either normal or beta distributed!")
 
-        if any_norm:
-            raise AssertionError("Mixed distributions of beta and normal for CO grids not implemented..."
-                                 "All variables have to be either normal or beta distributed!")
+            # create proposal distributed random variables
+            self.parameters_random_proposal = dict()
+            for rv in self.parameters_random:
+                # check the order > dimension criteria
+                if gpc.order_max > self.dim:
 
-        # create proposal distributed random variables
-        self.parameters_random_proposal = dict()
-        for rv in self.parameters_random:
-            # check the order > dimension criteria
-            if gpc.order_max > self.dim:
+                    # uniform distributed random variables -> Chebyshev distribution
+                    if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
+                        self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
+                                                                   pdf_limits=[-1, 1])
 
-                # uniform distributed random variables -> Chebyshev distribution
-                if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
-                    self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
-                                                               pdf_limits=[-1, 1])
+                    # normal distributed random variables -> sample uniformly from the d-dimensional ball of radius r
+                    # here a standard normal distribution is created, the uniform sampling from the ball is considered in
+                    # the method "create_pool"
+                    elif self.parameters_random[rv].pdf_type == "norm":
+                        self.parameters_random_proposal[rv] = Norm(pdf_shape=[0, 1])
 
-                # normal distributed random variables -> sample uniformly from the d-dimensional ball of radius r
-                # here a standard normal distribution is created, the uniform sampling from the ball is considered in
-                # the method "create_pool"
-                elif self.parameters_random[rv].pdf_type == "norm":
-                    self.parameters_random_proposal[rv] = Norm(pdf_shape=[0, 1])
-
+                    else:
+                        NotImplementedError("Coherence optimal sampling is only possible for uniform and normal "
+                                            "distributed random variables")
                 else:
-                    NotImplementedError("Coherence optimal sampling is only possible for uniform and normal "
-                                        "distributed random variables")
-            else:
-                self.parameters_random_proposal[rv] = self.parameters_random[rv]
+                    self.parameters_random_proposal[rv] = self.parameters_random[rv]
 
-        # draw sample pool for warmup
-        self.create_pool(n_samples=2*options["n_warmup"])
+            # draw sample pool for warmup
+            self.create_pool(n_samples=2*options["n_warmup"])
 
-        # warmup
-        self.warmup(n_warmup=options["n_warmup"])
+            # warmup
+            self.warmup(n_warmup=options["n_warmup"])
 
-        # draw sample pool for actual sampling
-        self.create_pool(n_samples=2*self.n_grid)
+            # draw sample pool for actual sampling
+            self.create_pool(n_samples=2*self.n_grid)
 
-        # get coherence optimal samples
-        self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid)
+            # get coherence optimal samples
+            self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid)
 
-        # Denormalize grid to original parameter space
-        self.coords = self.get_denormalized_coordinates(self.coords_norm)
+            # Denormalize grid to original parameter space
+            self.coords = self.get_denormalized_coordinates(self.coords_norm)
 
     def create_pool(self, n_samples):
         """
@@ -1953,8 +1955,7 @@ class CO(RandomGrid):
         if self.all_norm:
             # sample from d-dimensional ball of radius r (Hampton.2015, pp. 369)
             r = np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)
-            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool, axis=1))[:, np.newaxis] * \
-                               r * np.random.rand(1) ** (1/self.dim)
+            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool, axis=1))[:, np.newaxis] * r * np.random.rand(1) ** (1/self.dim)
 
         self.gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.coords_pool)
 
@@ -2258,15 +2259,21 @@ class L1(RandomGrid):
                              n_grid=self.n_pool,
                              gpc=self.gpc,
                              options=self.options)
-
+            # full gpc matrix is needed for w_matrix, maybe build a function that creates weighted pools
+            # based of the coordinates
+            # self.gpc.get_weight_matrix()
+            # w_matrix = self.gpc.w
         index_list = []
 
         # project grid in case of projection approach
         if self.gpc.p_matrix is not None:
+            # weight argument in create gpc matrix
             random_pool_trans = project_grid(grid=random_pool, p_matrix=self.gpc.p_matrix, mode="reduce")
-            psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool_trans.coords_norm, gradient=False)
+            psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool_trans.coords_norm, gradient=False,
+                                                  weighted=True)
         else:
-            psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool.coords_norm, gradient=False)
+            psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool.coords_norm, gradient=False,
+                                                  weighted=True)
 
         psy_pool = psy_pool / np.abs(psy_pool).max(axis=0)
         m = int(self.n_grid)
@@ -2289,9 +2296,11 @@ class L1(RandomGrid):
             # project grid in case of projection approach
             if self.gpc.p_matrix is not None:
                 grid_pre_trans = project_grid(grid=self.grid_pre, p_matrix=self.gpc.p_matrix, mode="reduce")
-                psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre_trans.coords_norm, gradient=False)
+                psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=grid_pre_trans.coords_norm, gradient=False,
+                                                     weighted=True)
             else:
-                psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.grid_pre.coords_norm, gradient=False)
+                psy_opt = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.grid_pre.coords_norm, gradient=False,
+                                                     weighted=True)
 
             index_list = []
             index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
