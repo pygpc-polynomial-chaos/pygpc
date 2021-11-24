@@ -2276,7 +2276,7 @@ class L1(RandomGrid):
             psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool.coords_norm, gradient=False,
                                                   weighted=True)
 
-        psy_pool = psy_pool / np.abs(psy_pool).max(axis=0)
+        psy_pool = psy_pool
         m = int(self.n_grid)
         m_p = int(np.shape(psy_pool)[0])
 
