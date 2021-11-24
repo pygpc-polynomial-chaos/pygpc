@@ -495,8 +495,8 @@ class Static(Algorithm):
                                  data=np.array([self.options["fn_session_folder"]]).astype("|S"))
                 f.create_dataset("misc/error_type", data=self.options["error_type"])
                 f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
-                f.create_dataset("grid/coords", data=gpc.grid.coords, maxshape=None, dtype="float64")
-                f.create_dataset("grid/coords_norm", data=gpc.grid.coords_norm, maxshape=None, dtype="float64")
+                f.create_dataset("grid/coords", maxshape=None, data=gpc.grid.coords, dtype="float64")
+                f.create_dataset("grid/coords_norm", maxshape=None, data=gpc.grid.coords_norm, dtype="float64")
 
                 if gpc.grid.coords_gradient is not None:
                     f.create_dataset("grid/coords_gradient", data=gpc.grid.coords_gradient,

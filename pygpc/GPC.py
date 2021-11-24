@@ -199,6 +199,8 @@ class GPC(object):
             Determine gradient gPC matrix.
         gradient_idx : ndarray of int [gradient_results.shape[0]]
             Indices of grid points where the gradient in gradient_results is provided
+        weighted : bool, optional, default: False
+            Weight gPC matrix with (row 2-norm)^-1
         verbose : bool, optional, default: False
             boolean value to determine if to print out the progress into the standard output
 
@@ -283,8 +285,8 @@ class GPC(object):
             gpc_matrix = gpc_matrix[:, np.newaxis]
 
         if weighted:
-            self.get_weight_matrix()
-            gpc_matrix = np.matmul(self.w, gpc_matrix)
+            w = np.diag(1/np.linalg.norm(gpc_matrix, axis=1))
+            gpc_matrix = np.matmul(w, gpc_matrix)
 
         return gpc_matrix
 
@@ -976,9 +978,10 @@ class GPC(object):
         else:
             results_complete = results
 
-        self.get_weight_matrix()
-        matrix = np.matmul(self.w, matrix)
-        results_complete = np.matmul(self.w, results_complete)
+        if (isinstance(self.grid, CO) or isinstance(self.grid, L1)) and not (["D"] in self.grid.criterion):
+            w = np.diag(1/np.linalg.norm(matrix, axis=1))
+            matrix = np.matmul(w, matrix)
+            results_complete = np.matmul(w, results_complete)
 
         self.coherence_matrix = matrix
 

@@ -91,7 +91,7 @@ def check_file_consistency(fn_hdf5):
                     file_status = False
 
         try:
-            if type(f["misc/error_type"][()]) is not str:
+            if type(f["misc/error_type"][...][()]) is not str:
                 error_msg.append("misc/error_type is not a str")
                 file_status = False
         except KeyError:
@@ -122,7 +122,7 @@ def check_file_consistency(fn_hdf5):
                 for target in ["error"]:
                     try:
                         h5_path = target + "/" + q_idx + "/" + d_idx
-                        tmp = f[h5_path][()]
+                        tmp = f[h5_path][...]
 
                     except KeyError:
                         try:

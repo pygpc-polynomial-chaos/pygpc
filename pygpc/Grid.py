@@ -2232,11 +2232,12 @@ class L1(RandomGrid):
         elif (self.method == 'iteration' or self.method == 'iter') and self.n_grid > 0 and self.coords is None:
             self.coords_norm = self.get_optimal_mu_iteration()
 
-        # Denormalize grid to original parameter space
-        self.coords = self.get_denormalized_coordinates(self.coords_norm)
+        if self.n_grid > 0:
+            # Denormalize grid to original parameter space
+            self.coords = self.get_denormalized_coordinates(self.coords_norm)
 
-        # Generate unique IDs of grid points
-        self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+            # Generate unique IDs of grid points
+            self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
     def get_optimal_mu_greedy(self):
         """
