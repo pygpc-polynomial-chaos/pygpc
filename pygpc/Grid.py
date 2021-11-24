@@ -2250,7 +2250,7 @@ class L1(RandomGrid):
         """
         n_cpu = np.min((1, multiprocessing.cpu_count()))
 
-        # create pool (Standard random grid for D-optimal grids and CO else)
+        # create pool (Standard random grid for D-optimal grids and CO else) bla
         if "D" in self.criterion:
             random_pool = Random(parameters_random=self.parameters_random,
                                  n_grid=self.n_pool,
