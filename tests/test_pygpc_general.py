@@ -13,6 +13,8 @@ from collections import OrderedDict
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 # test options
 folder = 'tmp'                  # output folder

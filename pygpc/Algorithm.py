@@ -214,7 +214,7 @@ class Algorithm(object):
 
         if self.options["solver"] == "LarsLasso":
             if "settings" in self.options.keys():
-                if self.options["settings"] is dict():
+                if type(self.options["settings"]) is dict:
                     if "alpha" not in self.options["settings"].keys():
                         self.options["settings"]["alpha"] = 1e-5
                 else:

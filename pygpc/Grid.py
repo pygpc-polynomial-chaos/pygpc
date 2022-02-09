@@ -1865,7 +1865,9 @@ class CO(RandomGrid):
             options["seed"] = None
 
         if "n_warmup" not in options.keys():
-            options["n_warmup"] = 100
+            options["n_warmup"] = max(200, n_grid*2)
+        else:
+            options["n_warmup"] = max(options["n_warmup"], n_grid * 2)
 
         self.gpc = gpc
         self.grid_pre = grid_pre
@@ -1920,18 +1922,20 @@ class CO(RandomGrid):
                                             "distributed random variables")
                 else:
                     self.parameters_random_proposal[rv] = self.parameters_random[rv]
+            #define number of warmup-samples
+            self.n_warmup = options["n_warmup"]
 
-            # draw sample pool for warmup
-            self.create_pool(n_samples=2*options["n_warmup"])
-
-            # warmup
-            self.warmup(n_warmup=options["n_warmup"])
+            # # draw sample pool for warmup
+            # self.create_pool(n_samples=2*options["n_warmup"])
+            #
+            # # warmup
+            # self.warmup(n_warmup=options["n_warmup"])
 
             # draw sample pool for actual sampling
-            self.create_pool(n_samples=2*self.n_grid)
+            self.create_pool(n_samples=2*(self.n_grid+self.n_warmup))
 
             # get coherence optimal samples
-            self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid)
+            self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid, n_warmup=self.n_warmup)
 
             # Denormalize grid to original parameter space
             self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -2052,7 +2056,7 @@ class CO(RandomGrid):
 
         return coords_norm_opt
 
-    def get_coherence_optimal_samples(self, n_grid):
+    def get_coherence_optimal_samples(self, n_grid, n_warmup):
         """
         Determine coherence optimal samples with Monte Carlo Markov Chain - Metropolis Hastings algorithm
 
@@ -2060,6 +2064,8 @@ class CO(RandomGrid):
         ----------
         n_grid : int
             Number of grid points
+        n_warmup: int
+            Number of warmup samples
 
         Returns
         -------
@@ -2068,7 +2074,9 @@ class CO(RandomGrid):
         """
         coords_norm_opt = np.zeros((n_grid, self.dim))
         coords_norm_opt[0, :] = self.coords_pool[0, :][np.newaxis, :]
-        i_grid = 1
+        # init grid_index at -n_warmup, then the number of warmup-samples are automatically drawn,
+        # before index 0 is reached
+        i_grid = -n_warmup
         idx1 = 0
         idx2 = 1
 
@@ -2084,7 +2092,8 @@ class CO(RandomGrid):
 
             # add point if acceptance rate is high
             if rho > np.random.rand(1):
-                coords_norm_opt[i_grid, :] = self.coords_pool[idx2, :]
+                if i_grid > -1:
+                    coords_norm_opt[i_grid, :] = self.coords_pool[idx2, :]
                 i_grid += 1
                 idx1 = idx2
 
@@ -2276,7 +2285,6 @@ class L1(RandomGrid):
             psy_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=random_pool.coords_norm, gradient=False,
                                                   weighted=True)
 
-        psy_pool = psy_pool / np.abs(psy_pool).max(axis=0)
         m = int(self.n_grid)
         m_p = int(np.shape(psy_pool)[0])
 
