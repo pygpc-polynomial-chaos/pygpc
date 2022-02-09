@@ -52,19 +52,10 @@ grid_mc = pygpc.L1(parameters_random=parameters,
 grid_mc_cc = pygpc.L1(parameters_random=parameters,
                       n_grid=100,
                       gpc=gpc,
-                      options={"criterion": ["tmc", "cc"],
+                      options={"criterion": ["mc", "cc"],
                                "method": "greedy",
                                "n_pool": 1000,
                                "seed": None})
-
-grid_tmc_cc = pygpc.L1(parameters_random=parameters,
-                       n_grid=100,
-                       gpc=gpc,
-                       options={"criterion": ["tmc", "cc"],
-                                "method": "greedy",
-                                "n_pool": 1000,
-                                "seed": None})
-
 
 ###############################################################################
 # The following options are available for L1-optimal grids:
@@ -81,16 +72,14 @@ grid_tmc_cc = pygpc.L1(parameters_random=parameters,
 #
 # The grid points are distributed as follows (in the normalized space):
 
-fig, ax = plt.subplots(nrows=1, ncols=3, squeeze=True, figsize=(9.53, 3.2))
+fig, ax = plt.subplots(nrows=1, ncols=2, squeeze=True, figsize=(6.53, 3.2))
 
 ax[0].scatter(grid_mc.coords_norm[:, 0], grid_mc.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
 ax[1].scatter(grid_mc_cc.coords_norm[:, 0], grid_mc_cc.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[1])
-ax[2].scatter(grid_tmc_cc.coords_norm[:, 0], grid_tmc_cc.coords_norm[:, 1],
-              color=sns.color_palette("bright", 5)[2])
 
-title = ['L1 (mc)', 'L1 (mc, cc)', 'L1 (tmc-cc)']
+title = ['L1 (mc)', 'L1 (mc, cc)']
 
 for i in range(len(ax)):
     ax[i].set_xlabel("$x_1$", fontsize=12)

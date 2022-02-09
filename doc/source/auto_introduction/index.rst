@@ -17,7 +17,6 @@ Introduction
 .. only:: html
 
  .. figure:: /auto_introduction/images/thumb/sphx_glr_plot_introduction_gpc_thumb.png
-     :alt: Introduction to generalized Polynomial Chaos (gPC)
 
      :ref:`sphx_glr_auto_introduction_plot_introduction_gpc.py`
 
@@ -38,7 +37,6 @@ Introduction
 .. only:: html
 
  .. figure:: /auto_introduction/images/thumb/sphx_glr_plot_introduction_ua_thumb.png
-     :alt: Introduction to uncertainty analysis
 
      :ref:`sphx_glr_auto_introduction_plot_introduction_ua.py`
 
@@ -63,15 +61,15 @@ Introduction
     :class: sphx-glr-footer-gallery
 
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_introduction_python.zip </auto_introduction/auto_introduction_python.zip>`
+    :download:`Download all examples in Python source code: auto_introduction_python.zip <//home/kporzig/py/pygpc/doc/source/auto_introduction/auto_introduction_python.zip>`
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_introduction_jupyter.zip </auto_introduction/auto_introduction_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_introduction_jupyter.zip <//home/kporzig/py/pygpc/doc/source/auto_introduction/auto_introduction_jupyter.zip>`
 
 
 .. only:: html
