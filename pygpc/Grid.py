@@ -62,7 +62,8 @@ class Grid(object):
         Total number of nodes in grid.
     """
     def __init__(self, parameters_random, coords=None, coords_norm=None,
-                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None):
+                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None,
+                 grid_pre=None):
         """
         Constructor; Initialize Grid class
         """
@@ -75,6 +76,7 @@ class Grid(object):
         self.dim = len(self.parameters_random)        # Number of random variables
         self._coords_gradient = coords_gradient       # Shifted coordinates for gradient calculation in the system space
         self._coords_gradient_norm = coords_gradient_norm  # Normalized coordinates for gradient calculation
+        self.grid_pre = grid_pre                      # Previous grid the new grid is based on
 
         if coords is not None:
             self.n_grid = self.coords.shape[0]                    # Total number of grid points
@@ -89,6 +91,9 @@ class Grid(object):
         if coords_gradient_id is None and coords_gradient is not None:
             self.coords_gradient_id = [uuid.uuid4() for _ in range(self.n_grid)]
             self.n_grid_gradient = self._coords_gradient.shape[0]
+
+        if coords is not None and coords_norm is None:
+            self.coords_norm = self.get_normalized_coordinates(self.coords)
 
     @property
     def coords(self):
@@ -862,7 +867,8 @@ class RandomGrid(Grid):
     """
 
     def __init__(self, parameters_random, n_grid=None, options=None, coords=None, coords_norm=None,
-                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None):
+                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None,
+                 grid_pre=None):
         """
         Constructor; Initializes RandomGrid instance; Generates grid
         """
@@ -872,7 +878,8 @@ class RandomGrid(Grid):
                                          coords_gradient=coords_gradient,
                                          coords_gradient_norm=coords_gradient_norm,
                                          coords_id=coords_id,
-                                         coords_gradient_id=coords_gradient_id)
+                                         coords_gradient_id=coords_gradient_id,
+                                         grid_pre=grid_pre)
 
         if n_grid is not None:
             self.n_grid = int(n_grid)
@@ -947,17 +954,17 @@ class RandomGrid(Grid):
                         self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
 
                     elif isinstance(self, L1) or isinstance(self, L1_LHS) or isinstance(self, LHS_L1) \
-                            or isinstance(self, FIM) or isinstance(self, CO):
+                            or isinstance(self, CO) or isinstance(self, FIM):
                         grid_pre = copy.deepcopy(self)
                         new_grid = self.__class__(parameters_random=self.parameters_random,
-                                                  n_grid=n_grid_add,
+                                                  n_grid=n_grid_new,
                                                   grid_pre=grid_pre,
                                                   gpc=self.gpc,
                                                   options=self.options)
 
-                        # append points to existing grid
-                        self.coords = np.vstack([self.coords, new_grid.coords])
-                        self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
+                        self.coords = new_grid.coords
+                        self.coords_norm = new_grid.coords_norm
+
                 else:
                     coords = np.zeros((n_grid_add, len(self.parameters_random)))
                     coords_norm = np.zeros((n_grid_add, len(self.parameters_random)))
@@ -1138,10 +1145,14 @@ class Random(RandomGrid):
     """
 
     def __init__(self, parameters_random, n_grid=None, options=None, coords=None, coords_norm=None,
-                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None):
+                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None,
+                 grid_pre=None):
         """
         Constructor; Initializes RandomGrid instance; Generates grid or copies provided content
         """
+        if n_grid is not None:
+            n_grid = int(n_grid)
+
         super(Random, self).__init__(parameters_random,
                                      n_grid=n_grid,
                                      options=options,
@@ -1150,7 +1161,8 @@ class Random(RandomGrid):
                                      coords_gradient=coords_gradient,
                                      coords_gradient_norm=coords_gradient_norm,
                                      coords_id=coords_id,
-                                     coords_gradient_id=coords_gradient_id)
+                                     coords_gradient_id=coords_gradient_id,
+                                     grid_pre=grid_pre)
 
         if coords is not None or coords_norm is not None:
             grid_present = True
@@ -1162,9 +1174,17 @@ class Random(RandomGrid):
             # Generate random samples for each random input variable [n_grid x dim]
             self.coords_norm = np.zeros([self.n_grid, self.dim])
 
+            if self.grid_pre is not None:
+                self.coords_norm[:self.grid_pre.n_grid, :] = self.grid_pre.coords_norm
+                n_grid_add = n_grid - self.grid_pre.n_grid
+                n_grid_start = self.grid_pre.n_grid
+            else:
+                n_grid_add = n_grid
+                n_grid_start = 0
+
             # in case of seeding, the random grid is constructed element wise (same grid-points when n_grid differs)
             if self.seed:
-                for i_grid in range(self.n_grid):
+                for i_grid in range(n_grid_start, n_grid):
                     for i_p, p in enumerate(self.parameters_random):
 
                         if self.parameters_random[p].pdf_type == "beta":
@@ -1198,13 +1218,17 @@ class Random(RandomGrid):
                 for i_p, p in enumerate(self.parameters_random):
 
                     if self.parameters_random[p].pdf_type == "beta":
-                        self.coords_norm[:, i_p] = (np.random.beta(self.parameters_random[p].pdf_shape[0],
-                                                                   self.parameters_random[p].pdf_shape[1],
-                                                                   [self.n_grid, 1]) * 2.0 - 1)[:, 0]
+                        self.coords_norm[n_grid_start:, i_p] = (np.random.beta(self.parameters_random[p].pdf_shape[0],
+                                                                               self.parameters_random[p].pdf_shape[1],
+                                                                               [n_grid_add, 1]) * 2.0 - 1)[:, 0]
 
                     if self.parameters_random[p].pdf_type in ["norm", "normal"]:
                         resample = True
-                        outlier_mask = np.ones(self.n_grid, dtype=bool)
+                        if self.grid_pre is not None:
+                            outlier_mask = np.hstack((np.zeros(self.grid_pre.n_grid, dtype=bool),
+                                                     np.ones(n_grid_add, dtype=bool)))
+                        else:
+                            outlier_mask = np.ones(self.n_grid, dtype=bool)
 
                         while resample:
                             self.coords_norm[outlier_mask, i_p] = (np.random.normal(loc=0,
@@ -1869,6 +1893,12 @@ class CO(RandomGrid):
         else:
             options["n_warmup"] = max(options["n_warmup"], n_grid * 2)
 
+        if "n_pool" not in options.keys():
+            if 1000 > 2 * n_grid:
+                options["n_pool"] = 1000
+            else:
+                options["n_pool"] = 2*n_grid
+
         self.gpc = gpc
         self.grid_pre = grid_pre
         self.coords_pool = []
@@ -1876,7 +1906,7 @@ class CO(RandomGrid):
         self.b2_pool = []
         self.g_pool = []
         self.f_pool = []
-        self.n_pool = []
+        self.n_pool = options["n_pool"]
         self.all_norm = []
 
         super(CO, self).__init__(parameters_random,
@@ -1887,7 +1917,8 @@ class CO(RandomGrid):
                                  coords_gradient=coords_gradient,
                                  coords_gradient_norm=coords_gradient_norm,
                                  coords_id=coords_id,
-                                 coords_gradient_id=coords_gradient_id)
+                                 coords_gradient_id=coords_gradient_id,
+                                 grid_pre=grid_pre)
         if n_grid == 0:
             pass
         else:
@@ -1907,7 +1938,8 @@ class CO(RandomGrid):
                 if gpc.order_max > self.dim:
 
                     # uniform distributed random variables -> Chebyshev distribution
-                    if self.parameters_random[rv].pdf_type == "beta" and (self.parameters_random[rv].pdf_shape == [1, 1]).all():
+                    if self.parameters_random[rv].pdf_type == "beta" and \
+                            (self.parameters_random[rv].pdf_shape == [1, 1]).all():
                         self.parameters_random_proposal[rv] = Beta(pdf_shape=[0.5, 0.5],
                                                                    pdf_limits=[-1, 1])
 
@@ -1915,7 +1947,8 @@ class CO(RandomGrid):
                     # here a standard normal distribution is created, the uniform sampling from the ball is considered in
                     # the method "create_pool"
                     elif self.parameters_random[rv].pdf_type == "norm":
-                        self.parameters_random_proposal[rv] = Norm(pdf_shape=[0, 1])
+                        self.parameters_random_proposal[rv] = Norm(pdf_shape=[0, 1],
+                                                                   p_perc=self.parameters_random[rv].p_perc)
 
                     else:
                         NotImplementedError("Coherence optimal sampling is only possible for uniform and normal "
@@ -1932,7 +1965,7 @@ class CO(RandomGrid):
             # self.warmup(n_warmup=options["n_warmup"])
 
             # draw sample pool for actual sampling
-            self.create_pool(n_samples=2*(self.n_grid+self.n_warmup))
+            self.create_pool(n_samples=self.n_pool + self.n_warmup)
 
             # get coherence optimal samples
             self.coords_norm = self.get_coherence_optimal_samples(n_grid=self.n_grid, n_warmup=self.n_warmup)
@@ -1957,9 +1990,10 @@ class CO(RandomGrid):
             self.coords_pool[:, i_rv] = self.parameters_random_proposal[rv].sample(n_samples=int(self.n_pool))
 
         if self.all_norm:
-            # sample from d-dimensional ball of radius r (Hampton.2015, pp. 369)
+            # sample from d-dimensional ball of radius r (Hampton et al. 2015, pp. 369)
             r = np.sqrt(2)*np.sqrt(2*self.gpc.order_max+1)
-            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool, axis=1))[:, np.newaxis] * r * np.random.rand(1) ** (1/self.dim)
+            self.coords_pool = self.coords_pool / (np.linalg.norm(self.coords_pool, axis=1))[:, np.newaxis] * \
+                               r * np.random.rand(1) ** (1/self.dim)
 
         self.gpc_matrix_pool = self.gpc.create_gpc_matrix(b=self.gpc.basis.b, x=self.coords_pool)
 
@@ -2074,11 +2108,23 @@ class CO(RandomGrid):
         """
         coords_norm_opt = np.zeros((n_grid, self.dim))
         coords_norm_opt[0, :] = self.coords_pool[0, :][np.newaxis, :]
+
+        if self.grid_pre is not None:
+            coords_norm_opt[:self.grid_pre.n_grid, :] = self.grid_pre.coords_norm
+            i_grid_start = self.grid_pre.n_grid
+        else:
+            i_grid_start = 0
+
         # init grid_index at -n_warmup, then the number of warmup-samples are automatically drawn,
         # before index 0 is reached
-        i_grid = -n_warmup
+        i_grid = -(n_warmup - i_grid_start)
         idx1 = 0
         idx2 = 1
+
+        if self.all_norm:
+            x_perc_norm = np.zeros(len(self.parameters_random))
+            for i_rv, rv in enumerate(self.parameters_random):
+                x_perc_norm[i_rv] = self.parameters_random[rv].x_perc_norm[1]
 
         while i_grid < n_grid:
             # create a new pool if it is empty
@@ -2092,10 +2138,17 @@ class CO(RandomGrid):
 
             # add point if acceptance rate is high
             if rho > np.random.rand(1):
-                if i_grid > -1:
-                    coords_norm_opt[i_grid, :] = self.coords_pool[idx2, :]
-                i_grid += 1
-                idx1 = idx2
+                    if self.all_norm:
+                        if (np.abs(self.coords_pool[idx2, :]) < x_perc_norm).all():
+                            if i_grid > (i_grid_start-1):
+                                coords_norm_opt[i_grid, :] = self.coords_pool[idx2, :]
+                            i_grid += 1
+                            idx1 = idx2
+                    else:
+                        if i_grid > (i_grid_start-1):
+                            coords_norm_opt[i_grid, :] = self.coords_pool[idx2, :]
+                        i_grid += 1
+                        idx1 = idx2
 
             idx2 += 1
 
@@ -2216,7 +2269,6 @@ class L1(RandomGrid):
         self.seed = options["seed"]
         self.method = options["method"]
         self.criterion = options["criterion"]
-        self.grid_pre = grid_pre
         self.coords_norm_perced = None
         self.perc_mask = None
 
@@ -2231,7 +2283,8 @@ class L1(RandomGrid):
                                  coords_gradient=coords_gradient,
                                  coords_gradient_norm=coords_gradient_norm,
                                  coords_id=coords_id,
-                                 coords_gradient_id=coords_gradient_id)
+                                 coords_gradient_id=coords_gradient_id,
+                                 grid_pre=grid_pre)
 
         self.weights = options["weights"]
 
@@ -2250,7 +2303,7 @@ class L1(RandomGrid):
 
     def get_optimal_mu_greedy(self):
         """
-        This function computes a set of grid points with minimal mutual coherence using an greedy approach.
+        This function computes a set of grid points with minimal mutual coherence using a greedy approach.
 
         Returns
         -------
@@ -2300,8 +2353,8 @@ class L1(RandomGrid):
             psy_opt = np.zeros((1, psy_pool.shape[1]))
             psy_opt[0, :] = psy_pool[idx, :]
             i_start = 1
-        else:
 
+        else:
             # project grid in case of projection approach
             if self.gpc.p_matrix is not None:
                 grid_pre_trans = project_grid(grid=self.grid_pre, p_matrix=self.gpc.p_matrix, mode="reduce")
@@ -2313,7 +2366,7 @@ class L1(RandomGrid):
 
             index_list = []
             index_list_remaining = [k for k in range(self.n_pool) if k not in index_list]
-            i_start = 0
+            i_start = self.grid_pre.n_grid
 
         # loop over grid points
         for i in range(i_start, m):
@@ -2353,7 +2406,10 @@ class L1(RandomGrid):
             crit = np.sum(crit**2 * np.array(self.weights), axis=1)
 
             # find best index
-            index_list.append(np.nanargmin(crit))
+            try:
+                index_list.append(np.nanargmin(crit))
+            except ValueError:
+                a=1
 
             # add row with best minimal coherence and cross correlation properties to the matrix
             psy_opt = np.vstack((psy_opt, psy_pool[index_list[-1], :]))
@@ -2364,6 +2420,9 @@ class L1(RandomGrid):
         coords_norm = random_pool.coords_norm[index_list, :]
 
         pool.close()
+
+        if self.grid_pre is not None:
+            coords_norm = np.vstack((self.grid_pre.coords_norm, coords_norm))
 
         return coords_norm
 
@@ -2513,7 +2572,6 @@ class FIM(RandomGrid):
 
         self.n_pool = options["n_pool"]
         self.gpc = copy.deepcopy(gpc)
-        self.grid_pre = grid_pre
 
         super(FIM, self).__init__(parameters_random,
                                   n_grid=n_grid,
@@ -2523,13 +2581,15 @@ class FIM(RandomGrid):
                                   coords_gradient=coords_gradient,
                                   coords_gradient_norm=coords_gradient_norm,
                                   coords_id=coords_id,
-                                  coords_gradient_id=coords_gradient_id)
+                                  coords_gradient_id=coords_gradient_id,
+                                  grid_pre=grid_pre)
 
         if coords_norm is not None:
             self.gpc.grid = Random(parameters_random=parameters_random,
                                    coords_norm=coords_norm,
                                    coords=coords,
                                    options=self.options)
+            n_grid_add = self.gpc.grid.n_grid
 
             if self.gpc.p_matrix is not None:
                 self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
@@ -2543,6 +2603,8 @@ class FIM(RandomGrid):
                                                                  gradient=False)
         elif self.grid_pre is not None:
             self.gpc.grid = self.grid_pre
+            n_grid_add = self.n_grid - self.grid_pre.n_grid
+            assert(n_grid_add >= 0, "Number of grid points to add has to be >= 0 ...")
 
             if self.gpc.p_matrix is not None:
                 self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
@@ -2554,9 +2616,12 @@ class FIM(RandomGrid):
                 self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,
                                                                  x=self.grid_pre.coords_norm,
                                                                  gradient=False)
+        else:
+            n_grid_add = self.n_grid
 
-        self.coords_norm = self.get_fim_optiomal_grid_points(parameters_random=parameters_random,
-                                                             n_grid_add=self.n_grid)
+        # add FIM optimal grid points (eventually to existing grid)
+        self.coords_norm = self.add_fim_optiomal_grid_points(parameters_random=parameters_random,
+                                                             n_grid_add=n_grid_add)
 
         # Denormalize grid to original parameter space
         self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -2564,7 +2629,7 @@ class FIM(RandomGrid):
         # Generate unique IDs of grid points
         self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
-    def get_fim_optiomal_grid_points(self, parameters_random, n_grid_add):
+    def add_fim_optiomal_grid_points(self, parameters_random, n_grid_add):
         """
         This function adds grid points (one by one) to the set of points by maximizing the Fisher-information matrix
         in a D-optimal sense.
@@ -3260,24 +3325,29 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None, options
         psy_pool_pre = None
 
     for i in range(len(idx_list)):
+        # print(f"idx_list iteration: {i}")
         if gpc.p_matrix is not None:
             if "D-coh" in criterion:
                 test_grid = CO(parameters_random=gpc.problem_original.parameters_random,
                                n_grid=n_grid,
+                               grid_pre=grid_pre,
                                gpc=gpc,
                                options=options)
             else:
                 test_grid = Random(parameters_random=gpc.problem_original.parameters_random,
-                                   n_grid=n_grid)
+                                   n_grid=n_grid,
+                                   grid_pre=grid_pre)
         else:
             if "D-coh" in criterion:
                 test_grid = CO(parameters_random=gpc.problem.parameters_random,
                                n_grid=n_grid,
+                               grid_pre=grid_pre,
                                gpc=gpc,
                                options=options)
             else:
                 test_grid = Random(parameters_random=gpc.problem.parameters_random,
-                                   n_grid=n_grid)
+                                   n_grid=n_grid,
+                                   grid_pre=grid_pre)
 
         coords_norm = test_grid.coords_norm
 

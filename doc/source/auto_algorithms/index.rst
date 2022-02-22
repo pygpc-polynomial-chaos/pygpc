@@ -12,6 +12,26 @@ Algorithms
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static_IO">
+
+.. only:: html
+
+ .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_IO_thumb.png
+
+     :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_IO.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_algorithms/plot_algorithm_static_IO
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptive">
 
 .. only:: html
@@ -149,6 +169,26 @@ Algorithms
    :hidden:
 
    /auto_algorithms/plot_algorithm_mestaticprojection
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic_IO">
+
+.. only:: html
+
+ .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestatic_IO_thumb.png
+
+     :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic_IO.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_algorithms/plot_algorithm_mestatic_IO
 
 .. raw:: html
 

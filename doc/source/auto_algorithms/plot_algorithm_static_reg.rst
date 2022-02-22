@@ -79,7 +79,35 @@ Setting up the algorithm
     options["backend"] = "omp"
     options["grid"] = pygpc.Random
     options["grid_options"] = {"seed": 1}
-    options["n_grid"] = 1000
+
+
+
+
+
+
+
+
+We will run the gPC with 10 initial simulations and see how well the approximation is
+
+
+.. code-block:: default
+
+    options["n_grid"] = 10
+
+
+
+
+
+
+
+
+We will use adaptive sampling here, which runs additional simulations if the approximation error is higher than eps
+
+
+.. code-block:: default
+
+    options["eps"] = 1e-3
+    options["adaptive_sampling"] = True
 
     # initialize algorithm
     algorithm = pygpc.Static(problem=problem, options=options)
@@ -114,19 +142,117 @@ Running the gpc
 
  .. code-block:: none
 
-    Performing 1000 simulations!
-    It/Sub-it: 9/2 Performing simulation 0001 from 1000 [                                        ] 0.1%
-    Total parallel function evaluation: 0.0006158351898193359 sec
-    Gradient evaluation: 0.18607640266418457 sec
+    Performing 10 simulations!
+    It/Sub-it: 9/2 Performing simulation 01 from 10 [====                                    ] 10.0%
+    Total parallel function evaluation: 0.00031495094299316406 sec
+    Gradient evaluation: 0.0003292560577392578 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
-    -> relative nrmsd error = 0.001260059497119485
-    Extending grid from 1000 to 1003 by 3 sampling points
+    -> relative nrmsd error = 1.2383417472210787
+    Extending grid from 10 to 13 by 3 sampling points
     Performing 3 simulations!
     It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
-    Total parallel function evaluation: 0.0005822181701660156 sec
-    Gradient evaluation: 0.2162613868713379 sec
+    Total parallel function evaluation: 0.00035762786865234375 sec
+    Gradient evaluation: 0.00044608116149902344 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
-    -> relative nrmsd error = 0.0012592677313095098
+    -> relative nrmsd error = 1.1707822203475031
+    Extending grid from 13 to 16 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.00036835670471191406 sec
+    Gradient evaluation: 0.0005092620849609375 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 1.143669885681281
+    Extending grid from 16 to 19 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.00028014183044433594 sec
+    Gradient evaluation: 0.0006506443023681641 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 1.1338956758277758
+    Extending grid from 19 to 22 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.00027251243591308594 sec
+    Gradient evaluation: 0.0006422996520996094 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 1.0507393608371591
+    Extending grid from 22 to 25 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0002834796905517578 sec
+    Gradient evaluation: 0.0007231235504150391 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 1.0450078846912312
+    Extending grid from 25 to 28 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.00027823448181152344 sec
+    Gradient evaluation: 0.0007951259613037109 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.939045452482192
+    Extending grid from 28 to 31 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0005109310150146484 sec
+    Gradient evaluation: 0.001474618911743164 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.8970113909538253
+    Extending grid from 31 to 34 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0005476474761962891 sec
+    Gradient evaluation: 0.0010459423065185547 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.8649732897266762
+    Extending grid from 34 to 37 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0004744529724121094 sec
+    Gradient evaluation: 0.0011947154998779297 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.8620414300424817
+    Extending grid from 37 to 40 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0004591941833496094 sec
+    Gradient evaluation: 0.0021278858184814453 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.75933106117979
+    Extending grid from 40 to 43 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.00048351287841796875 sec
+    Gradient evaluation: 0.001931905746459961 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.6808892118796706
+    Extending grid from 43 to 46 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0004837512969970703 sec
+    Gradient evaluation: 0.0025284290313720703 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.5332952917915144
+    Extending grid from 46 to 49 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0005266666412353516 sec
+    Gradient evaluation: 0.002330780029296875 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.41267297645708223
+    Extending grid from 49 to 52 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0002949237823486328 sec
+    Gradient evaluation: 0.0014619827270507812 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 0.1884838131989019
+    Extending grid from 52 to 55 by 3 sampling points
+    Performing 3 simulations!
+    It/Sub-it: 9/2 Performing simulation 1 from 3 [=============                           ] 33.3%
+    Total parallel function evaluation: 0.0005905628204345703 sec
+    Gradient evaluation: 0.0026466846466064453 sec
+    Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
+    -> relative nrmsd error = 3.6983801878890816e-06
 
 
 
@@ -147,8 +273,7 @@ Postprocessing
                                  calc_sobol=True,
                                  calc_global_sens=True,
                                  calc_pdf=True,
-                                 algorithm="standard",
-                                 n_samples=1e3)
+                                 algorithm="standard")
 
 
 
@@ -179,7 +304,7 @@ Validate gPC vs original model function (2D-surface)
                             coeffs=coeffs,
                             random_vars=list(problem.parameters_random.keys()),
                             n_grid=[51, 51],
-                            output_idx=[0],
+                            output_idx=0,
                             fn_out=None,
                             folder=None,
                             n_cpu=session.n_cpu)
@@ -229,7 +354,7 @@ Validate gPC vs original model function (Monte Carlo)
 
  .. code-block:: none
 
-    > Maximum NRMSD (gpc vs original): 0.0012%
+    > Maximum NRMSD (gpc vs original): 3.2e-06%
 
 
 
@@ -237,7 +362,7 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.952 seconds)
+   **Total running time of the script:** ( 0 minutes  3.116 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_static_reg.py:

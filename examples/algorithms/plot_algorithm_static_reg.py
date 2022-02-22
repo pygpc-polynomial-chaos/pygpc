@@ -48,7 +48,15 @@ options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
 options["backend"] = "omp"
 options["grid"] = pygpc.Random
 options["grid_options"] = {"seed": 1}
-options["n_grid"] = 1000
+
+# %%
+# We will run the gPC with 10 initial simulations and see how well the approximation is
+options["n_grid"] = 10
+
+# %%
+# We will use adaptive sampling here, which runs additional simulations if the approximation error is higher than eps
+options["eps"] = 1e-3
+options["adaptive_sampling"] = True
 
 # initialize algorithm
 algorithm = pygpc.Static(problem=problem, options=options)
@@ -76,8 +84,7 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              calc_sobol=True,
                              calc_global_sens=True,
                              calc_pdf=True,
-                             algorithm="standard",
-                             n_samples=1e3)
+                             algorithm="standard")
 
 #%%
 # Validation
@@ -88,7 +95,7 @@ pygpc.validate_gpc_plot(session=session,
                         coeffs=coeffs,
                         random_vars=list(problem.parameters_random.keys()),
                         n_grid=[51, 51],
-                        output_idx=[0],
+                        output_idx=0,
                         fn_out=None,
                         folder=None,
                         n_cpu=session.n_cpu)
