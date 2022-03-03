@@ -81,7 +81,6 @@ class ClassifierLearning(object):
         if options["clusterer"] == "KMeans":
             self.clusterer = KMeans(n_clusters=options["n_clusters"],
                                     random_state=42,
-                                    n_jobs=-1,
                                     n_init=100)
 
         elif options["clusterer"] == "spectral_clustering":

@@ -68,7 +68,7 @@ LHS with enhanced stochastic evolutionary algorithm (ESE)
 To achieve optimized designs with a more stable method and possibly quicker then by simply evaluating
 the criteria over a number of repetitions **pygpc** can use an ESE for achieving sufficient
 :math:`\\varphi_P`-value. This algorithm is more appealing in its efficacy and proves to
-[sth about the resulting error or std in a low sample size].
+decrease the samples for a stable recovery by over 10\\% for dense high dimensional functions.
 This method originated from Jin et al. (2005).
 
 .. [3] Jin, R., Chen, W., Sudjianto, A. (2005). An efficient algorithm for constructing optimal
@@ -115,7 +115,7 @@ grid_lhs_ese = pygpc.LHS(parameters_random=parameters,
                          options={"criterion": "ese",     "seed": None})
 
 ###############################################################################
-# The following options are available for D-optimal grids:
+# The following options are available for LHS grids:
 #
 # - seed: set a seed to reproduce the results (default: None)
 # - criterion:

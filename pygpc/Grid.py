@@ -1754,7 +1754,7 @@ class LHS(RandomGrid):
                 l_P = list()
                 l_Phi = list()
 
-                # Build J different designs with a single exchanged rows
+                # Build J different designs with a single exchanged row
                 # See PhiP_exchange
                 for j in range(J):
                     l_P.append(P_.copy())

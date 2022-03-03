@@ -11,6 +11,7 @@ run the model with the desired set of parameters.
     :align: center
 """
 
+
 # %%
 # Uncertainty analysis using Monte Carlo methods
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -113,4 +114,3 @@ _ = ax3.set_ylabel("STD")
 # .. [4] Marrel, A., Iooss, B., Laurent, B., & Roustant, O. (2009).
 #    Calculations of sobol indices for the gaussian process metamodel.
 #    Reliability Engineering & System Safety, 94(3), 742-751.
-
