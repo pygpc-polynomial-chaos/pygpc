@@ -1,8 +1,9 @@
+import os
 import copy
 import h5py
-import os
 import time
 import shutil
+import warnings
 from .Problem import *
 from .SGPC import *
 from .misc import determine_projection_matrix
@@ -13,6 +14,7 @@ from .misc import get_gradient_idx_domain
 from .misc import get_coords_discontinuity
 from .misc import increment_basis
 from .misc import get_num_coeffs_sparse
+from .testfunctions import Dummy
 from .Grid import *
 from .MEGPC import *
 from .Classifier import Classifier
@@ -171,6 +173,9 @@ class Algorithm(object):
 
         if "n_cpu" in self.options.keys():
             self.n_cpu = self.options["n_cpu"]
+        else:
+            self.options["n_cpu"] = 1
+            self.n_cpu = 1
 
         if "n_samples_validation" not in self.options.keys():
             self.options["n_samples_validation"] = 1e4
@@ -239,6 +244,180 @@ class Algorithm(object):
             self.options["adaptive_sampling"] = False
 
 
+class Static_IO(Algorithm):
+    """
+    Static gPC algorithm, which uses precomputed input output relationships to construct the gPC approximation
+
+    Parameters
+    ----------
+    parameters: OrderedDict containing the RandomParameter class instances
+        Dictionary (ordered) containing the properties of the random parameters
+    options["order"]: list of int [dim]
+        Maximum individual expansion order [order_1, order_2, ..., order_dim].
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    options["order_max"]: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    options["order_max_norm"]: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    options["interaction_order"]: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    grid: Grid object instance
+        Grid object to use for static gPC (Random, SparseGrid, TensorGrid) containing the parameter values, where the
+        output relations were calculated
+    results: ndarray of float [N_grid x N_qoi]
+        Model output at each grid point for each QOI
+    validation: Validation Set class instance, optional
+        Validation set containing reference solutions at precomputed grid points
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize static gPC algorithm using precomputed IO relationships
+    >>> algorithm = pygpc.Static_IO(parameters=parameters, options=options, grid=grid, results=results)
+    >>> # run algorithm
+    >>> gpc, coeffs = algorithm.run()
+    """
+    def __init__(self, parameters, options, results, grid, validation=None):
+        """
+        Constructor; Initializes static gPC algorithm
+        """
+        # create dummy model
+        model = Dummy()
+
+        # create dummy problem
+        problem = Problem(model, parameters)
+
+        super(Static_IO, self).__init__(problem=problem, options=options, validation=validation)
+        self.grid = grid
+        self.res = results
+
+        if "order" not in self.options.keys():
+            raise AssertionError("Please specify 'order'=[order_1, order_2, ..., order_dim] in options dictionary")
+
+        if "order_max" not in self.options.keys():
+            raise AssertionError("Please specify 'order_max' in options dictionary")
+
+        if "order_max_norm" not in self.options.keys():
+            self.options["order_max_norm"] = 1.
+
+        if "interaction_order" not in self.options.keys():
+            self.options["interaction_order"] = self.problem.dim
+
+        if "error_type" not in self.options.keys():
+            self.options["error_type"] = "loocv"
+
+        if self.options["error_type"] != "loocv":
+            self.options["error_type"] = "loocv"
+            warnings.warn("Changing error calculation type to loocv ...")
+
+    def run(self):
+        """
+        Runs static gPC algorithm using precomputed IO relationships to construct surrogate model.
+
+        Returns
+        -------
+        gpc : GPC object instance
+            GPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
+        coeffs: ndarray of float [n_basis x n_out]
+            GPC coefficients
+        """
+
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
+
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+        else:
+            fn_results = None
+
+        # Initialize gPC object
+        gpc = Reg(problem=self.problem,
+                  order=self.options["order"],
+                  order_max=self.options["order_max"],
+                  order_max_norm=self.options["order_max_norm"],
+                  interaction_order=self.options["interaction_order"],
+                  interaction_order_current=self.options["interaction_order"],
+                  options=self.options,
+                  validation=self.validation)
+
+        gpc.backend = self.options["backend"]
+
+        # determine number of basis functions
+        n_coeffs = get_num_coeffs_sparse(order_dim_max=self.options["order"],
+                                         order_glob_max=self.options["order_max"],
+                                         order_inter_max=self.options["interaction_order"],
+                                         dim=self.problem.dim)
+
+        print(f" > Determining {n_coeffs} gPC coeffs with {self.res.shape[0]} simulations!")
+
+        # Write grid in gpc object
+        gpc.grid = self.grid
+
+        # Initialize gpc matrix
+        gpc.init_gpc_matrix()
+
+        # Compute gpc coefficients
+        coeffs = gpc.solve(results=self.res,
+                           solver=self.options["solver"],
+                           settings=self.options["settings"],
+                           verbose=self.options["verbose"])
+
+        # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+        eps = gpc.validate(coeffs=coeffs, results=self.res)
+
+        iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                            self.options["error_type"],
+                                            eps), tab=0, verbose=self.options["verbose"])
+
+        # save gpc object and gpc coeffs
+        if self.options["fn_results"] is not None:
+
+            with h5py.File(fn_results + ".hdf5", "a") as f:
+
+                f.create_dataset("misc/fn_session",
+                                 data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                f.create_dataset("misc/fn_session_folder",
+                                 data=np.array([self.options["fn_session_folder"]]).astype("|S"))
+                f.create_dataset("misc/error_type", data=self.options["error_type"])
+                f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
+                f.create_dataset("grid/coords", maxshape=None, data=gpc.grid.coords, dtype="float64")
+                f.create_dataset("grid/coords_norm", maxshape=None, data=gpc.grid.coords_norm, dtype="float64")
+
+                if gpc.grid.coords_gradient is not None:
+                    f.create_dataset("grid/coords_gradient", data=gpc.grid.coords_gradient,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("grid/coords_gradient_norm", data=gpc.grid.coords_gradient_norm,
+                                     maxshape=None, dtype="float64")
+
+                f.create_dataset("coeffs", data=coeffs,
+                                 maxshape=None, dtype="float64")
+                f.create_dataset("gpc_matrix", data=gpc.gpc_matrix,
+                                 maxshape=None, dtype="float64")
+
+                if gpc.gpc_matrix_gradient is not None:
+                    f.create_dataset("gpc_matrix_gradient",
+                                     data=gpc.gpc_matrix_gradient, maxshape=None, dtype="float64")
+
+                f.create_dataset("model_evaluations/results", data=self.res, maxshape=None, dtype="float64")
+
+                if gpc.validation is not None:
+                    f.create_dataset("validation/model_evaluations/results", data=gpc.validation.results,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("validation/grid/coords", data=gpc.validation.grid.coords,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("validation/grid/coords_norm", data=gpc.validation.grid.coords_norm,
+                                     maxshape=None, dtype="float64")
+
+        return gpc, coeffs, self.res
+
+
 class Static(Algorithm):
     """
     Static gPC algorithm
@@ -267,6 +446,8 @@ class Static(Algorithm):
         All polynomials are ignored, which have an interaction order greater than the specified
     grid: Grid object instance
         Grid object to use for static gPC (Random, SparseGrid, TensorGrid)
+    validation: Validation Set class instance, optional
+        Validation set containing reference solutions at precomputed grid points
 
     Notes
     -----
@@ -930,6 +1111,298 @@ class MEStatic(Algorithm):
         com.close()
 
         return megpc, coeffs, res
+
+
+class MEStatic_IO(Algorithm):
+    """
+    Multi-Element Static gPC algorithm using precomputed IO data
+
+    Parameters
+    ----------
+    parameters: OrderedDict containing the RandomParameter class instances
+        Dictionary (ordered) containing the properties of the random parameters
+    problem : Problem object instance
+        Object instance of gPC problem to investigate
+    options["order"]: list of int [dim]
+        Maximum individual expansion order [order_1, order_2, ..., order_dim].
+        Generates individual polynomials also if maximum expansion order in order_max is exceeded
+    options["order_max"]: int
+        Maximum global expansion order.
+        The maximum expansion order considers the sum of the orders of combined polynomials together with the
+        chosen norm "order_max_norm". Typically this norm is 1 such that the maximum order is the sum of all
+        monomial orders.
+    options["order_max_norm"]: float
+        Norm for which the maximum global expansion order is defined [0, 1]. Values < 1 decrease the total number
+        of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme
+        is also referred to "hyperbolic polynomial chaos expansion" such that sum(a_i^q)^1/q <= p,
+        where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).
+    options["interaction_order"]: int
+        Number of random variables, which can interact with each other.
+        All polynomials are ignored, which have an interaction order greater than the specified
+    options["qoi"] : int or str, optional, default: 0
+        Choose for which QOI the projection is determined for. The other QOIs use the same projection.
+        Alternatively, the projection can be determined for every QOI independently (qoi_index or "all").
+    options["classifier"] : str, optional, default: "learning"
+        Classification algorithm to subdivide parameter domain.
+        - "learning" ... ClassifierLearning algorithm based on Unsupervised and supervised learning
+    options["classifier_options"] : dict, optional, default: default settings
+        Options of classifier
+    grid: Grid object instance
+        Grid object to use for static gPC (Random, SparseGrid, TensorGrid) containing the parameter values, where the
+        output relations were calculated
+    results: ndarray of float [N_grid x N_qoi]
+        Model output at each grid point for each QOI
+
+    Notes
+    -----
+    .. [1] Blatman, G., & Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle
+       regression. Journal of Computational Physics, 230(6), 2345-2367.
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> # initialize static gPC algorithm
+    >>> algorithm = pygpc.MEStatic_IO(parameters=parameters, options=options, results=results, grid=grid)
+    >>> # run algorithm
+    >>> gpc, coeffs, results = algorithm.run()
+    """
+
+    def __init__(self, parameters, options, results, grid, validation = None):
+        """
+        Constructor; Initializes multi-element static gPC algorithm
+        """
+        # create dummy model
+        model = Dummy()
+
+        # create dummy problem
+        problem = Problem(model, parameters)
+
+        super(MEStatic_IO, self).__init__(problem=problem, options=options, validation=validation)
+        self.grid = grid
+        self.res = results
+
+        # check contents of settings dict and set defaults
+        if "order" not in self.options.keys():
+            raise AssertionError("Please specify 'order'=[order_1, order_2, ..., order_dim] in options dictionary")
+
+        if "order_max" not in self.options.keys():
+            raise AssertionError("Please specify 'order_max' in options dictionary")
+
+        if "interaction_order" not in self.options.keys():
+            self.options["interaction_order"] = self.problem.dim
+
+        if "order_max_norm" not in self.options.keys():
+            self.options["order_max_norm"] = 1.
+
+        if "qoi" not in self.options.keys():
+            self.options["qoi"] = 0
+
+        if "classifier" not in self.options.keys():
+            self.options["classifier"] = "learning"
+
+        if "classifier_options" not in self.options.keys():
+            self.options["classifier_options"] = None
+
+        if self.options["qoi"] == "all":
+            self.qoi_specific = True
+        else:
+            self.qoi_specific = False
+
+        if self.options["error_type"] != "loocv":
+            self.options["error_type"] = "loocv"
+            warnings.warn("Changing error calculation type to loocv ...")
+
+    def run(self):
+        """
+        Runs Multi-Element Static gPC algorithm using precomputed IO data to construct gPC approximation.
+
+        Returns
+        -------
+        megpc : Multi-element GPC object instance
+            MEGPC object containing all information i.e., Problem, Model, Grid, Basis, RandomParameter instances
+        coeffs: list of ndarray of float [n_gpc][n_basis x n_out]
+            GPC coefficients
+        res : ndarray of float [n_grid x n_out]
+            Simulation results at n_grid points of the n_out output variables
+        """
+        if self.options["fn_results"] is not None:
+            fn_results = os.path.splitext(self.options["fn_results"])[0]
+
+            if os.path.exists(fn_results + ".hdf5"):
+                os.remove(fn_results + ".hdf5")
+        else:
+            fn_results = None
+
+        megpc = []
+        coeffs = []
+        i_grid = 0
+        i_qoi = 0
+
+        if self.options["qoi"] is not None and self.options["qoi"] != "all":
+            q_idx = self.options["qoi"]
+            qoi_idx = [q_idx]
+        else:
+            qoi_idx = np.arange(1)
+            q_idx = qoi_idx[0]
+
+        n_qoi = len(qoi_idx)
+
+        while i_qoi < n_qoi:
+            q_idx = qoi_idx[i_qoi]
+            print_str = "Determining gPC approximation for QOI #{}:".format(q_idx)
+            iprint(print_str, tab=0, verbose=self.options["verbose"])
+            iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
+            megpc.append(0)
+            coeffs.append(0)
+
+            # Create MEGPC object
+            megpc[i_qoi] = MEGPC(problem=self.problem,
+                                 options=self.options,
+                                 validation=self.validation)
+
+            if i_qoi == 0 and i_grid == 0:
+                if self.options["qoi"] == "all":
+                    qoi_idx = np.arange(self.res.shape[1])
+                    n_qoi = len(qoi_idx)
+
+            # crop results to considered qoi
+            if self.options["qoi"] != "all":
+                res = copy.deepcopy(self.res)
+                hdf5_subfolder = ""
+                output_idx_passed_validation = None
+            else:
+                res = self.res[:, q_idx][:, np.newaxis]
+                hdf5_subfolder = "/qoi_" + str(q_idx)
+                output_idx_passed_validation = q_idx
+
+            # Write grid in gpc object
+            megpc[i_qoi].grid = copy.deepcopy(self.grid)
+
+            # determine gpc domains
+            megpc[i_qoi].init_classifier(coords=megpc[i_qoi].grid.coords_norm,
+                                         results=self.res[:, q_idx][:, np.newaxis],
+                                         algorithm=self.options["classifier"],
+                                         options=self.options["classifier_options"])
+
+            # initialize sub-gPCs
+            for d in np.unique(megpc[i_qoi].domains):
+                megpc[i_qoi].add_sub_gpc(problem=megpc[i_qoi].problem,
+                                         order=[self.options["order"][0] for _ in range(megpc[i_qoi].problem.dim)],
+                                         order_max=self.options["order_max"],
+                                         order_max_norm=self.options["order_max_norm"],
+                                         interaction_order=self.options["interaction_order"],
+                                         interaction_order_current=self.options["interaction_order"],
+                                         options=self.options,
+                                         domain=d,
+                                         validation=None)
+
+            # assign grids to sub-gPCs (rotate sub-grids in case of projection)
+            megpc[i_qoi].assign_grids()
+
+            # Initialize gpc matrices
+            megpc[i_qoi].init_gpc_matrices()
+
+            # Compute gpc coefficients
+            coeffs[i_qoi] = megpc[i_qoi].solve(results=res,
+                                               solver=self.options["solver"],
+                                               settings=self.options["settings"],
+                                               verbose=self.options["verbose"])
+
+             # validate gpc approximation (determine nrmsd or loocv specified in options["error_type"])
+            eps = megpc[i_qoi].validate(coeffs=coeffs[i_qoi], results=res)
+
+            iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                                self.options["error_type"],
+                                                eps), tab=0, verbose=self.options["verbose"])
+
+            # domain specific error
+            eps_domain = [0 for _ in range(len(np.unique(megpc[i_qoi].domains)))]
+            for i_gpc, d in enumerate(np.unique(megpc[i_qoi].domains)):
+                eps_domain[d] = megpc[i_qoi].validate(coeffs=coeffs[i_qoi],
+                                                      results=res,
+                                                      domain=d,
+                                                      output_idx=output_idx_passed_validation)
+
+            # save data
+            if self.options["fn_results"] is not None:
+
+                with h5py.File(fn_results + ".hdf5", "a") as f:
+
+                    try:
+                        fn_session = f["misc/fn_session"]
+
+                    except KeyError:
+                        f.create_dataset("misc/fn_session",
+                                         data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                        f.create_dataset("misc/fn_session_folder",
+                                         data=np.array([self.options["fn_session_folder"]]).astype("|S"))
+
+                    for i_gpc in range(megpc[i_qoi].n_gpc):
+                        f.create_dataset("error" + hdf5_subfolder + "/dom_" + str(i_gpc),
+                                         data=eps_domain[i_gpc],
+                                         maxshape=None, dtype="float64")
+
+                        f.create_dataset("coeffs" + hdf5_subfolder + "/dom_" + str(i_gpc),
+                                         data=coeffs[i_qoi][i_gpc],
+                                         maxshape=None, dtype="float64")
+
+                    f.create_dataset("domains" + hdf5_subfolder,
+                                     data=megpc[i_qoi].domains,
+                                     maxshape=None, dtype="int64")
+
+                    for i_gpc in range(megpc[i_qoi].n_gpc):
+                        f.create_dataset("gpc_matrix" + hdf5_subfolder + "/dom_" + str(i_gpc),
+                                         data=megpc[i_qoi].gpc[i_gpc].gpc_matrix,
+                                         maxshape=None, dtype="float64")
+
+                        if megpc[i_qoi].gpc[0].gpc_matrix_gradient is not None:
+                            if self.options["gradient_enhanced"]:
+                                f.create_dataset("gpc_matrix_gradient" + hdf5_subfolder + "/dom_" + str(i_gpc),
+                                                 data=megpc[i_qoi].gpc[i_gpc].gpc_matrix_gradient,
+                                                 maxshape=None, dtype="float64")
+
+            i_qoi += 1
+
+        if self.options["fn_results"] is not None:
+
+            with h5py.File(fn_results + ".hdf5", "a") as f:
+
+                try:
+                    del f["grid/coords"]
+                    del f["grid/coords_norm"]
+                    del f["grid/coords_gradient"]
+                    del f["grid/coords_gradient_norm"]
+
+                except KeyError:
+                    pass
+
+                f.create_dataset("grid/coords", data=self.grid.coords,
+                                 maxshape=None, dtype="float64")
+                f.create_dataset("grid/coords_norm", data=self.grid.coords_norm,
+                                 maxshape=None, dtype="float64")
+
+                if self.grid.coords_gradient is not None:
+                    f.create_dataset("grid/coords_gradient",
+                                     data=self.grid.coords_gradient,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("grid/coords_gradient_norm",
+                                     data=self.grid.coords_gradient_norm,
+                                     maxshape=None, dtype="float64")
+
+                f.create_dataset("model_evaluations/results", data=self.res,
+                                 maxshape=None, dtype="float64")
+
+                f.create_dataset("misc/error_type", data=self.options["error_type"])
+
+                if megpc[0].validation is not None:
+                    f.create_dataset("validation/model_evaluations/results", data=megpc[0].validation.results,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("validation/grid/coords", data=megpc[0].validation.grid.coords,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("validation/grid/coords_norm", data=megpc[0].validation.grid.coords_norm,
+                                     maxshape=None, dtype="float64")
+
+        return megpc, coeffs, self.res
 
 
 class StaticProjection(Algorithm):
@@ -1847,8 +2320,13 @@ class RegAdaptive(Algorithm):
         n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
 
         if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM, CO]:
+            if "n_pool" in self.options["grid_options"]:
+                if self.options["grid_options"]["n_pool"] < int(n_grid_init):
+                    warnings.warn('self.options["grid_options"]["n_pool"] < n_grid_init ... setting n_pool to 2*n_grid_init')
+                    self.options["grid_options"]["n_pool"] = 2*int(n_grid_init)
+
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
-                                            n_grid=n_grid_init,
+                                            n_grid=int(n_grid_init),
                                             options=self.options["grid_options"],
                                             gpc=gpc)
 
@@ -1932,6 +2410,14 @@ class RegAdaptive(Algorithm):
                         iprint("Extending grid from {} to {} by {} sampling points".format(
                             gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
                             tab=0, verbose=self.options["verbose"])
+
+                        if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM, CO]:
+                            if "n_pool" in self.options["grid_options"]:
+                                if self.options["grid_options"]["n_pool"] < int(n_grid_init):
+                                    warnings.warn(
+                                        'self.options["grid_options"]["n_pool"] < n_grid_new ... '
+                                        'setting n_pool to 2*n_grid_new')
+                                    self.options["grid_options"]["n_pool"] = 2 * int(n_grid_new)
 
                         gpc.grid.extend_random_grid(n_grid_new=n_grid_new)
 
@@ -2075,8 +2561,6 @@ class RegAdaptive(Algorithm):
                            settings=gpc.settings,
                            verbose=self.options["verbose"])
 
-        gpc.gpc_matrix.shape
-        len(gpc.basis.b)
         # save gpc object and gpc coeffs
         if self.options["fn_results"] is not None:
 

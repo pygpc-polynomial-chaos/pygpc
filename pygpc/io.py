@@ -215,6 +215,7 @@ def read_session_hdf5(fname, folder="session", verbose=False):
     args = inspect.getfullargspec(alg).args[1:]
 
     args_dict = dict()
+    args = [a for a in args if a != "gpc"]
     for a in args:
         args_dict[a] = locals()[a]
 

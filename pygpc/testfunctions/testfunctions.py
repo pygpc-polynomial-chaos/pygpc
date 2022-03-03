@@ -116,6 +116,34 @@ def plot_testfunction(testfunction_name: object, parameters: object, constants: 
     plt.show()
 
 
+class Dummy(AbstractModel):
+    """
+    Dummy model
+
+    Parameters
+    ----------
+    p["..."]: float or ndarray of float [n_grid]
+        Any first parameter
+    p["..."]: float or ndarray of float [n_grid]
+        Any second parameter
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Any output
+    """
+
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+        pass
+
+
 class Ackley(AbstractModel):
     """
     N-dimensional Ackley function [1][2][3][4].

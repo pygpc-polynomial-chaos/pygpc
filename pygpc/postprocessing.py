@@ -29,7 +29,7 @@ def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_globa
         Algorithm to determine the Sobol indices
         - "standard": Sobol indices are determined from the gPC coefficients
         - "sampling": Sobol indices are determined from sampling using Saltelli's Sobol sampling sequence [1, 2, 3]
-    n_samples : int, optional, default: 1e4
+    n_samples : int, optional, default: 1e5
         Number of samples to determine Sobol indices by sampling. The efficient number of samples
         increases to n_samples * (2*dim + 2) in Saltelli's Sobol sampling sequence.
 
