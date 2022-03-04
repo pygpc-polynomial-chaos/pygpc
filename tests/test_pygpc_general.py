@@ -2488,6 +2488,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define input data
+        np.random.seed(1)
         n_grid = 100
         x1 = np.random.rand(n_grid) * 0.8 + 1.2
         x2 = 1.25
@@ -2565,6 +2566,7 @@ class TestPygpcMethods(unittest.TestCase):
         print(test_name)
 
         # define input data
+        np.random.seed(1)
         n_grid = 1000
         rho_0 = np.random.rand(n_grid)
         beta = np.random.rand(n_grid) * 20.
