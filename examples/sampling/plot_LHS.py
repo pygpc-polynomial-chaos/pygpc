@@ -2,12 +2,9 @@
 Latin Hypercube Sampling (LHS)
 ==============================
 
-To increase the information of each individual sampling point and to prevent undersampling, LHS is a simple
+To prevent clustering or undersampling of specific regions in the probability space, LHS is a simple
 alternative to enhance the space-filling properties of the sampling scheme first established by
 McKay et al. (2000).
-
-.. [1] McKay, M. D., Beckman, R. J., & Conover, W. J. (2000). A comparison of three methods for selecting
-   values of input variables in the analysis of output from a computer code. Technometrics, 42(1), 55-61.
 
 To draw :math:`n` independent samples from a number of :math:`d`-dimensional parameters
 a matrix :math:`\\Pi` is constructed with
@@ -35,12 +32,12 @@ variables :math:`rg_{X_i}`:
     r_s = \\rho_{rg_{X_i}, rg_{X_j}} = \\frac{cov(rg_{X_i}, rg_{X_j})}{\\sigma_{rg_{X_i}} \\sigma_{rg_{X_i}}}
 
 where :math:`\\rho` is the pearson correlation coefficient, :math:`\\sigma` is the standard deviation
-and :math:`cov` is the covariance of the rank variables
+and :math:`cov` is the covariance of the rank variables.
 
 Maximum-Minimal-Distance
 ^^^^^^^^^^^^^^^^^^^^^^^^
 For creating a so called maximin distance design that maximizes the minimum inter-site distance, proposed by
-Johnson et al.
+Johnson et al. (1990).
 
 .. math::
     \\min_{1 \\leqslant i, j \\leqslant n, i \\neq j} d(x_i,x_j),
@@ -60,9 +57,6 @@ called the :math:`\\varphi_P` criterion.
 where :math:`s` is the number of distinct distances, :math:`J` is an vector of indices of the distances
 and :math:`p` is an integer. With a very large :math:`p` this criterion is equivalent to the maximin criterion
 
-.. [2] Morris, M. D. and Mitchell, T. J. (1995). Exploratory Designs for Computer Experiments. J. Statist. Plann.
-   Inference 43, 381-402.
-
 LHS with enhanced stochastic evolutionary algorithm (ESE)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 To achieve optimized designs with a more stable method and possibly quicker then by simply evaluating
@@ -70,9 +64,6 @@ the criteria over a number of repetitions **pygpc** can use an ESE for achieving
 :math:`\\varphi_P`-value. This algorithm is more appealing in its efficacy and proves to
 decrease the samples for a stable recovery by over 10\\% for dense high dimensional functions.
 This method originated from Jin et al. (2005).
-
-.. [3] Jin, R., Chen, W., Sudjianto, A. (2005). An efficient algorithm for constructing optimal
-   design of computer experiments. Journal of statistical planning and inference, 134(1), 268-287.
 
 Example
 -------
@@ -119,10 +110,10 @@ grid_lhs_ese = pygpc.LHS(parameters_random=parameters,
 #
 # - seed: set a seed to reproduce the results (default: None)
 # - criterion:
-#    - None: Standard LHS
-#    - "corr": Correlation optimal LHS
-#    - "maximin": Maximum-minimum distance optimal LHS
-#    - "ese": LHS with enhanced stochastic evolutionary algorithm (ESE)
+#    - **None** - Standard LHS
+#    - **corr** - Correlation optimal LHS
+#    - **maximin** - Maximum-minimum distance optimal LHS
+#    - **ese** - LHS with enhanced stochastic evolutionary algorithm (ESE)
 #
 # The grid points are distributed as follows (in the normalized space):
 
@@ -146,6 +137,18 @@ for i in range(len(ax)):
     ax[i].grid()
 
 plt.tight_layout()
+
+###############################################################################
+# References
+# ^^^^^^^^^
+# .. [1] McKay, M. D., Beckman, R. J., & Conover, W. J. (2000). A comparison of three methods for selecting
+#    values of input variables in the analysis of output from a computer code. Technometrics, 42(1), 55-61.
+# .. [2] Johnson, M. E., Moore, L. M., Ylvisaker D. , Minimax and maximin distance designs,
+#    Journal of Statistical Planning and Inference, 26 (1990), 131–148.
+# .. [3] Morris, M. D., Mitchell, T. J. (1995). Exploratory Designs for Computer Experiments. J. Statist. Plann.
+#    Inference 43, 381-402.
+# .. [4] Jin, R., Chen, W., Sudjianto, A. (2005). An efficient algorithm for constructing optimal
+#    design of computer experiments. Journal of statistical planning and inference, 134(1), 268-287.
 
 # When using Windows you need to encapsulate the code in a main function and insert an
 # if __name__ == '__main__': guard in the main module to avoid creating subprocesses recursively:

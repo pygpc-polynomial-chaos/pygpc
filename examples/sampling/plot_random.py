@@ -2,8 +2,8 @@
 Standard Random sampling
 ========================
 
-To calculate the coefficients of the gPC matrix, a number of random samples needs to be
-picked to represent the probability space :math:`\\Theta` and enable discrete evaluations of the
+To calculate the coefficients of the gPC matrix, a number of model evaluations need to be
+performed to sample the probability space :math:`\\Theta` and enable the estimation of the
 polynomials. As for the computation of the coefficients, the input parameters :math:`\\mathbf{\\xi}`
 can be sampled in a number of different ways. In **pygpc** the grid :math:`\\mathcal{G}` for this
 application is constructed in `pygpc/Grid.py <../../../../pygpc/Grid.py>`_.
@@ -36,9 +36,9 @@ grid = pygpc.Random(parameters_random=parameters,
 ###############################################################################
 # The following options are available for Random grids:
 #
-# - seed: set a seed to reproduce the results
+# - seed: set a seed to reproduce the grid
 #
-# The grid points are distributed as follows (in the normalized space):
+# The grid points are distributed as follows (in the normalized space between [-1, 1]):
 
 fig = plt.figure(figsize=(4, 3.5))
 plt.scatter(grid.coords_norm[:, 0], grid.coords_norm[:, 1], c="k")
@@ -52,7 +52,7 @@ plt.grid()
 plt.tight_layout()
 
 ###############################################################################
-# The sampling method can be selected accordingly for each gPC algorithm by setting the following options
+# For each gPC algorithm, the sampling method can be selected accordingly by setting the following options
 # when setting up the algorithm:
 options = dict()
 ...

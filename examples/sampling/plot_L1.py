@@ -2,9 +2,10 @@
 L1 optimal sampling
 ===================
 
-Before explaining the division of L1 optimal grids in this section a brief motivation for the L1-optimization and
-further the L1 optimal sampling that aims to strengthen the benefit from this procedure is necessary. L1 optimization is
-used for solving the following linear algebra problem at the core of the gpc for cases of an underdetermined system.
+Before explaining the different types of L1 optimal grids a brief motivation for the L1-optimization and
+further the L1 optimal sampling that aims to strengthen the benefit from this procedure is given. L1 optimization is
+used for solving the following linear algebra problem at the core of the gPC for underdetermined system where
+the number of model evaluations is less than the number of gPC coefficients to be determined.
 
 .. math::
     \\mathbf{Y_{M}} = \\mathbf{\\Psi_{M \\times N}} \\mathbf{c_{N}}
@@ -12,23 +13,19 @@ used for solving the following linear algebra problem at the core of the gpc for
 In this case the matrix :math:`\\mathbf{\\Psi}` is of size :math:`M\\times N` and the coefficient vector :math:`\\mathbf{C}` of
 size :math:`N`, where :math:`N<M`. In other words we're trying to fit more coefficients then we have data points. This
 procedure is most effective if the vector or array of coefficients has a high amount of vanishing and thus not needed
-entries. This type of problem can also be called sparse recovery or compressive sampling.
+entries. This type of problem can also be called sparse recovery or compressive sensing.
 
-L1 optimal sampling seeks to tune the grid composition well for solving such a problem efficiently.
+L1 optimal sampling seeks to tune the grid composition for solving such a problem efficiently.
 Most grids in this category are based on coherence optimal samples drawn from a sampling strategy introduced by Hampton
-and Doostan in the framework of gpc.
+and Doostan (2015) in the framework of gPC.
 
-.. [1] J. Hampton and A. Doostan, Coherence motivated sampling and convergence analysis of least
-    squares polynomial Chaos regression, Computer Methods in Applied Mechanics and Engineering,
-    290 (2015), 73–97.
-
-A variety of grids can be build upon this idea:
+A variety of grid types can be build upon this idea:
 
 Coherence optimal sampling (CO)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Coherence optimal sampling seeks to minimize the spectral matrix norm between the Gram and the identify matrix.
-The Gram matrix is defined by:
+Coherence optimal sampling seeks to minimize the spectral matrix norm between the Gram matrix of the gPC matrix
+and the identify matrix. The Gram matrix is defined by:
 
 .. math::
     \\mathbf{G_\\Psi} = \\frac{1}{N_g}[\\mathbf{\\Psi^T}] [\\mathbf{\\Psi}]
@@ -52,20 +49,17 @@ distribution:
     P_{\\mathbf{Y}}(\\mathbf{\\xi}) := c^2 P(\\mathbf{\\xi}) B^2(\\mathbf{\\xi})
 
 where :math:`c` is a normalization constant, :math:`P(\\mathbf{\\xi})` is the joint probability density function of the
-original input distributions and :math:`B(\\mathbf{\\xi})` is an upper bound of the Polynomial Chaos basis:
+original input distributions and :math:`B(\\mathbf{\\xi})` is an upper bound of the polynomial chaos basis:
 
 .. math::
     B(\\mathbf{\\xi}):= \\sqrt{\\sum_{j=1}^P|\\psi_j(\\mathbf{\\xi})|^2}
 
 To avoid defining the normalization constant $c$ a Markov Chain Monte Carlo approach using a Metropolis-Hastings sampler
-is used to draw samples from :math:`P_{\\mathbf{Y}}(\\mathbf{\\xi})`. For the Mertopolis-Hastings sampler it is necessary
+[2] is used to draw samples from :math:`P_{\\mathbf{Y}}(\\mathbf{\\xi})`. For the Mertopolis-Hastings sampler it is necessary
 to define a sufficient candidate distribution. For a coherence optimal sampling this is realized by a proposal
 distribution :math:`g(\\xi)` (see the method introduced by Hampton). By sampling from a different distribution then
 :math:'P(\\xi)' however it is not possible to guarantee :math:`\\mathbf{\\Psi}` to be a matrix of orthonormal
 polynomials.
-
-.. [2] W. K. Hastings, Monte Carlo sampling methods using Markov chains and their applications,
-    1970.
 
 Therefore :math:`\\mathbf{W}` needs to be a diagonal positive-definite matrix of weight-functions :math:`w(\\xi)` which
 is then applied to:
@@ -80,7 +74,8 @@ In practice it is possible to compute :math:`\\mathbf{W}` with:
 
 Example
 -------
-In order to create a grid of sampling points, we have to define the random parameters and create a gpc object.
+In order to create a coherence optimal grid of sampling points, we have to define the random parameters and create
+a gpc object.
 
 """
 
@@ -111,13 +106,16 @@ gpc = pygpc.Reg(problem=problem,
                 options=None,
                 validation=None)
 
+# create a coherence optimal grid
 grid_co = pygpc.CO(parameters_random=parameters,
                    n_grid=50,
                    gpc=gpc,
                    options={"seed": None,
                             "n_warmup": 1000})
 
-# Here is a figure of CO sampling in normalized coordinates
+############################################################
+# An example of how the samples are distributed in the probability space is given below:
+
 plt.scatter(grid_co.coords_norm[:, 0], grid_co.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
 
@@ -136,7 +134,7 @@ plt.tight_layout()
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #
 # The mutual coherence of a matrix measures the cross-correlations between its columns by evaluating the largest
-# absolute and normalized inner product between different columns. It can be evaluated by:
+# absolute and normalized inner product between different columns. It is given by:
 #
 # .. math::
 #     \mu(\mathbf{\Psi}) = \max_ {1 \leq i, j\leq N_c, j\neq i} \quad \frac{|\psi_i^T \psi_j|}{||\psi_i||_2||
@@ -146,6 +144,7 @@ plt.tight_layout()
 # Minimizing the mutual-coherence considers only the worst-case scenario and does not account to improve
 # compressive sampling performance in general.
 
+# create a mutual coherence optimal grid
 grid_mc = pygpc.L1(parameters_random=parameters,
                    n_grid=50,
                    gpc=gpc,
@@ -154,7 +153,8 @@ grid_mc = pygpc.L1(parameters_random=parameters,
                             "n_pool": 1000,
                             "seed": None})
 
-# Here is a figure of MC optimal sampling in normalized coordinates
+############################################################
+# An example of how the samples are distributed in the probability space is given below:
 plt.scatter(grid_mc.coords_norm[:, 0], grid_mc.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
 
@@ -176,8 +176,6 @@ plt.tight_layout()
 # correlation as a measure for a two-fold optimization with the benefit of further robustness in its efficient sparse
 # recovery. The average cross-correlation is defined by:
 #
-#
-#
 # .. math::
 #     \gamma(\mathbf{\Psi}) = \frac{1}{N} \min_{\mathbf{\Psi} \in R^{M \times N_c}} ||I_{N_c} -
 #     \mathbf{G_\mathbf{\Psi}}||^2_F
@@ -194,11 +192,8 @@ plt.tight_layout()
 #
 # with :math:`\boldsymbol\mu = (\mu_{1}, \mu_{2}, ..., \mu_{i})` and :math:`\boldsymbol\gamma = (\gamma_1,
 # \gamma_2, ..., \gamma_i)`
-#
-# .. [3] N. Alemazkoor and H. Meidani, A near-optimal sampling strategy for sparse recovery of polynomial
-#     chaos expansions, Journal of Computational Physics, 371 (2018), 137–151
-#
 
+# create a mutual coherence and cross correlation optimal grid
 grid_mc_cc = pygpc.L1(parameters_random=parameters,
                       n_grid=50,
                       gpc=gpc,
@@ -207,7 +202,8 @@ grid_mc_cc = pygpc.L1(parameters_random=parameters,
                                "n_pool": 1000,
                                "seed": None})
 
-# Here is a figure of MC-CC optimal sampling in normalized coordinates
+############################################################
+# An example of how the samples are distributed in the probability space is given below:
 plt.scatter(grid_mc_cc.coords_norm[:, 0], grid_mc_cc.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
 
@@ -222,7 +218,7 @@ plt.grid()
 plt.tight_layout()
 
 #%%
-# :math:`D`-optimal sampling
+# D-optimal sampling
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^
 #
 # Further a selection of optimization criteria derived from :math:`\mathbf{G_\Psi}` and the identification of
@@ -233,27 +229,22 @@ plt.tight_layout()
 # .. math::
 #     \phi_D = |\mathbf{G_\Psi}^{-1}|^{1/N_c}
 #
-#
 # :math:`D`-optimal designs are focused on precise estimation of the coefficients. Besides :math:`D`-optimal designs,
 # there exist are a lot of other alphabetic optimal designs such as :math:`A`-, :math:`E`-, :math:`I`-, or :math:`V`-
-# optimal designs with different goals and criteria. A nice overview about them can be found in the papers below.
-#
-# .. [4]  A. C. Atkinson, Optimum experimental designs, with SAS, vol. 34 of Oxford statistical
-# science series, Oxford Univ. Press, Oxford, 2007, URL http://site.ebrary.com/lib/
-# academiccompletetitles/home.action.
-#
-# .. [5] F. Pukelsheim, Optimal design of experiments, SIAM, 2006.
-#
+# optimal designs with different goals and criteria. A nice overview about them can be found by Atkinson (2007) and
+# Pukelsheim (2006).
 
+# create a D optimal grid
 grid_d = pygpc.L1(parameters_random=parameters,
                       n_grid=50,
                       gpc=gpc,
-                      options={"criterion": ["D", "cc"],
+                      options={"criterion": ["D"],
                                "method": "greedy",
                                "n_pool": 1000,
                                "seed": None})
 
-# Here is a figure of D optimal sampling in normalized coordinates
+############################################################
+# An example of how the samples are distributed in the probability space is given below:
 plt.scatter(grid_d.coords_norm[:, 0], grid_d.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
 
@@ -268,7 +259,7 @@ plt.grid()
 plt.tight_layout()
 
 #%%
-# :math:`D`-Coherence optimal sampling
+# D-coherence optimal sampling
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #
 # :math:`D`-optimal designs can even be combined with coherence optimal designs by using a pool of already coherence
@@ -279,20 +270,18 @@ plt.tight_layout()
 # successively add a sampling point and calculate the respective optimization criteria. After evaluating all possible
 # candidates, we add the sampling point yielding the best criterion and append it to the existing set. This is repeated
 # until the sampling set has the desired size.
-#
-# .. [6] P. Diaz, A. Doostan and J. Hampton, Sparse polynomial chaos expansions via compressed sensing
-# and D-optimal design, Computer Methods in Applied Mechanics and Engineering, 336 (2018),
-# 640–666.
 
+# create a D-coherence optimal grid
 grid_d_coh = pygpc.L1(parameters_random=parameters,
                       n_grid=50,
                       gpc=gpc,
-                      options={"criterion": ["D-coh", "cc"],
+                      options={"criterion": ["D-coh"],
                                "method": "greedy",
                                "n_pool": 1000,
                                "seed": None})
 
-# Here is a figure of D-Coh optimal sampling in normalized coordinates
+############################################################
+# An example of how the samples are distributed in the probability space is given below:
 plt.scatter(grid_d_coh.coords_norm[:, 0], grid_d_coh.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
 
@@ -308,20 +297,19 @@ plt.tight_layout()
 
 ##############################################################################
 # L1 designs with different optimization criteria can be created using the "criterion" argument in the options
-# dictionary. Construction high dimensional grids using Numpy are much more time consuming then the other sampling
-# variations in pygpc as they are currently not very optimized.
-
-#%%
+# dictionary.
+#
 # Options
 # ^^^^^^^
 #
 # The following options are available for L1-optimal grids:
-# for pygpc.CO():
+#
+# **pygpc.CO()**
 #
 # - seed: set a seed to reproduce the results (default: None)
 # - n_warmup: the number of samples that are discarded in the Metropolis-Hastings sampler before samples are accepted (default: max(200, 2*n_grid), here n_grid is the amount of samples that are meant to be generated)
 #
-# for pygpc.L1()
+# **pygpc.L1()**
 #
 # - seed: set a seed to reproduce the results (default: None)
 # - method:
@@ -334,7 +322,6 @@ plt.tight_layout()
 #    - ["D-coh"]: D and coherence optimal
 # - n_pool: number of grid points in overall pool to select optimal points from (default: 10.000)
 # - n_iter: number of iterations used for the "iter" method (default: 1000)
-#
 
 ###############################################################################
 # The sampling method can be selected accordingly for each gPC algorithm by setting the following options
@@ -347,6 +334,22 @@ options["grid_options"] = {"seed": None,
                            "criterion": ["mc", "cc"],
                            "n_pool": 1000}
 ...
+
+#########################################################
+# References
+# ^^^^^^^^^
+# .. [1] Hampton, J., Doostan A., Coherence motivated sampling and convergence analysis of least
+#     squares polynomial Chaos regression, Computer Methods in Applied Mechanics and Engineering,
+#     290 (2015), 73–97.
+# .. [2] Hastings, W. K., Monte Carlo sampling methods using Markov chains and their applications,
+#     1970.
+# .. [3] Alemazkoor N., Meidani, H., A near-optimal sampling strategy for sparse recovery of polynomial
+#     chaos expansions, Journal of Computational Physics, 371 (2018), 137–151
+# .. [4] Atkinson, A. C., Optimum experimental designs, with SAS, vol. 34 of Oxford statistical
+#    science series, Oxford Univ. Press, Oxford, 2007, URL http://site.ebrary.com/lib/academiccompletetitles/home.action.
+# .. [5] Pukelsheim, F., Optimal design of experiments, SIAM, 2006.
+# .. [6] Diaz, P., Doostan, A., and Hampton, J., Sparse polynomial chaos expansions via compressed sensing
+#    and D-optimal design, Computer Methods in Applied Mechanics and Engineering, 336 (2018), 640–666.
 
 # When using Windows you need to encapsulate the code in a main function and insert an
 # if __name__ == '__main__': guard in the main module to avoid creating subprocesses recursively:
