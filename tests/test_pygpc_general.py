@@ -2567,7 +2567,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         # define input data
         np.random.seed(1)
-        n_grid = 1000
+        n_grid = 3000
         rho_0 = np.random.rand(n_grid)
         beta = np.random.rand(n_grid) * 20.
         alpha = 1.
@@ -2637,7 +2637,7 @@ class TestPygpcMethods(unittest.TestCase):
                                      algorithm="standard",
                                      n_samples=1e4)
 
-        self.expect_true(session.gpc[0].error[0] < 0.05,
+        self.expect_true(session.gpc[0].error[0] < 0.075,
                          f'gPC test failed with LOOCV error = {session.gpc[0].error[0]}')
 
         print("> Checking file consistency...")
