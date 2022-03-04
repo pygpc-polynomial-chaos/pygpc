@@ -16,7 +16,7 @@ convergence properties of the methods between the analyzed test functions. One o
 function, where the results are reported in the following.
 
  .. image:: ../../../examples/images/Testfunctions_table.png
-     :width: 700
+     :width: 550
      :align: center
 
 Benchmark on the Ishigami function
