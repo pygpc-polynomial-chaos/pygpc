@@ -743,8 +743,8 @@ class SparseGrid(Grid):
             weights = []
 
             for i_p in range(self.dim):
-                knots.append(np.asarray(dl_k[np.int(l_level[i_l_level, i_p])][i_p], dtype=float))
-                weights.append(np.asarray(dl_w[np.int(l_level[i_l_level, i_p])][i_p], dtype=float))
+                knots.append(np.asarray(dl_k[int(l_level[i_l_level, i_p])][i_p], dtype=float))
+                weights.append(np.asarray(dl_w[int(l_level[i_l_level, i_p])][i_p], dtype=float))
 
             # tensor product of knots
             dll_k.append(get_cartesian_product(knots))
@@ -2379,6 +2379,7 @@ class L1(RandomGrid):
 
             if "D" not in self.criterion and "D-coh" not in self.criterion:
                 crit_tmp = np.concatenate(crit_tmp)
+
             else:
                 sign = []
                 neg_logdet = []
@@ -2389,8 +2390,8 @@ class L1(RandomGrid):
 
                 sign = np.concatenate(sign)
                 neg_logdet = np.concatenate(neg_logdet)
-                neg_logdet_norm = neg_logdet / np.max(np.abs(neg_logdet))
-                crit_tmp = sign * np.exp(neg_logdet_norm)
+                neg_logdet_norm = neg_logdet / np.nan_to_num(np.max(np.abs(neg_logdet)))
+                crit_tmp = sign * np.nan_to_num(np.exp(neg_logdet_norm))
 
             crit[index_list_remaining, :] = crit_tmp
 
@@ -2400,7 +2401,8 @@ class L1(RandomGrid):
                     crit[crit[:, k] == 1e6, k] = np.max(crit[crit[:, k] != 1e6, k])
 
             # normalize optimality criteria to [0, 1]
-            crit = (crit - np.nanmin(crit, axis=0)) / (np.nanmax(crit, axis=0) - np.nanmin(crit, axis=0))
+            crit = np.nan_to_num(crit)
+            crit = (crit - np.nanmin(crit, axis=0)) / np.nan_to_num((np.nanmax(crit, axis=0) - np.nanmin(crit, axis=0)))
 
             # apply weights
             crit = np.sum(crit**2 * np.array(self.weights), axis=1)
@@ -2408,8 +2410,10 @@ class L1(RandomGrid):
             # find best index
             try:
                 index_list.append(np.nanargmin(crit))
+            # in very rare cases there the optimal grid point can not be determined (all nan), in this case the first
+            # grid point of the remaining indices is chosen
             except ValueError:
-                a=1
+                index_list.append(index_list_remaining[0])
 
             # add row with best minimal coherence and cross correlation properties to the matrix
             psy_opt = np.vstack((psy_opt, psy_pool[index_list[-1], :]))
@@ -2420,6 +2424,7 @@ class L1(RandomGrid):
         coords_norm = random_pool.coords_norm[index_list, :]
 
         pool.close()
+        pool.join()
 
         if self.grid_pre is not None:
             coords_norm = np.vstack((self.grid_pre.coords_norm, coords_norm))
@@ -2474,7 +2479,7 @@ class L1(RandomGrid):
                     coords_norm_list = coords_norm_list + res[j][2]
 
         # normalize optimality criteria to [0, 1]
-        crit = (crit - np.min(crit, axis=0)) / (np.max(crit, axis=0) - np.min(crit, axis=0))
+        crit = (crit - np.min(crit, axis=0)) / np.nan_to_num((np.max(crit, axis=0) - np.min(crit, axis=0)))
 
         # apply weights
         crit = np.sum(crit**2 * np.array(self.weights), axis=1)
@@ -2604,7 +2609,9 @@ class FIM(RandomGrid):
         elif self.grid_pre is not None:
             self.gpc.grid = self.grid_pre
             n_grid_add = self.n_grid - self.grid_pre.n_grid
-            assert(n_grid_add >= 0, "Number of grid points to add has to be >= 0 ...")
+
+            if n_grid_add < 0:
+                raise RuntimeError(f"Number of grid points to add has to be >= 0 (it is {n_grid_add}")
 
             if self.gpc.p_matrix is not None:
                 self.gpc.gpc_matrix = self.gpc.create_gpc_matrix(b=self.gpc.basis.b,

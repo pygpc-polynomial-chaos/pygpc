@@ -2644,8 +2644,6 @@ class TestPygpcMethods(unittest.TestCase):
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
         self.expect_true(files_consistent, error_msg)
 
-
-
         print("done!\n")
 
 

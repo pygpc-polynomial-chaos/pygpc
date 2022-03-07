@@ -883,7 +883,7 @@ def write_dict_to_hdf5(fn_hdf5, data, folder, verbose=False):
                               verbose=verbose)
 
 
-def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True,verbose=False):
+def write_arr_to_hdf5(fn_hdf5, arr_name, data, overwrite_arr=True, verbose=False):
     """
     Takes an array and adds it to an .hdf5 file
 

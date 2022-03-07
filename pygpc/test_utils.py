@@ -91,8 +91,8 @@ def check_file_consistency(fn_hdf5):
                     file_status = False
 
         try:
-            if type(f["misc/error_type"][...][()]) is not str:
-                error_msg.append("misc/error_type is not a str")
+            if not(type(f["misc/error_type"][...][()]) is str or type(f["misc/error_type"][...][()]) is bytes):
+                error_msg.append("misc/error_type is not str or bytes")
                 file_status = False
         except KeyError:
             error_msg.append("misc/error_type not found in results file: {}".format(fn_hdf5))

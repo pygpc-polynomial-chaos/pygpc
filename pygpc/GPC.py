@@ -1006,7 +1006,14 @@ class GPC(object):
                 results_complete = results_complete[:, np.newaxis]
 
             # determine gPC-coefficients of extended basis using LarsLasso
-            reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False)
+            # from sklearn.preprocessing import normalize
+            # matrix_norm = normalize(matrix, axis=0, return_norm=False)
+            #
+            # reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False, normalize=False)
+            # reg.fit(matrix_norm, results_complete)
+            # coeffs = reg.coef_
+
+            reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False, normalize=False)
             reg.fit(matrix, results_complete)
             coeffs = reg.coef_
 

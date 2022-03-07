@@ -4064,6 +4064,7 @@ class RegAdaptiveProjection(Algorithm):
                                 gpc[i_qoi].grid.n_grid, n_grid_new, n_grid_new - gpc[i_qoi].grid.n_grid),
                                 tab=0, verbose=self.options["verbose"])
 
+                            grid_original.gpc = gpc[i_qoi]
                             grid_original.extend_random_grid(n_grid_new=n_grid_new)
 
                             # run simulations
@@ -4364,7 +4365,7 @@ class RegAdaptiveProjection(Algorithm):
                                      maxshape=None, dtype="float64")
                     try:
                         f.create_dataset("misc/error_type", data=self.options["error_type"])
-                    except RuntimeError:
+                    except (RuntimeError, ValueError):
                         del f["misc/error_type"]
                         f.create_dataset("misc/error_type", data=self.options["error_type"])
 

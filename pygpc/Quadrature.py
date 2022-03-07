@@ -70,7 +70,7 @@ def get_quadrature_hermite_1d(n):
     weights: np.ndarray
         weights of the grid
     """
-    n = np.int(n)
+    n = int(n)
     knots, weights = np.polynomial.hermite_e.hermegauss(n)
     weights = np.array(list(2.0 * weights / np.sum(weights)))
 
@@ -97,10 +97,11 @@ def get_quadrature_laguerre_1d(n, alpha):
     weights: np.ndarray
         weights of the grid
     """
-    n = np.int(n)
+    n = int(n)
     knots, weights = roots_genlaguerre(n=n, alpha=alpha)
 
     return knots, weights
+
 
 # TODO: review this
 def get_quadrature_clenshaw_curtis_1d(n):
@@ -121,7 +122,7 @@ def get_quadrature_clenshaw_curtis_1d(n):
     weights: np.ndarray
         Weights of the grid
     """
-    n = np.int(n)
+    n = int(n)
 
     if n == 1:
         knots = 0
@@ -172,7 +173,7 @@ def get_quadrature_fejer1_1d(n):
     .. [3] Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw-Curtis quadrature rules.
        BIT Numerical Mathematics, 46(1), 195-202.
     """
-    n = np.int(n)
+    n = int(n)
 
     theta = np.zeros(n)
 
@@ -231,7 +232,7 @@ def get_quadrature_fejer2_1d(n):
     .. [3] Waldvogel, J. (2006). Fast construction of the Fejer and Clenshaw–Curtis quadrature rules.
        BIT Numerical Mathematics, 46(1), 195-202.
     """
-    n = np.int(n)
+    n = int(n)
 
     if n == 1:
         knots = np.array([0.0])
