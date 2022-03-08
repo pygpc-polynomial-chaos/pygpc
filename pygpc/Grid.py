@@ -3343,7 +3343,8 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None, options
             else:
                 test_grid = Random(parameters_random=gpc.problem_original.parameters_random,
                                    n_grid=n_grid,
-                                   grid_pre=grid_pre)
+                                   grid_pre=grid_pre,
+                                   options={"seed": options["seed"]})
         else:
             if "D-coh" in criterion:
                 test_grid = CO(parameters_random=gpc.problem.parameters_random,
@@ -3354,7 +3355,8 @@ def workhorse_iteration(idx_list, gpc, n_grid, criterion, grid_pre=None, options
             else:
                 test_grid = Random(parameters_random=gpc.problem.parameters_random,
                                    n_grid=n_grid,
-                                   grid_pre=grid_pre)
+                                   grid_pre=grid_pre,
+                                   options={"seed": options["seed"]})
 
         coords_norm = test_grid.coords_norm
 
