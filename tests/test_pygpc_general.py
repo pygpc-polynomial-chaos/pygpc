@@ -2637,7 +2637,7 @@ class TestPygpcMethods(unittest.TestCase):
                                      algorithm="standard",
                                      n_samples=1e4)
 
-        self.expect_true(session.gpc[0].error[0] < 0.075,
+        self.expect_true(session.gpc[0].error[0] < 0.1,
                          f'gPC test failed with LOOCV error = {session.gpc[0].error[0]}')
 
         print("> Checking file consistency...")
