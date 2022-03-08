@@ -11,12 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.8]
         include:
-          - python-version: 3.6
-            cibw-string: "cp36-*"
-          - python-version: 3.7
-            cibw-string: "cp37-*"
           - python-version: 3.8
             cibw-string: "cp38-*"
     steps:
@@ -55,12 +51,8 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.8]
         include:
-          - python-version: 3.6
-            cibw-string: "cp36-*"
-          - python-version: 3.7
-            cibw-string: "cp37-*"
           - python-version: 3.8
             cibw-string: "cp38-*"
     steps:
@@ -99,12 +91,8 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.8]
         include:
-          - python-version: 3.6
-            cibw-string: "cp36-*"
-          - python-version: 3.7
-            cibw-string: "cp37-*"
           - python-version: 3.8
             cibw-string: "cp38-*"
     steps:
