@@ -1822,7 +1822,7 @@ class TestPygpcMethods(unittest.TestCase):
             grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
 
         # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        self.expect_true(np.isclose(grid[0].coords_norm, grid[1].coords_norm).all(),
                          "Random grid is not reproducible when seeding")
 
         # LHS
@@ -1844,7 +1844,7 @@ class TestPygpcMethods(unittest.TestCase):
                 grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
 
             # compare
-            self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+            self.expect_true(np.isclose(grid[0].coords_norm, grid[1].coords_norm).all(),
                              f"LHS ({criterion}) grid is not reproducible when seeding")
 
         # L1
@@ -1873,7 +1873,7 @@ class TestPygpcMethods(unittest.TestCase):
                     grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
 
                 # compare
-                self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+                self.expect_true((np.isclose(grid[0].coords_norm, grid[1].coords_norm)).all(),
                                  f"L1 ({criterion}, {method}) grid is not reproducible when seeding")
 
         # FIM
@@ -1890,7 +1890,7 @@ class TestPygpcMethods(unittest.TestCase):
             grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
 
         # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        self.expect_true(np.isclose(grid[0].coords_norm, grid[1].coords_norm).all(),
                          "FIM grid is not reproducible when seeding")
 
         # CO
@@ -1907,7 +1907,7 @@ class TestPygpcMethods(unittest.TestCase):
             grid[i].extend_random_grid(n_grid_new=grid[i].n_grid + 5)
 
         # compare
-        self.expect_true((grid[0].coords_norm == grid[1].coords_norm).all(),
+        self.expect_true(np.isclose(grid[0].coords_norm, grid[1].coords_norm).all(),
                          "CO grid is not reproducible when seeding")
 
     def test_020_Matlab_gpc(self):
