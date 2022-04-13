@@ -14,6 +14,7 @@ from .misc import t_averaged_mutual_coherence
 from .misc import average_cross_correlation_gram
 from .misc import get_different_rows_from_matrices
 from scipy.special import gamma
+from scipy._lib.six import xrange
 
 import multiprocessing.pool
 from _functools import partial
@@ -1367,6 +1368,7 @@ class LHS(RandomGrid):
         self.grid_pre = grid_pre
         self.options = options
         self.criterion = None
+        self.method = None
         self.coords_norm_reservoir_perced = None
 
         if type(self.options) is dict:
@@ -1374,6 +1376,10 @@ class LHS(RandomGrid):
                 self.criterion = options["criterion"]
             else:
                 self.criterion = ["ese"]
+            if "method" in self.options.keys():
+                self.method = options["method"]
+            else:
+                self.criterion = ["standard"]
 
         if type(self.criterion) is not list:
             self.criterion = [self.criterion]
@@ -1390,10 +1396,10 @@ class LHS(RandomGrid):
 
         self.shift_outer = False
 
-        if self.criterion == ["ese"]:
-            for p in parameters_random:
-                if parameters_random[p].p_perc is None:
-                    self.shift_outer = True
+        # if self.criterion == ["ese"]:
+        #     for p in parameters_random:
+        #         if parameters_random[p].p_perc is None:
+        #             self.shift_outer = True
 
         if coords is not None and coords_norm is not None:
             grid_present = True
@@ -1534,9 +1540,24 @@ class LHS(RandomGrid):
         .. [1] Morris, M. D., & Mitchell, T. J. (1995). Exploratory designs for computational experiments.
            Journal of statistical planning and inference, 43(3), 381-402.
         """
+        m, n = x.shape
+        dist = np.zeros((m * (m - 1)) // 2, dtype=np.double)
+        k = 0
+        if self.method == "standard" or None:
+            for i in xrange(0, m - 1):
+                for j in xrange(i + 1, m):
+                    dist[k] = np.linalg.norm(x[i] - x[j])
+                    k = k + 1
 
-        phip = ((scipy.spatial.distance.pdist(x) ** (-p)).sum()) ** (1.0 / p)
+            phip = ((dist ** (-p)).sum()) ** (1.0 / p)
+        elif self.method == "periodic":
+            for i in xrange(0, m - 1):
+                for j in xrange(i + 1, m):
+                    periodic_dist = np.sqrt(np.sum(np.square(np.min(np.abs(x[i]-x[j])), 1 - np.abs(x[i]-x[j]))))
+                    dist[k] = periodic_dist
+                    k = k + 1
 
+            phip = ((dist ** (-p)).sum()) ** (1.0 / p)
         return phip
 
     def PhiP_exchange(self, P, k, Phi, p, fixed_index):
