@@ -74,7 +74,7 @@ One of the testcases for different grids was the Ishigami function, which is alr
 
 
 Because of their random nature, we compared the grid repeatedly by using N=30 repetition. For every grid instance
-and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row) the mean
+and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row), the mean
 (second row) and standard deviation (third row) of the gPC approximations compared to the original model.
 
 .. image:: ../../../examples/images/Ishigami_nrmsd_mean_std.png
@@ -96,7 +96,7 @@ Further the success rate of the best converging grids (from all LHS and from all
 0.1%, 1%, and 10% can be seen in the following figure.
 
 .. image:: ../../../examples/images/Ishigami_nrmsd_success_rates.png
-    :width: 800
+    :width: 500
     :align: center
 
 We evaluated the relative performance of the sampling schemes with respect to standard random sampling over four
@@ -122,7 +122,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.869 seconds)
+   **Total running time of the script:** ( 0 minutes  0.898 seconds)
 
 
 .. _sphx_glr_download_auto_sampling_plot_grid_comparison.py:

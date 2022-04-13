@@ -43,7 +43,7 @@ plot("Ishigami", parameters, constants, plot_3d=False)
 
 # %%
 # Because of their random nature, we compared the grid repeatedly by using N=30 repetition. For every grid instance
-# and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row) the mean
+# and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row), the mean
 # (second row) and standard deviation (third row) of the gPC approximations compared to the original model.
 #
 # .. image:: ../../../examples/images/Ishigami_nrmsd_mean_std.png
@@ -65,7 +65,7 @@ plot("Ishigami", parameters, constants, plot_3d=False)
 # 0.1%, 1%, and 10% can be seen in the following figure.
 #
 # .. image:: ../../../examples/images/Ishigami_nrmsd_success_rates.png
-#     :width: 800
+#     :width: 500
 #     :align: center
 #
 # We evaluated the relative performance of the sampling schemes with respect to standard random sampling over four
