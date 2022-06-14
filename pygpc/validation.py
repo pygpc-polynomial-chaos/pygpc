@@ -416,7 +416,8 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
 
 
-def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_idx=0, fn_out=None, camera_pos=None):
+def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_idx=0, fn_out=None, camera_pos=None,
+             zlim=None):
     """
     Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
     calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
@@ -443,6 +444,8 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
         Filename of plot comparing original vs gPC model (*.png or *.pdf)
     camera_pos : list [2], optional, default: None
         Camera position of 3D surface plot (for 2 random variables only) [azimuth, elevation]
+    zlim : list of float, optional, default: None
+        Limits of 3D plot in z direction
 
     Returns
     -------
@@ -552,6 +555,9 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
                 ax1.view_init(elev=camera_pos[0], azim=camera_pos[1])
 
             fig.colorbar(im1, ax=ax1, orientation='vertical')
+
+            if zlim is not None:
+                ax1.set_zlim(zlim)
 
         # plot histogram of output data and gPC estimated pdf
         ax2 = fig.add_subplot(1, 2, 2)
