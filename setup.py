@@ -8,7 +8,7 @@ from setuptools import setup, find_packages, Extension
 # analysis of complex systems. See also:
 # https://github.com/pygpc-polynomial-chaos/pygpc
 #
-# Copyright (C) 2017-2020 the original author (Konstantin Weise),
+# Copyright (C) 2017-2022 the original author (Konstantin Weise),
 # the Max-Planck-Institute for Human Cognitive Brain Sciences ("MPI CBS")
 # and contributors
 #
@@ -41,7 +41,7 @@ extensions = [Extension('pygpc.pygpc_extensions',
 
 
 setup(name='pygpc',
-      version='0.3.1',
+      version='0.3.2',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
