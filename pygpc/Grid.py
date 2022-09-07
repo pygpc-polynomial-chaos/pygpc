@@ -14,7 +14,6 @@ from .misc import t_averaged_mutual_coherence
 from .misc import average_cross_correlation_gram
 from .misc import get_different_rows_from_matrices
 from scipy.special import gamma
-from scipy._lib.six import xrange
 
 import multiprocessing.pool
 from _functools import partial
@@ -1544,15 +1543,15 @@ class LHS(RandomGrid):
         dist = np.zeros((m * (m - 1)) // 2, dtype=np.double)
         k = 0
         if self.method == "standard" or None:
-            for i in xrange(0, m - 1):
-                for j in xrange(i + 1, m):
+            for i in range(0, m - 1):
+                for j in range(i + 1, m):
                     dist[k] = np.linalg.norm(x[i] - x[j])
                     k = k + 1
 
             phip = ((dist ** (-p)).sum()) ** (1.0 / p)
         elif self.method == "periodic":
-            for i in xrange(0, m - 1):
-                for j in xrange(i + 1, m):
+            for i in range(0, m - 1):
+                for j in range(i + 1, m):
                     periodic_dist = np.sqrt(np.sum(np.square(np.min(np.abs(x[i]-x[j])), 1 - np.abs(x[i]-x[j]))))
                     dist[k] = periodic_dist
                     k = k + 1

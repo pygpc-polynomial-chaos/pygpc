@@ -44,6 +44,12 @@ pygpc can be used to analyze a variety of different of problems. It is used for 
   
   - [Kalloch, B., Weise, K., Bazin, P.-L., Lampea, L., Villringera, A., Hlawitschk, M., & Sehm, B. (2019). The influence of white matter lesions on the electrical fieldduring transcranial electric stimulation - Preliminary results of a computational sensitivity analysis, SfN Annual Meeting 2019, Chicago, Illinois, USA, October 19th-23rd 2019](https://www.fens.org/News-Activities/Calendar/Meetings/2019/10/SfN-Annual-Meeting-2019/)
 
+  - [Kalloch, B., Weise, K., Lampe, L., Bazin, P. L., Villringer, A., Hlawitschka, M., & Sehm, B. (2022). The influence of white matter lesions on the electric field in transcranial electric stimulation. NeuroImage: Clinical, 103071.](https://www.sciencedirect.com/science/article/pii/S221315822200136X)
+
+- Cancer treatment
+
+  - [Atsou, K., Khou S., Anjuère F., Braud, V., & Thierry Goudon (2022), Analysis of the equilibrium phase in immune-controlled tumors predicts best strategies for cancer treatment, preprint](https://hal.archives-ouvertes.fr/hal-03115518/)
+
 If you use pygpc in your studies, please contact [Konstantin Weise](https://www.cbs.mpg.de/person/51222/2470) to extend the list above. 
 
 Installation
