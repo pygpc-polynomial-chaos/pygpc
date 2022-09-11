@@ -2374,7 +2374,6 @@ class RegAdaptive(Algorithm):
                     #     break
 
 
-                    # TODO: implement Guilhermes rule here
                     # active_set = np.zeros(self.problem.dim)
                     # to_expand = np.zeros_like(active_set)
                     coeffs = self.gpc.coeffs
@@ -2382,12 +2381,9 @@ class RegAdaptive(Algorithm):
                     k = np.argmax(normalized_coeffs)
                     active_set = tuple(self.gpc.basis.multi_indices[k])
                     to_expand = tuple(self.gpc.basis.multi_indices[k])
-
-                    multi_indices_to_add = poly_expand(active_set, old_set, to_expand, self.options["order_max"],
+                    expand_indices = poly_expand(active_set, old_set, to_expand, self.options["order_max"],
                                                        self.options["interaction_order"])
-                    # multi_indices_to_add = np.array([[1, 1, 1],
-                    #                                  [1, 1, 2]])
-
+                    multi_indices_to_add = np.array(expand_indices)
                     # update basis
                     b_added = gpc.basis.add_basis_poly_by_order(multi_indices=multi_indices_to_add,
                                                                 problem=gpc.problem)
