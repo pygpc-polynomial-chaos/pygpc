@@ -4,15 +4,19 @@ import h5py
 import time
 import shutil
 import warnings
+
+import numpy as np
+
 from .Problem import *
 from .SGPC import *
-from .misc import determine_projection_matrix
+from .misc import determine_projection_matrix, poly_expand
 from .misc import get_num_coeffs_sparse
 from .misc import ten2mat
 from .misc import mat2ten
 from .misc import get_gradient_idx_domain
 from .misc import get_coords_discontinuity
 from .misc import increment_basis
+from .misc import get_coords_discontinuity
 from .misc import get_num_coeffs_sparse
 from .testfunctions import Dummy
 from .Grid import *
@@ -2352,6 +2356,7 @@ class RegAdaptive(Algorithm):
             gpc.grid.create_gradient_grid()
 
         # Main iterations (order)
+        iteration_i = 0
         while eps > self.options["eps"]:
 
             if first_iter:
@@ -2360,23 +2365,40 @@ class RegAdaptive(Algorithm):
                 basis_increment = 1
 
             if self.options["basis_increment_strategy"] == "anisotropic":
-                # TODO: think about new rule to abort algorithm with max. basis
-                # if basis_order[0] > self.options["order_end"]:
-                #     break
+                if iteration_i == 0:
+                    old_set = []
 
-                # TODO: implement Guilhermes rule here
-                multi_indices_to_add = np.array([[1, 1, 1],
-                                                 [1, 1, 2]])
+                if iteration_i > 1:
+                    # TODO: think about new rule to abort algorithm with max. basis
+                    # if basis_order[0] > self.options["order_end"]:
+                    #     break
 
-                # update basis
-                b_added = gpc.basis.add_basis_poly_by_order(multi_indices=multi_indices_to_add,
-                                                            problem=gpc.problem)
 
-                if b_added is not None:
-                    print_str = f"Added multi-indices to basis: \n {multi_indices_to_add}"
-                    iprint(print_str, tab=0, verbose=self.options["verbose"])
-                    iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
-                    extended_basis = True
+                    # TODO: implement Guilhermes rule here
+                    # active_set = np.zeros(self.problem.dim)
+                    # to_expand = np.zeros_like(active_set)
+                    coeffs = self.gpc.coeffs
+                    normalized_coeffs = np.linalg.norm(coeffs, axis=1)
+                    k = np.argmax(normalized_coeffs)
+                    active_set = tuple(self.gpc.basis.multi_indices[k])
+                    to_expand = tuple(self.gpc.basis.multi_indices[k])
+
+                    multi_indices_to_add = poly_expand(active_set, old_set, to_expand, self.options["order_max"],
+                                                       self.options["interaction_order"])
+                    # multi_indices_to_add = np.array([[1, 1, 1],
+                    #                                  [1, 1, 2]])
+
+                    # update basis
+                    b_added = gpc.basis.add_basis_poly_by_order(multi_indices=multi_indices_to_add,
+                                                                problem=gpc.problem)
+
+                    if b_added is not None:
+                        print_str = f"Added multi-indices to basis: \n {multi_indices_to_add}"
+                        iprint(print_str, tab=0, verbose=self.options["verbose"])
+                        iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
+                        extended_basis = True
+
+                    iteration_i += 1
 
             else:
                 # increase basis

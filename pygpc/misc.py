@@ -8,6 +8,8 @@ import math
 import itertools
 import random
 from .Visualization import plot_beta_pdf_fit
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
 def is_instance(obj):
@@ -1175,3 +1177,57 @@ def PhiP(x, p=10):
     phip = ((scipy.spatial.distance.pdist(x) ** (-p)).sum()) ** (1.0 / p)
 
     return phip
+
+def poly_expand(active_set, old_set, to_expand, order_max, interaction_max):
+
+    ''' Algorithm by Gerstner and Griebel '''
+
+    active_set.remove(to_expand)
+    old_set += [to_expand]
+    expand = []
+    for e in range(len(to_expand)):
+        forward = np.asarray(to_expand, dtype=int)
+        forward[e] += 1
+        has_predecessors = True
+        for e2 in range(len(to_expand)):
+            if forward[e2] > 0:
+                predecessor = forward.copy()
+                predecessor[e2] -= 1
+                predecessor = tuple(predecessor)
+                has_predecessors *= predecessor in old_set
+        if has_predecessors and np.sum(np.abs(forward)) <= order_max \
+                and np.sum(forward > 0) <= interaction_max:
+            expand += [tuple(forward)]
+            active_set += [tuple(forward)]
+
+    return active_set, old_set, expand
+
+def plot_basis_by_multiindex(a):
+    fig = plt.figure(figsize=(4, 4))
+
+    ax = fig.add_subplot(111, projection='3d')
+
+    for i in range(len(a)):
+        e = 0.3
+        x = a[i][0] + e
+        y = a[i][1] + e
+        z = a[i][2] + e
+        vertices = [[(x + e, y + e, z + e), (x + e, y + e, z - e), (x + e, y - e, z - e), (x + e, y - e, z + e)],
+                    [(x - e, y + e, z + e), (x - e, y + e, z - e), (x - e, y - e, z - e), (x - e, y - e, z + e)],
+                    [(x + e, y + e, z + e), (x + e, y + e, z - e), (x - e, y + e, z - e), (x - e, y + e, z + e)],
+                    [(x + e, y - e, z + e), (x + e, y - e, z - e), (x - e, y - e, z - e), (x - e, y - e, z + e)],
+                    [(x + e, y + e, z + e), (x + e, y - e, z + e), (x - e, y - e, z + e), (x - e, y + e, z + e)],
+                    [(x + e, y + e, z - e), (x + e, y - e, z - e), (x - e, y - e, z - e), (x - e, y + e, z - e)]]
+        poly = Poly3DCollection(vertices, alpha=0.5)
+        ax.add_collection3d(poly)
+
+        for j in range(6):
+            line_xs = np.hstack((np.array(vertices[j]).T[0], np.array(vertices[j]).T[0][0]))
+            line_ys = np.hstack((np.array(vertices[j]).T[1], np.array(vertices[j]).T[1][0]))
+            line_zs = np.hstack((np.array(vertices[j]).T[2], np.array(vertices[j]).T[2][0]))
+            plt.plot(line_xs, line_ys, line_zs, color='k')
+
+    ax.set_xlim(0, 3)
+    ax.set_ylim(0, 3)
+    ax.set_zlim(0, 3)
+    plt.show()
