@@ -671,7 +671,7 @@ class TestPygpcMethods(unittest.TestCase):
         parameters = OrderedDict()
         parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
         parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
-        parameters["x3"] = 0.
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
         parameters["a"] = 7.
         parameters["b"] = 0.1
 
@@ -679,20 +679,21 @@ class TestPygpcMethods(unittest.TestCase):
 
         # gPC options
         options = dict()
-        options["order_start"] = 8
+        options["order_start"] = 3
         options["order_end"] = 20
         options["solver"] = "LarsLasso"
         options["interaction_order"] = 2
         options["order_max_norm"] = 1.0
         options["n_cpu"] = 0
         options["adaptive_sampling"] = False
-        options["gradient_enhanced"] = True
+        options["gradient_enhanced"] = False
         options["gradient_calculation"] = "FD_fwd"
         options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
         options["fn_results"] = os.path.join(folder, test_name)
         options["save_session_format"] = save_session_format
         options["eps"] = 0.0075
         options["basis_increment_strategy"] = "isotropic"
+        options["matrix_ratio"] = 2
         # options["grid"] = pygpc.LHS
         # options["grid_options"] = {"criterion": "ese", "seed": seed}
 

@@ -316,6 +316,8 @@ class Basis:
             if _b not in self.b:
                 self.b.append(_b)
                 self.b_id.append(uuid.uuid4())
+                self.multi_indices = np.vstack((self.multi_indices,
+                                               np.array([_b[i_dim].p["i"] for i_dim in range(self.dim)])))
 
         # update size
         self.n_basis = len(self.b)
@@ -403,7 +405,7 @@ class Basis:
             Plot of basis functions
         """
 
-        plt.rc('text', usetex=True)
+        plt.rc('text', usetex=False)
         plt.rc('font', family='serif', size=14)
 
         multi_indices = np.array([list(map(lambda x: x.p["i"], _b)) for _b in self.b])

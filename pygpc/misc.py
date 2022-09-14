@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import scipy.special
 import scipy.stats
@@ -1178,12 +1180,26 @@ def PhiP(x, p=10):
 
     return phip
 
+
 def poly_expand(active_set, old_set, to_expand, order_max, interaction_max):
+    """
+    Algorithm by Gerstner and Griebel
 
-    ''' Algorithm by Gerstner and Griebel '''
+    Parameters
+    ----------
+    active_set
+    old_set
+    to_expand
+    order_max
+    interaction_max
 
-    active_set.remove(to_expand)
-    old_set += [to_expand]
+    Returns
+    -------
+    expand
+
+    """
+    # active_set.remove(to_expand)
+    # old_set += [to_expand]
     expand = []
     for e in range(len(to_expand)):
         forward = np.asarray(to_expand, dtype=int)
@@ -1193,16 +1209,47 @@ def poly_expand(active_set, old_set, to_expand, order_max, interaction_max):
             if forward[e2] > 0:
                 predecessor = forward.copy()
                 predecessor[e2] -= 1
-                predecessor = tuple(predecessor)
+                predecessor = list(predecessor)
                 has_predecessors *= predecessor in old_set
-        if has_predecessors and np.sum(np.abs(forward)) <= order_max \
-                and np.sum(forward > 0) <= interaction_max:
+        if (np.sum(np.abs(forward)) <= order_max) and (np.sum(forward > 0) <= interaction_max):  # has_predecessors and
             expand += [tuple(forward)]
-            active_set += [tuple(forward)]
+            # active_set += [tuple(forward)]
 
-    return active_set, old_set, expand
+    return expand
+
+
+def get_non_enclosed_multi_indices(multi_indices, interaction_order):
+
+    multi_indices_non_enclosed = []
+
+    for i_m, m in enumerate(multi_indices):
+
+        for i_dim in range(multi_indices.shape[1]):
+
+            m_test = copy.deepcopy(m)
+            m_test[i_dim] = m_test[i_dim] + 1
+
+            if np.sum(m_test > 0) <= interaction_order:
+                if list(m_test) not in multi_indices.tolist():
+                    multi_indices_non_enclosed.append(m)
+
+    multi_indices_non_enclosed = np.unique(multi_indices_non_enclosed, axis=0)
+    poly_indices_non_enclosed = [np.where((multi_indices == m).all(axis=1))[0][0] for m in multi_indices_non_enclosed]
+
+    return multi_indices_non_enclosed, poly_indices_non_enclosed
+
 
 def plot_basis_by_multiindex(a):
+    """
+
+    Parameters
+    ----------
+    a
+
+    Returns
+    -------
+
+    """
     fig = plt.figure(figsize=(4, 4))
 
     ax = fig.add_subplot(111, projection='3d')

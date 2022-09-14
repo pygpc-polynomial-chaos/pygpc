@@ -9,7 +9,7 @@ import numpy as np
 
 from .Problem import *
 from .SGPC import *
-from .misc import determine_projection_matrix, poly_expand
+from .misc import determine_projection_matrix, poly_expand, get_non_enclosed_multi_indices
 from .misc import get_num_coeffs_sparse
 from .misc import ten2mat
 from .misc import mat2ten
@@ -2368,25 +2368,43 @@ class RegAdaptive(Algorithm):
                 if iteration_i == 0:
                     old_set = []
 
-                if iteration_i > 1:
-                    # TODO: think about new rule to abort algorithm with max. basis
-                    # if basis_order[0] > self.options["order_end"]:
-                    #     break
+                if iteration_i > 0:
+                    if np.max(np.sum(gpc.basis.multi_indices, axis=1)) >= self.options["order_end"]:
+                        break
 
+                    # determine potential polynomials which can be extended (not enclosed by other already existing polynomials)
+                    active_non_enclosed_set, poly_indices_non_enclosed = get_non_enclosed_multi_indices(multi_indices=gpc.basis.multi_indices,
+                                                                                                        interaction_order=self.options["interaction_order"])
 
-                    # active_set = np.zeros(self.problem.dim)
-                    # to_expand = np.zeros_like(active_set)
-                    coeffs = self.gpc.coeffs
-                    normalized_coeffs = np.linalg.norm(coeffs, axis=1)
-                    k = np.argmax(normalized_coeffs)
-                    active_set = tuple(self.gpc.basis.multi_indices[k])
-                    to_expand = tuple(self.gpc.basis.multi_indices[k])
-                    expand_indices = poly_expand(active_set, old_set, to_expand, self.options["order_max"],
-                                                       self.options["interaction_order"])
+                    active_non_enclosed_set = [[active_non_enclosed_set[i, j]
+                                   for j in range(active_non_enclosed_set.shape[1])]
+                                  for i in range(active_non_enclosed_set.shape[0])]
+
+                    old_set = [[gpc.basis.multi_indices[i, j]
+                                   for j in range(gpc.basis.multi_indices.shape[1])]
+                                  for i in range(gpc.basis.multi_indices.shape[0])]
+
+                    # get index of highest non enclosed coefficient
+                    coeff_max_idx_non_enclosed = np.argmax(np.linalg.norm(coeffs[poly_indices_non_enclosed, :], axis=1))
+
+                    expand_indices = poly_expand(active_set=active_non_enclosed_set,
+                                                 old_set=old_set,
+                                                 to_expand=active_non_enclosed_set[coeff_max_idx_non_enclosed],
+                                                 order_max=self.options["order_end"],
+                                                 interaction_max=self.options["interaction_order"])
                     multi_indices_to_add = np.array(expand_indices)
+
+                    print("=============================================")
+                    print(f"to_expand: {active_non_enclosed_set[coeff_max_idx_non_enclosed]}")
+                    print("=============================================")
+                    print(f"multi_indices_to_add: {multi_indices_to_add}")
+                    print("=============================================")
+
                     # update basis
                     b_added = gpc.basis.add_basis_poly_by_order(multi_indices=multi_indices_to_add,
                                                                 problem=gpc.problem)
+
+                    gpc.basis.plot_basis(dims=[0, 1, 2], fn_plot=f"/data/pt_01756/studies/pygpc_adaptive_basis_anisotropic/basis_iter_{iteration_i:02}")
 
                     if b_added is not None:
                         print_str = f"Added multi-indices to basis: \n {multi_indices_to_add}"
@@ -2394,7 +2412,7 @@ class RegAdaptive(Algorithm):
                         iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
                         extended_basis = True
 
-                    iteration_i += 1
+                iteration_i += 1
 
             else:
                 # increase basis
@@ -2413,6 +2431,9 @@ class RegAdaptive(Algorithm):
                                                    interaction_order=self.options["interaction_order"],
                                                    interaction_order_current=basis_order[1],
                                                    problem=gpc.problem)
+
+                gpc.basis.plot_basis(dims=[0, 1, 2], fn_plot=f"/data/pt_01756/studies/pygpc_adaptive_basis_anisotropic/basis_isotropic_iter_{iteration_i:02}")
+                iteration_i += 1
 
                 if b_added is not None:
                     print_str = "Order/Interaction order: {}/{}".format(basis_order[0], basis_order[1])
