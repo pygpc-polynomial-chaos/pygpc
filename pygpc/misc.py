@@ -1181,57 +1181,99 @@ def PhiP(x, p=10):
     return phip
 
 
-def poly_expand(active_set, old_set, to_expand, order_max, interaction_max):
+def poly_expand(current_set, to_expand, order_max, interaction_order):
     """
-    Algorithm by Gerstner and Griebel
+    Algorithm by Gerstner and Griebel to expand polynomial basis [1] according to two criteria:
+    (1) The basis function may not be completely enclosed by already existing basis functions. In this case the added
+        basis would be already included in any case.
+    (2) The basis function is not a candidate if adding any basis would have no predecessors. The new basis must have
+        predecessors in all decreasing direction and may not "float".
 
     Parameters
     ----------
-    active_set
-    old_set
-    to_expand
-    order_max
-    interaction_max
+    current_set : ndarray of int [n_basis, dim]
+        Array of multi-indices of basis functions
+    to_expand : ndarray of int [dim]
+        Selected basis function (with highest gPC coefficient), which will be expanded in all possible direction
+    order_max : int
+        Maximal accumulated order (sum over all parameters)
+    interaction_order : int
+        Allowed interaction order between variables (<= dim)
 
     Returns
     -------
-    expand
+    expand : ndarray of int [n_basis, dim]
+        Array of multi-indices, which will be added to the set of basis functions
 
+    Notes
+    -----
+    .. [1] T Gerstner and M Griebel. Dimension adaptive tensor product quadrature. Computing, 71:65–87, 2003.
     """
-    # active_set.remove(to_expand)
-    # old_set += [to_expand]
+
+    if type(current_set) is not list:
+        current_set = current_set.tolist()
+
     expand = []
     for e in range(len(to_expand)):
-        forward = np.asarray(to_expand, dtype=int)
+        forward = copy.deepcopy(to_expand)
         forward[e] += 1
         has_predecessors = True
         for e2 in range(len(to_expand)):
             if forward[e2] > 0:
                 predecessor = forward.copy()
                 predecessor[e2] -= 1
-                predecessor = list(predecessor)
-                has_predecessors *= predecessor in old_set
-        if (np.sum(np.abs(forward)) <= order_max) and (np.sum(forward > 0) <= interaction_max):  # has_predecessors and
+                has_predecessors *= list(predecessor) in current_set
+        if has_predecessors and (np.sum(np.abs(forward)) <= order_max) and (np.sum(forward > 0) <= interaction_order):
             expand += [tuple(forward)]
-            # active_set += [tuple(forward)]
 
-    return expand
+    return np.array(expand)
 
 
 def get_non_enclosed_multi_indices(multi_indices, interaction_order):
+    """
+    Extract possible multi-indices from a given set which are potential candidates for anisotropic basis extension.
+    Two criteria must be met:
+    (1) The basis function may not be completely enclosed by already existing basis functions. In this case the added
+        basis would be already included in any case.
+    (2) The basis function is not a candidate if adding any basis would have no predecessors. The new basis must have
+        predecessors in all decreasing direction and may not "float".
 
+    Parameters
+    ----------
+    multi_indices: ndarray of float [n_basis, dim]
+        Array of multi-indices of basis functions
+    interaction_order: int
+        Allowed interaction order between variables (<= dim)
+
+    Returns
+    -------
+    multi_indices_non_enclosed: ndarray of float [n_basis_candidates, dim]
+        Array of possible multi-indices of basis functions
+    poly_indices_non_enclosed: list of int
+        Indices of selected basis functions in global "multi-indices" array
+    """
     multi_indices_non_enclosed = []
 
-    for i_m, m in enumerate(multi_indices):
+    if type(multi_indices) is not list:
+        multi_indices = multi_indices.tolist()
 
-        for i_dim in range(multi_indices.shape[1]):
+    dim = len(multi_indices[0])
 
-            m_test = copy.deepcopy(m)
+    for m in np.array(multi_indices):
+        for i_dim in range(dim):
+            m_test = copy.deepcopy(np.array(m))
             m_test[i_dim] = m_test[i_dim] + 1
+            has_predecessors = True
 
             if np.sum(m_test > 0) <= interaction_order:
-                if list(m_test) not in multi_indices.tolist():
-                    multi_indices_non_enclosed.append(m)
+                if list(m_test) not in multi_indices:
+                    for e2 in range(dim):
+                        if m_test[e2] > 0:
+                            predecessor = copy.deepcopy(m_test)
+                            predecessor[e2] = predecessor[e2] - 1
+                            has_predecessors *= list(predecessor) in multi_indices
+                    if has_predecessors:
+                        multi_indices_non_enclosed.append(m)
 
     multi_indices_non_enclosed = np.unique(multi_indices_non_enclosed, axis=0)
     poly_indices_non_enclosed = [np.where((multi_indices == m).all(axis=1))[0][0] for m in multi_indices_non_enclosed]
