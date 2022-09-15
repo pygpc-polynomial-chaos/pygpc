@@ -125,6 +125,8 @@ class Algorithm(object):
             Backend for performance intensive computations
             - "python" ... Use native python implementation
             - "cpu" .. Use C Implementaion without multicore-support
+        options["plot_basis"] : bool
+            Plot basis functions and save as fn_results + _basis_iter#.png
         """
 
         if "eps" not in self.options.keys():
@@ -247,6 +249,9 @@ class Algorithm(object):
         if "adaptive_sampling" not in self.options.keys():
             self.options["adaptive_sampling"] = False
 
+        if "plot_basis" not in self.options.keys():
+            self.options["plot_basis"] = False
+
 
 class Static_IO(Algorithm):
     """
@@ -298,8 +303,8 @@ class Static_IO(Algorithm):
         # create dummy problem
         problem = Problem(model, parameters)
 
-        super(Static_IO, self).__init__(problem=problem, options=options, validation=validation)
-        self.grid = grid
+        super(Static_IO, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
+
         self.res = results
 
         if "order" not in self.options.keys():
@@ -471,8 +476,8 @@ class Static(Algorithm):
         """
         Constructor; Initializes static gPC algorithm
         """
-        super(Static, self).__init__(problem=problem, options=options, validation=validation)
-        self.grid = grid
+        super(Static, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
+
         self.qoi_specific = False
         self.gpc = gpc
 
@@ -561,7 +566,16 @@ class Static(Algorithm):
 
         # Write grid in gpc object
         if self.grid is not None:
-            gpc.grid = self.grid
+            if self.options["method"] == "reg":
+                print(f"Using user-predefined grid with n_grid={self.grid.n_grid}")
+                gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                                coords=self.grid.coords,
+                                                coords_norm=self.grid.coords_norm,
+                                                coords_gradient=self.grid.coords_gradient,
+                                                coords_gradient_norm=self.grid.coords_gradient_norm,
+                                                options=self.options["grid_options"])
+            elif self.options["method"] == "quad":
+                gpc.grid = self.grid
 
         elif self.options["grid"] == Random or self.options["grid"] == LHS:
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
@@ -774,8 +788,7 @@ class MEStatic(Algorithm):
         """
         Constructor; Initializes multi-element static gPC algorithm
         """
-        super(MEStatic, self).__init__(problem=problem, options=options, validation=validation)
-        self.grid = grid
+        super(MEStatic, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
 
         # check contents of settings dict and set defaults
         if "method" not in self.options.keys():
@@ -840,11 +853,19 @@ class MEStatic(Algorithm):
 
         # Write grid in gpc object
         if self.grid is not None:
-            grid = self.grid
+            print(f"Using user-predefined grid with n_grid={n_grid}")
+            grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                        coords=self.grid.coords,
+                                        coords_norm=self.grid.coords_norm,
+                                        coords_gradient=self.grid.coords_gradient,
+                                        coords_gradient_norm=self.grid.coords_gradient_norm,
+                                        options=self.options["grid_options"])
+
         elif n_grid is None:
             raise ValueError("If grid is not provided during initialization please provide options['n_grid']")
 
         elif self.options["grid"] == Random or self.options["grid"] == LHS:
+            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
             grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                         n_grid=n_grid,
                                         options=self.options["grid_options"])
@@ -1125,8 +1146,6 @@ class MEStatic_IO(Algorithm):
     ----------
     parameters: OrderedDict containing the RandomParameter class instances
         Dictionary (ordered) containing the properties of the random parameters
-    problem : Problem object instance
-        Object instance of gPC problem to investigate
     options["order"]: list of int [dim]
         Maximum individual expansion order [order_1, order_2, ..., order_dim].
         Generates individual polynomials also if maximum expansion order in order_max is exceeded
@@ -1171,7 +1190,7 @@ class MEStatic_IO(Algorithm):
     >>> gpc, coeffs, results = algorithm.run()
     """
 
-    def __init__(self, parameters, options, results, grid, validation = None):
+    def __init__(self, parameters, options, results, grid, validation=None):
         """
         Constructor; Initializes multi-element static gPC algorithm
         """
@@ -1181,8 +1200,7 @@ class MEStatic_IO(Algorithm):
         # create dummy problem
         problem = Problem(model, parameters)
 
-        super(MEStatic_IO, self).__init__(problem=problem, options=options, validation=validation)
-        self.grid = grid
+        super(MEStatic_IO, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
         self.res = results
 
         # check contents of settings dict and set defaults
@@ -1455,11 +1473,11 @@ class StaticProjection(Algorithm):
     >>> gpc, coeffs, results = algorithm.run
     """
 
-    def __init__(self, problem, options, validation=None):
+    def __init__(self, problem, options, validation=None, grid=None):
         """
         Constructor; Initializes static gPC algorithm
         """
-        super(StaticProjection, self).__init__(problem=problem, options=options, validation=validation)
+        super(StaticProjection, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
 
         # check contents of settings dict and set defaults
         if "method" not in self.options.keys():
@@ -1518,11 +1536,21 @@ class StaticProjection(Algorithm):
         n_grid = self.options["n_grid"]
 
         # make initial grid to determine gradients and projection matrix. By default, it is an LHS (ese) grid
-        if self.options["grid"] == Random:
+        if self.grid is not None:
+            print(f"Using user-predefined grid with n_grid={self.grid.n_grid}")
+            grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                                 coords=self.grid.coords,
+                                                 coords_norm=self.grid.coords_norm,
+                                                 coords_gradient=self.grid.coords_gradient,
+                                                 coords_gradient_norm=self.grid.coords_gradient_norm,
+                                                 options=self.options["grid_options"])
+        elif self.options["grid"] == Random:
+            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
             grid_original = Random(parameters_random=self.problem.parameters_random,
                                    n_grid=n_grid,
                                    options={"seed": self.options["seed"]})
         else:
+            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
             grid_original = LHS(parameters_random=self.problem.parameters_random,
                                 n_grid=n_grid,
                                 options={"criterion": "ese",
@@ -1830,11 +1858,11 @@ class MEStaticProjection(Algorithm):
     >>> gpc, coeffs, results = algorithm.run
     """
 
-    def __init__(self, problem, options, validation=None):
+    def __init__(self, problem, options, validation=None, grid=None):
         """
         Constructor; Initializes static gPC algorithm
         """
-        super(MEStaticProjection, self).__init__(problem=problem, options=options, validation=validation)
+        super(MEStaticProjection, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
 
         # check contents of settings dict and set defaults
         if "method" not in self.options.keys():
@@ -1897,13 +1925,21 @@ class MEStaticProjection(Algorithm):
         gradient_idx = None
         res_all_list = []
 
-        grid = self.options["grid"]
-
         # make initial random grid to determine gradients and projection matrix
-        if self.options["grid"] == Random or self.options["grid"] == LHS:
-            grid = grid(parameters_random=self.problem.parameters_random,
-                        n_grid=self.options["n_grid"],
-                        options=self.options["grid_options"])
+        if self.grid is not None:
+            print(f"Using user-predefined grid with n_grid={self.grid.n_grid}")
+            grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                        coords=self.grid.coords,
+                                        coords_norm=self.grid.coords_norm,
+                                        coords_gradient=self.grid.coords_gradient,
+                                        coords_gradient_norm=self.grid.coords_gradient_norm,
+                                        options=self.options["grid_options"])
+
+        elif self.options["grid"] == Random or self.options["grid"] == LHS:
+            print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid']}")
+            grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                        n_grid=self.options["n_grid"],
+                                        options=self.options["grid_options"])
 
         elif self.options["grid"] == L1 or self.options["grid"] == L1_LHS or self.options["grid"] == LHS_L1 \
                 or self.options["grid"] == FIM:
@@ -2242,7 +2278,7 @@ class RegAdaptive(Algorithm):
         """
         Constructor; Initializes RegAdaptive algorithm
         """
-        super(RegAdaptive, self).__init__(problem=problem, options=options, validation=validation)
+        super(RegAdaptive, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
 
         self.qoi_specific = False
 
@@ -2286,10 +2322,6 @@ class RegAdaptive(Algorithm):
                 os.remove(fn_results + ".hdf5")
         else:
             fn_results = None
-        if self.grid is None:
-            grid = self.options["grid"]
-        else:
-            grid = self.grid
 
         # initialize iterators
         eps = self.options["eps"] + 1.0
@@ -2324,23 +2356,34 @@ class RegAdaptive(Algorithm):
                                       n_cpu=self.options["n_cpu"])
 
         # Initialize Grid object
-        n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
-
-        if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM, CO]:
-            if "n_pool" in self.options["grid_options"]:
-                if self.options["grid_options"]["n_pool"] < int(n_grid_init):
-                    warnings.warn('self.options["grid_options"]["n_pool"] < n_grid_init ... setting n_pool to 2*n_grid_init')
-                    self.options["grid_options"]["n_pool"] = 2*int(n_grid_init)
-
+        if self.grid is not None:
+            print(f"Using user-predefined grid with n_grid={self.grid.n_grid}")
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
-                                            n_grid=int(n_grid_init),
+                                            coords=self.grid.coords,
+                                            coords_norm=self.grid.coords_norm,
+                                            coords_gradient=self.grid.coords_gradient,
+                                            coords_gradient_norm=self.grid.coords_gradient_norm,
                                             options=self.options["grid_options"],
                                             gpc=gpc)
-
         else:
-            gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
-                                            n_grid=n_grid_init,
-                                            options=self.options["grid_options"])
+            n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
+            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid_init}")
+
+            if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM, CO]:
+                if "n_pool" in self.options["grid_options"]:
+                    if self.options["grid_options"]["n_pool"] < int(n_grid_init):
+                        warnings.warn('self.options["grid_options"]["n_pool"] < n_grid_init ... setting n_pool to 2*n_grid_init')
+                        self.options["grid_options"]["n_pool"] = 2*int(n_grid_init)
+
+                gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                                n_grid=int(n_grid_init),
+                                                options=self.options["grid_options"],
+                                                gpc=gpc)
+
+            else:
+                gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                                n_grid=n_grid_init,
+                                                options=self.options["grid_options"])
 
         gpc.solver = self.options["solver"]
         gpc.settings = self.options["settings"]
@@ -2356,7 +2399,7 @@ class RegAdaptive(Algorithm):
             gpc.grid.create_gradient_grid()
 
         # Main iterations (order)
-        iteration_i = 0
+        i_iter = 0
         while eps > self.options["eps"]:
 
             if first_iter:
@@ -2411,13 +2454,18 @@ class RegAdaptive(Algorithm):
                                                    interaction_order=self.options["interaction_order"],
                                                    interaction_order_current=basis_order[1],
                                                    problem=gpc.problem)
-                iteration_i += 1
 
                 if b_added is not None:
                     print_str = "Order/Interaction order: {}/{}".format(basis_order[0], basis_order[1])
                     iprint(print_str, tab=0, verbose=self.options["verbose"])
                     iprint("=" * len(print_str), tab=0, verbose=self.options["verbose"])
                     extended_basis = True
+
+            # plot basis
+            if self.options["plot_basis"]:
+                gpc.basis.plot_basis(dims=np.arange(np.min((gpc.problem.dim, 3))),
+                                     fn_plot=self.options["fn_results"] + f"_basis_{i_iter}")
+            i_iter += 1
 
             if self.options["adaptive_sampling"]:
                 iprint("Starting adaptive sampling:", tab=0, verbose=self.options["verbose"])
@@ -2689,11 +2737,11 @@ class MERegAdaptiveProjection(Algorithm):
     >>> gpc, coeffs, results = algorithm.run()
     """
 
-    def __init__(self, problem, options, validation=None):
+    def __init__(self, problem, options, validation=None, grid=None):
         """
         Constructor; Initializes MERegAdaptiveProjection Algorithm
         """
-        super(MERegAdaptiveProjection, self).__init__(problem=problem, options=options, validation=validation)
+        super(MERegAdaptiveProjection, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
 
         # check contents of settings dict and set defaults
         if "order_start" not in self.options.keys():
@@ -2757,7 +2805,17 @@ class MERegAdaptiveProjection(Algorithm):
         n_grid_init = self.options["n_grid_init"]
 
         # make initial random grid to determine number of output variables and to estimate projection
-        if self.options["grid"] == Random or self.options["grid"] == LHS:
+        if self.grid is not None:
+            print(f"Using user-predefined grid with n_grid={grid.n_grid}")
+            self.options["grid"](parameters_random=self.problem.parameters_random,
+                                 coords=grid.coords,
+                                 coords_norm=grid.coords_norm,
+                                 coords_gradient=grid.coords_gradient,
+                                 coords_gradient_norm=grid.coords_gradient_norm,
+                                 options=self.options["grid_options"])
+
+        elif self.options["grid"] == Random or self.options["grid"] == LHS:
+            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid_init}")
             grid = Random(parameters_random=self.problem.parameters_random,
                           n_grid=n_grid_init,
                           options=self.options["grid_options"])
@@ -3807,11 +3865,11 @@ class RegAdaptiveProjection(Algorithm):
     >>> gpc, coeffs, results = algorithm.run()
     """
 
-    def __init__(self, problem, options, validation=None):
+    def __init__(self, problem, options, validation=None, grid=None):
         """
         Constructor; Initializes RegAdaptiveProjection algorithm
         """
-        super(RegAdaptiveProjection, self).__init__(problem=problem, options=options, validation=validation)
+        super(RegAdaptiveProjection, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
 
         # check contents of settings dict and set defaults
         if "order_start" not in self.options.keys():
@@ -3875,11 +3933,22 @@ class RegAdaptiveProjection(Algorithm):
         loocv = []
 
         # make initial grid to determine gradients and projection matrix. By default, it is an LHS (ese) grid
-        if self.options["grid"] == Random:
+        if self.grid is not None:
+            print(f"Using user-predefined grid with n_grid={self.grid.n_grid}")
+            grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                                 coords=self.grid.coords,
+                                                 coords_norm=self.grid.coords_norm,
+                                                 coords_gradient=self.grid.coords_gradient,
+                                                 coords_gradient_norm=self.grid.coords_gradient_norm,
+                                                 options=self.options["grid_options"])
+
+        elif self.options["grid"] == Random:
+            print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid_gradient']}")
             grid_original = Random(parameters_random=self.problem.parameters_random,
                                    n_grid=self.options["n_grid_gradient"],
                                    options={"seed": self.options["seed"]})
         else:
+            print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid_gradient']}")
             grid_original = LHS(parameters_random=self.problem.parameters_random,
                                 n_grid=self.options["n_grid_gradient"],
                                 options={"criterion": "ese",
