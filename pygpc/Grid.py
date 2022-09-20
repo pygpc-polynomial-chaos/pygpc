@@ -85,7 +85,7 @@ class Grid(object):
             self.n_grid_gradient = self.coords_gradient.shape[0]  # Total number of grid points for gradient calculation
 
         if coords_id is None and coords is not None:
-            self.coords_id = self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+            self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
             self.n_grid = self._coords.shape[0]
 
         if coords_gradient_id is None and coords_gradient is not None:
@@ -1265,14 +1265,14 @@ class Random(RandomGrid):
             self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
 
         else:
-            self.coords = coords
-            self.coords_norm = coords_norm
-
-            self.coords_gradient = coords_gradient
-            self.coords_gradient_norm = coords_gradient_norm
-
-            self.coords_id = coords_id
-            self.coords_gradient_id = coords_gradient_id
+            # self.coords = coords
+            # self.coords_norm = coords_norm
+            #
+            # self.coords_gradient = coords_gradient
+            # self.coords_gradient_norm = coords_gradient_norm
+            #
+            # self.coords_id = coords_id
+            # self.coords_gradient_id = coords_gradient_id
 
             if self.coords is None:
                 # Denormalize grid to original parameter space

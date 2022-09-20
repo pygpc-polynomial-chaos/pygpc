@@ -2363,8 +2363,7 @@ class RegAdaptive(Algorithm):
                                             coords_norm=self.grid.coords_norm,
                                             coords_gradient=self.grid.coords_gradient,
                                             coords_gradient_norm=self.grid.coords_gradient_norm,
-                                            options=self.options["grid_options"],
-                                            gpc=gpc)
+                                            options=self.options["grid_options"])
         else:
             n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
             print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid_init}")
@@ -2488,7 +2487,7 @@ class RegAdaptive(Algorithm):
                     # increase sample size stepwise (adaptive sampling)
                     n_grid_new = int(np.ceil(gpc.grid.n_grid + delta_samples * gpc.basis.n_basis))
                 else:
-                    # increase sample size according to matrix ratio w.r.t. bnumber of basis functions
+                    # increase sample size according to matrix ratio w.r.t. number of basis functions
                     n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
 
                 # run model if grid points were added
