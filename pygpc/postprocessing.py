@@ -1,8 +1,10 @@
 import h5py
 import numpy as np
-from .io import read_session
+import pandas as pd
+
 from .Grid import *
 from .MEGPC import *
+from .io import read_session
 
 
 def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_global_sens=False, calc_pdf=False,
@@ -516,3 +518,101 @@ def get_sobol_composition(sobol, sobol_idx_bool, random_vars=None, verbose=False
     return sobol_rel_order_mean, sobol_rel_order_std, \
            sobol_rel_1st_order_mean, sobol_rel_1st_order_std, \
            sobol_rel_2nd_order_mean, sobol_rel_2nd_order_std
+
+def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
+    """
+    Print summary of Sobol indices and global derivative based sensitivity coefficients
+
+    Parameters
+    ----------
+    fn_gpc : str
+        Filename of gpc results file (without .hdf5 extension)
+    parameters_random: OrderedDict containing the RandomParameter class instances
+        Dictionary (ordered) containing the properties of the random parameters
+    fn_out : str
+        Filename of output .txt file containing the Sobol coefficient summary
+
+    Returns
+    -------
+    sobol : pandas DataFrame
+        Pandas DataFrame containing the normalized Sobol indices by significance
+    gsens : pandas DataFrame
+        Pandas DataFrame containing the global derivative based sensitivity coefficients
+    """
+
+    parameter_names = parameters_random.keys()
+
+    with h5py.File(fn_gpc + ".hdf5", "r") as f:
+        sobol_idx_bool = f["/sens/sobol_idx_bool"][:]
+        sobol_norm = f["/sens/sobol_norm"][:]
+        global_sens = f["/sens/global_sens"][:]
+
+    sobol_dict = OrderedDict()
+    p_length = []
+    params = []
+
+    # Extract Sobol coefficients
+    for i_s, s in enumerate(sobol_norm):
+        params.append([p for i_p, p in enumerate(parameter_names) if sobol_idx_bool[i_s, i_p]])
+        sobol_dict[str(params[-1])] = s
+        p_length.append(len(str(params[-1])))
+
+    sobol = pd.DataFrame.from_dict(sobol_dict, orient="index", columns=[f"sobol_norm (qoi {i})"
+                                                                        for i in range(sobol_norm.shape[1])])
+    len_max = np.max(p_length)
+
+    # Extract global derivative sensitivity coefficients
+    gsens_dict = OrderedDict()
+    for i_p, p in enumerate(parameter_names):
+        gsens_dict[p] = global_sens[i_p, :]
+
+    gsens = pd.DataFrame.from_dict(gsens_dict, orient="index", columns=[f"global_sens (qoi {i})"
+                                                                        for i in range(sobol_norm.shape[1])])
+
+    # write output file
+    if fn_out:
+        # Sobol indices
+        sep = " " * 4
+        sobol_text = []
+        sobol_text.append("Normalized Sobol indices:\n")
+        sobol_text.append("=" * (len_max + 10) + "\n")
+
+        for i_p, p in enumerate(params):
+            len_diff = len_max - p_length[i_p]
+            sobol_text.append(f"{str(p)}: " + " " * len_diff)
+            for i_qoi in range(sobol_norm.shape[1]):
+                sobol_text[-1] += sep + f"{sobol_norm[i_p, i_qoi]:.6f}"
+            sobol_text.append("\n")
+
+        len_max_sobol = np.max([len(line) for line in sobol_text])
+        sobol_text[1] = "=" * (len_max_sobol) + "\n"
+
+        # Derivative based sensitivity coefficients
+        gsens_text = []
+        gsens_text.append("Average derivatives:\n")
+        gsens_text.append("=" * (len_max + 10) + "\n")
+
+        for i_p, p in enumerate(parameter_names):
+            len_diff = len_max - len(p) - 4
+
+            gsens_text.append(f"['{str(p)}']: " + " " * len_diff)
+            for i_qoi in range(sobol_norm.shape[1]):
+                if global_sens[i_p][0] < 0:
+                    sep = " " * 3
+                else:
+                    sep = " " * 4
+                gsens_text[-1] += sep + f"{global_sens[i_p, i_qoi]:.2e}"
+            gsens_text.append("\n")
+
+        len_max_gsens = np.max([len(line) for line in gsens_text])
+        gsens_text[1] = "=" * (len_max_gsens) + "\n"
+
+        # write in file
+        with open(fn_out, 'w') as f:
+            for line in sobol_text:
+                f.write(line)
+            f.write("\n")
+            for line in gsens_text:
+                f.write(line)
+
+    return sobol, gsens

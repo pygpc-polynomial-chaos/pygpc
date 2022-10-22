@@ -131,8 +131,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_sobol=True,
                                      calc_global_sens=True,
                                      calc_pdf=True,
-                                     algorithm="standard",
-                                     n_samples=1e3)
+                                     algorithm="standard")
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
@@ -225,8 +228,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_sobol=True,
                                      calc_global_sens=True,
                                      calc_pdf=True,
-                                     algorithm="standard",
-                                     n_samples=1e3)
+                                     algorithm="standard")
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         if plot:
             # Validate gPC vs original model function (2D-surface)
@@ -335,8 +341,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_sobol=True,
                                      calc_global_sens=True,
                                      calc_pdf=True,
-                                     algorithm="sampling",
-                                     n_samples=1e3)
+                                     algorithm="sampling")
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(session=session,
@@ -432,7 +441,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_global_sens=True,
                                      calc_pdf=True,
                                      algorithm="sampling",
-                                     n_samples=1e3)
+                                     n_samples=int(1e3))
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(session=session,
@@ -531,7 +544,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_global_sens=True,
                                      calc_pdf=True,
                                      algorithm="sampling",
-                                     n_samples=1e3)
+                                     n_samples=int(1e3))
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(session=session,
@@ -631,7 +648,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_global_sens=True,
                                      calc_pdf=True,
                                      algorithm="sampling",
-                                     n_samples=1e3)
+                                     n_samples=int(1e3))
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(session=session,
@@ -728,7 +749,12 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_sobol=True,
                                      calc_global_sens=True,
                                      calc_pdf=True,
-                                     algorithm="sampling")
+                                     algorithm="sampling",
+                                     n_samples=int(1e3))
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         # Validate gPC vs original model function (Monte Carlo)
         nrmsd = pygpc.validate_gpc_mc(session=session,
@@ -844,7 +870,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_global_sens=True,
                                      calc_pdf=True,
                                      algorithm="sampling",
-                                     n_samples=1e4)
+                                     n_samples=int(1e3))
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
@@ -1982,7 +2012,11 @@ class TestPygpcMethods(unittest.TestCase):
                                          calc_global_sens=True,
                                          calc_pdf=True,
                                          algorithm="sampling",
-                                         n_samples=1e3)
+                                         n_samples=int(1e3))
+
+            pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                                   parameters_random=problem.parameters_random,
+                                   fn_out=options["fn_results"] + ".txt")
 
             # Validate gPC vs original model function (Monte Carlo)
             nrmsd = pygpc.validate_gpc_mc(session=session,
@@ -2200,7 +2234,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_global_sens=True,
                                      calc_pdf=True,
                                      algorithm="sampling",
-                                     n_samples=1e4)
+                                     n_samples=int(1e3))
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
         # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
@@ -2373,6 +2411,10 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_pdf=True,
                                      algorithm="standard")
 
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
+
         if plot:
             # Validate gPC vs original model function (2D-surface)
             pygpc.validate_gpc_plot(session=session,
@@ -2544,6 +2586,10 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_pdf=True,
                                      algorithm="standard")
 
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=parameters,
+                               fn_out=options["fn_results"] + ".txt")
+
         self.expect_true(session.gpc[0].error[0] < 0.001,
                          f'gPC test failed with LOOCV error = {session.gpc[0].error[0]}')
 
@@ -2635,7 +2681,11 @@ class TestPygpcMethods(unittest.TestCase):
                                      calc_global_sens=True,
                                      calc_pdf=True,
                                      algorithm="standard",
-                                     n_samples=1e4)
+                                     n_samples=int(1e4))
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=parameters,
+                               fn_out=options["fn_results"] + ".txt")
 
         self.expect_true(session.gpc[0].error[0] < 0.075,
                          f'gPC test failed with LOOCV error = {session.gpc[0].error[0]}')

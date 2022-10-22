@@ -32,7 +32,7 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
         If available, data of original model function at grid, containing all QOIs
     n_samples : int
         Number of samples to validate the gPC approximation (ignored if coords and data_original is provided)
-    output_idx : ndarray or list, optional, default=None [1 x n_out]
+    output_idx : int or ndarray of int or list of int, optional, default=None [1 x n_out]
         Index of output quantities to consider (if output_idx=None, all output quantities are considered)
     n_cpu : int, optional, default=1
         Number of CPU cores to use (parallel function evaluations) to evaluate original model function
@@ -222,8 +222,8 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
         A cartesian grid is generated based on the limits of the specified random_vars
     coords : ndarray of float [n_coords x n_dim]
         Parameter combinations for the random_vars the comparison is conducted with
-    output_idx : int, optional, default=0
-        Indices of output quantity to consider
+    output_idx : int or list of int, optional, default=0
+        List of indices of output quantity to consider
     data_original: ndarray of float [n_coords x n_out], optional, default: None
         If available, data of original model function at grid, containing all QOIs
     fn_out : str, optional, default: None
