@@ -2611,6 +2611,7 @@ class Lim2002(AbstractModel):
 
         return y_out
 
+
 class Ishigami(AbstractModel):
     """
     Three-dimensional test function of Ishigami.

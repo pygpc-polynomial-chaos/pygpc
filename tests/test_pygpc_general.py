@@ -674,7 +674,104 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_006_RegAdaptiveProjection_gpc(self):
+    def test_006_RegAdaptive_anisotropic_gpc(self):
+        """
+        Algorithm: RegAdaptive
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'pygpc_test_006_RegAdaptiveAnisotropic_gpc'
+        print(test_name)
+
+        # Model
+        model = pygpc.testfunctions.Ishigami()
+
+        # Problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["x3"] = 1.  # pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["a"] = 7.
+        parameters["b"] = 0.1
+
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["order_start"] = 0
+        options["order_end"] = 20
+        options["solver"] = "Moore-Penrose"
+        options["interaction_order"] = 2
+        options["order_max_norm"] = 1.0
+        options["n_cpu"] = 0
+        options["adaptive_sampling"] = False
+        options["gradient_enhanced"] = False
+        options["gradient_calculation"] = "FD_fwd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["eps"] = 0.0075
+        options["basis_increment_strategy"] = "anisotropic"
+        options["matrix_ratio"] = 2
+
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": seed}
+
+        # define algorithm
+        algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
+
+        # read session
+        session = pygpc.read_session(fname=session.fn_session, folder=session.fn_session_folder)
+
+        if plot:
+            # Validate gPC vs original model function (2D-surface)
+            pygpc.validate_gpc_plot(session=session,
+                                    coeffs=coeffs,
+                                    random_vars=list(problem.parameters_random.keys()),
+                                    n_grid=[51, 51],
+                                    output_idx=0,
+                                    fn_out=None,
+                                    folder="gpc_vs_original_plot",
+                                    n_cpu=options["n_cpu"])
+
+        # Post-process gPC
+        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True,
+                                     algorithm="sampling",
+                                     n_samples=1e3)
+
+        # Validate gPC vs original model function (Monte Carlo)
+        nrmsd = pygpc.validate_gpc_mc(session=session,
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      n_cpu=options["n_cpu"],
+                                      smooth_pdf=True,
+                                      fn_out=options["fn_results"],
+                                      folder="gpc_vs_original_mc",
+                                      plot=plot)
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
+        # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
+
+    def test_007_RegAdaptiveProjection_gpc(self):
         """
         Algorithm: RegAdaptiveProjection
         Method: Regression
@@ -776,7 +873,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_007_MERegAdaptiveProjection_gpc(self):
+    def test_008_MERegAdaptiveProjection_gpc(self):
         """
         Algorithm: MERegAdaptiveProjection
         Method: Regression
@@ -885,7 +982,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_008_testfunctions(self):
+    def test_009_testfunctions(self):
         """
         Testing testfunctions (multi-threading and inherited parallelization)
         """
@@ -955,7 +1052,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    def test_009_RandomParameters(self):
+    def test_010_RandomParameters(self):
         """
         Testing RandomParameters
         """
@@ -985,7 +1082,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    def test_010_quadrature_grids(self):
+    def test_011_quadrature_grids(self):
         """
         Testing Grids [TensorGrid, SparseGrid]
         """
@@ -1013,7 +1110,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_011_random_grid(self):
+    def test_012_random_grid(self):
         """
         Testing Grids [Random]
         """
@@ -1146,7 +1243,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_012_LHS_grid(self):
+    def test_013_LHS_grid(self):
         """
         Testing Grids [LHS]
         """
@@ -1299,7 +1396,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_013_L1_grid(self):
+    def test_014_L1_grid(self):
         """
         Testing Grids [L1]
         """
@@ -1506,7 +1603,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_016_FIM_grid(self):
+    def test_015_FIM_grid(self):
         """
         Testing Grids [FIM]
         """
@@ -1679,7 +1776,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_018_CO_grid(self):
+    def test_016_CO_grid(self):
         """
         Testing Grids [CO]
         """
@@ -1819,7 +1916,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_019_seed_grids_reproducibility(self):
+    def test_017_seed_grids_reproducibility(self):
         """
         Test reproducibility of grids when seeding
         """
@@ -1940,7 +2037,7 @@ class TestPygpcMethods(unittest.TestCase):
         self.expect_true(np.isclose(grid[0].coords_norm, grid[1].coords_norm).all(),
                          "CO grid is not reproducible when seeding")
 
-    def test_020_Matlab_gpc(self):
+    def test_018_Matlab_gpc(self):
         """
         Algorithm: RegAdaptive
         Method: Regression
@@ -2040,7 +2137,7 @@ class TestPygpcMethods(unittest.TestCase):
         else:
             print("Skipping Matlab test...")
 
-    def test_021_random_vars_postprocessing(self):
+    def test_019_random_vars_postprocessing(self):
         """
         Algorithm: Static
         Method: Regression
@@ -2145,7 +2242,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_022_clustering_3_domains(self):
+    def test_020_clustering_3_domains(self):
         """
         Algorithm: MERegAdaptiveprojection
         Method: Regression
@@ -2249,7 +2346,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_023_backends(self):
+    def test_021_backends(self):
         """
         Test the different backends ["python", "cpu", "omp", "cuda"]
         """
@@ -2352,7 +2449,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_024_save_and_load_session(self):
+    def test_022_save_and_load_session(self):
         """
         Save and load a gPC Session
         """
@@ -2445,7 +2542,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_025_gradient_estimation_methods(self):
+    def test_023_gradient_estimation_methods(self):
         """
         Test gradient estimation methods
         """
@@ -2518,7 +2615,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_026_Static_IO_gpc(self):
+    def test_024_Static_IO_gpc(self):
         """
         Algorithm: Static_IO
         Method: Regression
@@ -2599,8 +2696,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-
-    def test_027_MEStatic_IO_gpc(self):
+    def test_025_MEStatic_IO_gpc(self):
         """
         Algorithm: MEStatic_IO
         Method: Regression

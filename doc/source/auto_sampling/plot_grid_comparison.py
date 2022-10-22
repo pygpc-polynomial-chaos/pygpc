@@ -43,10 +43,10 @@ plot("Ishigami", parameters, constants, plot_3d=False)
 
 # %%
 # Because of their random nature, we compared the grid repeatedly by using N=30 repetition. For every grid instance
-# and sampling number we recorded the normalized root mean squared deviation (NRMSD) of the gPC approximations compared
-# to the original model.
+# and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row), the mean
+# (second row) and standard deviation (third row) of the gPC approximations compared to the original model.
 #
-# .. image:: ../../../examples/images/Ishigami_nrmsd.png
+# .. image:: ../../../examples/images/Ishigami_nrmsd_mean_std.png
 #     :width: 1400
 #     :align: center
 #
@@ -60,6 +60,13 @@ plot("Ishigami", parameters, constants, plot_3d=False)
 # - **CO** - coherence optimal L1 sampling
 # - **D** - :math:`D` optimal sampling
 # - **D-COH** - :math:`D` and coherence optimal sampling
+#
+# Further the success rate of the best converging grids (from all LHS and from all L1 grids) for error thresholds of
+# 0.1%, 1%, and 10% can be seen in the following figure.
+#
+# .. image:: ../../../examples/images/Ishigami_nrmsd_success_rates.png
+#     :width: 500
+#     :align: center
 #
 # We evaluated the relative performance of the sampling schemes with respect to standard random sampling over four
 # test cases. The Ishigami and the Rosenbrock
