@@ -463,6 +463,8 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
     if type(random_vars) is not list:
         random_vars = random_vars.tolist()
 
+    assert len(random_vars) <= 2
+
     if n_grid and type(n_grid) is not list:
         n_grid = n_grid.tolist()
 
@@ -491,7 +493,8 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
                              n_grid[i_p]))
 
     coords_gpc = get_cartesian_product(x)
-    x1_2d, x2_2d = np.meshgrid(x[0], x[1])
+    if len(random_vars) == 2:
+        x1_2d, x2_2d = np.meshgrid(x[0], x[1])
 
     grid[:, idx_global] = coords_gpc
 
@@ -530,14 +533,14 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
     matplotlib.rc('ytick', labelsize=13)
     fs = 14
 
-    for i in range(len(output_idx)):
+    for i in output_idx:
         fig = plt.figure(figsize=(9.75, 5))
 
         # One random variable
         if len(random_vars) == 1:
             ax1 = fig.add_subplot(1, 2, 1)
             ax1.plot(coords_gpc, y_gpc[:, i])
-            ax1.scatter(coords, y_orig[:, i], 'k', edgecolors='k')
+            ax1.scatter(coords[:, idx_global[0]], y_orig[:, i], s=7*np.ones(len(y_orig[:, i])), facecolor='w', edgecolors='k')
             ax1.legend([r"gPC", r"original",], fontsize=fs)
             ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
             ax1.set_ylabel(r"y(%s)" % random_vars[0], fontsize=fs)
@@ -575,6 +578,8 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
         if fn_out is not None:
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=1200)
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
+            plt.close()
+
 
 
 # def plot_gpc(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, fn_out=None):
