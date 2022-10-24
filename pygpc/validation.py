@@ -454,6 +454,9 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
     <file> : .png and .pdf file
         Plot comparing original vs gPC model
     """
+    import matplotlib
+    matplotlib.use('Qt5Agg')
+
     if type(output_idx) is int:
         output_idx = [output_idx]
 
@@ -543,9 +546,9 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
         # Two random variables
         elif len(random_vars) == 2:
             ax1 = fig.add_subplot(1, 2, 1, projection='3d')
-            im1 = ax1.plot_surface(x1_2d, x2_2d, np.reshape(y_gpc[:, 0], (x[1].size, x[0].size), order='f'),
+            im1 = ax1.plot_surface(x1_2d, x2_2d, np.reshape(y_gpc[:, i], (x[1].size, x[0].size), order='f'),
                                    cmap="jet", alpha=0.75, linewidth=0, edgecolors=None)
-            ax1.scatter(coords[:, 0], coords[:, 1], results,
+            ax1.scatter(coords[:, idx_global[0]], coords[:, idx_global[1]], results,
                         'k', alpha=1, edgecolors='k', depthshade=False)
             ax1.set_title(r'gPC approximation', fontsize=fs)
             ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)

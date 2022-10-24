@@ -540,12 +540,14 @@ def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
         Pandas DataFrame containing the global derivative based sensitivity coefficients
     """
 
-    parameter_names = parameters_random.keys()
+    parameter_names = list(parameters_random.keys())
 
     with h5py.File(fn_gpc + ".hdf5", "r") as f:
         sobol_idx_bool = f["/sens/sobol_idx_bool"][:]
         sobol_norm = f["/sens/sobol_norm"][:]
         global_sens = f["/sens/global_sens"][:]
+
+    global_sens_sort_idx = np.argsort(global_sens[:, 0])
 
     sobol_dict = OrderedDict()
     p_length = []
@@ -593,15 +595,15 @@ def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
         gsens_text.append("=" * (len_max + 10) + "\n")
 
         for i_p, p in enumerate(parameter_names):
-            len_diff = len_max - len(p) - 4
+            len_diff = len_max - len(parameter_names[global_sens_sort_idx[i_p]]) - 4
 
-            gsens_text.append(f"['{str(p)}']: " + " " * len_diff)
+            gsens_text.append(f"['{str(parameter_names[global_sens_sort_idx[i_p]])}']: " + " " * len_diff)
             for i_qoi in range(sobol_norm.shape[1]):
-                if global_sens[i_p][0] < 0:
+                if global_sens[global_sens_sort_idx[i_p]][0] < 0:
                     sep = " " * 3
                 else:
                     sep = " " * 4
-                gsens_text[-1] += sep + f"{global_sens[i_p, i_qoi]:.2e}"
+                gsens_text[-1] += sep + f"{global_sens[global_sens_sort_idx[i_p], i_qoi]:.2e}"
             gsens_text.append("\n")
 
         len_max_gsens = np.max([len(line) for line in gsens_text])
