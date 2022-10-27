@@ -519,6 +519,7 @@ def get_sobol_composition(sobol, sobol_idx_bool, random_vars=None, verbose=False
            sobol_rel_1st_order_mean, sobol_rel_1st_order_std, \
            sobol_rel_2nd_order_mean, sobol_rel_2nd_order_std
 
+
 def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
     """
     Print summary of Sobol indices and global derivative based sensitivity coefficients
@@ -547,7 +548,7 @@ def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
         sobol_norm = f["/sens/sobol_norm"][:]
         global_sens = f["/sens/global_sens"][:]
 
-    global_sens_sort_idx = np.argsort(global_sens[:, 0])
+    global_sens_sort_idx = np.flip(np.argsort(global_sens[:, 0]))
 
     sobol_dict = OrderedDict()
     p_length = []
