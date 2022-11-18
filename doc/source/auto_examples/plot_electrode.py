@@ -328,8 +328,8 @@ ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 ylim_bottom, ylim_top = plt.ylim()
 _ = plt.ylim([ylim_bottom, 10])
-_ = plt.yticks(np.flip(np.logspace(np.int(np.floor(np.log10(ylim_bottom))), 0,
-                                   np.int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
+_ = plt.yticks(np.flip(np.logspace(int(np.floor(np.log10(ylim_bottom))), 0,
+                                   int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
 
 #%%
 # Plot sobol indices of the parameters of the imaginary part of the model
@@ -353,8 +353,8 @@ ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 ylim_bottom, ylim_top = plt.ylim()
 _ = plt.ylim([ylim_bottom, 10])
-_ = plt.yticks(np.flip(np.logspace(np.int(np.floor(np.log10(ylim_bottom))), 0,
-                                   np.int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
+_ = plt.yticks(np.flip(np.logspace(int(np.floor(np.log10(ylim_bottom))), 0,
+                                   int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
 
 # On Windows subprocesses will import (i.e. execute) the main module at start.
 # You need to insert an if __name__ == '__main__': guard in the main module to avoid

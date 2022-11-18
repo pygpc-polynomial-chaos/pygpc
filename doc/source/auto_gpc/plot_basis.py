@@ -23,7 +23,7 @@ parameters = OrderedDict()
 parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
-
+# test
 # define problem
 problem = pygpc.Problem(model, parameters)
 

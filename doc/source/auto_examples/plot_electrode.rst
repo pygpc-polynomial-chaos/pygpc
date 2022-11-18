@@ -197,11 +197,12 @@ Running the gpc
 
  .. code-block:: none
 
+    Using user-predefined grid with n_grid=1788
     Performing 1788 simulations!
     It/Sub-it: 5/3 Performing simulation 0001 from 1788 [                                        ] 0.1%
-    Total parallel function evaluation: 0.8356609344482422 sec
+    Total parallel function evaluation: 1.0733826160430908 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
-    -> relative nrmsd error = 1.779829909813063e-05
+    -> relative nrmsd error = 1.7068961038847976e-05
 
 
 
@@ -273,6 +274,19 @@ Validate gPC vs original model function
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /data/pt_01756/software/git/pygpc/pygpc/validation.py:376: MatplotlibDeprecationWarning: shading='flat' when X and Y have the same dimensions as C is deprecated since 3.3.  Either specify the corners of the quadrilaterals with X and Y, or pass shading='auto', 'nearest' or 'gouraud', or set rcParams['pcolor.shading'].  This will become an error two minor releases later.
+      im1 = ax1.pcolor(x1_2d, x2_2d, np.reshape(y_orig[:, i], (x[1].size, x[0].size), order='f'),
+    /data/pt_01756/software/git/pygpc/pygpc/validation.py:386: MatplotlibDeprecationWarning: shading='flat' when X and Y have the same dimensions as C is deprecated since 3.3.  Either specify the corners of the quadrilaterals with X and Y, or pass shading='auto', 'nearest' or 'gouraud', or set rcParams['pcolor.shading'].  This will become an error two minor releases later.
+      im2 = ax2.pcolor(x1_2d, x2_2d, np.reshape(y_gpc[:, i], (x[1].size, x[0].size), order='f'),
+    /data/pt_01756/software/git/pygpc/pygpc/validation.py:400: MatplotlibDeprecationWarning: shading='flat' when X and Y have the same dimensions as C is deprecated since 3.3.  Either specify the corners of the quadrilaterals with X and Y, or pass shading='auto', 'nearest' or 'gouraud', or set rcParams['pcolor.shading'].  This will become an error two minor releases later.
+      im3 = ax3.pcolor(x1_2d, x2_2d, np.reshape(y_dif[:, i], (x[1].size, x[0].size), order='f'),
+
 
 
 
@@ -309,7 +323,11 @@ Validate gPC vs original model function (Monte Carlo)
 
  .. code-block:: none
 
-    > Maximum NRMSD (gpc vs original): 2.5e-05%
+    /data/u_kweise_software/miniconda3/envs/pyfempp/lib/python3.8/site-packages/seaborn/distributions.py:2551: FutureWarning: `distplot` is a deprecated function and will be removed in a future version. Please adapt your code to use either `displot` (a figure-level function with similar flexibility) or `histplot` (an axes-level function for histograms).
+      warnings.warn(msg, FutureWarning)
+    /data/u_kweise_software/miniconda3/envs/pyfempp/lib/python3.8/site-packages/seaborn/distributions.py:2551: FutureWarning: `distplot` is a deprecated function and will be removed in a future version. Please adapt your code to use either `displot` (a figure-level function with similar flexibility) or `histplot` (an axes-level function for histograms).
+      warnings.warn(msg, FutureWarning)
+    > Maximum NRMSD (gpc vs original): 2.6e-05%
 
 
 
@@ -445,10 +463,10 @@ Load sobol indices, mean and std from the *.hdf5 file
 
  .. code-block:: none
 
-    Minimum of sum of sobol indices of real part:  0.9922830860823653
-    Maximum of sum of sobol indices of real part:  0.9999999960849595
+    Minimum of sum of sobol indices of real part:  0.9922830860823648
+    Maximum of sum of sobol indices of real part:  0.9999999960849593
     Mean of sum of sobol indices of real part:  0.9984816706723425
-    Minimum of sum of sobol indices of imag part:  0.954105459100021
+    Minimum of sum of sobol indices of imag part:  0.9541054591000204
     Maximum of sum of sobol indices of imag part:  0.9988259205269605
     Mean of sum of sobol indices of imag part:  0.995266507219882
 
@@ -549,8 +567,8 @@ Set step size for frequency points to plot
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     ylim_bottom, ylim_top = plt.ylim()
     _ = plt.ylim([ylim_bottom, 10])
-    _ = plt.yticks(np.flip(np.logspace(np.int(np.floor(np.log10(ylim_bottom))), 0,
-                                       np.int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
+    _ = plt.yticks(np.flip(np.logspace(int(np.floor(np.log10(ylim_bottom))), 0,
+                                       int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
 
 
 
@@ -592,8 +610,8 @@ Plot sobol indices of the parameters of the imaginary part of the model
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     ylim_bottom, ylim_top = plt.ylim()
     _ = plt.ylim([ylim_bottom, 10])
-    _ = plt.yticks(np.flip(np.logspace(np.int(np.floor(np.log10(ylim_bottom))), 0,
-                                       np.int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
+    _ = plt.yticks(np.flip(np.logspace(int(np.floor(np.log10(ylim_bottom))), 0,
+                                       int(np.abs(np.floor(np.log10(ylim_bottom))))+1))[::4])
 
     # On Windows subprocesses will import (i.e. execute) the main module at start.
     # You need to insert an if __name__ == '__main__': guard in the main module to avoid
@@ -616,7 +634,7 @@ Plot sobol indices of the parameters of the imaginary part of the model
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  15.902 seconds)
+   **Total running time of the script:** ( 0 minutes  22.166 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_electrode.py:

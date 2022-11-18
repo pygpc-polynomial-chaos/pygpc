@@ -5,16 +5,16 @@
 
 Computation times
 =================
-**00:16.457** total execution time for **auto_gpc** files:
+**00:10.592** total execution time for **auto_gpc** files:
 
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_basis.py` (``plot_basis.py``)                                 | 00:11.532 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_basis.py` (``plot_basis.py``)                                 | 00:10.592 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py` (``plot_gpc_validation.py``)               | 00:03.265 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py` (``plot_gpc_validation.py``)               | 00:00.000 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_gradient_enhanced_gpc.py` (``plot_gradient_enhanced_gpc.py``) | 00:01.024 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_gradient_enhanced_gpc.py` (``plot_gradient_enhanced_gpc.py``) | 00:00.000 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_model.py` (``plot_model.py``)                                 | 00:00.365 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_model.py` (``plot_model.py``)                                 | 00:00.000 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_gpc_plot_problem.py` (``plot_problem.py``)                             | 00:00.270 | 0.0 MB |
+| :ref:`sphx_glr_auto_gpc_plot_problem.py` (``plot_problem.py``)                             | 00:00.000 | 0.0 MB |
 +--------------------------------------------------------------------------------------------+-----------+--------+

@@ -59,7 +59,7 @@ Test problem
     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
     parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
     parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
-
+    # test
     # define problem
     problem = pygpc.Problem(model, parameters)
 
@@ -105,6 +105,19 @@ sphinx_gallery_thumbnail_number = 2
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:459: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_xticklabels(range(np.max(multi_indices) + 1))
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:461: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_yticklabels(range(np.max(multi_indices) + 1))
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:463: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_zticklabels(range(np.max(multi_indices) + 1))
+
 
 
 
@@ -149,6 +162,19 @@ and hence, the dimension of the space spanned by the polynomials, is:
    :srcset: /auto_gpc/images/sphx_glr_plot_basis_002.png
    :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:459: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_xticklabels(range(np.max(multi_indices) + 1))
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:461: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_yticklabels(range(np.max(multi_indices) + 1))
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:463: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_zticklabels(range(np.max(multi_indices) + 1))
 
 
 
@@ -205,6 +231,19 @@ may be added to the set of basis functions.
    :srcset: /auto_gpc/images/sphx_glr_plot_basis_003.png
    :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:459: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_xticklabels(range(np.max(multi_indices) + 1))
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:461: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_yticklabels(range(np.max(multi_indices) + 1))
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:463: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_zticklabels(range(np.max(multi_indices) + 1))
 
 
 
@@ -285,6 +324,12 @@ simulations to determine the gPC coefficients!
 
  .. code-block:: none
 
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:459: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_xticklabels(range(np.max(multi_indices) + 1))
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:461: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_yticklabels(range(np.max(multi_indices) + 1))
+    /data/pt_01756/software/git/pygpc/pygpc/Basis.py:463: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax.set_zticklabels(range(np.max(multi_indices) + 1))
     Figure(600x600)
             Figure(600x600)
             Figure(600x600)
@@ -302,7 +347,7 @@ simulations to determine the gPC coefficients!
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.532 seconds)
+   **Total running time of the script:** ( 0 minutes  10.592 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_basis.py:
