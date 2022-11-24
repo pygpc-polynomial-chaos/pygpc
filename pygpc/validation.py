@@ -160,7 +160,7 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
             matplotlib.rc('xtick', labelsize=12)
             matplotlib.rc('ytick', labelsize=12)
 
-            fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
+            fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(6, 5))
 
             if hist is None:
                 ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
@@ -176,6 +176,7 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
             ax1.text(0.05, 0.95, r'$error=%.2f$' % (100 * relative_error_nrmsd[0],) + "%",
                      transform=ax1.transAxes, fontsize=12, verticalalignment='top',
                      bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+            plt.tight_layout()
 
             if fn_out:
                 plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.pdf')
