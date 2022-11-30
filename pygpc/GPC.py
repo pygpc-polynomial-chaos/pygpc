@@ -13,8 +13,8 @@ from .misc import display_fancy_bar
 from .misc import nrmsd
 from .misc import mat2ten
 from .misc import ten2mat
-from .pygpc_extensions import create_gpc_matrix_cpu
-from .pygpc_extensions import create_gpc_matrix_omp
+# from .pygpc_extensions import create_gpc_matrix_cpu
+# from .pygpc_extensions import create_gpc_matrix_omp
 from .ValidationSet import *
 from .Computation import *
 from .Grid import *
