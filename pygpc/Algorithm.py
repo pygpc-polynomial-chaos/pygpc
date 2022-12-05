@@ -2447,7 +2447,7 @@ class RegAdaptive(Algorithm):
                         extended_basis = True
 
             else:
-                # increase basis
+                # increase basis isotropic
                 basis_order[0], basis_order[1] = increment_basis(order_current=basis_order[0],
                                                                  interaction_order_current=basis_order[1],
                                                                  interaction_order_max=self.options["interaction_order"],

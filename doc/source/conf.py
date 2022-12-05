@@ -21,21 +21,21 @@ sys.path.append(os.path.abspath('sphinxext'))
 # -- Project information -----------------------------------------------------
 
 project = u'pygpc'
-copyright = u'2020, Konstantin Weise'
+copyright = u'2022, Konstantin Weise'
 author = u'Konstantin Weise'
 
 # The short X.Y version
-version = u'0.2'
+version = u'0.3'
 
 # The full version, including alpha/beta/rc tags
-release = u'0.2.7.5'
+release = u'0.3.3'
 
 
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-# needs_sphinx = '1.0'
+# needs_sphinx = '5.3'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
