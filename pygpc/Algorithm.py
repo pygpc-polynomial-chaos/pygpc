@@ -127,6 +127,10 @@ class Algorithm(object):
             - "cpu" .. Use C Implementaion without multicore-support
         options["plot_basis"] : bool
             Plot basis functions and save as fn_results + _basis_iter#.png
+        options["grid_extension_method"] : str, optional, default: GPR
+            Method to extend random grids when adaptive_sampling is turned on:
+            - "GPR": Gaussian Process Regression (sample location is optimized according to posterior variance)
+            - "random": Samples are added randomly
         """
 
         if "eps" not in self.options.keys():
@@ -251,6 +255,9 @@ class Algorithm(object):
 
         if "plot_basis" not in self.options.keys():
             self.options["plot_basis"] = False
+
+        if "grid_extension_method" not in self.options.keys():
+            self.options["grid_extension_method"] = "GPR"
 
 
 class Static_IO(Algorithm):
@@ -675,13 +682,16 @@ class Static(Algorithm):
 
             if eps > self.options["eps"]:
                 # extend grid by 5% of number of basis functions and restart loop
-                n_grid_new = int(np.ceil(gpc.grid.n_grid + 5e-2 * gpc.basis.n_basis)) #gpc.grid.n_grid + 1
-                iprint("Extending grid from {} to {} by {} sampling points".format(
-                    gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
+                n_grid_new = gpc.grid.n_grid + 1  # int(np.ceil(gpc.grid.n_grid + 5e-2 * gpc.basis.n_basis))
+                iprint('Extending grid from {} to {} by {} sampling points using grid_extension_method {}'.format(
+                    gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid, self.options["grid_extension_method"]),
                     tab=0, verbose=self.options["verbose"])
-                gpc.grid.extend_random_grid(n_grid_new=n_grid_new)
+                if self.options["grid_extension_method"] == "GPR":
+                    gpc.grid.extend_random_grid(n_grid_new=n_grid_new, results=res)
+                else:
+                    gpc.grid.extend_random_grid(n_grid_new=n_grid_new)
 
-            eps_pre = eps
+            # eps_pre = eps
 
         # save gpc object and gpc coeffs
         if self.options["fn_results"] is not None:

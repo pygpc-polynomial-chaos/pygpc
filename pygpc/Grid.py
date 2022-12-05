@@ -1,19 +1,21 @@
 import uuid
 import copy
-import numpy as np
 import scipy.stats
+import numpy as np
 from .io import iprint
 from .Quadrature import *
+from scipy.special import gamma
+from scipy.optimize import minimize
 from .RandomParameter import Beta
 from .RandomParameter import Norm
 from .misc import compute_chunks
 from .misc import mutual_coherence
 from .misc import get_multi_indices
 from .misc import get_cartesian_product
+from .misc import squared_exponential_kernel
 from .misc import t_averaged_mutual_coherence
 from .misc import average_cross_correlation_gram
 from .misc import get_different_rows_from_matrices
-from scipy.special import gamma
 
 import multiprocessing.pool
 from _functools import partial
@@ -897,7 +899,7 @@ class RandomGrid(Grid):
             np.random.seed(self.seed)
 
     def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, classifier=None, domain=None,
-                           gradient=False):
+                           gradient=False, results=None, type=None):
         """
         Add sample points according to input pdfs to grid (old points are kept). Define either the new total number of
         grid points with "n_grid_new" or add grid-points manually by providing "coords" and "coords_norm".
@@ -919,6 +921,13 @@ class RandomGrid(Grid):
             Adds grid points only in specified domain (needs Classifier object including a predict() method)
         gradient : bool, optional, default: False
             Add corresponding gradient grid points
+        results : np.ndarray of float [n_grid x n_qoi]
+            Results computed so far before adding additional grid points
+        type : str, optional, default: None
+            Type of adding new grid points
+            - "GP": Gaussian process regression (points are added where the uncertainty of sampling is very high).
+            Does only work for Random, LHS, and GP grids.
+            - None: grid points are added according to the grid type.
         """
 
         # increase seed if needed to avoid creation of same grid points
@@ -934,9 +943,24 @@ class RandomGrid(Grid):
                 # Generate new grid points
                 if classifier is None:
                     if isinstance(self, Random):
-                        new_grid = Random(parameters_random=self.parameters_random,
-                                          n_grid=n_grid_add,
-                                          options=self.options)
+                        if type is None:
+                            new_grid = Random(parameters_random=self.parameters_random,
+                                              n_grid=n_grid_add,
+                                              options=self.options)
+                        elif type == "GP":
+                            if results is not None:
+                                # Determine optimal hyperparameters for Gaussian Process Regression
+                                lengthscale, variance = get_parameters_gaussian_process(Xtrain=self.coords_norm,
+                                                                                        ytrain=results[:, 0])
+                            else:
+                                lengthscale = 0.2
+                                variance = 1
+
+                            # Determine new grid points where standard deviation is highest
+                            new_grid = get_coords_gaussian_process(grid=self,
+                                                                   n_grid_add=n_grid_add,
+                                                                   lengthscale=lengthscale,
+                                                                   variance=variance)
 
                         # append points to existing grid
                         self.coords = np.vstack([self.coords, new_grid.coords])
@@ -944,10 +968,26 @@ class RandomGrid(Grid):
 
                     elif isinstance(self, LHS):
                         grid_pre = copy.deepcopy(self)
-                        new_grid = LHS(parameters_random=self.parameters_random,
-                                       n_grid=n_grid_add,
-                                       grid_pre=grid_pre,
-                                       options=self.options)
+
+                        if type is None:
+                            new_grid = LHS(parameters_random=self.parameters_random,
+                                           n_grid=n_grid_add,
+                                           grid_pre=grid_pre,
+                                           options=self.options)
+                        elif type == "GP":
+                            if results is not None:
+                                # Determine optimal hyperparameters for Gaussian Process Regression
+                                lengthscale, variance = get_parameters_gaussian_process(Xtrain=self.coords_norm,
+                                                                                        ytrain=results[:, 0])
+                            else:
+                                lengthscale = 0.2
+                                variance = 1
+
+                            # Determine new grid points where standard deviation is highest
+                            new_grid = get_coords_gaussian_process(grid=self,
+                                                                   n_grid_add=n_grid_add,
+                                                                   lengthscale=lengthscale,
+                                                                   variance=variance)
 
                         # append points to existing grid
                         self.coords = np.vstack([self.coords, new_grid.coords])
@@ -996,12 +1036,6 @@ class RandomGrid(Grid):
                                     coords_norm[i, :] = self.coords_norm_reservoir[self.n_grid]
                                     self.n_grid += 1
                                     resample = False
-
-                                #else:
-                                # delete tested point
-                                # self.coords_norm_reservoir = np.delete(self.coords_norm_reservoir, self.n_grid, 0)
-                                # self.coords_reservoir = np.delete(self.coords_reservoir, self.n_grid, 0)
-                                # self.lhs_reservoir = np.delete(self.lhs_reservoir, self.n_grid, 0)
 
                     # append points to existing grid
                     self.coords = np.vstack([self.coords, coords])
@@ -1257,6 +1291,135 @@ class Random(RandomGrid):
                             resample = outlier_mask.any()
 
                             j += 1
+
+            # Denormalize grid to original parameter space
+            self.coords = self.get_denormalized_coordinates(self.coords_norm)
+
+            # Generate unique IDs of grid points
+            self.coords_id = [uuid.uuid4() for _ in range(self.n_grid)]
+
+        else:
+            # self.coords = coords
+            # self.coords_norm = coords_norm
+            #
+            # self.coords_gradient = coords_gradient
+            # self.coords_gradient_norm = coords_gradient_norm
+            #
+            # self.coords_id = coords_id
+            # self.coords_gradient_id = coords_gradient_id
+
+            if self.coords is None:
+                # Denormalize grid to original parameter space
+                self.coords = self.get_denormalized_coordinates(self.coords_norm)
+
+            if self.coords_norm is None:
+                # Normalize grid to original parameter space
+                self.coords = self.get_normalized_coordinates(self.coords)
+
+            if self.coords_gradient is None and self.coords_gradient_norm is not None:
+                # Denormalize grid to original parameter space
+                self.coords_gradient = self.get_denormalized_coordinates(self.coords_gradient_norm)
+
+            if self.coords_gradient_norm is None and self.coords_gradient is not None:
+                # Normalize grid to original parameter space
+                self.coords_gradient_norm = self.get_normalized_coordinates(self.coords_gradient)
+
+
+class GP(RandomGrid):
+    """
+    Gaussian Process grid object
+
+    Parameters
+    ----------
+    parameters_random : OrderedDict of RandomParameter instances
+        OrderedDict containing the RandomParameter instances the grids are generated for
+    n_grid : int or float
+        Number of random samples in grid
+    seed : float, optional, default=None
+        Seeding point to replicate random grid
+    options : dict, optional, default=None
+        RandomGrid options depending on the grid type
+    coords : ndarray of float [n_grid_add x dim]
+        Grid points to add (model space)
+    coords_norm : ndarray of float [n_grid_add x dim]
+        Grid points to add (normalized space)
+    coords_gradient : ndarray of float [n_grid x dim x dim]
+        Denormalized coordinates xi
+    coords_gradient_norm : ndarray of float [n_grid x dim x dim]
+        Normalized coordinates xi
+    coords_id : list of UUID objects (version 4) [n_grid]
+        Unique IDs of grid points
+    coords_gradient_id : list of UUID objects (version 4) [n_grid]
+        Unique IDs of grid points
+
+    Examples
+    --------
+    >>> import pygpc
+    >>> grid = pygpc.GP(parameters_random=parameters_random, n_grid=100)
+
+    Attributes
+    ----------
+    parameters_random : OrderedDict of RandomParameter instances
+        OrderedDict containing the RandomParameter instances the grids are generated for
+    n_grid : int or float
+        Number of random samples in grid
+    seed : float, optional, default=None
+        Seeding point to replicate random grid
+    options : dict, optional, default=None
+        RandomGrid options depending on the grid type
+    coords : ndarray of float [n_grid_add x dim]
+        Grid points to add (model space)
+    coords_norm : ndarray of float [n_grid_add x dim]
+        Grid points to add (normalized space)
+    coords_gradient : ndarray of float [n_grid x dim x dim]
+        Denormalized coordinates xi
+    coords_gradient_norm : ndarray of float [n_grid x dim x dim]
+        Normalized coordinates xi
+    coords_id : list of UUID objects (version 4) [n_grid]
+        Unique IDs of grid points
+    coords_gradient_id : list of UUID objects (version 4) [n_grid]
+        Unique IDs of grid points
+    """
+
+    def __init__(self, parameters_random, n_grid=None, options=None, coords=None, coords_norm=None,
+                 coords_gradient=None, coords_gradient_norm=None, coords_id=None, coords_gradient_id=None,
+                 grid_pre=None):
+        """
+        Constructor; Initializes RandomGrid instance; Generates grid or copies provided content
+        """
+        if n_grid is not None:
+            n_grid = int(n_grid)
+
+        super(Random, self).__init__(parameters_random,
+                                     n_grid=n_grid,
+                                     options=options,
+                                     coords=coords,
+                                     coords_norm=coords_norm,
+                                     coords_gradient=coords_gradient,
+                                     coords_gradient_norm=coords_gradient_norm,
+                                     coords_id=coords_id,
+                                     coords_gradient_id=coords_gradient_id,
+                                     grid_pre=grid_pre)
+
+        if coords is not None or coords_norm is not None:
+            grid_present = True
+        else:
+            grid_present = False
+
+        if not grid_present:
+            # Generate random samples for each random input variable [n_grid x dim]
+            self.coords_norm = np.zeros([self.n_grid, self.dim])
+
+            if self.grid_pre is not None:
+                self.coords_norm[:self.grid_pre.n_grid, :] = self.grid_pre.coords_norm
+                n_grid_add = n_grid - self.grid_pre.n_grid
+                n_grid_start = self.grid_pre.n_grid
+            else:
+                n_grid_add = n_grid
+                n_grid_start = 0
+
+            for i_grid in range(n_grid_start, n_grid):
+                self.extend_random_grid(n_grid_new=i_grid, coords_norm=self.coords_norm, coords=self.coords, type="GP")
 
             # Denormalize grid to original parameter space
             self.coords = self.get_denormalized_coordinates(self.coords_norm)
@@ -3450,3 +3613,133 @@ def workhorse_get_det_updated_fim_matrix(index_list, gpc_matrix_pool, fim_matrix
         sign[i], logdet[i] = np.linalg.slogdet(fim_matrix_test)
 
     return sign, logdet
+
+
+def get_coords_gaussian_process(grid, n_grid_add, lengthscale=1., variance=1.):
+    """
+    Determine coordinates at highest variance determined by Gaussian Process Regression
+
+    Parameters
+    ----------
+    grid : RandomGrid object
+        Grid containing the current samples
+    n_grid_add : int
+        Number of grid points to add
+    lengthscale : float, optional, default: 1.
+        Lengthscale parameter
+    variance : float, optional, default: 1.
+        Output variance
+
+    Returns
+    -------
+    grid_new : RandomGrid object
+        RandomGrid object which contains the new grid points in grid_new.coords and grid_new.coords_norm
+    """
+
+    n_test = np.max((10000, 2*grid.n_grid))
+
+    # create test grid
+    grid_test = Random(parameters_random=grid.parameters_random, n_grid=n_test)
+
+    # kernels
+    K = squared_exponential_kernel(x=grid.coords_norm, y=grid.coords_norm,
+                                   lengthscale=lengthscale, variance=variance)  # n_train x n_train
+    Ks = squared_exponential_kernel(x=grid.coords_norm, y=grid_test.coords_norm,
+                                    lengthscale=lengthscale, variance=variance)  # n_train x n_test
+    Kss = squared_exponential_kernel(x=grid_test.coords_norm, y=grid_test.coords_norm,
+                                     lengthscale=lengthscale, variance=variance)  # n_test x n_test
+
+    try:
+        # cholesky decomposition
+        L = np.linalg.cholesky(K)
+
+        # compute v
+        v = np.linalg.solve(L, Ks)
+
+    except np.linalg.LinAlgError:
+        print("Warning: Cholesky decomposition of K* matrix did not converge ... using Moore-Penrose pseudo inverse.")
+        v = np.linalg.pinv(K) @ Ks
+
+    # alpha
+    # alpha = np.linalg.solve(L.T, np.linalg.solve(L, results))
+
+    # compute the mean function
+    # mu = Ks.T @ alpha
+
+    # compute the covariance
+    covariance = Kss - (v.T @ v)
+
+    # we get the standard deviation from the covariance matrix
+    std = np.sqrt(np.diag(covariance))
+
+    idx_sorted = np.flip(np.argsort(std))
+    idx_sorted = idx_sorted[~np.isnan(std[idx_sorted])]
+
+    coords = grid_test.coords[idx_sorted[:n_grid_add], :]
+    coords_norm = grid_test.coords_norm[idx_sorted[:n_grid_add], :]
+
+    grid_new = Random(coords=coords, coords_norm=coords_norm, parameters_random=grid.parameters_random)
+
+    return grid_new
+
+
+def compute_neg_loglik(parameters, Xtrain, ytrain):
+    """
+    Computes the negative log likelihood of the hyperparameters of the Gaussian Process Regression.
+
+    Parameters
+    ----------
+    parameters : np.ndarray of float [2]
+        Hyperparameters (lengthscale, variance)
+    Xtrain : np.ndarray of float [N_train x dim]
+        Coordinates of the training data
+    ytrain : np.ndarray of float [N_train]
+        Function values at the training data points
+
+    Returns
+    -------
+    log_likelihood : float
+        Negative log likelihood
+    """
+    lengthscale, variance = parameters
+    K = squared_exponential_kernel(Xtrain, Xtrain, lengthscale, variance)  # n_train x n_train
+
+    try:
+        L = np.linalg.cholesky(K)
+    except np.linalg.LinAlgError:
+        return 0
+
+    alpha = np.linalg.solve(L.T, np.linalg.solve(L, ytrain))
+    log_likelihood = - 0.5 * ytrain.T @ alpha - np.log(np.diag(L)).sum() - len(ytrain) / 2 * np.log(2 * np.pi)
+
+    return - log_likelihood.squeeze()
+
+
+def get_parameters_gaussian_process(Xtrain, ytrain):
+    """
+    Determine optimal hyperparameters for Gaussian Process Regression (lengthscale, variance), without noise.
+
+    Parameters
+    ----------
+    Xtrain : np.ndarray of float [N_train x dim]
+        Coordinates of the training data
+    ytrain : np.ndarray of float [N_train]
+        Function values at the training data points
+
+    Returns
+    -------
+    lengthscale : float, optional, default: 1.
+        Lengthscale parameter
+    variance : float, optional, default: 1.
+        Output variance
+    """
+    lengthscale = .2
+    kernel_variance = 1
+    bounds = ((1e-3, 1e2), (1e-3, 1e2))
+    initial_parameters = np.array([lengthscale, kernel_variance])
+    args = (Xtrain, ytrain)
+    result = minimize(compute_neg_loglik, initial_parameters, args, method='l-bfgs-b', bounds=bounds)
+    lengthscale = result.x[0]
+    variance = result.x[1]
+
+    return lengthscale, variance

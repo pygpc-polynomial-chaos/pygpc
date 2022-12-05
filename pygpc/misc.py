@@ -1,17 +1,44 @@
-import copy
 
-import numpy as np
-import scipy.special
-import scipy.stats
-import scipy.spatial
-import warnings
 import sys
 import math
-import itertools
+import copy
 import random
-from .Visualization import plot_beta_pdf_fit
+import warnings
+import itertools
+import numpy as np
+import scipy.stats
+import scipy.special
+import scipy.spatial
 import matplotlib.pyplot as plt
+
+from scipy.spatial.distance import cdist
+from .Visualization import plot_beta_pdf_fit
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+def squared_exponential_kernel(x, y, lengthscale, variance):
+    """
+    Computes the squared exponential kernel for Gaussian Processes.
+
+    Parameters
+    ----------
+    x : np.ndarray of float [N x dim]
+        Input observation locations
+    y : np.ndarray of float [M x dim]
+        Output observation locations
+    lengthscale : float
+        Lengthscale parameter
+    variance : float
+        Output variance
+
+    Returns
+    -------
+    k : np.ndarray of float [M x X]
+        Kernel function values (covariance function or covariance matrix)
+    """
+    sqdist = cdist(x, y, 'sqeuclidean')
+    k = variance * np.exp(-0.5 * sqdist * (1/lengthscale**2))
+    return k
 
 
 def is_instance(obj):
