@@ -72,7 +72,7 @@ Loading the model and defining the problem
 Setting up the algorithm
 ------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 30-67
+.. GENERATED FROM PYTHON SOURCE LINES 30-64
 
 .. code-block:: default
 
@@ -97,10 +97,7 @@ Setting up the algorithm
     options["n_samples_validations"] = "absolute"
     options["qoi"] = 0
     options["classifier"] = "learning"
-    options["classifier_options"] = {"clusterer": "KMeans",
-                                     "n_clusters": 2,
-                                     "classifier": "MLPClassifier",
-                                     "classifier_solver": "lbfgs"}
+    options["classifier_options"] = {"clusterer": "KMeans", "n_clusters": 2, "classifier": "MLPClassifier", "classifier_solver": "lbfgs"}
     options["n_samples_discontinuity"] = 12
     options["eps"] = 0.75
     options["n_grid_init"] = 20
@@ -120,12 +117,12 @@ Setting up the algorithm
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 68-70
+.. GENERATED FROM PYTHON SOURCE LINES 65-67
 
 Running the gpc
 ---------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-77
+.. GENERATED FROM PYTHON SOURCE LINES 67-74
 
 .. code-block:: default
 
@@ -142,42 +139,45 @@ Running the gpc
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    Creating initial grid (<class 'pygpc.Grid.Random'>) with n_grid=20
     Performing 20 initial simulations!
-    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
-    Total function evaluation: 0.002593994140625 sec
-    It/Sub-it: 3/2 Performing simulation 01 from 40 [=                                       ] 2.5%
-    Gradient evaluation: 0.0011491775512695312 sec
+
+    It/Sub-it: 3/2 Performing simulation 01 from 20 [==                                      ] 5.0%
+    Total function evaluation: 0.04152727127075195 sec
+
+    It/Sub-it: 3/2 Performing simulation 01 from 40 [=                                       ] 2.5%
+    Gradient evaluation: 0.0012423992156982422 sec
     Determining gPC approximation for QOI #0:
     =========================================
     Determining gPC domains ...
     Determining validation set of size 10000 for NRMSD error calculation ...
     Refining domain boundary ...
     Performing 12 simulations to refine discontinuity location!
-    It/Sub-it: Domain boundary/N/A Performing simulation 01 from 12 [===                                     ] 8.3%
-    Total function evaluation: 0.0027184486389160156 sec
-    It/Sub-it: Domain boundary/N/A Performing simulation 01 from 24 [=                                       ] 4.2%
-    Gradient evaluation: 0.0005736351013183594 sec
+
+    It/Sub-it: Domain boundary/N/A Performing simulation 01 from 12 [===                                     ] 8.3%
+    Total function evaluation: 0.009866714477539062 sec
+
+    It/Sub-it: Domain boundary/N/A Performing simulation 01 from 24 [=                                       ] 4.2%
+    Gradient evaluation: 0.0008301734924316406 sec
     Updating classifier ...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
-    -> Domain: 0 absolute nrmsd error = 0.4943638148496512
-    -> Domain: 1 absolute nrmsd error = 0.6654697190759418
+    -> Domain: 0 absolute nrmsd error = 0.5441309166351019
+    -> Domain: 1 absolute nrmsd error = 0.666027814476713
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
     Determine gPC coefficients using 'LarsLasso' solver (gradient enhanced)...
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-80
+.. GENERATED FROM PYTHON SOURCE LINES 75-77
 
 Postprocessing
 --------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-93
+.. GENERATED FROM PYTHON SOURCE LINES 77-90
 
 .. code-block:: default
 
@@ -200,8 +200,6 @@ Postprocessing
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
     > Loading gpc session object: tmp/meregadaptiveprojection.pkl
@@ -211,14 +209,14 @@ Postprocessing
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-98
+.. GENERATED FROM PYTHON SOURCE LINES 91-95
 
 Validation
 ----------
 Validate gPC vs original model function (2D-surface)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. GENERATED FROM PYTHON SOURCE LINES 98-106
+.. GENERATED FROM PYTHON SOURCE LINES 95-103
 
 .. code-block:: default
 
@@ -242,12 +240,12 @@ Validate gPC vs original model function (2D-surface)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-109
+.. GENERATED FROM PYTHON SOURCE LINES 104-106
 
 Validate gPC vs original model function (Monte Carlo)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-126
+.. GENERATED FROM PYTHON SOURCE LINES 106-123
 
 .. code-block:: default
 
@@ -279,10 +277,30 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    /data/hu_emueller/.conda/envs/pygpc/lib/python3.8/site-packages/pygpc-0.3.0-py3.8-linux-x86_64.egg/pygpc/validation.py:168: UserWarning: 
+
+    `distplot` is a deprecated function and will be removed in seaborn v0.14.0.
+
+    Please adapt your code to use either `displot` (a figure-level function with
+    similar flexibility) or `histplot` (an axes-level function for histograms).
+
+    For a guide to updating your code to use the new functions, please see
+    https://gist.github.com/mwaskom/de44147ed2974457ad6372750bbe5751
+
+      sns.distplot(y_gpc[:, i].flatten(), bins=bins, ax=ax1)
+    /data/hu_emueller/.conda/envs/pygpc/lib/python3.8/site-packages/pygpc-0.3.0-py3.8-linux-x86_64.egg/pygpc/validation.py:169: UserWarning: 
+
+    `distplot` is a deprecated function and will be removed in seaborn v0.14.0.
+
+    Please adapt your code to use either `displot` (a figure-level function with
+    similar flexibility) or `histplot` (an axes-level function for histograms).
+
+    For a guide to updating your code to use the new functions, please see
+    https://gist.github.com/mwaskom/de44147ed2974457ad6372750bbe5751
+
+      sns.distplot(y_orig[:, i].flatten(), bins=bins, label=r'original', ax=ax1)
     > Maximum NRMSD (gpc vs original): 0.099%
 
 
@@ -291,28 +309,23 @@ Validate gPC vs original model function (Monte Carlo)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.754 seconds)
+   **Total running time of the script:** ( 0 minutes  50.098 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_meregadaptiveprojection.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_algorithm_meregadaptiveprojection.py <plot_algorithm_meregadaptiveprojection.py>`
 
-     :download:`Download Python source code: plot_algorithm_meregadaptiveprojection.py <plot_algorithm_meregadaptiveprojection.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_algorithm_meregadaptiveprojection.ipynb <plot_algorithm_meregadaptiveprojection.ipynb>`
+      :download:`Download Jupyter notebook: plot_algorithm_meregadaptiveprojection.ipynb <plot_algorithm_meregadaptiveprojection.ipynb>`
 
 
 .. only:: html

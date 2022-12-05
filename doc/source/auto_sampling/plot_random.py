@@ -23,7 +23,6 @@ parameters = OrderedDict()
 parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 
-###############################################################################
 # In the case of random sampling the samples will be randomly drawn according to the probability density function (PDF)
 # :math:`f(\xi)` of the input parameters.
 #
@@ -33,7 +32,6 @@ grid = pygpc.Random(parameters_random=parameters,
                     n_grid=200,
                     options={"seed": None})
 
-###############################################################################
 # The following options are available for Random grids:
 #
 # - seed: set a seed to reproduce the grid
@@ -51,7 +49,6 @@ plt.yticks(np.linspace(-1, 1, 5))
 plt.grid()
 plt.tight_layout()
 
-###############################################################################
 # For each gPC algorithm, the sampling method can be selected accordingly by setting the following options
 # when setting up the algorithm:
 options = dict()

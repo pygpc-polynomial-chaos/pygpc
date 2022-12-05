@@ -136,23 +136,18 @@ References
 
 .. _sphx_glr_download_auto_introduction_plot_introduction_gpc.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_introduction_gpc.py <plot_introduction_gpc.py>`
 
-     :download:`Download Python source code: plot_introduction_gpc.py <plot_introduction_gpc.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_introduction_gpc.ipynb <plot_introduction_gpc.ipynb>`
+      :download:`Download Jupyter notebook: plot_introduction_gpc.ipynb <plot_introduction_gpc.ipynb>`
 
 
 .. only:: html

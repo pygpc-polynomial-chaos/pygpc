@@ -113,54 +113,143 @@ basis.init_basis_sgpc(problem=problem,
 basis.plot_basis(dims=[0, 1, 2])
 
 #%%
-# Adaptive basis
-# ^^^^^^^^^^^^^^
+# Isotropic adaptive basis
+# ^^^^^^^^^^^^^^^^^^^^^^^^
 # The basic problem in gPC is to find a suitable basis while reducing the number of necessary forward
-# simulations to determine the gPC coefficients!
+# simulations to determine the gPC coefficients! To do this two basis increment strategies exist. This first is called
+# isotropic and is the default option for the gpc. It determines which multi-indices are picked to be added to the
+# existing set of basis functions in terms of their order and dimension. The boundary conditions for this expansion
+# are given by the maximum order and the interaction order in the gpc options. The maximum order sets a limit to how
+# high any index may grow and the interaction order limits the maximal dimension in which multi-indices can be chosen.
+# In action isotropic basis incrementation chooses the new basis multi-indices equally in each direction decreasing the
+# dimension in every step. If the interaction order is set as 3 this means that the first indices to be increased is
+# along the axes (shown in orange in the figure below), then the indices that span the area between the axes are
+# chosen and finally the indices that create the volume contained by the surrounding area are added. After that the
+# axes are extended again and the cycle is repeated until the error is sufficient. For an interaction order of higher
+#  than three the expansion continues until the final dimension is reached. The three-dimensional case was picked here
+#  only ofr ease of visualisation.
 
-basis_order = np.array([-1, 0])
-interaction_order = 2
-order_max_norm = 1
-n_iter = 10
 
 # define model
 model = pygpc.testfunctions.Ishigami()
 
-# define parameters
+# define problem
 parameters = OrderedDict()
 parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+parameters["a"] = 7.
+parameters["b"] = 0.1
+
+problem = pygpc.Problem(model, parameters)
+
+# gPC options
+options = dict()
+options["order_start"] = 10
+options["order_end"] = 20
+options["solver"] = "Moore-Penrose"
+options["interaction_order"] = 2
+options["order_max_norm"] = 1.0
+options["n_cpu"] = 0
+options["adaptive_sampling"] = False
+options["eps"] = 0.05
+options["fn_results"] = None
+options["basis_increment_strategy"] = None
+options["matrix_ratio"] = 4
+options["grid"] = pygpc.Random
+options["grid_options"] = {"seed": 1}
+
+# define algorithm
+algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+
+# Initialize gPC Session
+session = pygpc.Session(algorithm=algorithm)
+
+# run gPC session
+session, coeffs, results = session.run()
+
+#%%
+# Anisotropic adaptive basis
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^
+# In addition to the adaptive selection from the previous method, the specification options["basis_increment_strategy"]
+# = anisotropic can be used for the gpc object to use an algorithm by Gerstner and Griebel [1] for an anisotropic basis
+# increment strategy. The motivation behind it lies in reducing the variance of the output data of the gpc.
+#
+# .. math::
+#     Var(\mathbf{q}(\mathbf{\xi}) = \sum_{k=1}^{P}(\mathbf{u}_{\mathbf{\alpha}_k} || \mathbf{\Phi}_{\mathbf{\alpha}_k}
+#     ||)^2
+#
+# where :math:`\mathbf{q}(\mathbf{\xi})` is the output data dependent on :math:`\mathbf{\xi}` which are the random
+# variables, :math:`P` is the order of the gpc and :math:`\mathbf{u}_{\mathbf{\alpha}_k}` are the coefficients of the
+# basis function :math:`\mathbf{\Phi}_{\mathbf{\alpha}_k}`. The variance depends directly on the coefficients
+# :math:`\mathbf{u}_{\mathbf{\alpha}_k}` and can be reduced by using them as a optimization criterion in the mentioned
+# algorithm. A normalized version :math:`\hat{\mathbf{u}}_{\mathbf{\alpha}_k}` directly corresponds to the variance and
+# is given by
+#
+# .. math::
+#     \hat{\mathbf{u}}_{\mathbf{\alpha}_k} = (\mathbf{u}_{\mathbf{\alpha}_k} || \mathbf{\Phi}_{\mathbf{\alpha}_k}
+#     ||)^2
+#
+# in pygpc this quantity is calculated as the maximum L2-norm of the current coefficients and the relevant index
+# :math:'k' is  extracted from the set of multi-indices. The anisotropic adaptive basis algorithm selects the
+# multi-index :math:'k' with the
+# highest norm as the starting point for a basis expansion. The goal during the expansion is to find suitable candidate
+# indices that meet the following two criteria:
+# (1) The index is not completely enclosed by other indices with higher basis components since this would mean that it
+# is already included;
+# (2) The index needs to have predecessors. This means that in all directions of decreasing order connecting
+# multi-indices exist already and the new index is not 'floating'. In the figure below this is shown again for the
+# three-dimensional case. First the outer multi-indices that have connected faces with other included multi-indices
+# which 'have predecessors' are selected (marked green). Then
+# the basis function coefficients are computed for these candidates and the multi-index with the highest coefficient
+# is picked for the expansion (marked red). The index is then expanded in every dimension around it where the resulting
+# index is not already included in the multi-index-set yet (marked orange).
+#
+# .. image:: ../../../examples/images/Fig_adaptive_basis_anisotropic.png
+#     :width: 1300
+#     :align: center
+#
+
+# define model
+model = pygpc.testfunctions.Ishigami()
 
 # define problem
+parameters = OrderedDict()
+parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+parameters["a"] = 7.
+parameters["b"] = 0.1
+
 problem = pygpc.Problem(model, parameters)
-basis = pygpc.Basis()
 
-for i in range(n_iter):
-    # increment basis
-    basis_order[0], basis_order[1] = pygpc.increment_basis(order_current=basis_order[0],
-                                                           interaction_order_current=basis_order[1],
-                                                           interaction_order_max=interaction_order,
-                                                           incr=1)
+# gPC options
+options = dict()
+options["order_start"] = 10
+options["order_end"] = 20
+options["solver"] = "Moore-Penrose"
+options["interaction_order"] = 2
+options["order_max_norm"] = 1.0
+options["n_cpu"] = 0
+options["adaptive_sampling"] = False
+options["eps"] = 0.05
+options["fn_results"] = None
+options["basis_increment_strategy"] = "anisotropic"
+options["matrix_ratio"] = 4
+options["grid"] = pygpc.Random
+options["grid_options"] = {"seed": 1}
 
-    # set basis
-    basis.init_basis_sgpc(problem=problem,
-                          order=[basis_order[0]] * problem.dim,
-                          order_max=basis_order[0],
-                          order_max_norm=order_max_norm,
-                          interaction_order=interaction_order,
-                          interaction_order_current=basis_order[1])
+# define algorithm
+algorithm = pygpc.RegAdaptive(problem=problem, options=options)
 
-    # plot basis
-    basis.plot_basis(dims=[0, 1, 2], dynamic_plot_update=True)
+# Initialize gPC Session
+session = pygpc.Session(algorithm=algorithm)
 
-    time.sleep(0.5)
-    display.display(plt.gcf())
+# run gPC session
+session, coeffs, results = session.run()
 
-    if i != (n_iter-1):
-        display.clear_output(wait=True)
-        plt.close()
-
+#
+#
 # On Windows subprocesses will import (i.e. execute) the main module at start.
 # You need to insert an if __name__ == '__main__': guard in the main module to avoid
 # creating subprocesses recursively.

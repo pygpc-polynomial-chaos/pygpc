@@ -154,28 +154,23 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.618 seconds)
+   **Total running time of the script:** ( 0 minutes  2.662 seconds)
 
 
 .. _sphx_glr_download_auto_introduction_plot_introduction_ua.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_introduction_ua.py <plot_introduction_ua.py>`
 
-     :download:`Download Python source code: plot_introduction_ua.py <plot_introduction_ua.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_introduction_ua.ipynb <plot_introduction_ua.ipynb>`
+      :download:`Download Jupyter notebook: plot_introduction_ua.ipynb <plot_introduction_ua.ipynb>`
 
 
 .. only:: html

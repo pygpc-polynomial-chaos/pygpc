@@ -12,8 +12,8 @@ class MyModel_julia(AbstractModel):
 
     Parameters
     ----------
-    fname_matlab : str
-        Filename of Matlab function
+    fname_julia : str
+        Filename of julia function
     p["x1"] : float or ndarray of float [n_grid]
         Parameter 1
     p["x2"] : float or ndarray of float [n_grid]
@@ -36,7 +36,7 @@ class MyModel_julia(AbstractModel):
 
     def __init__(self, fname_julia=None):
         if fname_julia is not None:
-            self.fname_julia = fname_julia                            # filename of julia function
+            self.fname_julia = fname_julia                          # filename of julia function
         self.fname = inspect.getfile(inspect.currentframe())        # filename of python function
 
     def validate(self):
@@ -44,26 +44,19 @@ class MyModel_julia(AbstractModel):
 
     def simulate(self, process_id=None, matlab_engine=None):
 
-        # convert input parameters to matlab format (only lists can be converted)
-        # x1 = matlab.double(np.array(self.p["x1"]).tolist())
-        # x2 = matlab.double(np.array(self.p["x2"]).tolist())
-        # x3 = matlab.double(np.array(self.p["x3"]).tolist())
-        # a = matlab.double(np.array(self.p["a"]).tolist())
-        # b = matlab.double(np.array(self.p["b"]).tolist())
+        # pass parameters to julia function
         x1 = self.p["x1"]
         x2 = self.p["x2"]
         x3 = self.p["x3"]
         a = self.p["a"]
         b = self.p["b"]
 
+        # access .jl file
         Main.fname_julia = self.fname_julia
         Main.include(Main.fname_julia)
 
-        # call Matlab function
+        # call julia function
         y = Main.Ishigami(x1, x2, x3, a, b)
-        #
-        # # convert the output back to numpy and ensure that the output is [n_grid x n_out]
-        # y = np.array(y).transpose()
 
         if y.ndim == 0:
             y = np.array([[y]])

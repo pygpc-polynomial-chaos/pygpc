@@ -5,12 +5,14 @@
 
 Computation times
 =================
-**00:34.407** total execution time for **auto_features** files:
+**00:00.240** total execution time for **auto_features** files:
 
 +-------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_features_plot_backends.py` (``plot_backends.py``)               | 00:33.673 | 0.0 MB |
+| :ref:`sphx_glr_auto_features_plot_julia_model.py` (``plot_julia_model.py``)         | 00:00.240 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_features_plot_parallelization.py` (``plot_parallelization.py``) | 00:00.423 | 0.0 MB |
+| :ref:`sphx_glr_auto_features_plot_backends.py` (``plot_backends.py``)               | 00:00.000 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_features_plot_matlab_model.py` (``plot_matlab_model.py``)       | 00:00.311 | 0.0 MB |
+| :ref:`sphx_glr_auto_features_plot_matlab_model.py` (``plot_matlab_model.py``)       | 00:00.000 | 0.0 MB |
++-------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_auto_features_plot_parallelization.py` (``plot_parallelization.py``) | 00:00.000 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+

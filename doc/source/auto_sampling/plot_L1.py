@@ -113,7 +113,6 @@ grid_co = pygpc.CO(parameters_random=parameters,
                    options={"seed": None,
                             "n_warmup": 1000})
 
-############################################################
 # An example of how the samples are distributed in the probability space is given below:
 
 plt.scatter(grid_co.coords_norm[:, 0], grid_co.coords_norm[:, 1],
@@ -153,7 +152,6 @@ grid_mc = pygpc.L1(parameters_random=parameters,
                             "n_pool": 1000,
                             "seed": None})
 
-############################################################
 # An example of how the samples are distributed in the probability space is given below:
 plt.scatter(grid_mc.coords_norm[:, 0], grid_mc.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
@@ -202,7 +200,6 @@ grid_mc_cc = pygpc.L1(parameters_random=parameters,
                                "n_pool": 1000,
                                "seed": None})
 
-############################################################
 # An example of how the samples are distributed in the probability space is given below:
 plt.scatter(grid_mc_cc.coords_norm[:, 0], grid_mc_cc.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
@@ -243,7 +240,6 @@ grid_d = pygpc.L1(parameters_random=parameters,
                                "n_pool": 1000,
                                "seed": None})
 
-############################################################
 # An example of how the samples are distributed in the probability space is given below:
 plt.scatter(grid_d.coords_norm[:, 0], grid_d.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
@@ -280,7 +276,6 @@ grid_d_coh = pygpc.L1(parameters_random=parameters,
                                "n_pool": 1000,
                                "seed": None})
 
-############################################################
 # An example of how the samples are distributed in the probability space is given below:
 plt.scatter(grid_d_coh.coords_norm[:, 0], grid_d_coh.coords_norm[:, 1],
               color=sns.color_palette("bright", 5)[0])
@@ -295,7 +290,6 @@ plt.title("D-Coh")
 plt.grid()
 plt.tight_layout()
 
-##############################################################################
 # L1 designs with different optimization criteria can be created using the "criterion" argument in the options
 # dictionary.
 #
@@ -323,7 +317,6 @@ plt.tight_layout()
 # - n_pool: number of grid points in overall pool to select optimal points from (default: 10.000)
 # - n_iter: number of iterations used for the "iter" method (default: 1000)
 
-###############################################################################
 # The sampling method can be selected accordingly for each gPC algorithm by setting the following options
 # when setting up the algorithm:
 options = dict()
@@ -335,7 +328,6 @@ options["grid_options"] = {"seed": None,
                            "n_pool": 1000}
 ...
 
-#########################################################
 # References
 # ^^^^^^^^^
 # .. [1] Hampton, J., Doostan A., Coherence motivated sampling and convergence analysis of least

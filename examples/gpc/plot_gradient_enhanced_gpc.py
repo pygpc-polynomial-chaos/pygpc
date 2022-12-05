@@ -252,7 +252,6 @@ yields with :math:`[\\tilde{\\mathbf{Q}}]^{\\mathrm{T}}[\\mathbf{R}][\\mathbf{W}
 and :math:`[\\mathbf{Q}] = [\\mathbf{R}]^\\mathrm{T}[\\tilde{\\mathbf{Q}}]` exactly the same system as before.
 """
 
-###############################################################################
 # Comparison between the gradient estimation techniques
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

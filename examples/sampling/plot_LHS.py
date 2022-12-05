@@ -87,7 +87,6 @@ parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 # define problem
 problem = pygpc.Problem(model, parameters)
 
-###############################################################################
 # LHS designs with different optimization criteria can be created using the "criterion" argument in the options
 # dictionary. In the following, we are going to create different LHS designs for 2 random variables with 200
 # sampling points:
@@ -105,7 +104,6 @@ grid_lhs_ese = pygpc.LHS(parameters_random=parameters,
                          n_grid=200,
                          options={"criterion": "ese",     "seed": None})
 
-###############################################################################
 # The following options are available for LHS grids:
 #
 # - seed: set a seed to reproduce the results (default: None)
@@ -138,7 +136,6 @@ for i in range(len(ax)):
 
 plt.tight_layout()
 
-###############################################################################
 # References
 # ^^^^^^^^^
 # .. [1] McKay, M. D., Beckman, R. J., & Conover, W. J. (2000). A comparison of three methods for selecting

@@ -48,10 +48,7 @@ options["error_norm"] = "absolute"
 options["n_samples_validations"] = "absolute"
 options["qoi"] = 0
 options["classifier"] = "learning"
-options["classifier_options"] = {"clusterer": "KMeans",
-                                 "n_clusters": 2,
-                                 "classifier": "MLPClassifier",
-                                 "classifier_solver": "lbfgs"}
+options["classifier_options"] = {"clusterer": "KMeans", "n_clusters": 2, "classifier": "MLPClassifier", "classifier_solver": "lbfgs"}
 options["n_samples_discontinuity"] = 12
 options["eps"] = 0.75
 options["n_grid_init"] = 20
