@@ -1390,16 +1390,16 @@ class GP(RandomGrid):
         if n_grid is not None:
             n_grid = int(n_grid)
 
-        super(Random, self).__init__(parameters_random,
-                                     n_grid=n_grid,
-                                     options=options,
-                                     coords=coords,
-                                     coords_norm=coords_norm,
-                                     coords_gradient=coords_gradient,
-                                     coords_gradient_norm=coords_gradient_norm,
-                                     coords_id=coords_id,
-                                     coords_gradient_id=coords_gradient_id,
-                                     grid_pre=grid_pre)
+        super(GP, self).__init__(parameters_random,
+                                 n_grid=n_grid,
+                                 options=options,
+                                 coords=coords,
+                                 coords_norm=coords_norm,
+                                 coords_gradient=coords_gradient,
+                                 coords_gradient_norm=coords_gradient_norm,
+                                 coords_id=coords_id,
+                                 coords_gradient_id=coords_gradient_id,
+                                 grid_pre=grid_pre)
 
         if coords is not None or coords_norm is not None:
             grid_present = True
