@@ -71,7 +71,7 @@ class TestPygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def test_018_Matlab_gpc(self):
+    def test_interface_001_Matlab_gpc(self):
         """
         Algorithm: RegAdaptive
         Method: Regression
@@ -171,7 +171,7 @@ class TestPygpcMethods(unittest.TestCase):
         else:
             print("Skipping Matlab test...")
 
-    def test_022_save_and_load_session(self):
+    def test_interface_002_save_and_load_session(self):
         """
         Save and load a gPC Session
         """

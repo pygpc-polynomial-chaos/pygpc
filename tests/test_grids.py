@@ -71,7 +71,7 @@ class TestPygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def test_011_quadrature_grids(self):
+    def test_grids_001_quadrature_grids(self):
         """
         Testing Grids [TensorGrid, SparseGrid]
         """
@@ -99,7 +99,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_012_random_grid(self):
+    def test_grids_002_random_grid(self):
         """
         Testing Grids [Random]
         """
@@ -232,7 +232,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_013_LHS_grid(self):
+    def test_grids_003_LHS_grid(self):
         """
         Testing Grids [LHS]
         """
@@ -385,7 +385,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_014_L1_grid(self):
+    def test_grids_004_L1_grid(self):
         """
         Testing Grids [L1]
         """
@@ -592,7 +592,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_015_FIM_grid(self):
+    def test_grids_005_FIM_grid(self):
         """
         Testing Grids [FIM]
         """
@@ -765,7 +765,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_016_CO_grid(self):
+    def test_grids_006_CO_grid(self):
         """
         Testing Grids [CO]
         """
@@ -905,7 +905,140 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_017_seed_grids_reproducibility(self):
+    def test_grids_007_GP_grid(self):
+        """
+        Testing Grids [GP]
+        """
+        global folder, plot, seed
+        test_name = 'pygpc_test_007_GP_grid'
+        print(test_name)
+
+        # define testfunction
+        model = pygpc.testfunctions.Peaks()
+
+        # define problems
+        parameters_1 = OrderedDict()
+        parameters_1["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        parameters_1["x2"] = 1.
+        parameters_1["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        problem_1 = pygpc.Problem(model, parameters_1)
+
+        parameters_2 = OrderedDict()
+        parameters_2["x1"] = pygpc.Norm(pdf_shape=[0, 1], p_perc=0.5)
+        parameters_2["x2"] = 1.
+        parameters_2["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        problem_2 = pygpc.Problem(model, parameters_2)
+
+        n_grid = 4
+        n_grid_extend = 2
+
+        # generate grid w/o percentile constraint
+        #########################################
+        # initialize grid
+        grid = pygpc.GP(parameters_random=problem_1.parameters_random,
+                            n_grid=n_grid,
+                            options={"seed": seed, "n_pool": 1000})
+        self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
+
+        # extend grid
+        for i in range(2):
+            grid.extend_random_grid(n_grid_new=n_grid + (i+1)*n_grid_extend)
+            self.expect_true(grid.n_grid == n_grid + (i+1)*n_grid_extend,
+                             f"Size of random grid does not fit after extending it {i+1}. time.")
+            self.expect_true(pygpc.get_different_rows_from_matrices(
+                grid.coords_norm[0:n_grid + i*n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+                             f"Extended grid points are matching the initial grid after extending it {i+1}. time.")
+
+        # generate grid with percentile constraint
+        ##########################################
+        # initialize grid
+        grid = pygpc.Random(parameters_random=problem_2.parameters_random,
+                            n_grid=n_grid,
+                            options={"seed": seed, "n_pool": 1000})
+
+        perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+
+        for i_p, p in enumerate(problem_2.parameters_random):
+            perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+                              (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+
+        self.expect_true(grid.n_grid == n_grid, "Size of random grid does not fit after initialization.")
+        self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+
+        # extend grid
+        for i in range(2):
+            grid.extend_random_grid(n_grid_new=n_grid + (i + 1) * n_grid_extend)
+
+            perc_check = np.zeros(len(problem_2.parameters_random)).astype(bool)
+
+            for i_p, p in enumerate(problem_2.parameters_random):
+                perc_check[i_p] = (grid.coords[:, i_p] >= problem_2.parameters_random[p].pdf_limits[0]).all() and \
+                                  (grid.coords[:, i_p] <= problem_2.parameters_random[p].pdf_limits[1]).all()
+
+            self.expect_true(perc_check.all(), "Grid points do not fulfill percentile constraint.")
+            self.expect_true(grid.n_grid == n_grid + (i + 1) * n_grid_extend,
+                             "Size of random grid does not fit after extending it.")
+            self.expect_true(pygpc.get_different_rows_from_matrices(
+                grid.coords_norm[0:n_grid + i * n_grid_extend, :], grid.coords_norm).shape[0] == n_grid_extend,
+                             f"Extended grid points are matching the initial grid after extending it {i + 1}. time.")
+
+        # perform static gpc
+        ###############################
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "LarsLasso"
+        options["settings"] = None
+        options["order"] = [9, 9]
+        options["order_max"] = 9
+        options["interaction_order"] = 2
+        options["error_type"] = "nrmsd"
+        options["n_samples_validation"] = 1e3
+        options["n_cpu"] = 0
+        options["fn_results"] = None
+        options["save_session_format"] = save_session_format
+        options["gradient_enhanced"] = False
+        options["gradient_calculation"] = "FD_1st2nd"
+        options["gradient_calculation_options"] = {"dx": 0.05, "distance_weight": -2}
+        options["backend"] = "omp"
+        options["grid"] = pygpc.GP
+        options["grid_options"] = {"seed": seed, "n_pool": 1000}
+        options["matrix_ratio"] = None
+        options["n_grid"] = 50
+        options["order_start"] = 3
+        options["order_end"] = 15
+        options["eps"] = 0.0075
+        options["adaptive_sampling"] = False
+
+        # define algorithm
+        algorithm = pygpc.Static(problem=problem_1, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC algorithm
+        session, coeffs, results = session.run()
+
+        self.expect_true(session.gpc[0].error[0] <= 0.0075, "Error of static gpc too high.")
+
+        # perform adaptive gpc
+        ##############################
+        options["matrix_ratio"] = 2
+
+        # define algorithm
+        algorithm = pygpc.RegAdaptive(problem=problem_1, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC algorithm
+        session, coeffs, results = session.run()
+
+        self.expect_true(session.gpc[0].error[-1] <= 0.0075, "Error of adaptive gpc too high.")
+
+        print("done!\n")
+
+    def test_grids_008_seed_grids_reproducibility(self):
         """
         Test reproducibility of grids when seeding
         """
