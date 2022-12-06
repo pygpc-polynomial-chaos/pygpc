@@ -71,7 +71,7 @@ class TestPygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def test_009_testfunctions(self):
+    def test_utils_001_testfunctions(self):
         """
         Testing testfunctions (multi-threading and inherited parallelization)
         """
@@ -141,7 +141,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    def test_010_RandomParameters(self):
+    def test_utils_002_RandomParameters(self):
         """
         Testing RandomParameters
         """
@@ -171,7 +171,7 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    def test_021_backends(self):
+    def test_utils_003_backends(self):
         """
         Test the different backends ["python", "cpu", "omp", "cuda"]
         """
@@ -274,7 +274,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_023_gradient_estimation_methods(self):
+    def test_utils_004_gradient_estimation_methods(self):
         """
         Test gradient estimation methods
         """

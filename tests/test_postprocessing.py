@@ -71,7 +71,7 @@ class TestPygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def test_019_random_vars_postprocessing(self):
+    def test_postprocessing_001_random_vars_postprocessing(self):
         """
         Algorithm: Static
         Method: Regression

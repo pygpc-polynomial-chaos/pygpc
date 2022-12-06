@@ -71,7 +71,7 @@ class TestPygpcMethods(unittest.TestCase):
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def test_000_Static_gpc_quad(self):
+    def test_algorithms_000_Static_gpc_quad(self):
         """
         Algorithm: Static
         Method: Quadrature
@@ -167,7 +167,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_001_Static_gpc(self):
+    def test_algorithms_001_Static_gpc(self):
         """
         Algorithm: Static
         Method: Regression
@@ -264,7 +264,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_002_MEStatic_gpc(self):
+    def test_algorithms_002_MEStatic_gpc(self):
         """
         Algorithm: MEStatic
         Method: Regression
@@ -367,7 +367,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_003_StaticProjection_gpc(self):
+    def test_algorithms_003_StaticProjection_gpc(self):
         """
         Algorithm: StaticProjection
         Method: Regression
@@ -467,7 +467,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_004_MEStaticProjection_gpc(self):
+    def test_algorithms_004_MEStaticProjection_gpc(self):
         """
         Algorithm: MEStaticProjection
         Method: Regression
@@ -570,7 +570,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_005_RegAdaptive_gpc(self):
+    def test_algorithms_005_RegAdaptive_gpc(self):
         """
         Algorithm: RegAdaptive
         Method: Regression
@@ -674,7 +674,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_006_RegAdaptive_anisotropic_gpc(self):
+    def test_algorithms_006_RegAdaptive_anisotropic_gpc(self):
         """
         Algorithm: RegAdaptive
         Method: Regression
@@ -771,7 +771,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_007_RegAdaptiveProjection_gpc(self):
+    def test_algorithms_007_RegAdaptiveProjection_gpc(self):
         """
         Algorithm: RegAdaptiveProjection
         Method: Regression
@@ -873,7 +873,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_008_MERegAdaptiveProjection_gpc(self):
+    def test_algorithms_008_MERegAdaptiveProjection_gpc(self):
         """
         Algorithm: MERegAdaptiveProjection
         Method: Regression
@@ -982,7 +982,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_020_clustering_3_domains(self):
+    def test_algorithms_009_clustering_3_domains(self):
         """
         Algorithm: MERegAdaptiveprojection
         Method: Regression
@@ -1086,7 +1086,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_024_Static_IO_gpc(self):
+    def test_algorithms_010_Static_IO_gpc(self):
         """
         Algorithm: Static_IO
         Method: Regression
@@ -1167,7 +1167,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
-    def test_025_MEStatic_IO_gpc(self):
+    def test_algorithms_011_MEStatic_IO_gpc(self):
         """
         Algorithm: MEStatic_IO
         Method: Regression
