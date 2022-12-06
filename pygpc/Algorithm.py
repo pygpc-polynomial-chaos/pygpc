@@ -109,8 +109,6 @@ class Algorithm(object):
             Print function evaluation time for every single run
         options["projection"] : boolean, optional, default: False
             Use projection approach
-        options["seed"] : int, optional, default=None
-            Set np.random.seed(seed) in random_grid()
         options["solver"]: str
             Solver to determine the gPC coefficients
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
@@ -584,7 +582,7 @@ class Static(Algorithm):
             elif self.options["method"] == "quad":
                 gpc.grid = self.grid
 
-        elif self.options["grid"] == Random or self.options["grid"] == LHS:
+        elif self.options["grid"] == Random or self.options["grid"] == LHS or self.options["grid"] == GP:
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                             n_grid=n_grid,
                                             options=self.options["grid_options"])
@@ -874,7 +872,7 @@ class MEStatic(Algorithm):
         elif n_grid is None:
             raise ValueError("If grid is not provided during initialization please provide options['n_grid']")
 
-        elif self.options["grid"] == Random or self.options["grid"] == LHS:
+        elif self.options["grid"] == Random or self.options["grid"] == LHS or self.options["grid"] == GP:
             print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
             grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                         n_grid=n_grid,
@@ -1554,11 +1552,11 @@ class StaticProjection(Algorithm):
                                                  coords_gradient=self.grid.coords_gradient,
                                                  coords_gradient_norm=self.grid.coords_gradient_norm,
                                                  options=self.options["grid_options"])
-        elif self.options["grid"] == Random:
+        elif self.options["grid"] == Random or self.options["grid"] == GP:
             print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
-            grid_original = Random(parameters_random=self.problem.parameters_random,
+            grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
                                    n_grid=n_grid,
-                                   options={"seed": self.options["seed"]})
+                                   options=self.options["grid_options"])
         else:
             print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
             grid_original = LHS(parameters_random=self.problem.parameters_random,
@@ -1945,7 +1943,7 @@ class MEStaticProjection(Algorithm):
                                         coords_gradient_norm=self.grid.coords_gradient_norm,
                                         options=self.options["grid_options"])
 
-        elif self.options["grid"] == Random or self.options["grid"] == LHS:
+        elif self.options["grid"] == Random or self.options["grid"] == LHS or self.options["grid"] == GP:
             print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid']}")
             grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                         n_grid=self.options["n_grid"],
@@ -2823,16 +2821,16 @@ class MERegAdaptiveProjection(Algorithm):
                                  coords_gradient_norm=grid.coords_gradient_norm,
                                  options=self.options["grid_options"])
 
-        elif self.options["grid"] == Random or self.options["grid"] == LHS:
+        elif self.options["grid"] == Random or self.options["grid"] == LHS or self.options["grid"] == GP:
             print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid_init}")
-            grid = Random(parameters_random=self.problem.parameters_random,
-                          n_grid=n_grid_init,
-                          options=self.options["grid_options"])
+            grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                        n_grid=n_grid_init,
+                                        options=self.options["grid_options"])
 
         elif self.options["grid"] == L1 or self.options["grid"] == L1_LHS or self.options["grid"] == LHS_L1 \
                 or self.options["grid"] == FIM:
             raise NotImplementedError("Grid type not possible for MERegAdaptiveProjection algorithm."
-                                      "Please use either 'Random' or 'LHS'.")
+                                      "Please use either 'Random', 'LHS' or 'GP'.")
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -3019,7 +3017,6 @@ class MERegAdaptiveProjection(Algorithm):
                 # Check if we have enough samples in this particular domain for the given order we start
                 if n_grid_reinit[d] > np.sum(megpc[i_qoi].domains == d):
 
-                    # TODO: implement new grids before here
                     # extend random grid
                     grid.extend_random_grid(n_grid_new=grid.n_grid - np.sum(megpc[i_qoi].domains == d) + n_grid_reinit[d],
                                             domain=d)
@@ -3951,17 +3948,17 @@ class RegAdaptiveProjection(Algorithm):
                                                  coords_gradient_norm=self.grid.coords_gradient_norm,
                                                  options=self.options["grid_options"])
 
-        elif self.options["grid"] == Random:
+        elif self.options["grid"] == Random or self.options["grid"] == GP:
             print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid_gradient']}")
-            grid_original = Random(parameters_random=self.problem.parameters_random,
-                                   n_grid=self.options["n_grid_gradient"],
-                                   options={"seed": self.options["seed"]})
+            grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                                 n_grid=self.options["n_grid_gradient"],
+                                                 options=self.options["grid_options"])
         else:
             print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid_gradient']}")
             grid_original = LHS(parameters_random=self.problem.parameters_random,
                                 n_grid=self.options["n_grid_gradient"],
                                 options={"criterion": "ese",
-                                         "seed": self.options["seed"]})
+                                         "seed": self.options["grid_options"]["seed"]})
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
