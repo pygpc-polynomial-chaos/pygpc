@@ -3872,7 +3872,7 @@ class Lorenz_System_julia(AbstractModel):
 
         from julia import Main
         # the package DifferentialEquations.jl needs to be installed in the julia environment
-        # in for this example the folder "julia_env" is located in the same folder as the julia file
+        # for this example the folder "julia_env" is located in the same folder as the julia file
         fname_folder = os.path.split(self.fname_julia)[0]
         Main.fname_environment = os.path.join(fname_folder, 'julia_env')
         Main.eval('import Pkg; Pkg.activate(fname_environment)')
