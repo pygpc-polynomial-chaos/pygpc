@@ -27,8 +27,8 @@ if __name__ == '__main__':
     options["interaction_order"] = 2
     options["order_max_norm"] = 0.7
     options["n_cpu"] = 0
-    options["adaptive_sampling"] = True
-    options["gradient_enhanced"] = True
+    options["adaptive_sampling"] = False
+    options["gradient_enhanced"] = False
     options["fn_results"] = fn_results
     options["eps"] = 0.0075
     options["julia_model"] = True
