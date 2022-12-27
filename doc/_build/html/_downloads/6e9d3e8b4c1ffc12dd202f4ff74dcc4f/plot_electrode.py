@@ -9,22 +9,22 @@ an open-ended coaxial electrode.
 The model consists of a Randles circuit that was modified according to the coaxial geometry of the electrode.
 The parameters model the different contributions of the physical phenomena as follows:
 
-1. **Rs** models the contribution of the serial resistance of an electrolyte that the electrode is dipped into.
-2. **Qdl** models the distributed double layer capacitance of the electrode.
-3. **Rct** models the charge transfer resistance between the electrode and the electrolyte
-4. **Qd** and **Rd** model the diffusion of charge carriers and other particles towards the electrode surface.
+1. :math:`R_d` models the contribution of the serial resistance of an electrolyte that the electrode is dipped into.
+2. :math:`Q_{dl}` models the distributed double layer capacitance of the electrode.
+3. :math:`R_{ct}` models the charge transfer resistance between the electrode and the electrolyte
+4. :math:`Q_d` and :math:`R_d` model the diffusion of charge carriers and other particles towards the electrode surface.
 
-The elements **Qdl** and **Qd** can be described with:
+The elements :math:`Q_{dl}` and :math:`Q_d` can be described with:
 :math:`\\frac{1}{Q(j\\omega)^\\alpha}`
 The equation depends on the angular frequency :math:`\\omega` as a variable and :math:`Q` and :math:`\\alpha`
 as parameters.
 
-The impedance of the equivalent circuit is complex valued, has seven parameters :math:`$R_s$`,  :math:`$R_{ct}$`,
-:math:`$R_d$`, :math:`$Q_d$`, :math:`$\\alpha_d$`, :math:`$Q_{dl}$`, :math:`$\\alpha_{dl}$`
+The impedance of the equivalent circuit is complex valued, has seven parameters :math:`R_s`,  :math:`R_{ct}`,
+:math:`R_d`, :math:`Q_d`, :math:`\\alpha_d`, :math:`Q_{dl}`, :math:`\\alpha_{dl}`
 and one variable :math:`\\omega`.
 
 The model returns an array of containing the real and imaginary part of every frequency point. Every element of this
-array is a quantity of interest (**Qoi**) and a gPC is computed for every quantity of interest.
+array is a quantity of interest (QoI) and a gPC is computed for every quantity of interest.
 """
 # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
 # def main():
@@ -133,7 +133,7 @@ pygpc.get_sensitivities_hdf5(fn_gpc=session.fn_results,
                              calc_sobol=True,
                              calc_global_sens=True,
                              calc_pdf=True,
-                             n_samples=1e4)
+                             n_samples=int(1e4))
 
 #%%
 # Validation

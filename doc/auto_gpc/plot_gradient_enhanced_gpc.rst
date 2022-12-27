@@ -18,7 +18,6 @@
 .. _sphx_glr_auto_gpc_plot_gradient_enhanced_gpc.py:
 
 
-..  _label_gradient_enhanced_gpc:
 Gradient enhanced gPC
 =====================
 
@@ -272,7 +271,7 @@ it follows that applying orthogonal reduction to the permuted system
 yields with :math:`[\tilde{\mathbf{Q}}]^{\mathrm{T}}[\mathbf{R}][\mathbf{W}][\mathbf{M}] = [\mathbf{T}]`
 and :math:`[\mathbf{Q}] = [\mathbf{R}]^\mathrm{T}[\tilde{\mathbf{Q}}]` exactly the same system as before.
 
-.. GENERATED FROM PYTHON SOURCE LINES 256-271
+.. GENERATED FROM PYTHON SOURCE LINES 255-270
 
 .. code-block:: default
 
@@ -298,12 +297,12 @@ and :math:`[\mathbf{Q}] = [\mathbf{R}]^\mathrm{T}[\tilde{\mathbf{Q}}]` exactly t
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 272-274
+.. GENERATED FROM PYTHON SOURCE LINES 271-273
 
 We are going to compare the forward approximation method (most exact but needs additional simulations) with the
 first and second order approximations. For each method, we define different distances/radii :math:`dx`:
 
-.. GENERATED FROM PYTHON SOURCE LINES 274-278
+.. GENERATED FROM PYTHON SOURCE LINES 273-277
 
 .. code-block:: default
 
@@ -318,12 +317,12 @@ first and second order approximations. For each method, we define different dist
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 279-281
+.. GENERATED FROM PYTHON SOURCE LINES 278-280
 
 We are going to compare the methods using the "Peaks" function and we are defining
 the parameter space by setting up the problem:
 
-.. GENERATED FROM PYTHON SOURCE LINES 281-292
+.. GENERATED FROM PYTHON SOURCE LINES 280-291
 
 .. code-block:: default
 
@@ -345,12 +344,12 @@ the parameter space by setting up the problem:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 293-295
+.. GENERATED FROM PYTHON SOURCE LINES 292-294
 
 Depending on the grid and its density, the methods will behave differently.
 Here, we use 100 random sampling points in the parameter space defined before.
 
-.. GENERATED FROM PYTHON SOURCE LINES 295-302
+.. GENERATED FROM PYTHON SOURCE LINES 294-301
 
 .. code-block:: default
 
@@ -368,11 +367,11 @@ Here, we use 100 random sampling points in the parameter space defined before.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 303-304
+.. GENERATED FROM PYTHON SOURCE LINES 302-303
 
 We are setting up a Computation instance to evaluate the model function in the 100 grid points
 
-.. GENERATED FROM PYTHON SOURCE LINES 304-318
+.. GENERATED FROM PYTHON SOURCE LINES 303-317
 
 .. code-block:: default
 
@@ -397,14 +396,14 @@ We are setting up a Computation instance to evaluate the model function in the 1
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 319-323
+.. GENERATED FROM PYTHON SOURCE LINES 318-322
 
 We are looping over the different methods and evaluate the gradients. The forward approximation method "FD_fwd"
 returns the gradient for every grid point whereas the first and second order approximation "FD_1st" and "FD_2nd"
 only return the gradient in grid points if they have sufficient number of neighboring points within radius
 :math:`dx`. The indices stored in "gradient_idx" are the indices of the grid points where the gradients are computed.
 
-.. GENERATED FROM PYTHON SOURCE LINES 323-354
+.. GENERATED FROM PYTHON SOURCE LINES 322-353
 
 .. code-block:: default
 
@@ -446,12 +445,12 @@ only return the gradient in grid points if they have sufficient number of neighb
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 355-357
+.. GENERATED FROM PYTHON SOURCE LINES 354-356
 
 Plotting the results
 ^^^^^^^^^^^^^^^^^^^^
 
-.. GENERATED FROM PYTHON SOURCE LINES 357-413
+.. GENERATED FROM PYTHON SOURCE LINES 356-412
 
 .. code-block:: default
 
@@ -523,14 +522,14 @@ Plotting the results
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 414-418
+.. GENERATED FROM PYTHON SOURCE LINES 413-417
 
 Comparing the normalized root mean square deviation of the first and second order approximation
 methods with respect to the forward approximation it can be seen that the 2nd order approximation is more exact.
 However, less points could be estimated because of the necessity to eliminate the first 3 equations.
 This is reflected in the lower coverage
 
-.. GENERATED FROM PYTHON SOURCE LINES 418-431
+.. GENERATED FROM PYTHON SOURCE LINES 417-430
 
 .. code-block:: default
 
@@ -553,11 +552,15 @@ This is reflected in the lower coverage
 
 .. rst-class:: sphx-glr-script-out
 
+ Out:
+
  .. code-block:: none
 
-       method                                         nrmsd coverage
-    1  FD_1st   [0.037228266490919294, 0.04457181241337915]     0.15
-    2  FD_2nd  [0.004782517660426531, 0.016680268495954064]     0.06
+       method  ... coverage
+    1  FD_1st  ...     0.15
+    2  FD_2nd  ...     0.06
+
+    [2 rows x 3 columns]
 
 
 
@@ -565,23 +568,28 @@ This is reflected in the lower coverage
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.820 seconds)
+   **Total running time of the script:** ( 0 minutes  0.609 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_gradient_enhanced_gpc.py:
 
-.. only:: html
 
-  .. container:: sphx-glr-footer sphx-glr-footer-example
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
 
 
-    .. container:: sphx-glr-download sphx-glr-download-python
 
-      :download:`Download Python source code: plot_gradient_enhanced_gpc.py <plot_gradient_enhanced_gpc.py>`
+  .. container:: sphx-glr-download sphx-glr-download-python
 
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
+     :download:`Download Python source code: plot_gradient_enhanced_gpc.py <plot_gradient_enhanced_gpc.py>`
 
-      :download:`Download Jupyter notebook: plot_gradient_enhanced_gpc.ipynb <plot_gradient_enhanced_gpc.ipynb>`
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_gradient_enhanced_gpc.ipynb <plot_gradient_enhanced_gpc.ipynb>`
 
 
 .. only:: html

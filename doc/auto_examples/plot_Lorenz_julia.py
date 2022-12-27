@@ -1,5 +1,5 @@
 """
-Example: Lorenz system of differential equations (julia)
+Example: Lorenz system of differential equations (Julia)
 ========================================================
 
 About the model
@@ -92,6 +92,7 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
 
             return x_out
 
+The
 
 .. code-block:: python
 
@@ -170,6 +171,11 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
                             y_label="x(t)")
 
 """
+import matplotlib.pyplot as plt
+
+# _ = plt.figure(figsize=[25, 10])
+_ = plt.imshow(plt.imread("../images/Lorenz_Sobol.png"))
+_ = plt.axis('off')
 
 
 

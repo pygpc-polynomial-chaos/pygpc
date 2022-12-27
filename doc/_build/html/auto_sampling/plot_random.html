@@ -4,9 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
-    <title>Standard Random sampling &#8212; pygpc 0.2.7.5 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Standard Random sampling &#8212; pygpc 0.3.4 documentation</title>
   
   
   
@@ -27,7 +26,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -312,15 +310,15 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
-                        Example: Lorenz system of differential equations
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (julia)
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
-                        Example: Lorenz system of differential equations (julia)
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
                       </a>
                     </li>
                 
@@ -335,48 +333,6 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_examples/plot_electrode.html">
                         Example: Modelling of an electrode
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../pygpc.html">
-                        pygpc package
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_introduction/index.html">
-                        Introduction
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/index.html">
-                        Generalized Polynomial Chaos
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_algorithms/index.html">
-                        Algorithms
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Sampling schemes
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_features/index.html">
-                        Features
                       </a>
                     </li>
                 
@@ -686,15 +642,15 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
-                        Example: Lorenz system of differential equations
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (julia)
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
-                        Example: Lorenz system of differential equations (julia)
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
                       </a>
                     </li>
                 
@@ -709,48 +665,6 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_examples/plot_electrode.html">
                         Example: Modelling of an electrode
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../pygpc.html">
-                        pygpc package
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_introduction/index.html">
-                        Introduction
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/index.html">
-                        Generalized Polynomial Chaos
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_algorithms/index.html">
-                        Algorithms
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Sampling schemes
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_features/index.html">
-                        Features
                       </a>
                     </li>
                 
@@ -860,14 +774,14 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-sampling-plot-random-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<section class="sphx-glr-example-title" id="standard-random-sampling">
+<div class="sphx-glr-example-title section" id="standard-random-sampling">
 <span id="sphx-glr-auto-sampling-plot-random-py"></span><h1>Standard Random sampling<a class="headerlink" href="#standard-random-sampling" title="Permalink to this heading">#</a></h1>
 <p>To calculate the coefficients of the gPC matrix, a number of model evaluations need to be
 performed to sample the probability space <span class="math notranslate nohighlight">\(\Theta\)</span> and enable the estimation of the
 polynomials. As for the computation of the coefficients, the input parameters <span class="math notranslate nohighlight">\(\mathbf{\xi}\)</span>
 can be sampled in a number of different ways. In <strong>pygpc</strong> the grid <span class="math notranslate nohighlight">\(\mathcal{G}\)</span> for this
 application is constructed in <a class="reference external" href="../../../../pygpc/Grid.py">pygpc/Grid.py</a>.</p>
-<section id="example">
+<div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
 <p>In order to create a grid of sampling points, we have to define the random parameters first.</p>
 <img src="../_images/sphx_glr_plot_random_001.png" srcset="../_images/sphx_glr_plot_random_001.png" alt="plot random" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Ellipsis
@@ -937,8 +851,8 @@ application is constructed in <a class="reference external" href="../../../../py
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</section>
-</section>
+</div>
+</div>
 
 
             </article>
@@ -1033,7 +947,7 @@ application is constructed in <a class="reference external" href="../../../../py
     
 <p class="copyright">
 
-    &copy; Copyright 2020, Konstantin Weise.<br>
+    &copy; Copyright 2022, Konstantin Weise.<br>
 
 </p>
 

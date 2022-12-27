@@ -35,7 +35,7 @@ Algorithm: MEStatic_IO
     from mpl_toolkits.mplot3d import Axes3D
     from collections import OrderedDict
 
-    fn_results = 'tmp/mestatic_IO'   # filename of output
+    fn_results = 'tmp/mestatic_IO'  # filename of output
     save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
     np.random.seed(1)
 
@@ -187,8 +187,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 1.569347620010376 sec
-    -> relative loocv error = 0.10667297364458497
+    LOOCV computation time: 0.5486202239990234 sec
+    -> relative loocv error = 0.05238332091729374
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
     LOOCV 03 from 25 [====                                    ] 12.0%
@@ -214,7 +214,7 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.6147603988647461 sec
+    LOOCV computation time: 0.35370612144470215 sec
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
     LOOCV 03 from 25 [====                                    ] 12.0%
@@ -240,7 +240,7 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 2.068666934967041 sec
+    LOOCV computation time: 0.5250899791717529 sec
 
 
 
@@ -265,17 +265,17 @@ Postprocessing
                                  calc_global_sens=True,
                                  calc_pdf=True,
                                  algorithm="standard",
-                                 n_samples=1e4)
+                                 n_samples=int(1e4))
 
     # plot gPC approximation and IO data
     pygpc.plot_gpc(session=session,
                    coeffs=coeffs,
                    random_vars=["rho_0", "beta"],
                    output_idx=0,
-                   n_grid = [100, 100],
+                   n_grid=[100, 100],
                    coords=grid.coords,
                    results=results,
-                   fn_out=fn_results + "_plot",
+                   fn_out=None,
                    camera_pos=[45., 65])
 
     # On Windows subprocesses will import (i.e. execute) the main module at start.
@@ -286,6 +286,11 @@ Postprocessing
     #     main()
 
 
+
+.. image-sg:: /auto_algorithms/images/sphx_glr_plot_algorithm_mestatic_IO_001.png
+   :alt: gPC approximation, Probability density
+   :srcset: /auto_algorithms/images/sphx_glr_plot_algorithm_mestatic_IO_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -304,7 +309,7 @@ Postprocessing
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.242 seconds)
+   **Total running time of the script:** ( 0 minutes  9.018 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_mestatic_IO.py:

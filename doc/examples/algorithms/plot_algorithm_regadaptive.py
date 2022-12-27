@@ -9,7 +9,7 @@ import numpy as np
 from collections import OrderedDict
 
 fn_results = 'tmp/regadaptive'   # filename of output
-save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+save_session_format = ".pkl"     # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 
 #%%
 # Loading the model and defining the problem

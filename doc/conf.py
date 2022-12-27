@@ -21,14 +21,14 @@ import pygpc
 # -- Project information -----------------------------------------------------
 
 project = u'pygpc'
-copyright = u'2020, Konstantin Weise'
+copyright = u'2022, Konstantin Weise'
 author = u'Konstantin Weise'
 
 # The short X.Y version
-version = u'0.2'
+version = u'0.3'
 
 # The full version, including alpha/beta/rc tags
-release = u'0.2.7.5'
+release = u'0.3.4'
 
 
 # -- General configuration ---------------------------------------------------
@@ -49,7 +49,8 @@ extensions = [
     # 'sphinx.ext.imgmath',
     'matplotlib.sphinxext.plot_directive',
     'sphinx_gallery.gen_gallery',
-    'sphinx.ext.autosectionlabel'
+    'sphinx.ext.autosectionlabel',
+    'matplotlib.sphinxext.plot_directive'
 ]
 
 # configuration of sphinx gallery
@@ -57,7 +58,7 @@ sphinx_gallery_conf = {
     'examples_dirs': ['examples/introduction', 'examples/gpc', 'examples/algorithms',
                       'examples/features', 'examples/examples', 'examples/sampling'],   # path to your example scripts
     'gallery_dirs': ['auto_introduction', 'auto_gpc', 'auto_algorithms', 'auto_features', 'auto_examples', 'auto_sampling'],
-    'default_thumb_file': '../../examples/images/pygpc_logo_square.png',
+    'default_thumb_file': 'examples/images/pygpc_logo_square.png',
     'remove_config_comments': True # path to where to save gallery generated output
 
 } #'default_thumb_file': '../../../pckg/media/pygpc_logo_git.png',
@@ -131,11 +132,13 @@ html_theme_options = {
                 "attributes": {"target": "_blank"},
             },
         ],
-        "logo": {
-            "text": "pygpc documentation",
-            "image_dark": "logo.png",
-            "alt_text": "pygpc",
-        }
+    "logo": {
+        "text": "pygpc documentation",
+        "image_dark": "logo.png",
+        "alt_text": "pygpc",
+    },
+    "show_nav_level": 1,
+    "navigation_depth": 1
 }
 
 pngmath_latex_preamble = r"""

@@ -1,8 +1,8 @@
 """
-Setting up your model
-=====================
-In order to analyze your model with pygpc, it has to be converted into a format understandable for pygpc.
-For this, we implemented the *AbstracModel* class in pygpc. You can find an example template in
+Setting up a custom model
+=========================
+In order to analyze a mathematical model or function with pygpc, it has to be converted into a format understandable for pygpc.
+For this, we implemented the *AbstractModel* class in pygpc. You can find an example template in
 `/templates/MyModel.py <../../../../templates/MyModel.py>`_
 """
 

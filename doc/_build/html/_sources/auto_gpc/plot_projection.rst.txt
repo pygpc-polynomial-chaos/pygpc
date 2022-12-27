@@ -94,7 +94,7 @@ solution vector is required to determine the projection matrix :math:`[\mathbf{W
 :ref:`gradient calculation approach <label_gradient_calculation_approach>` this may result in additional
 function evaluations. Once the gradients have been calculated, however, the gPC coefficients can be computed with higher
 accuracy and less additional sampling points as it is described in the
-:ref:`gradient enhanced gPC <label_gradient_enhanced_gpc>`. Accordingly, the choice of which method to select is
+:ref:`Gradient enhanced gPC`. Accordingly, the choice of which method to select is
 (as usual) highly dependent on the underlying problem and its compression capabilities.
 
 It is noted that the projection matrix :math:`[\mathbf{W}]` has to be determined for
@@ -106,10 +106,6 @@ The projection approach is implemented in the following algorithms:
 * :ref:`Algorithm: RegAdaptiveProjection`
 * :ref:`Algorithm: MEStaticProjection`
 * :ref:`Algorithm: MERegAdaptiveProjection`
-
-.. image:: /examples/images/FD_fwd.png
-    :width: 500
-    :align: center
 
 Example
 ^^^^^^^
@@ -132,12 +128,12 @@ This function is implemented in the :mod:`testfunctions <pygpc.testfunctions.tes
 we will set up a static gPC with fixed order using the previously described projection approach to reduce the
 original dimensionality of the problem.
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-120
+.. GENERATED FROM PYTHON SOURCE LINES 114-116
 
 Setting up the problem
 ----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-136
+.. GENERATED FROM PYTHON SOURCE LINES 116-132
 
 .. code-block:: default
 
@@ -164,12 +160,12 @@ Setting up the problem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 137-139
+.. GENERATED FROM PYTHON SOURCE LINES 133-135
 
 Setting up the algorithm
 ------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-158
+.. GENERATED FROM PYTHON SOURCE LINES 135-154
 
 .. code-block:: default
 
@@ -199,13 +195,13 @@ Setting up the algorithm
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-162
+.. GENERATED FROM PYTHON SOURCE LINES 155-158
 
 Since we have to compute the gradients of the solution anyway for the projection approach, we will make use of them
 also when determining the gPC coefficients. Therefore, we enable the "gradient_enhanced" gPC. For more details
-please see :ref:`gradient enhanced gPC <label_gradient_enhanced_gpc>`.
+please see :ref:`Gradient enhanced gPC`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-164
+.. GENERATED FROM PYTHON SOURCE LINES 158-160
 
 .. code-block:: default
 
@@ -218,12 +214,12 @@ please see :ref:`gradient enhanced gPC <label_gradient_enhanced_gpc>`.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-167
+.. GENERATED FROM PYTHON SOURCE LINES 161-163
 
 In the following we choose the :ref:`method to determine the gradients <label_gradient_calculation_approach>`.
 We will use a classical first order finite difference forward approximation for now.
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-170
+.. GENERATED FROM PYTHON SOURCE LINES 163-166
 
 .. code-block:: default
 
@@ -237,12 +233,12 @@ We will use a classical first order finite difference forward approximation for 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-173
+.. GENERATED FROM PYTHON SOURCE LINES 167-169
 
 We will use a 10th order approximation. It is noted that the model will consist of only one random variable.
 Including the mean (0th order coefficient) there will be 11 gPC coefficients in total.
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-176
+.. GENERATED FROM PYTHON SOURCE LINES 169-172
 
 .. code-block:: default
 
@@ -256,11 +252,11 @@ Including the mean (0th order coefficient) there will be 11 gPC coefficients in 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-178
+.. GENERATED FROM PYTHON SOURCE LINES 173-174
 
 Now we are defining the :class:`StaticProjection <pygpc.Algorithm.StaticProjection>` algorithm to solve the given problem.
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-180
+.. GENERATED FROM PYTHON SOURCE LINES 174-176
 
 .. code-block:: default
 
@@ -273,12 +269,12 @@ Now we are defining the :class:`StaticProjection <pygpc.Algorithm.StaticProjecti
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-183
+.. GENERATED FROM PYTHON SOURCE LINES 177-179
 
 Running the gpc
 ---------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-190
+.. GENERATED FROM PYTHON SOURCE LINES 179-186
 
 .. code-block:: default
 
@@ -295,6 +291,8 @@ Running the gpc
 
 .. rst-class:: sphx-glr-script-out
 
+ Out:
+
  .. code-block:: none
 
     Creating initial grid (<class 'pygpc.Grid.Random'>) with n_grid=100
@@ -302,23 +300,23 @@ Running the gpc
     =========================================
     Performing 100 simulations!
     It/Sub-it: 10/1 Performing simulation 001 from 100 [                                        ] 1.0%
-    Total function evaluation: 0.00026345252990722656 sec
+    Total function evaluation: 0.00021028518676757812 sec
     It/Sub-it: 10/1 Performing simulation 001 from 200 [                                        ] 0.5%
-    Gradient evaluation: 0.0022084712982177734 sec
+    Gradient evaluation: 0.0012793540954589844 sec
     Determine gPC coefficients using 'Moore-Penrose' solver (gradient enhanced)...
-    -> relative nrmsd error = 0.0006729579518100502
+    -> relative nrmsd error = 0.000693256699171336
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-195
+.. GENERATED FROM PYTHON SOURCE LINES 187-191
 
 Inspecting the gpc object
 -------------------------
 The SVD of the gradients of the solution vector resulted in the following projection matrix reducing the problem
 from the two dimensional case to the one dimensional case:
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-197
+.. GENERATED FROM PYTHON SOURCE LINES 191-193
 
 .. code-block:: default
 
@@ -330,6 +328,8 @@ from the two dimensional case to the one dimensional case:
 
 .. rst-class:: sphx-glr-script-out
 
+ Out:
+
  .. code-block:: none
 
     Projection matrix [W]: [[-0.70710678 -0.70710678]]
@@ -337,14 +337,14 @@ from the two dimensional case to the one dimensional case:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-202
+.. GENERATED FROM PYTHON SOURCE LINES 194-198
 
 It is of size :math:`n_d' \times n_d`, i.e. :math:`[1 \times 2]` in our case. Because of the simple sum of the
 random variables it can be seen directly from the projection matrix that the principal axis is 45° between the
 original parameter axes, exactly as the SVD of the gradient of the solution predicts. As a result,
 the number of gPC coefficients for a 10th order gPC approximation with only one random variable is 11:
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-204
+.. GENERATED FROM PYTHON SOURCE LINES 198-200
 
 .. code-block:: default
 
@@ -356,6 +356,8 @@ the number of gPC coefficients for a 10th order gPC approximation with only one 
 
 .. rst-class:: sphx-glr-script-out
 
+ Out:
+
  .. code-block:: none
 
     Number of gPC coefficients: 11
@@ -363,11 +365,11 @@ the number of gPC coefficients for a 10th order gPC approximation with only one 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-206
+.. GENERATED FROM PYTHON SOURCE LINES 201-202
 
 Accordingly, the gPC matrix has 11 columns, one for each gPC coefficient:
 
-.. GENERATED FROM PYTHON SOURCE LINES 206-208
+.. GENERATED FROM PYTHON SOURCE LINES 202-204
 
 .. code-block:: default
 
@@ -379,6 +381,8 @@ Accordingly, the gPC matrix has 11 columns, one for each gPC coefficient:
 
 .. rst-class:: sphx-glr-script-out
 
+ Out:
+
  .. code-block:: none
 
     Size of gPC matrix: (100, 11)
@@ -386,14 +390,14 @@ Accordingly, the gPC matrix has 11 columns, one for each gPC coefficient:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 209-213
+.. GENERATED FROM PYTHON SOURCE LINES 205-209
 
 It was mentioned previously that the one can make use of the
-:ref:`gradient enhanced gPC <label_gradient_enhanced_gpc>` when using the projection approach.
+:ref:`Gradient enhanced gPC` when using the projection approach.
 Internally, the gradients are also rotated and the gPC matrix is extended by the gPC matrix
 containing the derivatives:
 
-.. GENERATED FROM PYTHON SOURCE LINES 213-215
+.. GENERATED FROM PYTHON SOURCE LINES 209-211
 
 .. code-block:: default
 
@@ -405,6 +409,8 @@ containing the derivatives:
 
 .. rst-class:: sphx-glr-script-out
 
+ Out:
+
  .. code-block:: none
 
     Size of gPC matrix containing the derivatives: (100, 11)
@@ -412,11 +418,11 @@ containing the derivatives:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 216-217
+.. GENERATED FROM PYTHON SOURCE LINES 212-213
 
 The random variables of the original and the reduced problem can be reviewed in:
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-220
+.. GENERATED FROM PYTHON SOURCE LINES 213-216
 
 .. code-block:: default
 
@@ -429,22 +435,24 @@ The random variables of the original and the reduced problem can be reviewed in:
 
 .. rst-class:: sphx-glr-script-out
 
+ Out:
+
  .. code-block:: none
 
-    Original random variables: OrderedDict([('x1', <pygpc.RandomParameter.Beta object at 0x7f580375fd90>), ('x2', <pygpc.RandomParameter.Beta object at 0x7f57fa2eef40>)])
-    Reduced random variables: OrderedDict([('n0', <pygpc.RandomParameter.Beta object at 0x7f580375f3a0>)])
+    Original random variables: OrderedDict([('x1', <pygpc.RandomParameter.Beta object at 0x7f685275b6a0>), ('x2', <pygpc.RandomParameter.Beta object at 0x7f685275bb50>)])
+    Reduced random variables: OrderedDict([('n0', <pygpc.RandomParameter.Beta object at 0x7f68526ef610>)])
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 221-225
+.. GENERATED FROM PYTHON SOURCE LINES 217-221
 
 Postprocessing
 --------------
 The post-processing works identical as in a standard gPC. The routines identify whether the problem is reduced
 and provide all sensitivity measures with respect to the original model parameters.
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-247
+.. GENERATED FROM PYTHON SOURCE LINES 221-243
 
 .. code-block:: default
 
@@ -476,6 +484,8 @@ and provide all sensitivity measures with respect to the original model paramete
 
 .. rst-class:: sphx-glr-script-out
 
+ Out:
+
  .. code-block:: none
 
     > Loading gpc session object: tmp/staticprojection.pkl
@@ -492,13 +502,13 @@ and provide all sensitivity measures with respect to the original model paramete
     Global average derivatives:
     ===========================
         global_sens (qoi 0)
-    x1            -0.170988
-    x2            -0.170988
+    x1            -0.151716
+    x2            -0.151716
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 248-255
+.. GENERATED FROM PYTHON SOURCE LINES 244-251
 
 Validation
 ----------
@@ -508,7 +518,7 @@ The possibility of parameter reduction becomes best clear if one visualizes the 
 space. In this simple example there is almost no difference between the original model (left) and the reduced gPC
 (center).
 
-.. GENERATED FROM PYTHON SOURCE LINES 255-265
+.. GENERATED FROM PYTHON SOURCE LINES 251-261
 
 .. code-block:: default
 
@@ -534,7 +544,7 @@ space. In this simple example there is almost no difference between the original
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 266-275
+.. GENERATED FROM PYTHON SOURCE LINES 262-271
 
 References
 ^^^^^^^^^^
@@ -549,23 +559,28 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.440 seconds)
+   **Total running time of the script:** ( 0 minutes  1.130 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_projection.py:
 
-.. only:: html
 
-  .. container:: sphx-glr-footer sphx-glr-footer-example
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
 
 
-    .. container:: sphx-glr-download sphx-glr-download-python
 
-      :download:`Download Python source code: plot_projection.py <plot_projection.py>`
+  .. container:: sphx-glr-download sphx-glr-download-python
 
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
+     :download:`Download Python source code: plot_projection.py <plot_projection.py>`
 
-      :download:`Download Jupyter notebook: plot_projection.ipynb <plot_projection.ipynb>`
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_projection.ipynb <plot_projection.ipynb>`
 
 
 .. only:: html

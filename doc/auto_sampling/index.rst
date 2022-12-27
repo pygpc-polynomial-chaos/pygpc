@@ -1,5 +1,9 @@
 :orphan:
 
+
+
+.. _sphx_glr_auto_sampling:
+
 Sampling schemes
 ----------------
 
@@ -8,76 +12,14 @@ Sampling schemes
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbnails">
-
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="For evaluating the efficiency of the sampling schemes in pygpc we compared L1 optimal sampling ...">
 
 .. only:: html
 
-  .. image:: /auto_sampling/images/thumb/sphx_glr_plot_grid_comparison_thumb.png
-    :alt: Comparison of sampling schemes
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_grid_comparison_thumb.png
+     :alt: Comparison of sampling schemes
 
-  :ref:`sphx_glr_auto_sampling_plot_grid_comparison.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Comparison of sampling schemes</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="To calculate the coefficients of the gPC matrix, a number of model evaluations need to be perfo...">
-
-.. only:: html
-
-  .. image:: /auto_sampling/images/thumb/sphx_glr_plot_random_thumb.png
-    :alt: Standard Random sampling
-
-  :ref:`sphx_glr_auto_sampling_plot_random.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Standard Random sampling</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="To prevent clustering or undersampling of specific regions in the probability space, LHS is a s...">
-
-.. only:: html
-
-  .. image:: /auto_sampling/images/thumb/sphx_glr_plot_LHS_thumb.png
-    :alt: Latin Hypercube Sampling (LHS)
-
-  :ref:`sphx_glr_auto_sampling_plot_LHS.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Latin Hypercube Sampling (LHS)</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Before explaining the different types of L1 optimal grids a brief motivation for the L1-optimiz...">
-
-.. only:: html
-
-  .. image:: /auto_sampling/images/thumb/sphx_glr_plot_L1_thumb.png
-    :alt: L1 optimal sampling
-
-  :ref:`sphx_glr_auto_sampling_plot_L1.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">L1 optimal sampling</div>
-    </div>
-
+     :ref:`sphx_glr_auto_sampling_plot_grid_comparison.py`
 
 .. raw:: html
 
@@ -88,22 +30,90 @@ Sampling schemes
    :hidden:
 
    /auto_sampling/plot_grid_comparison
-   /auto_sampling/plot_random
-   /auto_sampling/plot_LHS
-   /auto_sampling/plot_L1
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="To calculate the coefficients of the gPC matrix, a number of model evaluations need to be perfo...">
 
 .. only:: html
 
-  .. container:: sphx-glr-footer sphx-glr-footer-gallery
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_random_thumb.png
+     :alt: Standard Random sampling
 
-    .. container:: sphx-glr-download sphx-glr-download-python
+     :ref:`sphx_glr_auto_sampling_plot_random.py`
 
-      :download:`Download all examples in Python source code: auto_sampling_python.zip </auto_sampling/auto_sampling_python.zip>`
+.. raw:: html
 
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
+    </div>
 
-      :download:`Download all examples in Jupyter notebooks: auto_sampling_jupyter.zip </auto_sampling/auto_sampling_jupyter.zip>`
+
+.. toctree::
+   :hidden:
+
+   /auto_sampling/plot_random
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="To prevent clustering or undersampling of specific regions in the probability space, LHS is a s...">
+
+.. only:: html
+
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_LHS_thumb.png
+     :alt: Latin Hypercube Sampling (LHS)
+
+     :ref:`sphx_glr_auto_sampling_plot_LHS.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_sampling/plot_LHS
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Before explaining the different types of L1 optimal grids a brief motivation for the L1-optimiz...">
+
+.. only:: html
+
+ .. figure:: /auto_sampling/images/thumb/sphx_glr_plot_L1_thumb.png
+     :alt: L1 optimal sampling
+
+     :ref:`sphx_glr_auto_sampling_plot_L1.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_sampling/plot_L1
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-gallery
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+    :download:`Download all examples in Python source code: auto_sampling_python.zip </auto_sampling/auto_sampling_python.zip>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+    :download:`Download all examples in Jupyter notebooks: auto_sampling_jupyter.zip </auto_sampling/auto_sampling_jupyter.zip>`
 
 
 .. only:: html

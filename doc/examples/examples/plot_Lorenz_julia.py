@@ -1,5 +1,5 @@
 """
-Example: Lorenz system of differential equations (julia)
+Example: Lorenz system of differential equations (Julia)
 ========================================================
 
 About the model
@@ -171,6 +171,11 @@ The
                             y_label="x(t)")
 
 """
+import matplotlib.pyplot as plt
+
+# _ = plt.figure(figsize=[25, 10])
+_ = plt.imshow(plt.imread("../images/Lorenz_Sobol.png"))
+_ = plt.axis('off')
 
 
 

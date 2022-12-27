@@ -5,20 +5,20 @@
 
 Computation times
 =================
-**00:15.082** total execution time for **auto_algorithms** files:
+**00:09.018** total execution time for **auto_algorithms** files:
 
 +---------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestaticprojection.py` (``plot_algorithm_mestaticprojection.py``)           | 00:06.394 | 0.0 MB |
+| :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic_IO.py` (``plot_algorithm_mestatic_IO.py``)                         | 00:09.018 | 0.0 MB |
 +---------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_algorithms_plot_algorithm_meregadaptiveprojection.py` (``plot_algorithm_meregadaptiveprojection.py``) | 00:05.881 | 0.0 MB |
-+---------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptiveprojection.py` (``plot_algorithm_regadaptiveprojection.py``)     | 00:02.806 | 0.0 MB |
+| :ref:`sphx_glr_auto_algorithms_plot_algorithm_meregadaptiveprojection.py` (``plot_algorithm_meregadaptiveprojection.py``) | 00:00.000 | 0.0 MB |
 +---------------------------------------------------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic.py` (``plot_algorithm_mestatic.py``)                               | 00:00.000 | 0.0 MB |
 +---------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic_IO.py` (``plot_algorithm_mestatic_IO.py``)                         | 00:00.000 | 0.0 MB |
+| :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestaticprojection.py` (``plot_algorithm_mestaticprojection.py``)           | 00:00.000 | 0.0 MB |
 +---------------------------------------------------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptive.py` (``plot_algorithm_regadaptive.py``)                         | 00:00.000 | 0.0 MB |
++---------------------------------------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptiveprojection.py` (``plot_algorithm_regadaptiveprojection.py``)     | 00:00.000 | 0.0 MB |
 +---------------------------------------------------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_IO.py` (``plot_algorithm_static_IO.py``)                             | 00:00.000 | 0.0 MB |
 +---------------------------------------------------------------------------------------------------------------------------+-----------+--------+

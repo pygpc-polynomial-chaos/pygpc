@@ -1,5 +1,4 @@
 """
-..  _label_gradient_enhanced_gpc:
 Gradient enhanced gPC
 =====================
 

@@ -7,8 +7,8 @@ Algorithm: Static_IO
 import pygpc
 import numpy as np
 import matplotlib
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+matplotlib.use("Qt5Agg")
+
 from collections import OrderedDict
 
 fn_results = 'tmp/static_IO'   # filename of output
@@ -37,7 +37,7 @@ grid = pygpc.RandomGrid(parameters_random=parameters, coords=np.vstack((x1,x3)).
 results = (3.0 * (1 - x1) ** 2. * np.exp(-(x1 ** 2) - (x3 + 1) ** 2)
            - 10.0 * (x1 / 5.0 - x1 ** 3 - x3 ** 5)
            * np.exp(-x1 ** 2 - x3 ** 2) - 1.0 / 3
-           * np.exp(-(x1 + 1) ** 2 - x3 ** 2)) + x2
+           * np.exp(-(x1 + 1) ** 2 - x3 ** 2)) +  x2
 results = results[:, np.newaxis]
 
 #%%
@@ -91,11 +91,11 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
 pygpc.plot_gpc(session=session,
                coeffs=coeffs,
                random_vars=["x1", "x3"],
-               output_idx=0,
-               n_grid = [100, 100],
+               output_idx= 0,
+               n_grid=[100, 100],
                coords=grid.coords,
                results=results,
-               fn_out=fn_results + "_plot")
+               fn_out=None)
 
 # On Windows subprocesses will import (i.e. execute) the main module at start.
 # You need to insert an if __name__ == '__main__': guard in the main module to avoid

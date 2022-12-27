@@ -163,6 +163,7 @@ Table of contents
 -----------------
 
 .. toctree::
+   :titlesonly:
    pygpc
    auto_introduction/index
    auto_gpc/index

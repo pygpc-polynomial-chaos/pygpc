@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pygpc.validation &#8212; pygpc 0.12.0 documentation</title>
+    <title>pygpc.validation &#8212; pygpc 0.3.4 documentation</title>
   
   
   
@@ -26,14 +26,10 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
@@ -45,52 +41,11 @@
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/thebelab-helper.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pygpc/validation';</script>
-    <script>
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pydata-sphinx-theme.readthedocs.io/en/latest/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.12.0';
-        </script>
-    <link rel="canonical" href="http://127.0.0.1:8000/_modules/pygpc/validation.html" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">  
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
+  <meta name="docsearch:language" content="en">
   </head>
   
   
@@ -119,17 +74,6 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
-  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
-    
-
-
-<script>
-$.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_templates/custom-template.html", success=(data)=>{
-      $("#header-announcement").html(`<div class="bd-header-announcement__content">${data}</div>`);
-  }).fail(() => {
-  console.log("[PST]: Failed to load announcement at: https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_templates/custom-template.html")
-});
-</script>
   </div>
 
   
@@ -158,27 +102,15 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
     <img src="../../_static/logo.png" class="logo__image only-dark" alt="pygpc">
   
   
-    <p class="title logo__title">pygpc</p>
+    <p class="title logo__title">pygpc documentation</p>
   
 </a>
     
   </div>
 
   
-  <div class=" navbar-header-items">
+  <div class="col-lg-9 navbar-header-items">
     <div id="navbar-center" class="mr-auto">
-      
-      <div class="navbar-center-item">
-        <div class="version-switcher__container dropdown">
-    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
-        v0.12.0  <!-- this text may get changed later by javascript -->
-        <span class="caret"></span>
-    </button>
-    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
-    <!-- dropdown will be populated by javascript on page load -->
-    </div>
-</div>
-      </div>
       
       <div class="navbar-center-item">
         <nav class="navbar-nav">
@@ -202,15 +134,22 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
-                        Dimensionality reduction
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
-                        How to define a gPC problem
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
                       </a>
                     </li>
                 
@@ -220,13 +159,6 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
                 </button>
                 <div class="dropdown-menu">
                     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
-                        Validation of gPC approximation
-                      </a>
-                    </li>
-                
-
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../auto_gpc/plot_model.html">
                         Setting up your model
@@ -319,6 +251,34 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
                 
 
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_grid_comparison.html">
+                        Comparison of sampling schemes
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_random.html">
+                        Standard Random sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_LHS.html">
+                        Latin Hypercube Sampling (LHS)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_L1.html">
+                        L1 optimal sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../auto_features/plot_julia_model.html">
                         Analyzing julia models with pygpc
                       </a>
@@ -347,43 +307,29 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
                 
 
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (julia)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_ishigami.html">
+                        Example: Ishigami Testfunction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../auto_examples/plot_electrode.html">
                         Example: Modelling of an electrode
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../pygpc.html">
-                        pygpc package
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_introduction/index.html">
-                        Introduction
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_gpc/index.html">
-                        Generalized Polynomial Chaos
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_algorithms/index.html">
-                        Algorithms
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_features/index.html">
-                        Features
                       </a>
                     </li>
                 
@@ -459,7 +405,7 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
           
           
           
-          <a href="https://pydata.org" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
         </li>
       </ul>
       </div>
@@ -499,18 +445,6 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
       <div class="sidebar-header-items__center">
       
       <div class="navbar-center-item">
-        <div class="version-switcher__container dropdown">
-    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
-        v0.12.0  <!-- this text may get changed later by javascript -->
-        <span class="caret"></span>
-    </button>
-    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
-    <!-- dropdown will be populated by javascript on page load -->
-    </div>
-</div>
-      </div>
-      
-      <div class="navbar-center-item">
         <nav class="navbar-nav">
     <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
         Site Navigation
@@ -532,15 +466,22 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
-                        Dimensionality reduction
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
-                        How to define a gPC problem
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
                       </a>
                     </li>
                 
@@ -550,13 +491,6 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
                 </button>
                 <div class="dropdown-menu">
                     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
-                        Validation of gPC approximation
-                      </a>
-                    </li>
-                
-
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../auto_gpc/plot_model.html">
                         Setting up your model
@@ -649,6 +583,34 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
                 
 
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_grid_comparison.html">
+                        Comparison of sampling schemes
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_random.html">
+                        Standard Random sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_LHS.html">
+                        Latin Hypercube Sampling (LHS)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_L1.html">
+                        L1 optimal sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../auto_features/plot_julia_model.html">
                         Analyzing julia models with pygpc
                       </a>
@@ -677,43 +639,29 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
                 
 
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (julia)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_ishigami.html">
+                        Example: Ishigami Testfunction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../auto_examples/plot_electrode.html">
                         Example: Modelling of an electrode
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../pygpc.html">
-                        pygpc package
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_introduction/index.html">
-                        Introduction
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_gpc/index.html">
-                        Generalized Polynomial Chaos
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_algorithms/index.html">
-                        Algorithms
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../auto_features/index.html">
-                        Features
                       </a>
                     </li>
                 
@@ -784,7 +732,7 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
           
           
           
-          <a href="https://pydata.org" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
         </li>
       </ul>
       </div>
@@ -817,7 +765,8 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
             
             
             <article class="bd-article" role="main">
-               <h1>Source code for pygpc.validation</h1><div class="highlight"><pre>
+              
+  <h1>Source code for pygpc.validation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
@@ -1275,8 +1224,6 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
 <span class="sd">    &lt;file&gt; : .png and .pdf file</span>
 <span class="sd">        Plot comparing original vs gPC model</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">matplotlib</span>
-    <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Qt5Agg&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">output_idx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">output_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">output_idx</span><span class="p">]</span>
@@ -1400,6 +1347,7 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
             <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fn_out</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_qoi_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_idx</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">1200</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fn_out</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_qoi_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_idx</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
 
 
 
@@ -1544,9 +1492,6 @@ $.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_t
 <span class="c1">#         plt.savefig(os.path.splitext(fn_out)[0] + &quot;_qoi_&quot; + str(output_idx) + &#39;.png&#39;, dpi=600)</span>
 <span class="c1">#         plt.savefig(os.path.splitext(fn_out)[0] + &quot;_qoi_&quot; + str(output_idx) + &#39;.pdf&#39;)</span>
 </pre></div>
-<div class="section">
-   
-</div>
 
             </article>
             

@@ -30,8 +30,8 @@ Algorithm: Static_IO
     import pygpc
     import numpy as np
     import matplotlib
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
+    matplotlib.use("Qt5Agg")
+
     from collections import OrderedDict
 
     fn_results = 'tmp/static_IO'   # filename of output
@@ -73,7 +73,7 @@ Setup input and output data
     results = (3.0 * (1 - x1) ** 2. * np.exp(-(x1 ** 2) - (x3 + 1) ** 2)
                - 10.0 * (x1 / 5.0 - x1 ** 3 - x3 ** 5)
                * np.exp(-x1 ** 2 - x3 ** 2) - 1.0 / 3
-               * np.exp(-(x1 + 1) ** 2 - x3 ** 2)) + x2
+               * np.exp(-(x1 + 1) ** 2 - x3 ** 2)) +  x2
     results = results[:, np.newaxis]
 
 
@@ -171,8 +171,8 @@ Running the gpc
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.15088152885437012 sec
-    -> relative loocv error = 2.764782010539312e-05
+    LOOCV computation time: 0.08343315124511719 sec
+    -> relative loocv error = 2.1361275428489573e-05
 
 
 
@@ -202,11 +202,11 @@ Postprocessing
     pygpc.plot_gpc(session=session,
                    coeffs=coeffs,
                    random_vars=["x1", "x3"],
-                   output_idx=0,
-                   n_grid = [100, 100],
+                   output_idx= 0,
+                   n_grid=[100, 100],
                    coords=grid.coords,
                    results=results,
-                   fn_out=fn_results + "_plot")
+                   fn_out=None)
 
     # On Windows subprocesses will import (i.e. execute) the main module at start.
     # You need to insert an if __name__ == '__main__': guard in the main module to avoid
@@ -216,6 +216,11 @@ Postprocessing
     #     main()
 
 
+
+.. image-sg:: /auto_algorithms/images/sphx_glr_plot_algorithm_static_IO_001.png
+   :alt: gPC approximation, Probability density
+   :srcset: /auto_algorithms/images/sphx_glr_plot_algorithm_static_IO_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -234,7 +239,7 @@ Postprocessing
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.778 seconds)
+   **Total running time of the script:** ( 0 minutes  2.262 seconds)
 
 
 .. _sphx_glr_download_auto_algorithms_plot_algorithm_static_IO.py:

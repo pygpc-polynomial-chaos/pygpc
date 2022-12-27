@@ -1,12 +1,11 @@
 :orphan:
 
+
+
+.. _sphx_glr_auto_examples:
+
 Examples
 --------
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbnails">
 
 
 .. raw:: html
@@ -15,67 +14,10 @@ Examples
 
 .. only:: html
 
-  .. image:: /auto_examples/images/thumb/sphx_glr_plot_Lorenz_julia_thumb.png
-    :alt: Example: Lorenz system of differential equations (julia)
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_Lorenz_julia_thumb.png
+     :alt: Example: Lorenz system of differential equations (Julia)
 
-  :ref:`sphx_glr_auto_examples_plot_Lorenz_julia.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Example: Lorenz system of differential equations (julia)</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This tutorial shows how to perform uncertainty and sensitivity ...">
-
-.. only:: html
-
-  .. image:: /auto_examples/images/thumb/sphx_glr_plot_Lorenz_thumb.png
-    :alt: Example: Lorenz system of differential equations
-
-  :ref:`sphx_glr_auto_examples_plot_Lorenz.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Example: Lorenz system of differential equations</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This easy tutorial shows the application of pygpc to the Ishiga...">
-
-.. only:: html
-
-  .. image:: /auto_examples/images/thumb/sphx_glr_plot_ishigami_thumb.png
-    :alt: Example: Ishigami Testfunction
-
-  :ref:`sphx_glr_auto_examples_plot_ishigami.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Example: Ishigami Testfunction</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ This tutorial shows th...">
-
-.. only:: html
-
-  .. image:: /auto_examples/images/thumb/sphx_glr_plot_electrode_thumb.png
-    :alt: Example: Modelling of an electrode
-
-  :ref:`sphx_glr_auto_examples_plot_electrode.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Example: Modelling of an electrode</div>
-    </div>
-
+     :ref:`sphx_glr_auto_examples_plot_Lorenz_julia.py`
 
 .. raw:: html
 
@@ -86,22 +28,90 @@ Examples
    :hidden:
 
    /auto_examples/plot_Lorenz_julia
-   /auto_examples/plot_Lorenz
-   /auto_examples/plot_ishigami
-   /auto_examples/plot_electrode
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This tutorial shows how to perform uncertainty and sensitivity ...">
 
 .. only:: html
 
-  .. container:: sphx-glr-footer sphx-glr-footer-gallery
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_Lorenz_thumb.png
+     :alt: Example: Lorenz system of differential equations
 
-    .. container:: sphx-glr-download sphx-glr-download-python
+     :ref:`sphx_glr_auto_examples_plot_Lorenz.py`
 
-      :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
+.. raw:: html
 
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
+    </div>
 
-      :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_Lorenz
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This easy tutorial shows the application of pygpc to the Ishiga...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_ishigami_thumb.png
+     :alt: Example: Ishigami Testfunction
+
+     :ref:`sphx_glr_auto_examples_plot_ishigami.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_ishigami
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ This tutorial shows th...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_electrode_thumb.png
+     :alt: Example: Modelling of an electrode
+
+     :ref:`sphx_glr_auto_examples_plot_electrode.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_electrode
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-gallery
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+    :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

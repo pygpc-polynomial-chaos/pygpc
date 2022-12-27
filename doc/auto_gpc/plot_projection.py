@@ -75,7 +75,7 @@ solution vector is required to determine the projection matrix :math:`[\\mathbf{
 :ref:`gradient calculation approach <label_gradient_calculation_approach>` this may result in additional
 function evaluations. Once the gradients have been calculated, however, the gPC coefficients can be computed with higher
 accuracy and less additional sampling points as it is described in the
-:ref:`gradient enhanced gPC <label_gradient_enhanced_gpc>`. Accordingly, the choice of which method to select is
+:ref:`Gradient enhanced gPC`. Accordingly, the choice of which method to select is
 (as usual) highly dependent on the underlying problem and its compression capabilities.
 
 It is noted that the projection matrix :math:`[\\mathbf{W}]` has to be determined for
@@ -87,10 +87,6 @@ The projection approach is implemented in the following algorithms:
 * :ref:`Algorithm: RegAdaptiveProjection`
 * :ref:`Algorithm: MEStaticProjection`
 * :ref:`Algorithm: MERegAdaptiveProjection`
-
-.. image:: /examples/images/FD_fwd.png
-    :width: 500
-    :align: center
 
 Example
 ^^^^^^^
@@ -158,7 +154,7 @@ options["n_grid"] = 100
 #%%
 # Since we have to compute the gradients of the solution anyway for the projection approach, we will make use of them
 # also when determining the gPC coefficients. Therefore, we enable the "gradient_enhanced" gPC. For more details
-# please see :ref:`gradient enhanced gPC <label_gradient_enhanced_gpc>`.
+# please see :ref:`Gradient enhanced gPC`.
 options["gradient_enhanced"] = True
 
 #%%
@@ -207,7 +203,7 @@ print(f"Size of gPC matrix: {session.gpc[0].gpc_matrix.shape}")
 
 #%%
 # It was mentioned previously that the one can make use of the
-# :ref:`gradient enhanced gPC <label_gradient_enhanced_gpc>` when using the projection approach.
+# :ref:`Gradient enhanced gPC` when using the projection approach.
 # Internally, the gradients are also rotated and the gPC matrix is extended by the gPC matrix
 # containing the derivatives:
 print(f"Size of gPC matrix containing the derivatives: {session.gpc[0].gpc_matrix_gradient.shape}")

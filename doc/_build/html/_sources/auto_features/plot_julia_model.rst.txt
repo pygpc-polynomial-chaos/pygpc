@@ -18,11 +18,11 @@
 .. _sphx_glr_auto_features_plot_julia_model.py:
 
 
-Analyzing julia models with pygpc
+Analyzing Julia models with pygpc
 ==================================
 
-You can easily investigate your models written in julia with pygpc. In order to do so, you have to
-install the julia API for Python.
+You can easily analyze your models written in Julia with pygpc. In order to do so, you have to
+install the Julia API for Python.
 
 .. GENERATED FROM PYTHON SOURCE LINES 8-14
 
@@ -46,69 +46,59 @@ install the julia API for Python.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-171
+.. GENERATED FROM PYTHON SOURCE LINES 15-164
 
-Install julia API for Python
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Install Julia API for Python
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If not already done, install Julia (https://julialang.org) and Python (https://www.python.org/).
+After installation is finished, the dependency *PyCall* needs to be installed in Julia.
+Open Julia and enter the following:
 
-To start the julia within a Python session, you first must install the julia as a Python package and PyCall as a julia
-library. If both are installed the julia package in python needs to be activated once by typing 'julia.install()'.
+**Withing Julia**
 
-Before you install, verify your Python and julia configurations.
-
-- Check that your system has a supported version of Python and julia 0.7 or later.
-  To check that Python is installed on your system, run Python at the operating system prompt.
-- Add the folder that contains the Python interpreter to your path, if it is not already there.
-- Find the path to the MATLAB folder. Start MATLAB and type matlabroot in the command window. Copy the path returned
-  by matlabroot.
-
-If julia is not already installed refer to <https://julialang.org> for the needed distribution.
-Once both are installed PyCall needs to be installed in julia. Boot up julia and type the following:
-
-**Withing julia**
-
-.. code-block:: bash
+.. code-block:: julia
 
    import Pkg
    Pkg.install("PyCall")
 
-In python you need to install and 'activate' the julia package. You can use pip for the julia package for example.
-Then open a python console an type the following (this should work if PyCall was installed beforehand).
+In Python you need to download and install the Julia package from pip for example:
+
+.. code-block:: bash
+
+   pip install julia
+
+Then open Python and install the Julia dependency (this should work if PyCall was installed beforehand):
 
 **Withing Python**
 
-.. code-block:: bash
+.. code-block:: python
 
    import julia
    julia.install()
 
 
-After you installed the julia Engine API for Python, you can set
+After installation is finished, you can set:
 
 .. code-block:: python
 
    options["julia_model"] = True
 
-in your gPC run-file.
+in the gPC options section of your gPC run-file.
 
-You can find an example model-file in :code:`.../templates/MyModel_julia.py` and the associated gPC
-run-file in :code:`.../templates/MyGPC_julia.py`.
-
-Setting up the julia model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Setting up the model in julia is straight forward. You simply have to define your model as a julia function
-within an *.jl* file. In the following, you see an example model *.jl* file:
+Setting up the Julia model
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Setting up the model in Julia is straight forward. You simply have to define your model as a julia function
+within an .jl file. In the following, you see an example model .jl file:
 
 .. code-block:: julia
 
-    # Three-dimensional test function of Ishigami.
-
+    # Three-dimensional test function of Ishigami
     function Ishigami(x1, x2, x3, a, b)
     return sin.(x1) .- a .* sin.(x1).^2 .+ b .* x3.^4 .* sin.(x1)
     end
 
-If the julia model requires the usage of julia libraries a julia environment needs to be created and loaded during the
-call from python. The environment can be created inside julia where libraries can be installed afterwards.
+If the Julia model requires the usage of Julia libraries a Julia environment needs to be created and loaded during the
+call from python. The environment can be created inside Julia where libraries can be installed afterwards.
 
 .. code-block:: julia
 
@@ -118,12 +108,15 @@ call from python. The environment can be created inside julia where libraries ca
 
 Accessing the model within pypgc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-In order to call the julia function within pygpc, we have to set up a corresponding python model as shown below.
-During initialization we pass the function name *fname_julia*, which tells pygpc where to find the model *.jl*
-function. During computation, pygpc accesses the julia function.
+In order to call the Julia function within pygpc, we have to set up a corresponding python model as shown below.
+During initialization we pass the function name *fname_julia*, which tells pygpc where to find the model .jl
+function. During computation, pygpc accesses the Julia function.
 
 The example shown below can be found in the templates folder of pygpc (`/templates/MyModel_julia.py
-<../../../../templates/MyModel_julia.py>`_)
+<../../templates/MyModel_julia.py>`_). In particular, you can find an example model-file in
+:code:`.../templates/MyModel_julia.py` and the associated gPC run-file in :code:`.../templates/MyGPC_julia.py`.
+
+A detailed example is also shown in :ref:`Example: Lorenz system of differential equations (Julia)`.
 
 .. code-block:: python
 
@@ -135,7 +128,7 @@ The example shown below can be found in the templates folder of pygpc (`/templat
 
     class MyModel_julia(AbstractModel):
         """
-        MyModel evaluates something by loading a julia file that contains a function. The parameters of the model
+        MyModel evaluates something by loading a Julia file that contains a function. The parameters of the model
          (constants and random parameters) are stored in the dictionary p. Their type is defined during the problem
           definition.
 
@@ -183,8 +176,8 @@ The example shown below can be found in the templates folder of pygpc (`/templat
             Main.fname_julia = self.fname_julia
             Main.include(Main.fname_julia)
 
-            # call julia function
-        y = Main.Ishigami(x1, x2, x3, a, b)
+            # call Julia function
+            y = Main.Ishigami(x1, x2, x3, a, b)
 
             if y.ndim == 0:
                 y = np.array([[y]])
@@ -193,19 +186,19 @@ The example shown below can be found in the templates folder of pygpc (`/templat
 
             return y
 
-To enable libraries vie an existing environment folder as described above use 'Main.eval('import Pkg')' and
-'Main.eval('Pkg.activate(" folder name of environment ")')' before including the *.jl* file. If the environment
-folder is not in the same place as the *.jl* file the complete path is needed for this call as well.
+To enable libraries via an existing environment folder as described above use 'Main.eval('import Pkg')' and
+'Main.eval('Pkg.activate(" folder name of environment ")')' before including the .jl file. If the environment
+folder is not in the same place as the .jl file the complete path is needed for this call as well.
 
 Performance Tip
 ^^^^^^^^^^^^^^^
-You can easily vectorize basic julia operations like (+, -, etc.) by appending a dot before them: .+, .-, etc as shown
+You can easily vectorize basic Julia operations like (+, -, etc.) by appending a dot before them: .+, .-, etc as shown
 in the function above. This can even be extended to entire functions by appending the dot after it:
 *y = function_name(args).* . With that the function should be able to process arrays for the input parameters passed
 in the dictionary *p*. And if that is the case you can set the
 algorithm option:
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-178
+.. GENERATED FROM PYTHON SOURCE LINES 164-171
 
 .. code-block:: default
 
@@ -223,9 +216,9 @@ algorithm option:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 179-183
+.. GENERATED FROM PYTHON SOURCE LINES 172-176
 
-to enable parallel processing in pygpc. In this way, multiple sampling points are passed to the function
+To enable parallel processing in pygpc. In this way, multiple sampling points are passed to the function
 and processed in parallel, which speeds up your gPC analysis. A more detailed description about the parallel
 processing capabilities of pygpc is given in this
 `example <plot_parallel_processing.html>`_.
@@ -233,7 +226,7 @@ processing capabilities of pygpc is given in this
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.157 seconds)
+   **Total running time of the script:** ( 0 minutes  0.126 seconds)
 
 
 .. _sphx_glr_download_auto_features_plot_julia_model.py:

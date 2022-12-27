@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from collections import OrderedDict
 
-fn_results = 'tmp/mestatic_IO'   # filename of output
+fn_results = 'tmp/mestatic_IO'  # filename of output
 save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 np.random.seed(1)
 
@@ -100,17 +100,17 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              calc_global_sens=True,
                              calc_pdf=True,
                              algorithm="standard",
-                             n_samples=1e4)
+                             n_samples=int(1e4))
 
 # plot gPC approximation and IO data
 pygpc.plot_gpc(session=session,
                coeffs=coeffs,
                random_vars=["rho_0", "beta"],
                output_idx=0,
-               n_grid = [100, 100],
+               n_grid=[100, 100],
                coords=grid.coords,
                results=results,
-               fn_out=fn_results + "_plot",
+               fn_out=None,
                camera_pos=[45., 65])
 
 # On Windows subprocesses will import (i.e. execute) the main module at start.

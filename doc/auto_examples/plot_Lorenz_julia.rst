@@ -18,7 +18,7 @@
 .. _sphx_glr_auto_examples_plot_Lorenz_julia.py:
 
 
-Example: Lorenz system of differential equations (julia)
+Example: Lorenz system of differential equations (Julia)
 ========================================================
 
 About the model
@@ -111,6 +111,7 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
 
             return x_out
 
+The
 
 .. code-block:: python
 
@@ -188,9 +189,14 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
                             x_label="t in s",
                             y_label="x(t)")
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-182
+.. GENERATED FROM PYTHON SOURCE LINES 174-188
 
 
+
+.. image-sg:: /auto_examples/images/sphx_glr_plot_Lorenz_julia_001.png
+   :alt: plot Lorenz julia
+   :srcset: /auto_examples/images/sphx_glr_plot_Lorenz_julia_001.png
+   :class: sphx-glr-single-img
 
 
 
@@ -198,6 +204,11 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
 
 .. code-block:: default
 
+    import matplotlib.pyplot as plt
+
+    # _ = plt.figure(figsize=[25, 10])
+    _ = plt.imshow(plt.imread("../images/Lorenz_Sobol.png"))
+    _ = plt.axis('off')
 
 
 
@@ -211,23 +222,28 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.002 seconds)
+   **Total running time of the script:** ( 0 minutes  0.059 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_Lorenz_julia.py:
 
-.. only:: html
 
-  .. container:: sphx-glr-footer sphx-glr-footer-example
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
 
 
-    .. container:: sphx-glr-download sphx-glr-download-python
 
-      :download:`Download Python source code: plot_Lorenz_julia.py <plot_Lorenz_julia.py>`
+  .. container:: sphx-glr-download sphx-glr-download-python
 
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
+     :download:`Download Python source code: plot_Lorenz_julia.py <plot_Lorenz_julia.py>`
 
-      :download:`Download Jupyter notebook: plot_Lorenz_julia.ipynb <plot_Lorenz_julia.ipynb>`
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_Lorenz_julia.ipynb <plot_Lorenz_julia.ipynb>`
 
 
 .. only:: html

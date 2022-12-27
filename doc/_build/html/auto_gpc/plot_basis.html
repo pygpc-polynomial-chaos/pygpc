@@ -4,9 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
-    <title>Polynomial basis functions &#8212; pygpc 0.2.7.5 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polynomial basis functions &#8212; pygpc 0.3.4 documentation</title>
   
   
   
@@ -27,7 +26,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -312,15 +310,15 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
-                        Example: Lorenz system of differential equations
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (julia)
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
-                        Example: Lorenz system of differential equations (julia)
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
                       </a>
                     </li>
                 
@@ -335,48 +333,6 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_examples/plot_electrode.html">
                         Example: Modelling of an electrode
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../pygpc.html">
-                        pygpc package
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_introduction/index.html">
-                        Introduction
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Generalized Polynomial Chaos
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_algorithms/index.html">
-                        Algorithms
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_sampling/index.html">
-                        Sampling schemes
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_features/index.html">
-                        Features
                       </a>
                     </li>
                 
@@ -686,15 +642,15 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
-                        Example: Lorenz system of differential equations
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (julia)
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
-                        Example: Lorenz system of differential equations (julia)
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
                       </a>
                     </li>
                 
@@ -709,48 +665,6 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_examples/plot_electrode.html">
                         Example: Modelling of an electrode
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../pygpc.html">
-                        pygpc package
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_introduction/index.html">
-                        Introduction
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Generalized Polynomial Chaos
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_algorithms/index.html">
-                        Algorithms
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_sampling/index.html">
-                        Sampling schemes
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_features/index.html">
-                        Features
                       </a>
                     </li>
                 
@@ -860,13 +774,13 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-gpc-plot-basis-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<section class="sphx-glr-example-title" id="polynomial-basis-functions">
+<div class="sphx-glr-example-title section" id="polynomial-basis-functions">
 <span id="sphx-glr-auto-gpc-plot-basis-py"></span><h1>Polynomial basis functions<a class="headerlink" href="#polynomial-basis-functions" title="Permalink to this heading">#</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.</span>
 <span class="c1"># def main():</span>
 </pre></div>
 </div>
-<section id="test-problem">
+<div class="section" id="test-problem">
 <h2>Test problem<a class="headerlink" href="#test-problem" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygpc</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -888,7 +802,7 @@ to download the full example code</p>
 <span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
-<section id="total-order-gpc">
+<div class="section" id="total-order-gpc">
 <h3>Total-order gPC<a class="headerlink" href="#total-order-gpc" title="Permalink to this heading">#</a></h3>
 <p>In general, the set <span class="math notranslate nohighlight">\(\mathcal{A}(\mathbf{p})\)</span> of multi-indices can be freely chosen according
 to the problem under investigation. In the following figures, the blue boxes correspond to polynomials
@@ -907,8 +821,8 @@ sphinx_gallery_thumbnail_number = 2</p>
 <span class="n">basis</span><span class="o">.</span><span class="n">plot_basis</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_basis_001.png" srcset="../_images/sphx_glr_plot_basis_001.png" alt="plot basis" class = "sphx-glr-single-img"/></section>
-<section id="maximum-order-gpc">
+<img src="../_images/sphx_glr_plot_basis_001.png" srcset="../_images/sphx_glr_plot_basis_001.png" alt="plot basis" class = "sphx-glr-single-img"/></div>
+<div class="section" id="maximum-order-gpc">
 <h3>Maximum-order gPC<a class="headerlink" href="#maximum-order-gpc" title="Permalink to this heading">#</a></h3>
 <p>In practical applications, the more economical maximum total order gPC is preferably used.
 In this case, the set <span class="math notranslate nohighlight">\(\mathcal{A}(p_g)\)</span> includes all polynomials whose total order
@@ -930,9 +844,9 @@ and hence, the dimension of the space spanned by the polynomials, is:</p>
 <span class="n">basis</span><span class="o">.</span><span class="n">plot_basis</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_basis_002.png" srcset="../_images/sphx_glr_plot_basis_002.png" alt="plot basis" class = "sphx-glr-single-img"/></section>
-</section>
-<section id="reduced-basis-gpc">
+<img src="../_images/sphx_glr_plot_basis_002.png" srcset="../_images/sphx_glr_plot_basis_002.png" alt="plot basis" class = "sphx-glr-single-img"/></div>
+</div>
+<div class="section" id="reduced-basis-gpc">
 <h2>Reduced-basis gPC<a class="headerlink" href="#reduced-basis-gpc" title="Permalink to this heading">#</a></h2>
 <p>The concept of the <em>maximum-order</em> gPC is extended by introducing three new parameters:
 - the <em>univariate</em> expansion order <span class="math notranslate nohighlight">\(\mathbf{p}_u = (p_{u,1},...,p_{u,d})\)</span> with
@@ -965,7 +879,7 @@ may be added to the set of basis functions.</p>
 <span class="n">basis</span><span class="o">.</span><span class="n">plot_basis</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_basis_003.png" srcset="../_images/sphx_glr_plot_basis_003.png" alt="plot basis" class = "sphx-glr-single-img"/><section id="isotropic-adaptive-basis">
+<img src="../_images/sphx_glr_plot_basis_003.png" srcset="../_images/sphx_glr_plot_basis_003.png" alt="plot basis" class = "sphx-glr-single-img"/><div class="section" id="isotropic-adaptive-basis">
 <h3>Isotropic adaptive basis<a class="headerlink" href="#isotropic-adaptive-basis" title="Permalink to this heading">#</a></h3>
 <p>The basic problem in gPC is to find a suitable basis while reducing the number of necessary forward
 simulations to determine the gPC coefficients! To do this two basis increment strategies exist. This first is called
@@ -1083,8 +997,8 @@ LOOCV computation time: 0.4485130310058594 sec
 Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 </pre></div>
 </div>
-</section>
-<section id="anisotropic-adaptive-basis">
+</div>
+<div class="section" id="anisotropic-adaptive-basis">
 <h3>Anisotropic adaptive basis<a class="headerlink" href="#anisotropic-adaptive-basis" title="Permalink to this heading">#</a></h3>
 <p>In addition to the adaptive selection from the previous method, the specification options[“basis_increment_strategy”]
 = anisotropic can be used for the gpc object to use an algorithm by Gerstner and Griebel [1] for an anisotropic basis
@@ -1238,9 +1152,9 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
             </article>
@@ -1364,7 +1278,7 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
     
 <p class="copyright">
 
-    &copy; Copyright 2020, Konstantin Weise.<br>
+    &copy; Copyright 2022, Konstantin Weise.<br>
 
 </p>
 

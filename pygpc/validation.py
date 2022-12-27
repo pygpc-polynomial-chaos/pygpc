@@ -455,8 +455,6 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
     <file> : .png and .pdf file
         Plot comparing original vs gPC model
     """
-    import matplotlib
-    matplotlib.use('Qt5Agg')
 
     if type(output_idx) is int:
         output_idx = [output_idx]
@@ -580,6 +578,7 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=1200)
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
             plt.close()
+
 
 
 

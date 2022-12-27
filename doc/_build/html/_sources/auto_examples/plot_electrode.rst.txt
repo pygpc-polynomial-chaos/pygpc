@@ -28,22 +28,22 @@ an open-ended coaxial electrode.
 The model consists of a Randles circuit that was modified according to the coaxial geometry of the electrode.
 The parameters model the different contributions of the physical phenomena as follows:
 
-1. **Rs** models the contribution of the serial resistance of an electrolyte that the electrode is dipped into.
-2. **Qdl** models the distributed double layer capacitance of the electrode.
-3. **Rct** models the charge transfer resistance between the electrode and the electrolyte
-4. **Qd** and **Rd** model the diffusion of charge carriers and other particles towards the electrode surface.
+1. :math:`R_d` models the contribution of the serial resistance of an electrolyte that the electrode is dipped into.
+2. :math:`Q_{dl}` models the distributed double layer capacitance of the electrode.
+3. :math:`R_{ct}` models the charge transfer resistance between the electrode and the electrolyte
+4. :math:`Q_d` and :math:`R_d` model the diffusion of charge carriers and other particles towards the electrode surface.
 
-The elements **Qdl** and **Qd** can be described with:
+The elements :math:`Q_{dl}` and :math:`Q_d` can be described with:
 :math:`\frac{1}{Q(j\omega)^\alpha}`
 The equation depends on the angular frequency :math:`\omega` as a variable and :math:`Q` and :math:`\alpha`
 as parameters.
 
-The impedance of the equivalent circuit is complex valued, has seven parameters :math:`$R_s$`,  :math:`$R_{ct}$`,
-:math:`$R_d$`, :math:`$Q_d$`, :math:`$\alpha_d$`, :math:`$Q_{dl}$`, :math:`$\alpha_{dl}$`
+The impedance of the equivalent circuit is complex valued, has seven parameters :math:`R_s`,  :math:`R_{ct}`,
+:math:`R_d`, :math:`Q_d`, :math:`\alpha_d`, :math:`Q_{dl}`, :math:`\alpha_{dl}`
 and one variable :math:`\omega`.
 
 The model returns an array of containing the real and imaginary part of every frequency point. Every element of this
-array is a quantity of interest (**Qoi**) and a gPC is computed for every quantity of interest.
+array is a quantity of interest (QoI) and a gPC is computed for every quantity of interest.
 
 .. GENERATED FROM PYTHON SOURCE LINES 29-38
 
@@ -200,9 +200,9 @@ Running the gpc
     Using user-predefined grid with n_grid=1788
     Performing 1788 simulations!
     It/Sub-it: 5/3 Performing simulation 0001 from 1788 [                                        ] 0.1%
-    Total parallel function evaluation: 0.8193540573120117 sec
+    Total parallel function evaluation: 0.5561909675598145 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
-    -> relative nrmsd error = 1.6986834589818316e-05
+    -> relative nrmsd error = 1.8068237682744275e-05
 
 
 
@@ -226,7 +226,7 @@ Postprocessing
                                  calc_sobol=True,
                                  calc_global_sens=True,
                                  calc_pdf=True,
-                                 n_samples=1e4)
+                                 n_samples=int(1e4))
 
 
 
@@ -446,11 +446,11 @@ Load sobol indices, mean and std from the *.hdf5 file
 
  .. code-block:: none
 
-    Minimum of sum of sobol indices of real part:  0.9922830860823653
-    Maximum of sum of sobol indices of real part:  0.9999999960849595
+    Minimum of sum of sobol indices of real part:  0.9922830860823648
+    Maximum of sum of sobol indices of real part:  0.9999999960849593
     Mean of sum of sobol indices of real part:  0.9984816706723425
-    Minimum of sum of sobol indices of imag part:  0.954105459100021
-    Maximum of sum of sobol indices of imag part:  0.9988259205269605
+    Minimum of sum of sobol indices of imag part:  0.95410545910002
+    Maximum of sum of sobol indices of imag part:  0.9988259205269608
     Mean of sum of sobol indices of imag part:  0.995266507219882
 
 
@@ -617,7 +617,7 @@ Plot sobol indices of the parameters of the imaginary part of the model
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  23.122 seconds)
+   **Total running time of the script:** ( 0 minutes  13.000 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_electrode.py:

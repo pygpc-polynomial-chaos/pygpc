@@ -18,10 +18,10 @@
 .. _sphx_glr_auto_gpc_plot_model.py:
 
 
-Setting up your model
-=====================
-In order to analyze your model with pygpc, it has to be converted into a format understandable for pygpc.
-For this, we implemented the *AbstracModel* class in pygpc. You can find an example template in
+Setting up a custom model
+=========================
+In order to analyze a mathematical model or function with pygpc, it has to be converted into a format understandable for pygpc.
+For this, we implemented the *AbstractModel* class in pygpc. You can find an example template in
 `/templates/MyModel.py <../../../../templates/MyModel.py>`_
 
 .. GENERATED FROM PYTHON SOURCE LINES 8-56
@@ -185,7 +185,7 @@ Testing the model
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.373 seconds)
+   **Total running time of the script:** ( 0 minutes  0.433 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_model.py:
