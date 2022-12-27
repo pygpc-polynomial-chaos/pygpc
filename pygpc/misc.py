@@ -1211,10 +1211,10 @@ def PhiP(x, p=10):
 def poly_expand(current_set, to_expand, order_max, interaction_order):
     """
     Algorithm by Gerstner and Griebel to expand polynomial basis [1] according to two criteria:
-    (1) The basis function may not be completely enclosed by already existing basis functions. In this case the added
-        basis would be already included in any case.
-    (2) The basis function is not a candidate if adding any basis would have no predecessors. The new basis must have
-        predecessors in all decreasing direction and may not "float".
+        (1) The basis function may not be completely enclosed by already existing basis functions. In this case the added
+            basis would be already included in any case.
+        (2) The basis function is not a candidate if adding any basis would have no predecessors. The new basis must have
+            predecessors in all decreasing direction and may not "float".
 
     Parameters
     ----------
@@ -1267,16 +1267,16 @@ def get_non_enclosed_multi_indices(multi_indices, interaction_order):
 
     Parameters
     ----------
-    multi_indices: ndarray of float [n_basis, dim]
+    multi_indices : ndarray of float [n_basis, dim]
         Array of multi-indices of basis functions
-    interaction_order: int
+    interaction_order : int
         Allowed interaction order between variables (<= dim)
 
     Returns
     -------
-    multi_indices_non_enclosed: ndarray of float [n_basis_candidates, dim]
+    multi_indices_non_enclosed : ndarray of float [n_basis_candidates, dim]
         Array of possible multi-indices of basis functions
-    poly_indices_non_enclosed: list of int
+    poly_indices_non_enclosed : list of int
         Indices of selected basis functions in global "multi-indices" array
     """
     multi_indices_non_enclosed = []

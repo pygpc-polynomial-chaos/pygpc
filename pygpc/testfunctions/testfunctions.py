@@ -3821,7 +3821,7 @@ class Lorenz_System(AbstractModel):
         sols = np.zeros((x_out_shape, t.shape[0]))
         for i in range(x_out_shape):
             p = (self.p["sigma"][i], self.p["beta"][i], self.p["rho"][i])
-            y0 = [self.p["y1_0"][i], self.p["y2_0"][i], self.p["y3_0"][i]]
+            y0 = [self.p["x_0"][i], self.p["y_0"][i], self.p["z_0"][i]]
             # only save x-coordinate (index 0)
             sols[i, :] = odeint(lorenz, y0, t, p, tfirst=True)[:, 0]
         x_out = sols

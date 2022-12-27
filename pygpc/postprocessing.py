@@ -619,3 +619,127 @@ def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
                 f.write(line)
 
     return sobol, gsens
+
+
+def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
+                      y_label="y", x_label="x", sobol_donut=True):
+    """
+    Plot summary of Sobol indices and global derivative based sensitivity coefficients
+
+    Parameters
+    ----------
+    sobol : pandas DataFrame
+        Pandas DataFrame containing the normalized Sobol indices from get_sens_summary()
+    gsens: pandas DataFrame
+        Pandas DataFrame containing the global derivative based sensitivity coefficients from get_sens_summary()
+    sobol_donut : Boolean
+        Option to plot the sobol indices as donut (pie) chart instead of bars, default is True
+    multiple_qoi: Boolean
+        Option to plot over a quantity of interest, needs an array of qoi values and results
+    qois: numpy ndarray
+        Quantities of interest
+    results: numpy ndarray
+        Results from gpc session
+    """
+    import matplotlib.pyplot as plt
+
+    glob_sens = gsens.values.flatten()
+    gsens_keys = gsens["global_sens (qoi 0)"].keys()
+    sobols = sobol.values.flatten()
+    sobol_keys = sobol["sobol_norm (qoi 0)"].keys()
+
+    # ignore very low Sobol indices
+    mask = sobols >= 0.001
+
+    # format keys for plot ticks
+    sobol_labels = [(x[1:-1].replace("'", " ")).replace(" ,", ",") for x in sobol_keys]
+
+    sobols = sobols[mask]
+    sobol_labels = [s for i, s in enumerate(sobol_labels) if mask[i]]
+
+    if multiple_qoi == False:
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 7))
+        if sobol_donut:
+            wedgeprops = {"linewidth": 0.5, 'width': 0.5, "edgecolor": "k"}
+            wedges, texts = ax1.pie(sobols, wedgeprops=wedgeprops, startangle=-40)
+            bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="w", lw=0.72)
+            kw = dict(arrowprops=dict(arrowstyle="-"), bbox=bbox_props, zorder=0, va="center")
+
+            last_label = False
+            for i, p in enumerate(wedges):
+                ang = (p.theta2 - p.theta1) / 2. + p.theta1
+
+                if not last_label:
+                    y = np.sin(np.deg2rad(ang))
+                    x = np.cos(np.deg2rad(ang))
+                    horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+                    connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+                    kw["arrowprops"].update({"connectionstyle": connectionstyle})
+                    ax1.annotate(sobol_labels[i] + f" ({sobols[i]*100:.1f}%)", xy=(x, y), xytext=(1.35 * np.sign(x), 1.4 * y),
+                                horizontalalignment=horizontalalignment, **kw)
+                    if ang > 310:
+                        last_label = True
+
+            # for i, p in enumerate(wedges):
+            #     ang = (p.theta2 - p.theta1) / 2. + p.theta1
+            #     y = np.sin(np.deg2rad(ang))
+            #     x = np.cos(np.deg2rad(ang))
+            #     horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+            #     connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+            #     kw["arrowprops"].update({"connectionstyle": connectionstyle})
+            #     ax1.annotate(sobol_labels[i], xy=(x, y), xytext=(1.35 * np.sign(x), 1.4 * y),
+            #                 horizontalalignment=horizontalalignment, **kw)
+
+            # ax1.legend(wedges, sobol_labels,
+            #           title="Parameter",
+            #           loc="center left",
+            #           bbox_to_anchor=(1, 0, 0.5, 1))
+
+            ax1.set_title("Normalized Sobol indices")
+        else:
+            ax1.bar(np.arange(len(sobol_keys)) + 1, sobols, width=0.8)
+            ax1.set_xticklabels([" "] + sobol_labels)
+            ax1.set_yscale('log')
+            ax1.set_ylabel('Sobol indices', fontsize=14)
+            ax1.set_xlabel('parameter', fontsize=14)
+            ax1.set_xlim(0, len(sobol_keys) + 1)
+            ax1.set_ylim(0., 1.0)
+        ax2.bar(np.arange(len(gsens_keys)) + 1, glob_sens, color='orange')
+        ax2.set_xticks(list(np.arange(len(gsens_keys)) + 1))
+        ax2.set_xticklabels(list(gsens_keys))
+        ax2.set_ylabel('global sensitivities', fontsize=14)
+        ax2.set_xlabel('parameter', fontsize=14)
+        ax2.axhline(y=0, color='k', alpha=0.5)
+        plt.tight_layout()
+        plt.show()
+    else:
+        if not (type(qois) == np.ndarray and type(results) == np.ndarray):
+            raise ValueError("Please specifiy qois and results as a numpy array of values!")
+        else:
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=[8, 6])
+            for i in range(sobol.values.shape[0]):
+                ax1.plot(qois, sobol.values[i])
+                ax1.set_title("Sobol indices of the parameters over the qois", fontsize=14)
+                ax1.set_xlabel(x_label, fontsize=14)
+                ax1.set_ylabel("Sobol index", fontsize=14)
+                ax1.set_yscale('log')
+            sobol_labels = [(x[1:-1].replace("'", " ")).replace(" ,", ",") for x in sobol_keys]
+            ax1.legend(sobol_labels)
+            # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
+            ax1.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+            ax1.grid()
+
+            # Plot mean and std of the model
+            mean_results = np.mean(results, axis=0)
+            std_results = np.std(results, axis=0)
+            ax2.plot(qois, mean_results)
+            ax2.grid()
+            ax2.set_ylabel(y_label, fontsize=14)
+            ax2.set_xlabel(x_label, fontsize=14)
+            ax2.legend(["mean of " + y_label], loc='upper left')
+            ax2.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+            ax2.set_title("Mean and standard deviation of " + y_label, fontsize=14)
+            # ax2.set_ylim(np.min(results) + np.max(std_results), np.max(results) + np.max(std_results))
+            ax2.fill_between(qois, mean_results - std_results, mean_results + std_results, color="grey", alpha=0.5)
+            plt.tight_layout()
+            plt.show()

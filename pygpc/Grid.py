@@ -1593,8 +1593,7 @@ class LHS(RandomGrid):
         Number of random samples in grid
     seed : float, optional, default=None
         Seeding point to replicate random grid
-    options: dict, optional, default=None
-        Grid options:
+    options : dict, optional, default=None
         - 'corr'            : optimizes design points in their spearman correlation coefficients
         - 'maximin' or 'm'  : optimizes design points in their maximum minimal distance using the Phi-P criterion
         - 'ese'             : uses an enhanced evolutionary algorithm to optimize the Phi-P criterion

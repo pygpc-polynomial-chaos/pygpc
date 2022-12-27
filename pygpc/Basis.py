@@ -452,27 +452,27 @@ class Basis:
                 ax.set_ylabel("$x_2$", fontsize=18)
                 ax.set_zlabel("$x_3$", fontsize=18)
 
-                # ax.set_xlim([0, np.max(multi_indices) + 1])
-                # ax.set_ylim([0, np.max(multi_indices) + 1])
-                # ax.set_zlim([0, np.max(multi_indices) + 1])
+                ax.set_xlim([0, np.max(multi_indices) + 1])
+                ax.set_ylim([0, np.max(multi_indices) + 1])
+                ax.set_zlim([0, np.max(multi_indices) + 1])
+
+                ax.set_xticklabels(range(np.max(multi_indices) + 1))
+                ax.set_xticks(range(np.max(multi_indices) + 1))
+                ax.set_yticklabels(range(np.max(multi_indices) + 1))
+                ax.set_yticks(range(np.max(multi_indices) + 1))
+                ax.set_zticklabels(range(np.max(multi_indices) + 1))
+                ax.set_zticks(range(np.max(multi_indices) + 1))
+
+                # ax.set_xlim([0, 5])
+                # ax.set_ylim([0, 5])
+                # ax.set_zlim([0, 5])
                 #
-                # ax.set_xticklabels(range(np.max(multi_indices) + 1))
-                # ax.set_xticks(range(np.max(multi_indices) + 1))
-                # ax.set_yticklabels(range(np.max(multi_indices) + 1))
-                # ax.set_yticks(range(np.max(multi_indices) + 1))
-                # ax.set_zticklabels(range(np.max(multi_indices) + 1))
-                # ax.set_zticks(range(np.max(multi_indices) + 1))
-
-                ax.set_xlim([0, 5])
-                ax.set_ylim([0, 5])
-                ax.set_zlim([0, 5])
-
-                ax.set_xticklabels(range(5))
-                ax.set_xticks(range(5))
-                ax.set_yticklabels(range(5))
-                ax.set_yticks(range(5))
-                ax.set_zticklabels(range(5))
-                ax.set_zticks(range(5))
+                # ax.set_xticklabels(range(5))
+                # ax.set_xticks(range(5))
+                # ax.set_yticklabels(range(5))
+                # ax.set_yticks(range(5))
+                # ax.set_zticklabels(range(5))
+                # ax.set_zticks(range(5))
 
         if fn_plot is not None:
             if os.path.splitext(fn_plot) not in [".pdf", ".png"]:
