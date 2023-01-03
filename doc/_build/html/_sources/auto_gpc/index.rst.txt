@@ -12,27 +12,6 @@ Generalized Polynomial Chaos
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Modelling discontinuous model functions">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_multi_element_gpc_thumb.png
-     :alt: Modelling discontinuous model functions
-
-     :ref:`sphx_glr_auto_gpc_plot_multi_element_gpc.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_gpc/plot_multi_element_gpc
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="The probability density function (pdf) p_i(\xi_i), with i=1,...,d, has to be defined for each r...">
 
 .. only:: html
@@ -93,6 +72,27 @@ Generalized Polynomial Chaos
    :hidden:
 
    /auto_gpc/plot_projection
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In some cases, the output quantities of a model are discontinuous in the investigated parameter...">
+
+.. only:: html
+
+ .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_multi_element_gpc_thumb.png
+     :alt: Modelling discontinuous model functions
+
+     :ref:`sphx_glr_auto_gpc_plot_multi_element_gpc.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_gpc/plot_multi_element_gpc
 
 .. raw:: html
 

@@ -135,6 +135,7 @@ html_theme_options = {
     "logo": {
         "text": "pygpc documentation",
         "image_dark": "logo.png",
+        "image_light": "logo.png",
         "alt_text": "pygpc",
     },
     "show_nav_level": 1,

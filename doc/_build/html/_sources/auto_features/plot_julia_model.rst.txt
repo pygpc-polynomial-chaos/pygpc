@@ -116,7 +116,7 @@ The example shown below can be found in the templates folder of pygpc (`/templat
 <../../templates/MyModel_julia.py>`_). In particular, you can find an example model-file in
 :code:`.../templates/MyModel_julia.py` and the associated gPC run-file in :code:`.../templates/MyGPC_julia.py`.
 
-A detailed example is also shown in :ref:`Example: Lorenz system of differential equations (Julia)`.
+A detailed example is given in :ref:`Example: Lorenz system of differential equations (Julia)`.
 
 .. code-block:: python
 
@@ -226,7 +226,7 @@ processing capabilities of pygpc is given in this
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.126 seconds)
+   **Total running time of the script:** ( 0 minutes  0.181 seconds)
 
 
 .. _sphx_glr_download_auto_features_plot_julia_model.py:

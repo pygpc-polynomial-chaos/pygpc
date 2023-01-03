@@ -57,9 +57,9 @@ One of the testcases for different grids was the Ishigami function, which is alr
     parameters["x2"] = np.linspace(-np.pi, np.pi, 100)
 
     constants = OrderedDict()
-    constants["a"] = 7.
+    constants["a"] = 7.0
     constants["b"] = 0.1
-    constants["x3"] = 0.
+    constants["x3"] = 0.0
 
     plot("Ishigami", parameters, constants, plot_3d=False)
 
@@ -81,7 +81,7 @@ Because of their random nature, we compared the grid repeatedly by using N=30 re
 and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row), the mean
 (second row) and standard deviation (third row) of the gPC approximations compared to the original model.
 
-.. image:: /examples/images/Ishigami_nrmsd_mean_std.png
+.. image:: /examples/images/Ishigami_nrmsd.png
     :width: 1400
     :align: center
 
@@ -126,23 +126,28 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.433 seconds)
+   **Total running time of the script:** ( 0 minutes  0.186 seconds)
 
 
 .. _sphx_glr_download_auto_sampling_plot_grid_comparison.py:
 
-.. only:: html
 
-  .. container:: sphx-glr-footer sphx-glr-footer-example
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
 
 
-    .. container:: sphx-glr-download sphx-glr-download-python
 
-      :download:`Download Python source code: plot_grid_comparison.py <plot_grid_comparison.py>`
+  .. container:: sphx-glr-download sphx-glr-download-python
 
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
+     :download:`Download Python source code: plot_grid_comparison.py <plot_grid_comparison.py>`
 
-      :download:`Download Jupyter notebook: plot_grid_comparison.ipynb <plot_grid_comparison.ipynb>`
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_grid_comparison.ipynb <plot_grid_comparison.ipynb>`
 
 
 .. only:: html

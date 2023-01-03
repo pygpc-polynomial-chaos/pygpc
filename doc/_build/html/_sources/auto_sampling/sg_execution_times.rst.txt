@@ -5,14 +5,14 @@
 
 Computation times
 =================
-**00:10.516** total execution time for **auto_sampling** files:
+**00:00.186** total execution time for **auto_sampling** files:
 
 +-------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_sampling_plot_L1.py` (``plot_L1.py``)                           | 00:09.679 | 0.0 MB |
+| :ref:`sphx_glr_auto_sampling_plot_grid_comparison.py` (``plot_grid_comparison.py``) | 00:00.186 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_sampling_plot_grid_comparison.py` (``plot_grid_comparison.py``) | 00:00.433 | 0.0 MB |
+| :ref:`sphx_glr_auto_sampling_plot_L1.py` (``plot_L1.py``)                           | 00:00.000 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_sampling_plot_LHS.py` (``plot_LHS.py``)                         | 00:00.291 | 0.0 MB |
+| :ref:`sphx_glr_auto_sampling_plot_LHS.py` (``plot_LHS.py``)                         | 00:00.000 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_sampling_plot_random.py` (``plot_random.py``)                   | 00:00.113 | 0.0 MB |
+| :ref:`sphx_glr_auto_sampling_plot_random.py` (``plot_random.py``)                   | 00:00.000 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+

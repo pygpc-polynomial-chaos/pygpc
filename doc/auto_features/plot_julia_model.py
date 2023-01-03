@@ -80,7 +80,7 @@ _ = plt.axis('off')
 # <../../templates/MyModel_julia.py>`_). In particular, you can find an example model-file in
 # :code:`.../templates/MyModel_julia.py` and the associated gPC run-file in :code:`.../templates/MyGPC_julia.py`.
 #
-# A detailed example is also shown in :ref:`Example: Lorenz system of differential equations (Julia)`.
+# A detailed example is given in :ref:`Example: Lorenz system of differential equations (Julia)`.
 #
 # .. code-block:: python
 #

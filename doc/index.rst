@@ -3,18 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. image:: /examples/images/pygpc_logo_wide_mod.png
+    :width: 1400
+    :align: center
 
-Documentation of pygpc
-======================
-
-A Sensitivity and uncertainty analysis toolbox for Python based on the generalized polynomial chaos method
 
 Basic features:
 ---------------
 
 - Highly efficient **uncertainty analysis of N-dimensional systems**
 - Sensitivity analysis using **Sobol indices** and **Global derivative based sensitivity indices**
-- Easy **coupling** to user defined models written in Python, Matlab, etc...
+- Easy **coupling** to user defined models written in Python, Matlab, Julia, etc...
 - The **parallelization** concept allows to run model evaluations in parallel
 - Highly efficient **adaptive algorithms** allow for analysis of complex systems
 - Includes highly efficient **CPU** and **GPU (CUDA)** implementations to significantly accelerate algorithmic and post-processing routines for high-dimensional and complex problems

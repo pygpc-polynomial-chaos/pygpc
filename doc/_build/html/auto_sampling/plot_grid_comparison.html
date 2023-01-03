@@ -101,7 +101,7 @@
   
 
   
-    <img src="../_static/" class="logo__image only-light" alt="pygpc">
+    <img src="../_static/logo.png" class="logo__image only-light" alt="pygpc">
     <img src="../_static/logo.png" class="logo__image only-dark" alt="pygpc">
   
   
@@ -137,13 +137,6 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
-                        Modelling discontinuous model functions
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_gpc/plot_problem.html">
                         How to define a gPC problem
                       </a>
@@ -156,6 +149,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     More
@@ -163,8 +163,8 @@
                 <div class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
-                        Dimensionality reduction
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
+                        Modelling discontinuous model functions
                       </a>
                     </li>
                 
@@ -476,13 +476,6 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
-                        Modelling discontinuous model functions
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_gpc/plot_problem.html">
                         How to define a gPC problem
                       </a>
@@ -495,6 +488,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     More
@@ -502,8 +502,8 @@
                 <div class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
-                        Dimensionality reduction
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
+                        Modelling discontinuous model functions
                       </a>
                     </li>
                 
@@ -817,9 +817,9 @@ function, where the results are reported in the following.</p>
 <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;x2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
 <span class="n">constants</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-<span class="n">constants</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">7.</span>
+<span class="n">constants</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">7.0</span>
 <span class="n">constants</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>
-<span class="n">constants</span><span class="p">[</span><span class="s2">&quot;x3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">constants</span><span class="p">[</span><span class="s2">&quot;x3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
 <span class="n">plot</span><span class="p">(</span><span class="s2">&quot;Ishigami&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">constants</span><span class="p">,</span> <span class="n">plot_3d</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
@@ -827,7 +827,7 @@ function, where the results are reported in the following.</p>
 <img src="../_images/sphx_glr_plot_grid_comparison_001.png" srcset="../_images/sphx_glr_plot_grid_comparison_001.png" alt="Ishigami function" class = "sphx-glr-single-img"/><p>Because of their random nature, we compared the grid repeatedly by using N=30 repetition. For every grid instance
 and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row), the mean
 (second row) and standard deviation (third row) of the gPC approximations compared to the original model.</p>
-<a class="reference internal image-reference" href="examples/images/Ishigami_nrmsd_mean_std.png"><img alt="examples/images/Ishigami_nrmsd_mean_std.png" class="align-center" src="examples/images/Ishigami_nrmsd_mean_std.png" style="width: 1400px;" /></a>
+<a class="reference internal image-reference" href="../_images/Ishigami_nrmsd.png"><img alt="../_images/Ishigami_nrmsd.png" class="align-center" src="../_images/Ishigami_nrmsd.png" style="width: 1400px;" /></a>
 <p>In this figure the sampling designs are abbreviated as follows:</p>
 <ul class="simple">
 <li><p><strong>STD</strong> - standard LHS sampling</p></li>
@@ -841,7 +841,7 @@ and sampling number we recorded the normalized root mean squared deviation (NRMS
 </ul>
 <p>Further the success rate of the best converging grids (from all LHS and from all L1 grids) for error thresholds of
 0.1%, 1%, and 10% can be seen in the following figure.</p>
-<a class="reference internal image-reference" href="examples/images/Ishigami_nrmsd_success_rates.png"><img alt="examples/images/Ishigami_nrmsd_success_rates.png" class="align-center" src="examples/images/Ishigami_nrmsd_success_rates.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="../_images/Ishigami_nrmsd_success_rates.png"><img alt="../_images/Ishigami_nrmsd_success_rates.png" class="align-center" src="../_images/Ishigami_nrmsd_success_rates.png" style="width: 500px;" /></a>
 <p>We evaluated the relative performance of the sampling schemes with respect to standard random sampling over four
 test cases. The Ishigami and the Rosenbrock
 function serve as well known test cases and the LPP (Linear-Paired-Product) function is a high dimensional test
@@ -861,8 +861,8 @@ of samples needed to reach a success rate of 95% and 99% respectively.</p>
 strategies for polynomial chaos expansion, AIMS Mathematical Biosciences and Engineering, 2022.</p>
 </dd>
 </dl>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.433 seconds)</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-sampling-plot-grid-comparison-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.186 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-sampling-plot-grid-comparison-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/6d4bb0dab7f38729ceeb022f8d376aab/plot_grid_comparison.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_grid_comparison.py</span></code></a></p>
 </div>

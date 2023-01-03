@@ -100,7 +100,7 @@
   
 
   
-    <img src="../_static/" class="logo__image only-light" alt="pygpc">
+    <img src="../_static/logo.png" class="logo__image only-light" alt="pygpc">
     <img src="../_static/logo.png" class="logo__image only-dark" alt="pygpc">
   
   
@@ -136,13 +136,6 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
-                        Modelling discontinuous model functions
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_gpc/plot_problem.html">
                         How to define a gPC problem
                       </a>
@@ -155,6 +148,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     More
@@ -162,8 +162,8 @@
                 <div class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
-                        Dimensionality reduction
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
+                        Modelling discontinuous model functions
                       </a>
                     </li>
                 
@@ -475,13 +475,6 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
-                        Modelling discontinuous model functions
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_gpc/plot_problem.html">
                         How to define a gPC problem
                       </a>
@@ -494,6 +487,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     More
@@ -501,8 +501,8 @@
                 <div class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
-                        Dimensionality reduction
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
+                        Modelling discontinuous model functions
                       </a>
                     </li>
                 
@@ -849,7 +849,7 @@ During initialization we pass the function name <em>fname_julia</em>, which tell
 function. During computation, pygpc accesses the Julia function.</p>
 <p>The example shown below can be found in the templates folder of pygpc (<a class="reference external" href="../../templates/MyModel_julia.py">/templates/MyModel_julia.py</a>). In particular, you can find an example model-file in
 <code class="code docutils literal notranslate"><span class="pre">.../templates/MyModel_julia.py</span></code> and the associated gPC run-file in <code class="code docutils literal notranslate"><span class="pre">.../templates/MyGPC_julia.py</span></code>.</p>
-<p>A detailed example is also shown in <a class="reference internal" href="../auto_examples/plot_Lorenz_julia.html#example-lorenz-system-of-differential-equations-julia"><span class="std std-ref">Example: Lorenz system of differential equations (Julia)</span></a>.</p>
+<p>A detailed example is given in <a class="reference internal" href="../auto_examples/plot_Lorenz_julia.html#example-lorenz-system-of-differential-equations-julia"><span class="std std-ref">Example: Lorenz system of differential equations (Julia)</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">julia</span> <span class="kn">import</span> <span class="n">Main</span>
@@ -939,7 +939,7 @@ algorithm option:</p>
 and processed in parallel, which speeds up your gPC analysis. A more detailed description about the parallel
 processing capabilities of pygpc is given in this
 <a class="reference external" href="plot_parallel_processing.html">example</a>.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.126 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.181 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-features-plot-julia-model-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/f6ac108ab7434dd24d2a959023cf64e6/plot_julia_model.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_julia_model.py</span></code></a></p>

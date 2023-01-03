@@ -5,10 +5,10 @@
 
 Computation times
 =================
-**00:00.126** total execution time for **auto_features** files:
+**00:00.181** total execution time for **auto_features** files:
 
 +-------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_features_plot_julia_model.py` (``plot_julia_model.py``)         | 00:00.126 | 0.0 MB |
+| :ref:`sphx_glr_auto_features_plot_julia_model.py` (``plot_julia_model.py``)         | 00:00.181 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_auto_features_plot_backends.py` (``plot_backends.py``)               | 00:00.000 | 0.0 MB |
 +-------------------------------------------------------------------------------------+-----------+--------+

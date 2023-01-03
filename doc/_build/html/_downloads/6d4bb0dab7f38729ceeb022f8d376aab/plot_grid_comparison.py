@@ -35,9 +35,9 @@ parameters["x1"] = np.linspace(-np.pi, np.pi, 100)
 parameters["x2"] = np.linspace(-np.pi, np.pi, 100)
 
 constants = OrderedDict()
-constants["a"] = 7.
+constants["a"] = 7.0
 constants["b"] = 0.1
-constants["x3"] = 0.
+constants["x3"] = 0.0
 
 plot("Ishigami", parameters, constants, plot_3d=False)
 
@@ -46,7 +46,7 @@ plot("Ishigami", parameters, constants, plot_3d=False)
 # and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row), the mean
 # (second row) and standard deviation (third row) of the gPC approximations compared to the original model.
 #
-# .. image:: /examples/images/Ishigami_nrmsd_mean_std.png
+# .. image:: /examples/images/Ishigami_nrmsd.png
 #     :width: 1400
 #     :align: center
 #

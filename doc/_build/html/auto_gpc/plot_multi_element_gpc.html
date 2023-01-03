@@ -44,8 +44,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_gpc/plot_multi_element_gpc';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="How to define a gPC problem" href="plot_problem.html" />
-    <link rel="prev" title="Introduction to uncertainty analysis" href="../auto_introduction/plot_introduction_ua.html" />
+    <link rel="next" title="Setting up a custom model" href="plot_model.html" />
+    <link rel="prev" title="Dimensionality reduction" href="plot_projection.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -100,7 +100,7 @@
   
 
   
-    <img src="../_static/" class="logo__image only-light" alt="pygpc">
+    <img src="../_static/logo.png" class="logo__image only-light" alt="pygpc">
     <img src="../_static/logo.png" class="logo__image only-dark" alt="pygpc">
   
   
@@ -135,13 +135,6 @@
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
-                        Modelling discontinuous model functions
-                      </a>
-                    </li>
-                
-
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="plot_problem.html">
                         How to define a gPC problem
@@ -155,22 +148,29 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
+
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="plot_projection.html">
                         Dimensionality reduction
                       </a>
                     </li>
                 
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Modelling discontinuous model functions
+                      </a>
+                    </li>
+                
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="plot_model.html">
-                        Setting up your model
+                        Setting up a custom model
                       </a>
                     </li>
                 
@@ -289,7 +289,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_features/plot_julia_model.html">
-                        Analyzing julia models with pygpc
+                        Analyzing Julia models with pygpc
                       </a>
                     </li>
                 
@@ -317,7 +317,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
-                        Example: Lorenz system of differential equations (julia)
+                        Example: Lorenz system of differential equations (Julia)
                       </a>
                     </li>
                 
@@ -474,13 +474,6 @@
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
-                        Modelling discontinuous model functions
-                      </a>
-                    </li>
-                
-
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="plot_problem.html">
                         How to define a gPC problem
@@ -494,22 +487,29 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
+
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="plot_projection.html">
                         Dimensionality reduction
                       </a>
                     </li>
                 
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Modelling discontinuous model functions
+                      </a>
+                    </li>
+                
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="plot_model.html">
-                        Setting up your model
+                        Setting up a custom model
                       </a>
                     </li>
                 
@@ -628,7 +628,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_features/plot_julia_model.html">
-                        Analyzing julia models with pygpc
+                        Analyzing Julia models with pygpc
                       </a>
                     </li>
                 
@@ -656,7 +656,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
-                        Example: Lorenz system of differential equations (julia)
+                        Example: Lorenz system of differential equations (Julia)
                       </a>
                     </li>
                 
@@ -789,7 +789,372 @@ to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="modelling-discontinuous-model-functions">
 <span id="sphx-glr-auto-gpc-plot-multi-element-gpc-py"></span><h1>Modelling discontinuous model functions<a class="headerlink" href="#modelling-discontinuous-model-functions" title="Permalink to this heading">#</a></h1>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<p>In some cases, the output quantities of a model are discontinuous in the investigated parameter ranges.
+Modelling such systems with global continuous basis polynomials of a classical gPC would require a very high
+polynomial order and consequently a large number of sampling points. In addition, discontinuities can
+only be modeled to a limited extent due to the Gibbs phenomenon (overshooting).
+The gPC approach has been extended by a multi-element approach (ME-gPC) so that this class of problems
+can also be analyzed efficiently using gPC. The approach consists of dividing the global parameter space into
+several regions in which the model function is continuous. Each of these regions is described with an
+independent gPC approach as it shown in the following example.</p>
+<a class="reference internal image-reference" href="../_images/Fig_multi_element_gpc.png"><img alt="../_images/Fig_multi_element_gpc.png" class="align-center" src="../_images/Fig_multi_element_gpc.png" style="width: 1400px;" /></a>
+<p>The core task of the method is to identify the discontinuity boundary
+between the regions. For this purpose, modern image processing and machine learning techniques are used.
+In a first step, a cluster analysis is performed based on the feature values at the sampling points and a
+class is assigned to each sample (unsupervised learning) depending on its function value.
+In a second step, the identified groups are
+used with a classification algorithm to identify the discontinuity boundary (supervised learning).
+This allowed, for example, uncertainty and sensitivity analysis of Jansen-Rit type neural mass models
+and created the basis for the analysis of this class of problems (Weise et al. 2020).</p>
+<p>The post-processing and sensitivity analysis methods recognize if a multi-element gPC approach is used
+and adapts the calculation of the sensitivity coefficients according to the different domains using a sampling
+based approach instead of determining the sensitivity coefficients directly from the gPC coefficients.</p>
+<p>In the following, an example of a discontinuous test problem is provided:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.</span>
+<span class="c1"># def main():</span>
+<span class="kn">import</span> <span class="nn">pygpc</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="n">fn_results</span> <span class="o">=</span> <span class="s1">&#39;tmp/mestatic&#39;</span>       <span class="c1"># filename of output</span>
+<span class="n">save_session_format</span> <span class="o">=</span> <span class="s2">&quot;.pkl&quot;</span>      <span class="c1"># file format of saved gpc session &quot;.hdf5&quot; (slow) or &quot;.pkl&quot; (fast)</span>
+</pre></div>
+</div>
+<div class="section" id="loading-the-model-and-defining-the-problem">
+<h2>Loading the model and defining the problem<a class="headerlink" href="#loading-the-model-and-defining-the-problem" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># define model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">testfunctions</span><span class="o">.</span><span class="n">SurfaceCoverageSpecies</span><span class="p">()</span>
+
+<span class="c1"># define problem</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;rho_0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">pdf_shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pdf_limits</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">pdf_shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pdf_limits</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-up-the-algorithm">
+<h2>Setting up the algorithm<a class="headerlink" href="#setting-up-the-algorithm" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># gPC options</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;reg&quot;</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;solver&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Moore-Penrose&quot;</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;order&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;order_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;interaction_order&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;n_cpu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;gradient_enhanced&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;error_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;loocv&quot;</span>
+
+<span class="c1"># all QoIs are treated separately (one ME-gPC for each QoI, in this example we only have one QoI)</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;qoi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+
+<span class="c1"># Multi-Element classifier type is &quot;learning&quot;</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;classifier&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;learning&quot;</span>
+
+<span class="c1"># set the options of the clusterer and classifier</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;classifier_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;clusterer&quot;</span><span class="p">:</span> <span class="s2">&quot;KMeans&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;n_clusters&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                                 <span class="s2">&quot;classifier&quot;</span><span class="p">:</span> <span class="s2">&quot;MLPClassifier&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;classifier_solver&quot;</span><span class="p">:</span> <span class="s2">&quot;lbfgs&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>“clusterer”:</strong> For clustering (unsupervised learning) we choose <em>“KMeans”</em> from <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html">sklearn.cluster.KMeans</a>
+The clusterer assigns a domain ID to each sampling point depending on the function value.</p></li>
+<li><p><strong>“n_clusters”:</strong> number of different domains</p></li>
+<li><p><strong>“classifier”:</strong> For classification (supervised learning) we choose <em>“MLPClassifier”</em> from <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html">sklearn.neural_network.MLPClassifier</a>
+With the domain IDs from the clusterer and the associated parameter values of the sampling points, a classifier is
+created, which can assign a domain ID to unknown (new) grid points.</p></li>
+<li><p><strong>“classifier_solver”:</strong> The solver of the classifier for weight optimization. (<em>“lbfgs”</em> is an optimizer in the
+family of quasi-Newton methods; <em>“sgd”</em> refers to stochastic gradient descent; <em>“adam”</em> refers to a stochastic
+gradient-based optimizer from Kingma and Ba (2014))</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;fn_results&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fn_results</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;save_session_format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">save_session_format</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Random</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;grid_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;n_grid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;adaptive_sampling&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>We are going to use a static gPC approach here without any basis adaption. Algorithms, which include the multi-element
+gPC approach are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../auto_algorithms/plot_algorithm_mestatic.html#algorithm-mestatic"><span class="std std-ref">Algorithm: MEStatic</span></a> (standard gPC approach with static basis)</p></li>
+<li><p><a class="reference internal" href="../auto_algorithms/plot_algorithm_mestatic_IO.html#algorithm-mestatic-io"><span class="std std-ref">Algorithm: MEStatic_IO</span></a> (standard gPC approach with static basis but precalculated input/output relationships)</p></li>
+<li><p><a class="reference internal" href="../auto_algorithms/plot_algorithm_mestaticprojection.html#algorithm-mestaticprojection"><span class="std std-ref">Algorithm: MEStaticProjection</span></a> (standard gPC approach with dimensionality reduction approach in each domain)</p></li>
+<li><p><a class="reference internal" href="../auto_algorithms/plot_algorithm_meregadaptiveprojection.html#algorithm-meregadaptiveprojection"><span class="std std-ref">Algorithm: MERegAdaptiveProjection</span></a> (adaptive basis approach with dimensionality reduction approach in each domain)</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># define algorithm</span>
+<span class="n">algorithm</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">MEStatic</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-the-gpc">
+<h2>Running the gpc<a class="headerlink" href="#running-the-gpc" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize gPC Session</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
+
+<span class="c1"># run gPC algorithm</span>
+<span class="n">session</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Creating initial grid (&lt;class &#39;pygpc.Grid.Random&#39;&gt;) with n_grid=1000
+Determining gPC approximation for QOI #0:
+=========================================
+Performing 1000 simulations!
+
+It/Sub-it: 10/2 Performing simulation 0001 from 1000 [                                        ] 0.1%
+Total function evaluation: 0.7326366901397705 sec
+Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
+Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
+
+LOOCV 01 from 25 [=                                       ] 4.0%
+
+LOOCV 02 from 25 [===                                     ] 8.0%
+
+LOOCV 03 from 25 [====                                    ] 12.0%
+
+LOOCV 04 from 25 [======                                  ] 16.0%
+
+LOOCV 05 from 25 [========                                ] 20.0%
+
+LOOCV 06 from 25 [=========                               ] 24.0%
+
+LOOCV 07 from 25 [===========                             ] 28.0%
+
+LOOCV 08 from 25 [============                            ] 32.0%
+
+LOOCV 09 from 25 [==============                          ] 36.0%
+
+LOOCV 10 from 25 [================                        ] 40.0%
+
+LOOCV 11 from 25 [=================                       ] 44.0%
+
+LOOCV 12 from 25 [===================                     ] 48.0%
+
+LOOCV 13 from 25 [====================                    ] 52.0%
+
+LOOCV 14 from 25 [======================                  ] 56.0%
+
+LOOCV 15 from 25 [========================                ] 60.0%
+
+LOOCV 16 from 25 [=========================               ] 64.0%
+
+LOOCV 17 from 25 [===========================             ] 68.0%
+
+LOOCV 18 from 25 [============================            ] 72.0%
+
+LOOCV 19 from 25 [==============================          ] 76.0%
+
+LOOCV 20 from 25 [================================        ] 80.0%
+
+LOOCV 21 from 25 [=================================       ] 84.0%
+
+LOOCV 22 from 25 [===================================     ] 88.0%
+
+LOOCV 23 from 25 [====================================    ] 92.0%
+
+LOOCV 24 from 25 [======================================  ] 96.0%
+
+LOOCV 25 from 25 [========================================] 100.0%
+LOOCV computation time: 0.06884884834289551 sec
+-&gt; relative loocv error = 0.013441785999693444
+
+LOOCV 01 from 25 [=                                       ] 4.0%
+
+LOOCV 02 from 25 [===                                     ] 8.0%
+
+LOOCV 03 from 25 [====                                    ] 12.0%
+
+LOOCV 04 from 25 [======                                  ] 16.0%
+
+LOOCV 05 from 25 [========                                ] 20.0%
+
+LOOCV 06 from 25 [=========                               ] 24.0%
+
+LOOCV 07 from 25 [===========                             ] 28.0%
+
+LOOCV 08 from 25 [============                            ] 32.0%
+
+LOOCV 09 from 25 [==============                          ] 36.0%
+
+LOOCV 10 from 25 [================                        ] 40.0%
+
+LOOCV 11 from 25 [=================                       ] 44.0%
+
+LOOCV 12 from 25 [===================                     ] 48.0%
+
+LOOCV 13 from 25 [====================                    ] 52.0%
+
+LOOCV 14 from 25 [======================                  ] 56.0%
+
+LOOCV 15 from 25 [========================                ] 60.0%
+
+LOOCV 16 from 25 [=========================               ] 64.0%
+
+LOOCV 17 from 25 [===========================             ] 68.0%
+
+LOOCV 18 from 25 [============================            ] 72.0%
+
+LOOCV 19 from 25 [==============================          ] 76.0%
+
+LOOCV 20 from 25 [================================        ] 80.0%
+
+LOOCV 21 from 25 [=================================       ] 84.0%
+
+LOOCV 22 from 25 [===================================     ] 88.0%
+
+LOOCV 23 from 25 [====================================    ] 92.0%
+
+LOOCV 24 from 25 [======================================  ] 96.0%
+
+LOOCV 25 from 25 [========================================] 100.0%
+LOOCV computation time: 0.0694575309753418 sec
+
+LOOCV 01 from 25 [=                                       ] 4.0%
+
+LOOCV 02 from 25 [===                                     ] 8.0%
+
+LOOCV 03 from 25 [====                                    ] 12.0%
+
+LOOCV 04 from 25 [======                                  ] 16.0%
+
+LOOCV 05 from 25 [========                                ] 20.0%
+
+LOOCV 06 from 25 [=========                               ] 24.0%
+
+LOOCV 07 from 25 [===========                             ] 28.0%
+
+LOOCV 08 from 25 [============                            ] 32.0%
+
+LOOCV 09 from 25 [==============                          ] 36.0%
+
+LOOCV 10 from 25 [================                        ] 40.0%
+
+LOOCV 11 from 25 [=================                       ] 44.0%
+
+LOOCV 12 from 25 [===================                     ] 48.0%
+
+LOOCV 13 from 25 [====================                    ] 52.0%
+
+LOOCV 14 from 25 [======================                  ] 56.0%
+
+LOOCV 15 from 25 [========================                ] 60.0%
+
+LOOCV 16 from 25 [=========================               ] 64.0%
+
+LOOCV 17 from 25 [===========================             ] 68.0%
+
+LOOCV 18 from 25 [============================            ] 72.0%
+
+LOOCV 19 from 25 [==============================          ] 76.0%
+
+LOOCV 20 from 25 [================================        ] 80.0%
+
+LOOCV 21 from 25 [=================================       ] 84.0%
+
+LOOCV 22 from 25 [===================================     ] 88.0%
+
+LOOCV 23 from 25 [====================================    ] 92.0%
+
+LOOCV 24 from 25 [======================================  ] 96.0%
+
+LOOCV 25 from 25 [========================================] 100.0%
+LOOCV computation time: 0.05720090866088867 sec
+</pre></div>
+</div>
+</div>
+<div class="section" id="postprocessing">
+<h2>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read session</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">read_session</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session_folder</span><span class="p">)</span>
+
+<span class="c1"># Post-process gPC</span>
+<span class="n">pygpc</span><span class="o">.</span><span class="n">get_sensitivities_hdf5</span><span class="p">(</span><span class="n">fn_gpc</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;fn_results&quot;</span><span class="p">],</span>
+                             <span class="n">output_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">calc_sobol</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">calc_global_sens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">calc_pdf</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;sampling&quot;</span><span class="p">,</span>
+                             <span class="n">n_samples</span><span class="o">=</span><span class="mf">1e4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; Loading gpc session object: tmp/mestatic.pkl
+&gt; Loading gpc coeffs: tmp/mestatic.hdf5
+&gt; Adding results to: tmp/mestatic.hdf5
+</pre></div>
+</div>
+</div>
+<div class="section" id="validation">
+<h2>Validation<a class="headerlink" href="#validation" title="Permalink to this heading">#</a></h2>
+<div class="section" id="validate-gpc-vs-original-model-function-2d-surface">
+<h3>Validate gPC vs original model function (2D-surface)<a class="headerlink" href="#validate-gpc-vs-original-model-function-2d-surface" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_plot</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                        <span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span>
+                        <span class="n">random_vars</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                        <span class="n">n_grid</span><span class="o">=</span><span class="p">[</span><span class="mi">51</span><span class="p">,</span> <span class="mi">51</span><span class="p">],</span>
+                        <span class="n">output_idx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">fn_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">n_cpu</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_multi_element_gpc_001.png" srcset="../_images/sphx_glr_plot_multi_element_gpc_001.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></div>
+<div class="section" id="validate-gpc-vs-original-model-function-monte-carlo">
+<h3>Validate gPC vs original model function (Monte Carlo)<a class="headerlink" href="#validate-gpc-vs-original-model-function-monte-carlo" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nrmsd</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_mc</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                              <span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span>
+                              <span class="n">n_samples</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">),</span>
+                              <span class="n">output_idx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="n">fn_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">n_cpu</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&gt; Maximum NRMSD (gpc vs original): </span><span class="si">{:.2}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">nrmsd</span><span class="p">)))</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_multi_element_gpc_002.png" srcset="../_images/sphx_glr_plot_multi_element_gpc_002.png" alt="plot multi element gpc" class = "sphx-glr-single-img"/><p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; Maximum NRMSD (gpc vs original): 0.0072%
+</pre></div>
+</div>
+</div>
+<div class="section" id="sensitivity-analysis">
+<h3>Sensitivity analysis<a class="headerlink" href="#sensitivity-analysis" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sobol</span><span class="p">,</span> <span class="n">gsens</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">get_sens_summary</span><span class="p">(</span><span class="n">fn_results</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">)</span>
+<span class="n">pygpc</span><span class="o">.</span><span class="n">plot_sens_summary</span><span class="p">(</span><span class="n">sobol</span><span class="o">=</span><span class="n">sobol</span><span class="p">,</span> <span class="n">gsens</span><span class="o">=</span><span class="n">gsens</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_multi_element_gpc_003.png" srcset="../_images/sphx_glr_plot_multi_element_gpc_003.png" alt="Normalized Sobol indices" class = "sphx-glr-single-img"/><p>The Sobol indices at the top indicate that both parameters are influencing the output quantity by more than 40%.
+The global (derivative based) sensitivity coefficients at the bottom reveal that an increase in parameter <em>rho_0</em>
+increases the model function and an increase of <em>beta</em> decreases the model function to almost the same extent.
+This can also be observed when taking a closer look at the model function in one of the previous figures.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># On Windows subprocesses will import (i.e. execute) the main module at start.</span>
+<span class="c1"># You need to insert an if __name__ == &#39;__main__&#39;: guard in the main module to avoid</span>
+<span class="c1"># creating subprocesses recursively.</span>
+<span class="c1">#</span>
+<span class="c1"># if __name__ == &#39;__main__&#39;:</span>
+<span class="c1">#     main()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h3>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Weise, K., Poßner, L., Müller, E., Gast, R., &amp; Knösche, T. R. (2020). Pygpc: A sensitivity and
+uncertainty analysis toolbox for Python. SoftwareX, 11, 100450.</p>
+</dd>
+<dt class="label" id="id2"><span class="brackets">2</span></dt>
+<dd><p>Kingma, D. P., &amp; Ba, J. (2014). Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980.</p>
+</dd>
+</dl>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.257 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-gpc-plot-multi-element-gpc-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/18abd0681b1aa52f4cad0dda864aa221/plot_multi_element_gpc.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_multi_element_gpc.py</span></code></a></p>
@@ -800,6 +1165,8 @@ to download the full example code</p>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
+</div>
+</div>
 
 
             </article>
@@ -809,17 +1176,17 @@ to download the full example code</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="../auto_introduction/plot_introduction_ua.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="plot_projection.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">Introduction to uncertainty analysis</p>
+          <p class="prev-next-title">Dimensionality reduction</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="plot_problem.html" title="next page">
+  <a class='right-next' id="next-link" href="plot_model.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">How to define a gPC problem</p>
+      <p class="prev-next-title">Setting up a custom model</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -832,6 +1199,65 @@ to download the full example code</p>
           
             <div class="bd-sidebar-secondary bd-toc">
               
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#loading-the-model-and-defining-the-problem">
+   Loading the model and defining the problem
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#setting-up-the-algorithm">
+   Setting up the algorithm
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#running-the-gpc">
+   Running the gpc
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#postprocessing">
+   Postprocessing
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#validation">
+   Validation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#validate-gpc-vs-original-model-function-2d-surface">
+     Validate gPC vs original model function (2D-surface)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#validate-gpc-vs-original-model-function-monte-carlo">
+     Validate gPC vs original model function (Monte Carlo)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#sensitivity-analysis">
+     Sensitivity analysis
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#references">
+     References
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
 <div class="toc-item">
   
 <div id="searchbox"></div>

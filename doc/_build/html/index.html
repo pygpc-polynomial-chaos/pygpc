@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Documentation of pygpc &#8212; pygpc 0.3.4 documentation</title>
+    <title>Basic features: &#8212; pygpc 0.3.4 documentation</title>
   
   
   
@@ -99,7 +99,7 @@
   
 
   
-    <img src="_static/" class="logo__image only-light" alt="pygpc">
+    <img src="_static/logo.png" class="logo__image only-light" alt="pygpc">
     <img src="_static/logo.png" class="logo__image only-dark" alt="pygpc">
   
   
@@ -135,13 +135,6 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_gpc/plot_multi_element_gpc.html">
-                        Modelling discontinuous model functions
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="auto_gpc/plot_problem.html">
                         How to define a gPC problem
                       </a>
@@ -154,6 +147,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     More
@@ -161,8 +161,8 @@
                 <div class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_gpc/plot_projection.html">
-                        Dimensionality reduction
+                      <a class="nav-link nav-internal" href="auto_gpc/plot_multi_element_gpc.html">
+                        Modelling discontinuous model functions
                       </a>
                     </li>
                 
@@ -474,13 +474,6 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_gpc/plot_multi_element_gpc.html">
-                        Modelling discontinuous model functions
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="auto_gpc/plot_problem.html">
                         How to define a gPC problem
                       </a>
@@ -493,6 +486,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     More
@@ -500,8 +500,8 @@
                 <div class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_gpc/plot_projection.html">
-                        Dimensionality reduction
+                      <a class="nav-link nav-internal" href="auto_gpc/plot_multi_element_gpc.html">
+                        Modelling discontinuous model functions
                       </a>
                     </li>
                 
@@ -781,11 +781,9 @@
             
             <article class="bd-article" role="main">
               
-  <div class="section" id="documentation-of-pygpc">
-<h1>Documentation of pygpc<a class="headerlink" href="#documentation-of-pygpc" title="Permalink to this heading">#</a></h1>
-<p>A Sensitivity and uncertainty analysis toolbox for Python based on the generalized polynomial chaos method</p>
+  <a class="reference internal image-reference" href="_images/pygpc_logo_wide_mod.png"><img alt="_images/pygpc_logo_wide_mod.png" class="align-center" src="_images/pygpc_logo_wide_mod.png" style="width: 1400px;" /></a>
 <div class="section" id="basic-features">
-<h2>Basic features:<a class="headerlink" href="#basic-features" title="Permalink to this heading">#</a></h2>
+<h1>Basic features:<a class="headerlink" href="#basic-features" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
 <li><p>Highly efficient <strong>uncertainty analysis of N-dimensional systems</strong></p></li>
 <li><p>Sensitivity analysis using <strong>Sobol indices</strong> and <strong>Global derivative based sensitivity indices</strong></p></li>
@@ -807,7 +805,7 @@
 </ul>
 </div>
 <div class="section" id="areas-of-application">
-<h2>Areas of application:<a class="headerlink" href="#areas-of-application" title="Permalink to this heading">#</a></h2>
+<h1>Areas of application:<a class="headerlink" href="#areas-of-application" title="Permalink to this heading">#</a></h1>
 <p>pygpc can be used to analyze a variety of different of problems. It is used for example in the frameworks of:</p>
 <ul class="simple">
 <li><p>Nondestructive testing:</p>
@@ -835,7 +833,7 @@
 <p>If you use pygpc in your studies, please contact <a class="reference external" href="https://www.cbs.mpg.de/person/51222/2470">Konstantin Weise</a> to extend the list above.</p>
 </div>
 <div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h1>
 <p><strong>Installation using pip:</strong></p>
 <p>Pygpc can be installed via the <cite>pip</cite> command with Python &gt;= 3.6. Simply run the following command in your terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install pygpc
@@ -883,28 +881,28 @@ If CMake and the CUDA-toolkit are installed on your machine you can build the ex
 <p>On windows you might need a compiler to install pygpc. To install the <cite>Visual C++ Build Tools</cite>, please refer to: <a class="reference external" href="http://go.microsoft.com/fwlink/?LinkId=691126&amp;fixForIE=.exe">http://go.microsoft.com/fwlink/?LinkId=691126&amp;fixForIE=.exe</a>.</p>
 </div>
 <div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h2>
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h1>
 <p>For a full API of pygpc, see <a class="reference external" href="https://pygpc.readthedocs.io/en/latest/">https://pygpc.readthedocs.io/en/latest/</a>.
 For examplary simulations and model configurations, please have a look at the jupyter notebooks provided in the <code class="code docutils literal notranslate"><span class="pre">/tutorial</span></code> folder and the templates in the <code class="code docutils literal notranslate"><span class="pre">/templates</span></code> folder.</p>
 </div>
 <div class="section" id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h1>
 <p>If you use pygpc, please cite:</p>
 <p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S2352711020300078">Weise, K., Poßner, L., Müller, E., Gast, R., &amp; Knösche, T. R. (2020). Pygpc: A sensitivity and uncertainty analysis toolbox for Python. SoftwareX, 11, 100450.</a></p>
 </div>
 <div class="section" id="contact">
-<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this heading">#</a></h2>
+<h1>Contact<a class="headerlink" href="#contact" title="Permalink to this heading">#</a></h1>
 <p>If you have questions, problems or suggestions regarding pygpc, please contact <a class="reference external" href="https://www.cbs.mpg.de/person/51222/2470">Konstantin Weise</a>.</p>
-</div>
-</div>
 <div class="section" id="examples-gallery">
-<h1>Examples Gallery<a class="headerlink" href="#examples-gallery" title="Permalink to this heading">#</a></h1>
+<h2>Examples Gallery<a class="headerlink" href="#examples-gallery" title="Permalink to this heading">#</a></h2>
 <dl class="field-list simple">
 <dt class="field-odd">orphan</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
+</div>
+</div>
 <div class="section" id="introduction">
-<span id="sphx-glr-auto-introduction"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<span id="sphx-glr-auto-introduction"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h1>
 <div class="sphx-glr-thumbcontainer" tooltip="The primary focus of this tutorial rests on spectral methods, which are based on the determinat..."><div class="figure align-default" id="id7">
 <img alt="Introduction to generalized Polynomial Chaos (gPC)" src="_images/sphx_glr_plot_introduction_gpc_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="auto_introduction/plot_introduction_gpc.html#sphx-glr-auto-introduction-plot-introduction-gpc-py"><span class="std std-ref">Introduction to generalized Polynomial Chaos (gPC)</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">#</a></p>
@@ -932,28 +930,28 @@ For examplary simulations and model configurations, please have a look at the ju
 </dl>
 </div>
 <div class="section" id="generalized-polynomial-chaos">
-<span id="sphx-glr-auto-gpc"></span><h2>Generalized Polynomial Chaos<a class="headerlink" href="#generalized-polynomial-chaos" title="Permalink to this heading">#</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="Modelling discontinuous model functions"><div class="figure align-default" id="id9">
-<img alt="Modelling discontinuous model functions" src="_images/sphx_glr_plot_multi_element_gpc_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_multi_element_gpc.html#sphx-glr-auto-gpc-plot-multi-element-gpc-py"><span class="std std-ref">Modelling discontinuous model functions</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="The probability density function (pdf) p_i(\xi_i), with i=1,...,d, has to be defined for each r..."><div class="figure align-default" id="id10">
+<span id="sphx-glr-auto-gpc"></span><h1>Generalized Polynomial Chaos<a class="headerlink" href="#generalized-polynomial-chaos" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbcontainer" tooltip="The probability density function (pdf) p_i(\xi_i), with i=1,...,d, has to be defined for each r..."><div class="figure align-default" id="id9">
 <img alt="How to define a gPC problem" src="_images/sphx_glr_plot_problem_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_problem.html#sphx-glr-auto-gpc-plot-problem-py"><span class="std std-ref">How to define a gPC problem</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">#</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_problem.html#sphx-glr-auto-gpc-plot-problem-py"><span class="std std-ref">How to define a gPC problem</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">#</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Validation of gPC approximation"><div class="figure align-default" id="id11">
+<div class="sphx-glr-thumbcontainer" tooltip="Validation of gPC approximation"><div class="figure align-default" id="id10">
 <img alt="Validation of gPC approximation" src="_images/sphx_glr_plot_gpc_validation_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_gpc_validation.html#sphx-glr-auto-gpc-plot-gpc-validation-py"><span class="std std-ref">Validation of gPC approximation</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">#</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_gpc_validation.html#sphx-glr-auto-gpc-plot-gpc-validation-py"><span class="std std-ref">Validation of gPC approximation</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">#</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ A large number of models show redundancies in the form of correlation..."><div class="figure align-default" id="id12">
+<div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ A large number of models show redundancies in the form of correlation..."><div class="figure align-default" id="id11">
 <img alt="Dimensionality reduction" src="_images/sphx_glr_plot_projection_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_projection.html#sphx-glr-auto-gpc-plot-projection-py"><span class="std std-ref">Dimensionality reduction</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">#</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_projection.html#sphx-glr-auto-gpc-plot-projection-py"><span class="std std-ref">Dimensionality reduction</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">#</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="In some cases, the output quantities of a model are discontinuous in the investigated parameter..."><div class="figure align-default" id="id12">
+<img alt="Modelling discontinuous model functions" src="_images/sphx_glr_plot_multi_element_gpc_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_multi_element_gpc.html#sphx-glr-auto-gpc-plot-multi-element-gpc-py"><span class="std std-ref">Modelling discontinuous model functions</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">#</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -990,7 +988,7 @@ For examplary simulations and model configurations, please have a look at the ju
 </dl>
 </div>
 <div class="section" id="algorithms">
-<span id="sphx-glr-auto-algorithms"></span><h2>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this heading">#</a></h2>
+<span id="sphx-glr-auto-algorithms"></span><h1>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this heading">#</a></h1>
 <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static_IO"><div class="figure align-default" id="id16">
 <img alt="Algorithm: Static_IO" src="_images/sphx_glr_plot_algorithm_static_IO_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_static_IO.html#sphx-glr-auto-algorithms-plot-algorithm-static-io-py"><span class="std std-ref">Algorithm: Static_IO</span></a></span><a class="headerlink" href="#id16" title="Permalink to this image">#</a></p>
@@ -1066,7 +1064,7 @@ For examplary simulations and model configurations, please have a look at the ju
 </dl>
 </div>
 <div class="section" id="sampling-schemes">
-<span id="sphx-glr-auto-sampling"></span><h2>Sampling schemes<a class="headerlink" href="#sampling-schemes" title="Permalink to this heading">#</a></h2>
+<span id="sphx-glr-auto-sampling"></span><h1>Sampling schemes<a class="headerlink" href="#sampling-schemes" title="Permalink to this heading">#</a></h1>
 <div class="sphx-glr-thumbcontainer" tooltip="For evaluating the efficiency of the sampling schemes in pygpc we compared L1 optimal sampling ..."><div class="figure align-default" id="id26">
 <img alt="Comparison of sampling schemes" src="_images/sphx_glr_plot_grid_comparison_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="auto_sampling/plot_grid_comparison.html#sphx-glr-auto-sampling-plot-grid-comparison-py"><span class="std std-ref">Comparison of sampling schemes</span></a></span><a class="headerlink" href="#id26" title="Permalink to this image">#</a></p>
@@ -1106,7 +1104,7 @@ For examplary simulations and model configurations, please have a look at the ju
 </dl>
 </div>
 <div class="section" id="features">
-<span id="sphx-glr-auto-features"></span><h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
+<span id="sphx-glr-auto-features"></span><h1>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h1>
 <div class="sphx-glr-thumbcontainer" tooltip="You can easily analyze your models written in Julia with pygpc. In order to do so, you have to ..."><div class="figure align-default" id="id30">
 <img alt="Analyzing Julia models with pygpc" src="_images/sphx_glr_plot_julia_model_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="auto_features/plot_julia_model.html#sphx-glr-auto-features-plot-julia-model-py"><span class="std std-ref">Analyzing Julia models with pygpc</span></a></span><a class="headerlink" href="#id30" title="Permalink to this image">#</a></p>
@@ -1146,7 +1144,7 @@ For examplary simulations and model configurations, please have a look at the ju
 </dl>
 </div>
 <div class="section" id="examples">
-<span id="sphx-glr-auto-examples"></span><h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
+<span id="sphx-glr-auto-examples"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h1>
 <div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This tutorial treats the same problem as in Example: Lorenz sys..."><div class="figure align-default" id="id34">
 <img alt="Example: Lorenz system of differential equations (Julia)" src="_images/sphx_glr_plot_Lorenz_julia_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/plot_Lorenz_julia.html#sphx-glr-auto-examples-plot-lorenz-julia-py"><span class="std std-ref">Example: Lorenz system of differential equations (Julia)</span></a></span><a class="headerlink" href="#id34" title="Permalink to this image">#</a></p>
@@ -1182,16 +1180,15 @@ For examplary simulations and model configurations, please have a look at the ju
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
 <div class="section" id="table-of-contents">
-<h2>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">#</a></h2>
-</div>
-</div>
+<h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">#</a></h1>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">#</a></h1>
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
+</div>
 </div>
 
 
@@ -1227,99 +1224,94 @@ For examplary simulations and model configurations, please have a look at the ju
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#">
-   Documentation of pygpc
+   Basic features:
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#areas-of-application">
+   Areas of application:
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#installation">
+   Installation
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#documentation">
+   Documentation
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   Reference
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#contact">
+   Contact
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#basic-features">
-     Basic features:
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#areas-of-application">
-     Areas of application:
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#installation">
-     Installation
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#documentation">
-     Documentation
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#reference">
-     Reference
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#contact">
-     Contact
+    <a class="reference internal nav-link" href="#examples-gallery">
+     Examples Gallery
     </a>
    </li>
   </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#examples-gallery">
-   Examples Gallery
+  <a class="reference internal nav-link" href="#introduction">
+   Introduction
   </a>
   <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#introduction">
-     Introduction
-    </a>
-    <ul class="nav section-nav flex-column">
-    </ul>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#generalized-polynomial-chaos">
-     Generalized Polynomial Chaos
-    </a>
-    <ul class="nav section-nav flex-column">
-    </ul>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#algorithms">
-     Algorithms
-    </a>
-    <ul class="nav section-nav flex-column">
-    </ul>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#sampling-schemes">
-     Sampling schemes
-    </a>
-    <ul class="nav section-nav flex-column">
-    </ul>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#features">
-     Features
-    </a>
-    <ul class="nav section-nav flex-column">
-    </ul>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#examples">
-     Examples
-    </a>
-    <ul class="nav section-nav flex-column">
-    </ul>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#table-of-contents">
-     Table of contents
-    </a>
-   </li>
   </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#indices-and-tables">
-   Indices and tables
+  <a class="reference internal nav-link" href="#generalized-polynomial-chaos">
+   Generalized Polynomial Chaos
   </a>
+  <ul class="visible nav section-nav flex-column">
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#algorithms">
+   Algorithms
+  </a>
+  <ul class="visible nav section-nav flex-column">
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sampling-schemes">
+   Sampling schemes
+  </a>
+  <ul class="visible nav section-nav flex-column">
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#features">
+   Features
+  </a>
+  <ul class="visible nav section-nav flex-column">
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples">
+   Examples
+  </a>
+  <ul class="visible nav section-nav flex-column">
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#table-of-contents">
+   Table of contents
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#indices-and-tables">
+     Indices and tables
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 

@@ -3,11 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. image:: /examples/images/pygpc_logo_wide_mod.png
+    :width: 1400
+    :align: center
 
-Documentation of pygpc
-======================
-
-A Sensitivity and uncertainty analysis toolbox for Python based on the generalized polynomial chaos method
 
 Basic features:
 ---------------
