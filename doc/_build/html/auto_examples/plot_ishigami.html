@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Example: Ishigami Testfunction &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -787,15 +789,15 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-ishigami-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="example-ishigami-testfunction">
+<section class="sphx-glr-example-title" id="example-ishigami-testfunction">
 <span id="sphx-glr-auto-examples-plot-ishigami-py"></span><h1>Example: Ishigami Testfunction<a class="headerlink" href="#example-ishigami-testfunction" title="Permalink to this heading">#</a></h1>
-<div class="section" id="about-the-model">
+<section id="about-the-model">
 <h2>About the model<a class="headerlink" href="#about-the-model" title="Permalink to this heading">#</a></h2>
-<p>This easy tutorial shows the application of pygpc to the Ishigami function which can be found in the testfunctions
+<p>This easy tutorial shows the application of pygpc to the Ishigami function, which can be found in the testfunctions
 section.
-The model consists of three random variables that will be tested as input parameters (x1, x2, x3) and two shape
-parameters that will stay constant in this tutorial (a, b)</p>
-<p>The model returns an output array with a value y for every sampling point.</p>
+The model consists of three random variables that are considered as input parameters (<em>x1</em>, <em>x2</em>, <em>x3</em>). The shape
+parameters of the function are chosen to be <code class="code docutils literal notranslate"><span class="pre">a=7</span></code> and <code class="code docutils literal notranslate"><span class="pre">b=0.1</span></code>.</p>
+<p>The model returns an output array with a value <em>y</em> for every sampling point.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.</span>
 <span class="c1"># def main():</span>
 
@@ -866,7 +868,7 @@ parameters that will stay constant in this tutorial (a, b)</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Performing 1300 simulations!
 
 It/Sub-it: 15/2 Performing simulation 0001 from 1300 [                                        ] 0.1%
-Total parallel function evaluation: 0.00047898292541503906 sec
+Total parallel function evaluation: 0.0008881092071533203 sec
 Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 
 LOOCV 01 from 25 [=                                       ] 4.0%
@@ -918,12 +920,12 @@ LOOCV 23 from 25 [====================================    ] 92.0%
 LOOCV 24 from 25 [======================================  ] 96.0%
 
 LOOCV 25 from 25 [========================================] 100.0%
-LOOCV computation time: 2.150564432144165 sec
--&gt; relative loocv error = 6.296052930940377e-06
+LOOCV computation time: 21.255335330963135 sec
+-&gt; relative loocv error = 1.5486945296868608e-05
 </pre></div>
 </div>
-</div>
-<div class="section" id="postprocessing">
+</section>
+<section id="postprocessing">
 <h2>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this heading">#</a></h2>
 <p>Postprocess gPC and add results to .hdf5 file</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pygpc</span><span class="o">.</span><span class="n">get_sensitivities_hdf5</span><span class="p">(</span><span class="n">fn_gpc</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_results</span><span class="p">,</span>
@@ -939,8 +941,8 @@ LOOCV computation time: 2.150564432144165 sec
 &gt; Adding results to: tmp/example_ishigami.hdf5
 </pre></div>
 </div>
-</div>
-<div class="section" id="validation">
+</section>
+<section id="validation">
 <h2>Validation<a class="headerlink" href="#validation" title="Permalink to this heading">#</a></h2>
 <p>Validate gPC vs original model function</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_plot</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
@@ -961,8 +963,8 @@ LOOCV computation time: 2.150564432144165 sec
                               <span class="n">fn_out</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_results</span> <span class="o">+</span> <span class="s1">&#39;_mc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_ishigami_002.png" srcset="../_images/sphx_glr_plot_ishigami_002.png" alt="plot ishigami" class = "sphx-glr-single-img"/></div>
-<div class="section" id="sensitivity-analysis">
+<img src="../_images/sphx_glr_plot_ishigami_002.png" srcset="../_images/sphx_glr_plot_ishigami_002.png" alt="plot ishigami" class = "sphx-glr-single-img"/></section>
+<section id="sensitivity-analysis">
 <h2>Sensitivity analysis<a class="headerlink" href="#sensitivity-analysis" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sobol</span><span class="p">,</span> <span class="n">gsens</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">get_sens_summary</span><span class="p">(</span><span class="n">fn_results</span><span class="p">,</span> <span class="n">parameters_random</span><span class="p">)</span>
 <span class="n">pygpc</span><span class="o">.</span><span class="n">plot_sens_summary</span><span class="p">(</span><span class="n">sobol</span><span class="p">,</span> <span class="n">gsens</span><span class="p">)</span>
@@ -976,7 +978,7 @@ LOOCV computation time: 2.150564432144165 sec
 <span class="c1">#     main()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_ishigami_003.png" srcset="../_images/sphx_glr_plot_ishigami_003.png" alt="Normalized Sobol indices" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  18.099 seconds)</p>
+<img src="../_images/sphx_glr_plot_ishigami_003.png" srcset="../_images/sphx_glr_plot_ishigami_003.png" alt="Normalized Sobol indices" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  8.951 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-ishigami-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b385f739b48aa079a0453d86e1783cc3/plot_ishigami.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_ishigami.py</span></code></a></p>
@@ -986,8 +988,8 @@ LOOCV computation time: 2.150564432144165 sec
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

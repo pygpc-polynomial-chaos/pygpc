@@ -23,14 +23,14 @@ Example: Ishigami Testfunction
 
 About the model
 ^^^^^^^^^^^^^^^
-This easy tutorial shows the application of pygpc to the Ishigami function which can be found in the testfunctions
+This easy tutorial shows the application of pygpc to the Ishigami function, which can be found in the testfunctions
 section.
-The model consists of three random variables that will be tested as input parameters (x1, x2, x3) and two shape
-parameters that will stay constant in this tutorial (a, b)
+The model consists of three random variables that are considered as input parameters (*x1*, *x2*, *x3*). The shape
+parameters of the function are chosen to be :code:`a=7` and :code:`b=0.1`.
 
-The model returns an output array with a value y for every sampling point.
+The model returns an output array with a value *y* for every sampling point.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-81
+.. GENERATED FROM PYTHON SOURCE LINES 14-80
 
 .. code-block:: default
 
@@ -110,7 +110,7 @@ The model returns an output array with a value y for every sampling point.
 
     Performing 1300 simulations!
     It/Sub-it: 15/2 Performing simulation 0001 from 1300 [                                        ] 0.1%
-    Total parallel function evaluation: 0.00047898292541503906 sec
+    Total parallel function evaluation: 0.0008881092071533203 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -137,19 +137,19 @@ The model returns an output array with a value y for every sampling point.
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 2.150564432144165 sec
-    -> relative loocv error = 6.296052930940377e-06
+    LOOCV computation time: 21.255335330963135 sec
+    -> relative loocv error = 1.5486945296868608e-05
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-85
+.. GENERATED FROM PYTHON SOURCE LINES 81-84
 
 Postprocessing
 ^^^^^^^^^^^^^^
 Postprocess gPC and add results to .hdf5 file
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-92
+.. GENERATED FROM PYTHON SOURCE LINES 84-91
 
 .. code-block:: default
 
@@ -175,13 +175,13 @@ Postprocess gPC and add results to .hdf5 file
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-96
+.. GENERATED FROM PYTHON SOURCE LINES 92-95
 
 Validation
 ^^^^^^^^^^
 Validate gPC vs original model function
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-104
+.. GENERATED FROM PYTHON SOURCE LINES 95-103
 
 .. code-block:: default
 
@@ -205,11 +205,11 @@ Validate gPC vs original model function
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-106
+.. GENERATED FROM PYTHON SOURCE LINES 104-105
 
 Validate gPC vs original model function (Monte Carlo)
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-113
+.. GENERATED FROM PYTHON SOURCE LINES 105-112
 
 .. code-block:: default
 
@@ -232,12 +232,12 @@ Validate gPC vs original model function (Monte Carlo)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-116
+.. GENERATED FROM PYTHON SOURCE LINES 113-115
 
 Sensitivity analysis
 ^^^^^^^^^^^^^^^^^^^^
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-125
+.. GENERATED FROM PYTHON SOURCE LINES 115-124
 
 .. code-block:: default
 
@@ -265,7 +265,7 @@ Sensitivity analysis
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  18.099 seconds)
+   **Total running time of the script:** ( 1 minutes  8.951 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_ishigami.py:

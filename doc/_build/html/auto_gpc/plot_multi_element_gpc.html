@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Modelling discontinuous model functions &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -787,7 +789,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-gpc-plot-multi-element-gpc-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="modelling-discontinuous-model-functions">
+<section class="sphx-glr-example-title" id="modelling-discontinuous-model-functions">
 <span id="sphx-glr-auto-gpc-plot-multi-element-gpc-py"></span><h1>Modelling discontinuous model functions<a class="headerlink" href="#modelling-discontinuous-model-functions" title="Permalink to this heading">#</a></h1>
 <p>In some cases, the output quantities of a model are discontinuous in the investigated parameter ranges.
 Modelling such systems with global continuous basis polynomials of a classical gPC would require a very high
@@ -819,7 +821,7 @@ based approach instead of determining the sensitivity coefficients directly from
 <span class="n">save_session_format</span> <span class="o">=</span> <span class="s2">&quot;.pkl&quot;</span>      <span class="c1"># file format of saved gpc session &quot;.hdf5&quot; (slow) or &quot;.pkl&quot; (fast)</span>
 </pre></div>
 </div>
-<div class="section" id="loading-the-model-and-defining-the-problem">
+<section id="loading-the-model-and-defining-the-problem">
 <h2>Loading the model and defining the problem<a class="headerlink" href="#loading-the-model-and-defining-the-problem" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># define model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">testfunctions</span><span class="o">.</span><span class="n">SurfaceCoverageSpecies</span><span class="p">()</span>
@@ -832,8 +834,8 @@ based approach instead of determining the sensitivity coefficients directly from
 <span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="setting-up-the-algorithm">
+</section>
+<section id="setting-up-the-algorithm">
 <h2>Setting up the algorithm<a class="headerlink" href="#setting-up-the-algorithm" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># gPC options</span>
 <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -891,8 +893,8 @@ gPC approach are:</p>
 <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">MEStatic</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="running-the-gpc">
+</section>
+<section id="running-the-gpc">
 <h2>Running the gpc<a class="headerlink" href="#running-the-gpc" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize gPC Session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
@@ -1067,8 +1069,8 @@ LOOCV 25 from 25 [========================================] 100.0%
 LOOCV computation time: 0.05720090866088867 sec
 </pre></div>
 </div>
-</div>
-<div class="section" id="postprocessing">
+</section>
+<section id="postprocessing">
 <h2>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">read_session</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session_folder</span><span class="p">)</span>
@@ -1089,10 +1091,10 @@ LOOCV computation time: 0.05720090866088867 sec
 &gt; Adding results to: tmp/mestatic.hdf5
 </pre></div>
 </div>
-</div>
-<div class="section" id="validation">
+</section>
+<section id="validation">
 <h2>Validation<a class="headerlink" href="#validation" title="Permalink to this heading">#</a></h2>
-<div class="section" id="validate-gpc-vs-original-model-function-2d-surface">
+<section id="validate-gpc-vs-original-model-function-2d-surface">
 <h3>Validate gPC vs original model function (2D-surface)<a class="headerlink" href="#validate-gpc-vs-original-model-function-2d-surface" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_plot</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                         <span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span>
@@ -1104,8 +1106,8 @@ LOOCV computation time: 0.05720090866088867 sec
                         <span class="n">n_cpu</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_multi_element_gpc_001.png" srcset="../_images/sphx_glr_plot_multi_element_gpc_001.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></div>
-<div class="section" id="validate-gpc-vs-original-model-function-monte-carlo">
+<img src="../_images/sphx_glr_plot_multi_element_gpc_001.png" srcset="../_images/sphx_glr_plot_multi_element_gpc_001.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></section>
+<section id="validate-gpc-vs-original-model-function-monte-carlo">
 <h3>Validate gPC vs original model function (Monte Carlo)<a class="headerlink" href="#validate-gpc-vs-original-model-function-monte-carlo" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nrmsd</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_mc</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                               <span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span>
@@ -1123,8 +1125,8 @@ LOOCV computation time: 0.05720090866088867 sec
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; Maximum NRMSD (gpc vs original): 0.0072%
 </pre></div>
 </div>
-</div>
-<div class="section" id="sensitivity-analysis">
+</section>
+<section id="sensitivity-analysis">
 <h3>Sensitivity analysis<a class="headerlink" href="#sensitivity-analysis" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sobol</span><span class="p">,</span> <span class="n">gsens</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">get_sens_summary</span><span class="p">(</span><span class="n">fn_results</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">)</span>
 <span class="n">pygpc</span><span class="o">.</span><span class="n">plot_sens_summary</span><span class="p">(</span><span class="n">sobol</span><span class="o">=</span><span class="n">sobol</span><span class="p">,</span> <span class="n">gsens</span><span class="o">=</span><span class="n">gsens</span><span class="p">)</span>
@@ -1142,18 +1144,20 @@ This can also be observed when taking a closer look at the model function in one
 <span class="c1">#     main()</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="references">
+</section>
+<section id="references">
 <h3>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h3>
-<dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Weise, K., Poßner, L., Müller, E., Gast, R., &amp; Knösche, T. R. (2020). Pygpc: A sensitivity and
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id1" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Weise, K., Poßner, L., Müller, E., Gast, R., &amp; Knösche, T. R. (2020). Pygpc: A sensitivity and
 uncertainty analysis toolbox for Python. SoftwareX, 11, 100450.</p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Kingma, D. P., &amp; Ba, J. (2014). Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980.</p>
-</dd>
-</dl>
+</aside>
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>Kingma, D. P., &amp; Ba, J. (2014). Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980.</p>
+</aside>
+</aside>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.257 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-gpc-plot-multi-element-gpc-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -1164,9 +1168,9 @@ uncertainty analysis toolbox for Python. SoftwareX, 11, 100450.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             </article>

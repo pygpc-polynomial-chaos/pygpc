@@ -92,7 +92,7 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
 
             return x_out
 
-The
+The model can then be called in the associated analysis script:
 
 .. code-block:: python
 

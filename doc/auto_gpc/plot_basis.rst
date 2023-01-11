@@ -21,33 +21,27 @@
 Polynomial basis functions
 ==========================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-7
+.. GENERATED FROM PYTHON SOURCE LINES 6-14
+
+Total-order gPC
+^^^^^^^^^^^^^^^
+In general, the set :math:`\mathcal{A}(\mathbf{p})` of multi-indices can be freely chosen according
+to the problem under investigation. In the following figures, the blue boxes correspond to polynomials
+included in the gPC expansion. The coordinates of the boxes correspond to the multi-indices
+:math:`\mathbf{\alpha}`, which correspond to the polynomial degrees of the individual basis functions
+forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
+coefficients to determine, increases exponentially in this case :math:`N_c=(P+1)^d`
+
+.. GENERATED FROM PYTHON SOURCE LINES 14-45
 
 .. code-block:: default
+
+
 
     # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
     # def main():
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 8-10
-
-Test problem
-------------
-
-.. GENERATED FROM PYTHON SOURCE LINES 10-30
-
-.. code-block:: default
-
-
     import pygpc
-    import time
     import numpy as np
-    import matplotlib.pyplot as plt
     from IPython import display
     from collections import OrderedDict
 
@@ -59,34 +53,11 @@ Test problem
     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
     parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
     parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
-    # test
+
     # define problem
     problem = pygpc.Problem(model, parameters)
 
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 31-40
-
-Total-order gPC
-^^^^^^^^^^^^^^^
-In general, the set :math:`\mathcal{A}(\mathbf{p})` of multi-indices can be freely chosen according
-to the problem under investigation. In the following figures, the blue boxes correspond to polynomials
-included in the gPC expansion. The coordinates of the boxes correspond to the multi-indices
-:math:`\mathbf{\alpha}`, which correspond to the polynomial degrees of the individual basis functions
-forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
-coefficients to determine, increases exponentially in this case :math:`N_c=(P+1)^d`
-sphinx_gallery_thumbnail_number = 2
-
-.. GENERATED FROM PYTHON SOURCE LINES 40-50
-
-.. code-block:: default
-
-
+    # define basis
     basis = pygpc.Basis()
     basis.init_basis_sgpc(problem=problem,
                           order=[5, 5, 5],
@@ -108,7 +79,7 @@ sphinx_gallery_thumbnail_number = 2
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-67
+.. GENERATED FROM PYTHON SOURCE LINES 47-63
 
 Maximum-order gPC
 ^^^^^^^^^^^^^^^^^
@@ -127,7 +98,7 @@ and hence, the dimension of the space spanned by the polynomials, is:
 .. math::
     N_c = \binom{d+p_g}{d} = \frac{(d+p_g)!}{d!p_g!}.
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-77
+.. GENERATED FROM PYTHON SOURCE LINES 63-73
 
 .. code-block:: default
 
@@ -153,7 +124,7 @@ and hence, the dimension of the space spanned by the polynomials, is:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-104
+.. GENERATED FROM PYTHON SOURCE LINES 74-100
 
 Reduced-basis gPC
 -----------------
@@ -182,7 +153,7 @@ It includes all elements from a total order gPC with the restriction of the inte
 :math:`P_i`. Additionally, univariate polynomials of higher orders specified in :math:`\mathbf{P}_u`
 may be added to the set of basis functions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-115
+.. GENERATED FROM PYTHON SOURCE LINES 100-111
 
 .. code-block:: default
 
@@ -209,7 +180,7 @@ may be added to the set of basis functions.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-134
+.. GENERATED FROM PYTHON SOURCE LINES 112-130
 
 Isotropic adaptive basis
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -230,7 +201,7 @@ than three the expansion continues until the final dimension is reached.
     :width: 1300
     :align: center
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-174
+.. GENERATED FROM PYTHON SOURCE LINES 130-170
 
 .. code-block:: default
 
@@ -288,7 +259,7 @@ than three the expansion continues until the final dimension is reached.
     Extending grid from 664 to 664 by 0 sampling points
     Performing simulations 1 to 664
     It/Sub-it: 10/2 Performing simulation 001 from 664 [                                        ] 0.2%
-    Total parallel function evaluation: 0.00032901763916015625 sec
+    Total parallel function evaluation: 0.0009629726409912109 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -315,14 +286,14 @@ than three the expansion continues until the final dimension is reached.
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.4485130310058594 sec
-    -> relative loocv error = 0.008882993213940598
+    LOOCV computation time: 7.975844383239746 sec
+    -> relative loocv error = 0.003700657535101174
     Determine gPC coefficients using 'Moore-Penrose' solver ...
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-217
+.. GENERATED FROM PYTHON SOURCE LINES 171-213
 
 Anisotropic adaptive basis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -367,7 +338,7 @@ index is not already included in the multi-index-set yet (marked orange).
     :align: center
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-263
+.. GENERATED FROM PYTHON SOURCE LINES 213-259
 
 .. code-block:: default
 
@@ -431,7 +402,7 @@ index is not already included in the multi-index-set yet (marked orange).
     Extending grid from 664 to 664 by 0 sampling points
     Performing simulations 1 to 664
     It/Sub-it: 10/2 Performing simulation 001 from 664 [                                        ] 0.2%
-    Total parallel function evaluation: 0.0003311634063720703 sec
+    Total parallel function evaluation: 0.000560760498046875 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
     LOOCV 01 from 25 [=                                       ] 4.0%
     LOOCV 02 from 25 [===                                     ] 8.0%
@@ -458,8 +429,8 @@ index is not already included in the multi-index-set yet (marked orange).
     LOOCV 23 from 25 [====================================    ] 92.0%
     LOOCV 24 from 25 [======================================  ] 96.0%
     LOOCV 25 from 25 [========================================] 100.0%
-    LOOCV computation time: 0.5663723945617676 sec
-    -> relative loocv error = 0.002040690798602467
+    LOOCV computation time: 3.1844444274902344 sec
+    -> relative loocv error = 0.0010463610901777784
     Determine gPC coefficients using 'Moore-Penrose' solver ...
 
 
@@ -468,7 +439,7 @@ index is not already included in the multi-index-set yet (marked orange).
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.901 seconds)
+   **Total running time of the script:** ( 0 minutes  22.560 seconds)
 
 
 .. _sphx_glr_download_auto_gpc_plot_basis.py:

@@ -43,9 +43,10 @@ Benchmark on the Ishigami function
 
 One of the testcases for different grids was the Ishigami function, which is already implemented in pygpc.
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-44
+.. GENERATED FROM PYTHON SOURCE LINES 28-45
 
 .. code-block:: default
+
 
 
     import numpy as np
@@ -75,7 +76,7 @@ One of the testcases for different grids was the Ishigami function, which is alr
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 45-89
+.. GENERATED FROM PYTHON SOURCE LINES 47-91
 
 Because of their random nature, we compared the grid repeatedly by using N=30 repetition. For every grid instance
 and sampling number we recorded the normalized root mean squared deviation (NRMSD) (first row), the mean
@@ -126,28 +127,23 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.186 seconds)
+   **Total running time of the script:** ( 0 minutes  0.904 seconds)
 
 
 .. _sphx_glr_download_auto_sampling_plot_grid_comparison.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_grid_comparison.py <plot_grid_comparison.py>`
 
-     :download:`Download Python source code: plot_grid_comparison.py <plot_grid_comparison.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_grid_comparison.ipynb <plot_grid_comparison.ipynb>`
+      :download:`Download Jupyter notebook: plot_grid_comparison.ipynb <plot_grid_comparison.ipynb>`
 
 
 .. only:: html

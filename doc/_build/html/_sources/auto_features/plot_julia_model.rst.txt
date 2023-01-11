@@ -128,9 +128,9 @@ A detailed example is given in :ref:`Example: Lorenz system of differential equa
 
     class MyModel_julia(AbstractModel):
         """
-        MyModel evaluates something by loading a Julia file that contains a function. The parameters of the model
-         (constants and random parameters) are stored in the dictionary p. Their type is defined during the problem
-          definition.
+        MyModel evaluates something by loading a Julia file that contains a function. The parameters
+        of the model (constants and random parameters) are stored in the dictionary p. Their type is
+        defined during the problem definition.
 
         Parameters
         ----------
@@ -153,12 +153,13 @@ A detailed example is given in :ref:`Example: Lorenz system of differential equa
             Results of the n_out quantities of interest the gPC is conducted for
         additional_data : dict or list of dict [n_grid]
             Additional data, will be saved under its keys in the .hdf5 file during gPC simulations.
-            If multiple grid-points are evaluated in one function call, return a dict for every grid-point in a list
+            If multiple grid-points are evaluated in one function call, return a dict for every
+            grid-point in a list
         """
 
         def __init__(self, fname_julia=None):
             if fname_julia is not None:
-                self.fname_julia = fname_julia                            # filename of julia function
+                self.fname_julia = fname_julia                          # filename of julia function
             self.fname = inspect.getfile(inspect.currentframe())        # filename of python function
 
         def validate(self):
@@ -186,17 +187,16 @@ A detailed example is given in :ref:`Example: Lorenz system of differential equa
 
             return y
 
-To enable libraries via an existing environment folder as described above use 'Main.eval('import Pkg')' and
-'Main.eval('Pkg.activate(" folder name of environment ")')' before including the .jl file. If the environment
+To enable libraries via an existing environment folder as described above use :code:`Main.eval('import Pkg')` and
+:code:`Main.eval('Pkg.activate(" folder name of environment ")')` before including the .jl file. If the environment
 folder is not in the same place as the .jl file the complete path is needed for this call as well.
 
 Performance Tip
 ^^^^^^^^^^^^^^^
-You can easily vectorize basic Julia operations like (+, -, etc.) by appending a dot before them: .+, .-, etc as shown
-in the function above. This can even be extended to entire functions by appending the dot after it:
-*y = function_name(args).* . With that the function should be able to process arrays for the input parameters passed
-in the dictionary *p*. And if that is the case you can set the
-algorithm option:
+You can easily vectorize basic Julia operations like (+, -, etc.) by appending a dot before them: :code:`.+`,
+:code:`.-`, etc. as shown in the function above. This can even be extended to entire functions by appending the
+dot after it: :code:`y = function_name(args).`. With that the function should be able to process arrays for the
+input parameters passed in the dictionary *p*. And if that is the case you can set the algorithm option:
 
 .. GENERATED FROM PYTHON SOURCE LINES 164-171
 
@@ -221,33 +221,28 @@ algorithm option:
 To enable parallel processing in pygpc. In this way, multiple sampling points are passed to the function
 and processed in parallel, which speeds up your gPC analysis. A more detailed description about the parallel
 processing capabilities of pygpc is given in this
-`example <plot_parallel_processing.html>`_.
+`example <plot_parallelization.html>`_.
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.181 seconds)
+   **Total running time of the script:** ( 0 minutes  0.385 seconds)
 
 
 .. _sphx_glr_download_auto_features_plot_julia_model.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_julia_model.py <plot_julia_model.py>`
 
-     :download:`Download Python source code: plot_julia_model.py <plot_julia_model.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_julia_model.ipynb <plot_julia_model.ipynb>`
+      :download:`Download Jupyter notebook: plot_julia_model.ipynb <plot_julia_model.ipynb>`
 
 
 .. only:: html

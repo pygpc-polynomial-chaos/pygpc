@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Algorithm: Static (Regression) &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -787,7 +789,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-algorithms-plot-algorithm-static-reg-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="algorithm-static-regression">
+<section class="sphx-glr-example-title" id="algorithm-static-regression">
 <span id="sphx-glr-auto-algorithms-plot-algorithm-static-reg-py"></span><h1>Algorithm: Static (Regression)<a class="headerlink" href="#algorithm-static-regression" title="Permalink to this heading">#</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.</span>
 <span class="c1"># def main():</span>
@@ -798,7 +800,7 @@ to download the full example code</p>
 <span class="n">save_session_format</span> <span class="o">=</span> <span class="s2">&quot;.pkl&quot;</span>    <span class="c1"># file format of saved gpc session &quot;.hdf5&quot; (slow) or &quot;.pkl&quot; (fast)</span>
 </pre></div>
 </div>
-<div class="section" id="loading-the-model-and-defining-the-problem">
+<section id="loading-the-model-and-defining-the-problem">
 <h2>Loading the model and defining the problem<a class="headerlink" href="#loading-the-model-and-defining-the-problem" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># define model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">testfunctions</span><span class="o">.</span><span class="n">Peaks</span><span class="p">()</span>
@@ -811,8 +813,8 @@ to download the full example code</p>
 <span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="setting-up-the-algorithm">
+</section>
+<section id="setting-up-the-algorithm">
 <h2>Setting up the algorithm<a class="headerlink" href="#setting-up-the-algorithm" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># gPC options</span>
 <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -848,8 +850,8 @@ to download the full example code</p>
 <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Static</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="running-the-gpc">
+</section>
+<section id="running-the-gpc">
 <h2>Running the gpc<a class="headerlink" href="#running-the-gpc" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># initialize gPC Session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
@@ -24172,8 +24174,8 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver (gradient enhanc
 -&gt; relative nrmsd error = 0.0009968688566217537
 </pre></div>
 </div>
-</div>
-<div class="section" id="postprocessing">
+</section>
+<section id="postprocessing">
 <h2>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">read_session</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session_folder</span><span class="p">)</span>
@@ -24193,10 +24195,10 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver (gradient enhanc
 &gt; Adding results to: tmp/static_reg.hdf5
 </pre></div>
 </div>
-</div>
-<div class="section" id="validation">
+</section>
+<section id="validation">
 <h2>Validation<a class="headerlink" href="#validation" title="Permalink to this heading">#</a></h2>
-<div class="section" id="validate-gpc-vs-original-model-function-2d-surface">
+<section id="validate-gpc-vs-original-model-function-2d-surface">
 <h3>Validate gPC vs original model function (2D-surface)<a class="headerlink" href="#validate-gpc-vs-original-model-function-2d-surface" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_plot</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                         <span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span>
@@ -24208,8 +24210,8 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver (gradient enhanc
                         <span class="n">n_cpu</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_algorithm_static_reg_001.png" srcset="../_images/sphx_glr_plot_algorithm_static_reg_001.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></div>
-<div class="section" id="validate-gpc-vs-original-model-function-monte-carlo">
+<img src="../_images/sphx_glr_plot_algorithm_static_reg_001.png" srcset="../_images/sphx_glr_plot_algorithm_static_reg_001.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></section>
+<section id="validate-gpc-vs-original-model-function-monte-carlo">
 <h3>Validate gPC vs original model function (Monte Carlo)<a class="headerlink" href="#validate-gpc-vs-original-model-function-monte-carlo" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nrmsd</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_mc</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                               <span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span>
@@ -24244,9 +24246,9 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver (gradient enhanc
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             </article>

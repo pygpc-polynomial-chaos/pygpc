@@ -1,9 +1,5 @@
 :orphan:
 
-
-
-.. _sphx_glr_auto_introduction:
-
 Introduction
 ------------
 
@@ -12,14 +8,42 @@ Introduction
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The primary focus of this tutorial rests on spectral methods, which are based on the determinat...">
 
 .. only:: html
 
- .. figure:: /auto_introduction/images/thumb/sphx_glr_plot_introduction_gpc_thumb.png
-     :alt: Introduction to generalized Polynomial Chaos (gPC)
+  .. image:: /auto_introduction/images/thumb/sphx_glr_plot_introduction_gpc_thumb.png
+    :alt: Introduction to generalized Polynomial Chaos (gPC)
 
-     :ref:`sphx_glr_auto_introduction_plot_introduction_gpc.py`
+  :ref:`sphx_glr_auto_introduction_plot_introduction_gpc.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Introduction to generalized Polynomial Chaos (gPC)</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Typically, we have some model, which depends on parameters, e.g., \tau_{e,i}, \tau_{e,i}, ..., ...">
+
+.. only:: html
+
+  .. image:: /auto_introduction/images/thumb/sphx_glr_plot_introduction_ua_thumb.png
+    :alt: Introduction to uncertainty analysis
+
+  :ref:`sphx_glr_auto_introduction_plot_introduction_ua.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Introduction to uncertainty analysis</div>
+    </div>
+
 
 .. raw:: html
 
@@ -30,48 +54,20 @@ Introduction
    :hidden:
 
    /auto_introduction/plot_introduction_gpc
+   /auto_introduction/plot_introduction_ua
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Typically, we have some model, which depends on parameters, e.g., \tau_{e,i}, \tau_{e,i}, ..., ...">
 
 .. only:: html
 
- .. figure:: /auto_introduction/images/thumb/sphx_glr_plot_introduction_ua_thumb.png
-     :alt: Introduction to uncertainty analysis
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
 
-     :ref:`sphx_glr_auto_introduction_plot_introduction_ua.py`
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-.. raw:: html
+      :download:`Download all examples in Python source code: auto_introduction_python.zip </auto_introduction/auto_introduction_python.zip>`
 
-    </div>
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-.. toctree::
-   :hidden:
-
-   /auto_introduction/plot_introduction_ua
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-gallery
-
-
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-    :download:`Download all examples in Python source code: auto_introduction_python.zip </auto_introduction/auto_introduction_python.zip>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-    :download:`Download all examples in Jupyter notebooks: auto_introduction_jupyter.zip </auto_introduction/auto_introduction_jupyter.zip>`
+      :download:`Download all examples in Jupyter notebooks: auto_introduction_jupyter.zip </auto_introduction/auto_introduction_jupyter.zip>`
 
 
 .. only:: html

@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Algorithm: Static_IO &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -787,7 +789,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-algorithms-plot-algorithm-static-io-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="algorithm-static-io">
+<section class="sphx-glr-example-title" id="algorithm-static-io">
 <span id="sphx-glr-auto-algorithms-plot-algorithm-static-io-py"></span><h1>Algorithm: Static_IO<a class="headerlink" href="#algorithm-static-io" title="Permalink to this heading">#</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.</span>
 <span class="c1"># def main():</span>
@@ -803,7 +805,7 @@ to download the full example code</p>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="setup-input-and-output-data">
+<section id="setup-input-and-output-data">
 <h2>Setup input and output data<a class="headerlink" href="#setup-input-and-output-data" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># We artificially generate some coordinates for the input data the user has to provide where the model was sampled</span>
 <span class="n">n_grid</span> <span class="o">=</span> <span class="mi">100</span>
@@ -827,8 +829,8 @@ to download the full example code</p>
 <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="setting-up-the-algorithm">
+</section>
+<section id="setting-up-the-algorithm">
 <h2>Setting up the algorithm<a class="headerlink" href="#setting-up-the-algorithm" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># gPC options</span>
 <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -849,8 +851,8 @@ to download the full example code</p>
 <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Static_IO</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="n">results</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="running-the-gpc">
+</section>
+<section id="running-the-gpc">
 <h2>Running the gpc<a class="headerlink" href="#running-the-gpc" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># initialize gPC Session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
@@ -916,8 +918,8 @@ LOOCV computation time: 0.08343315124511719 sec
 -&gt; relative loocv error = 2.1361275428489573e-05
 </pre></div>
 </div>
-</div>
-<div class="section" id="postprocessing">
+</section>
+<section id="postprocessing">
 <h2>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">read_session</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session_folder</span><span class="p">)</span>
@@ -964,8 +966,8 @@ LOOCV computation time: 0.08343315124511719 sec
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>OpenMP and CUDA &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -787,9 +789,9 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-features-plot-backends-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="openmp-and-cuda">
+<section class="sphx-glr-example-title" id="openmp-and-cuda">
 <span id="sphx-glr-auto-features-plot-backends-py"></span><h1>OpenMP and CUDA<a class="headerlink" href="#openmp-and-cuda" title="Permalink to this heading">#</a></h1>
-<div class="section" id="accelerating-pygpc-by-using-different-computing-backends">
+<section id="accelerating-pygpc-by-using-different-computing-backends">
 <h2>Accelerating pygpc by using different computing backends<a class="headerlink" href="#accelerating-pygpc-by-using-different-computing-backends" title="Permalink to this heading">#</a></h2>
 <p>This tutorial shows how to accelerate pygpc by choosing different computing backends.
 At the moment, the following backends are available:</p>
@@ -799,8 +801,8 @@ At the moment, the following backends are available:</p>
 <li><p>Implementation in <strong>C++</strong> and <strong>OpenMP</strong>: pygpc names this backend <strong>omp</strong></p></li>
 <li><p>Implementation in <strong>CUDA-C++</strong>: pygpc names this backend <strong>cuda</strong>, an Nvidia GPU is required</p></li>
 </ol>
-</div>
-<div class="section" id="installation-of-the-cuda-backend">
+</section>
+<section id="installation-of-the-cuda-backend">
 <h2>Installation of the CUDA backend<a class="headerlink" href="#installation-of-the-cuda-backend" title="Permalink to this heading">#</a></h2>
 <p>Pygpc also provides a CUDA-backend to speed up some computations. To use the backend you need to build it manually.
 This requires the CUDA-toolkit and CMake. CMake can be installd via the <cite>pip</cite> command.
@@ -825,8 +827,8 @@ If CMake and the CUDA-toolkit are installed on your machine you can build the ex
 </div>
 <p><strong>Troubleshooting for Windows:</strong></p>
 <p>On windows you might need a compiler to install pygpc. To install the <cite>Visual C++ Build Tools</cite>, please refer to: <a class="reference external" href="http://go.microsoft.com/fwlink/?LinkId=691126&amp;fixForIE=.exe">http://go.microsoft.com/fwlink/?LinkId=691126&amp;fixForIE=.exe</a>.</p>
-</div>
-<div class="section" id="setting-up-benchmark-parameters">
+</section>
+<section id="setting-up-benchmark-parameters">
 <h2>Setting up benchmark parameters<a class="headerlink" href="#setting-up-benchmark-parameters" title="Permalink to this heading">#</a></h2>
 <p>We define the number of samples, the dimensionality of the parameter space and the maximum number of basis functions.
 This will determine the size of the gPC matrix and therefore the compute time.</p>
@@ -839,8 +841,8 @@ This will determine the size of the gPC matrix and therefore the compute time.</
 <span class="n">n_iterations</span> <span class="o">=</span> <span class="mi">3</span>        <span class="c1"># number repeated benchmark runs</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="setting-up-the-gpc-and-the-grid-of-sampling-points">
+</section>
+<section id="setting-up-the-gpc-and-the-grid-of-sampling-points">
 <h2>Setting up the gPC and the grid of sampling points<a class="headerlink" href="#setting-up-the-gpc-and-the-grid-of-sampling-points" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygpc</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -881,8 +883,8 @@ This will determine the size of the gPC matrix and therefore the compute time.</
 <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">gpc</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">b</span><span class="p">),</span> <span class="n">n_qoi</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="running-the-benchmark">
+</section>
+<section id="running-the-benchmark">
 <h2>Running the benchmark<a class="headerlink" href="#running-the-benchmark" title="Permalink to this heading">#</a></h2>
 <p>Per default the <strong>omp</strong>-backend is set. Let’s try them all and see how the performance changes.
 If you have installed the CUDA backend you can add “cuda” to the list of backends.
@@ -924,8 +926,8 @@ It is the fastest one and outperforms all other backends.</p>
         <span class="n">time_get_approximation</span><span class="p">[</span><span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="performance-comparison-between-the-backends">
+</section>
+<section id="performance-comparison-between-the-backends">
 <h2>Performance comparison between the backends<a class="headerlink" href="#performance-comparison-between-the-backends" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
@@ -971,8 +973,8 @@ It is the fastest one and outperforms all other backends.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

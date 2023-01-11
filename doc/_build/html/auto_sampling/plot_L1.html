@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>L1 optimal sampling &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -788,7 +790,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-sampling-plot-l1-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="l1-optimal-sampling">
+<section class="sphx-glr-example-title" id="l1-optimal-sampling">
 <span id="sphx-glr-auto-sampling-plot-l1-py"></span><h1>L1 optimal sampling<a class="headerlink" href="#l1-optimal-sampling" title="Permalink to this heading">#</a></h1>
 <p>Before explaining the different types of L1 optimal grids a brief motivation for the L1-optimization and
 further the L1 optimal sampling that aims to strengthen the benefit from this procedure is given. L1 optimization is
@@ -804,7 +806,7 @@ entries. This type of problem can also be called sparse recovery or compressive 
 Most grids in this category are based on coherence optimal samples drawn from a sampling strategy introduced by Hampton
 and Doostan (2015) in the framework of gPC.</p>
 <p>A variety of grid types can be build upon this idea:</p>
-<div class="section" id="coherence-optimal-sampling-co">
+<section id="coherence-optimal-sampling-co">
 <h2>Coherence optimal sampling (CO)<a class="headerlink" href="#coherence-optimal-sampling-co" title="Permalink to this heading">#</a></h2>
 <p>Coherence optimal sampling seeks to minimize the spectral matrix norm between the Gram matrix of the gPC matrix
 and the identify matrix. The Gram matrix is defined by:</p>
@@ -839,7 +841,7 @@ is then applied to:</p>
 <p>In practice it is possible to compute <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> with:</p>
 <div class="math notranslate nohighlight">
 \[w_i(\xi) = \frac{1}{B_i(\xi)}\]</div>
-<div class="section" id="example">
+<section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
 <p>In order to create a coherence optimal grid of sampling points, we have to define the random parameters and create
 a gpc object.</p>
@@ -893,9 +895,9 @@ a gpc object.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_L1_001.png" srcset="../_images/sphx_glr_plot_L1_001.png" alt="CO" class = "sphx-glr-single-img"/></div>
-</div>
-<div class="section" id="mutual-coherence-optimal-sampling-mc">
+<img src="../_images/sphx_glr_plot_L1_001.png" srcset="../_images/sphx_glr_plot_L1_001.png" alt="CO" class = "sphx-glr-single-img"/></section>
+</section>
+<section id="mutual-coherence-optimal-sampling-mc">
 <h2>Mutual coherence optimal sampling (mc)<a class="headerlink" href="#mutual-coherence-optimal-sampling-mc" title="Permalink to this heading">#</a></h2>
 <p>The mutual coherence of a matrix measures the cross-correlations between its columns by evaluating the largest
 absolute and normalized inner product between different columns. It is given by:</p>
@@ -929,8 +931,8 @@ compressive sampling performance in general.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_L1_002.png" srcset="../_images/sphx_glr_plot_L1_002.png" alt="MC" class = "sphx-glr-single-img"/></div>
-<div class="section" id="mutual-coherence-and-average-cross-correlation-optimal-sampling-mc-cc">
+<img src="../_images/sphx_glr_plot_L1_002.png" srcset="../_images/sphx_glr_plot_L1_002.png" alt="MC" class = "sphx-glr-single-img"/></section>
+<section id="mutual-coherence-and-average-cross-correlation-optimal-sampling-mc-cc">
 <h2>Mutual coherence and average cross-correlation optimal sampling (mc-cc)<a class="headerlink" href="#mutual-coherence-and-average-cross-correlation-optimal-sampling-mc-cc" title="Permalink to this heading">#</a></h2>
 <p>An improvement of sampling designs that are only optimized in the mutual coherence is done by adding the average cross-
 correlation as a measure for a two-fold optimization with the benefit of further robustness in its efficient sparse
@@ -972,8 +974,8 @@ average-cross correlation <span class="math notranslate nohighlight">\(\gamma(\m
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_L1_003.png" srcset="../_images/sphx_glr_plot_L1_003.png" alt="MC-CC" class = "sphx-glr-single-img"/></div>
-<div class="section" id="d-optimal-sampling">
+<img src="../_images/sphx_glr_plot_L1_003.png" srcset="../_images/sphx_glr_plot_L1_003.png" alt="MC-CC" class = "sphx-glr-single-img"/></section>
+<section id="d-optimal-sampling">
 <h2>D-optimal sampling<a class="headerlink" href="#d-optimal-sampling" title="Permalink to this heading">#</a></h2>
 <p>Further a selection of optimization criteria derived from <span class="math notranslate nohighlight">\(\mathbf{G_\Psi}\)</span> and the identification of
 corresponding optimal sampling locations is the core concept of optimal design of experiment (ODE). The most popular
@@ -1009,8 +1011,8 @@ Pukelsheim (2006).</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_L1_004.png" srcset="../_images/sphx_glr_plot_L1_004.png" alt="D" class = "sphx-glr-single-img"/></div>
-<div class="section" id="d-coherence-optimal-sampling">
+<img src="../_images/sphx_glr_plot_L1_004.png" srcset="../_images/sphx_glr_plot_L1_004.png" alt="D" class = "sphx-glr-single-img"/></section>
+<section id="d-coherence-optimal-sampling">
 <h2>D-coherence optimal sampling<a class="headerlink" href="#d-coherence-optimal-sampling" title="Permalink to this heading">#</a></h2>
 <p><span class="math notranslate nohighlight">\(D\)</span>-optimal designs can even be combined with coherence optimal designs by using a pool of already coherence
 optimal samples and then applying the optimization of the <span class="math notranslate nohighlight">\(D\)</span> criterion on it. This has been shown to be a
@@ -1116,8 +1118,8 @@ until the sampling set has the desired size.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Example: Modelling of an electrode &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -787,9 +789,9 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-electrode-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="example-modelling-of-an-electrode">
+<section class="sphx-glr-example-title" id="example-modelling-of-an-electrode">
 <span id="sphx-glr-auto-examples-plot-electrode-py"></span><h1>Example: Modelling of an electrode<a class="headerlink" href="#example-modelling-of-an-electrode" title="Permalink to this heading">#</a></h1>
-<div class="section" id="about-the-model">
+<section id="about-the-model">
 <h2>About the model<a class="headerlink" href="#about-the-model" title="Permalink to this heading">#</a></h2>
 <p>This tutorial shows the application of pygpc to an equivalent electrical circuit, modelling the impedance of
 an open-ended coaxial electrode.
@@ -819,7 +821,7 @@ array is a quantity of interest (QoI) and a gPC is computed for every quantity o
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_electrode_001.png" srcset="../_images/sphx_glr_plot_electrode_001.png" alt="plot electrode" class = "sphx-glr-single-img"/><div class="section" id="loading-the-model-and-defining-the-problem">
+<img src="../_images/sphx_glr_plot_electrode_001.png" srcset="../_images/sphx_glr_plot_electrode_001.png" alt="plot electrode" class = "sphx-glr-single-img"/><section id="loading-the-model-and-defining-the-problem">
 <h3>Loading the model and defining the problem<a class="headerlink" href="#loading-the-model-and-defining-the-problem" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygpc</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -856,8 +858,8 @@ array is a quantity of interest (QoI) and a gPC is computed for every quantity o
 <span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="setting-up-the-algorithm">
+</section>
+<section id="setting-up-the-algorithm">
 <h3>Setting up the algorithm<a class="headerlink" href="#setting-up-the-algorithm" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set gPC options</span>
 <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -893,8 +895,8 @@ array is a quantity of interest (QoI) and a gPC is computed for every quantity o
 <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Static</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="running-the-gpc">
+</section>
+<section id="running-the-gpc">
 <h3>Running the gpc<a class="headerlink" href="#running-the-gpc" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize gPC Session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
@@ -913,8 +915,8 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 -&gt; relative nrmsd error = 1.8068237682744275e-05
 </pre></div>
 </div>
-</div>
-<div class="section" id="postprocessing">
+</section>
+<section id="postprocessing">
 <h3>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">read_session</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">fn_session_folder</span><span class="p">)</span>
@@ -934,12 +936,12 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 &gt; Adding results to: GPC/electrode.hdf5
 </pre></div>
 </div>
-</div>
-<div class="section" id="validation">
+</section>
+<section id="validation">
 <h3>Validation<a class="headerlink" href="#validation" title="Permalink to this heading">#</a></h3>
-</div>
-</div>
-<div class="section" id="validate-gpc-vs-original-model-function-2d-surface">
+</section>
+</section>
+<section id="validate-gpc-vs-original-model-function-2d-surface">
 <h2>Validate gPC vs original model function (2D-surface)<a class="headerlink" href="#validate-gpc-vs-original-model-function-2d-surface" title="Permalink to this heading">#</a></h2>
 <p>Validate gPC vs original model function</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_plot</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
@@ -951,8 +953,8 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
                         <span class="n">n_cpu</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_electrode_002.png" srcset="../_images/sphx_glr_plot_electrode_002.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></div>
-<div class="section" id="validate-gpc-vs-original-model-function-monte-carlo">
+<img src="../_images/sphx_glr_plot_electrode_002.png" srcset="../_images/sphx_glr_plot_electrode_002.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></section>
+<section id="validate-gpc-vs-original-model-function-monte-carlo">
 <h2>Validate gPC vs original model function (Monte Carlo)<a class="headerlink" href="#validate-gpc-vs-original-model-function-monte-carlo" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nrmsd</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">validate_gpc_mc</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                               <span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span>
@@ -968,8 +970,8 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; Maximum NRMSD (gpc vs original): 2.6e-05%
 </pre></div>
 </div>
-</div>
-<div class="section" id="load-sobol-indices-mean-and-std-from-the-hdf5-file">
+</section>
+<section id="load-sobol-indices-mean-and-std-from-the-hdf5-file">
 <h2>Load sobol indices, mean and std from the <a href="#id1"><span class="problematic" id="id2">*</span></a>.hdf5 file<a class="headerlink" href="#load-sobol-indices-mean-and-std-from-the-hdf5-file" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">h5py</span>
 
@@ -1093,8 +1095,8 @@ Maximum of sum of sobol indices of imag part:  0.9988259205269608
 Mean of sum of sobol indices of imag part:  0.995266507219882
 </pre></div>
 </div>
-</div>
-<div class="section" id="plot-mean-and-std-of-real-part-of-the-model">
+</section>
+<section id="plot-mean-and-std-of-real-part-of-the-model">
 <h2>Plot mean and std of real part of the model<a class="headerlink" href="#plot-mean-and-std-of-real-part-of-the-model" title="Permalink to this heading">#</a></h2>
 <p>Set step size for frequency points to plot</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">frequency_index_step</span> <span class="o">=</span> <span class="mi">20</span>
@@ -1110,8 +1112,8 @@ Mean of sum of sobol indices of imag part:  0.995266507219882
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Re(Z)/$\Omega$&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_electrode_004.png" srcset="../_images/sphx_glr_plot_electrode_004.png" alt="Mean and std of the real part of Z" class = "sphx-glr-single-img"/></div>
-<div class="section" id="plot-mean-and-std-of-imaginary-part-of-the-model">
+<img src="../_images/sphx_glr_plot_electrode_004.png" srcset="../_images/sphx_glr_plot_electrode_004.png" alt="Mean and std of the real part of Z" class = "sphx-glr-single-img"/></section>
+<section id="plot-mean-and-std-of-imaginary-part-of-the-model">
 <h2>Plot mean and std of imaginary part of the model<a class="headerlink" href="#plot-mean-and-std-of-imaginary-part-of-the-model" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">f</span><span class="p">[::</span><span class="n">frequency_index_step</span><span class="p">],</span> <span class="n">mean_imag</span><span class="p">[::</span><span class="n">frequency_index_step</span><span class="p">],</span> <span class="s2">&quot;C1o-&quot;</span><span class="p">)</span>
@@ -1122,8 +1124,8 @@ Mean of sum of sobol indices of imag part:  0.995266507219882
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Im(Z)/$\Omega$&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_electrode_005.png" srcset="../_images/sphx_glr_plot_electrode_005.png" alt="Mean and std of the imaginary part of Z" class = "sphx-glr-single-img"/></div>
-<div class="section" id="plot-sobol-indices-of-the-parameters-of-the-real-part-of-the-model">
+<img src="../_images/sphx_glr_plot_electrode_005.png" srcset="../_images/sphx_glr_plot_electrode_005.png" alt="Mean and std of the imaginary part of Z" class = "sphx-glr-single-img"/></section>
+<section id="plot-sobol-indices-of-the-parameters-of-the-real-part-of-the-model">
 <h2>Plot sobol indices of the parameters of the real part of the model<a class="headerlink" href="#plot-sobol-indices-of-the-parameters-of-the-real-part-of-the-model" title="Permalink to this heading">#</a></h2>
 <p>Set step size for frequency points to plot</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">frequency_index_step</span> <span class="o">=</span> <span class="mi">1</span>
@@ -1151,8 +1153,8 @@ Mean of sum of sobol indices of imag part:  0.995266507219882
                                    <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">ylim_bottom</span><span class="p">))))</span><span class="o">+</span><span class="mi">1</span><span class="p">))[::</span><span class="mi">4</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_electrode_006.png" srcset="../_images/sphx_glr_plot_electrode_006.png" alt="Sobol indices of the parameters of the real part of Z" class = "sphx-glr-single-img"/></div>
-<div class="section" id="plot-sobol-indices-of-the-parameters-of-the-imaginary-part-of-the-model">
+<img src="../_images/sphx_glr_plot_electrode_006.png" srcset="../_images/sphx_glr_plot_electrode_006.png" alt="Sobol indices of the parameters of the real part of Z" class = "sphx-glr-single-img"/></section>
+<section id="plot-sobol-indices-of-the-parameters-of-the-imaginary-part-of-the-model">
 <h2>Plot sobol indices of the parameters of the imaginary part of the model<a class="headerlink" href="#plot-sobol-indices-of-the-parameters-of-the-imaginary-part-of-the-model" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
 
@@ -1194,8 +1196,8 @@ Mean of sum of sobol indices of imag part:  0.995266507219882
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

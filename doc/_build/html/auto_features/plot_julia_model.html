@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Analyzing Julia models with pygpc &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -787,7 +789,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-features-plot-julia-model-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="analyzing-julia-models-with-pygpc">
+<section class="sphx-glr-example-title" id="analyzing-julia-models-with-pygpc">
 <span id="sphx-glr-auto-features-plot-julia-model-py"></span><h1>Analyzing Julia models with pygpc<a class="headerlink" href="#analyzing-julia-models-with-pygpc" title="Permalink to this heading">#</a></h1>
 <p>You can easily analyze your models written in Julia with pygpc. In order to do so, you have to
 install the Julia API for Python.</p>
@@ -798,7 +800,7 @@ install the Julia API for Python.</p>
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_julia_model_001.png" srcset="../_images/sphx_glr_plot_julia_model_001.png" alt="plot julia model" class = "sphx-glr-single-img"/><div class="section" id="install-julia-api-for-python">
+<img src="../_images/sphx_glr_plot_julia_model_001.png" srcset="../_images/sphx_glr_plot_julia_model_001.png" alt="plot julia model" class = "sphx-glr-single-img"/><section id="install-julia-api-for-python">
 <h2>Install Julia API for Python<a class="headerlink" href="#install-julia-api-for-python" title="Permalink to this heading">#</a></h2>
 <p>If not already done, install Julia (<a class="reference external" href="https://julialang.org">https://julialang.org</a>) and Python (<a class="reference external" href="https://www.python.org/">https://www.python.org/</a>).
 After installation is finished, the dependency <em>PyCall</em> needs to be installed in Julia.
@@ -823,8 +825,8 @@ Open Julia and enter the following:</p>
 </pre></div>
 </div>
 <p>in the gPC options section of your gPC run-file.</p>
-</div>
-<div class="section" id="setting-up-the-julia-model">
+</section>
+<section id="setting-up-the-julia-model">
 <h2>Setting up the Julia model<a class="headerlink" href="#setting-up-the-julia-model" title="Permalink to this heading">#</a></h2>
 <p>Setting up the model in Julia is straight forward. You simply have to define your model as a julia function
 within an .jl file. In the following, you see an example model .jl file:</p>
@@ -841,8 +843,8 @@ call from python. The environment can be created inside Julia where libraries ca
 <span class="n">Pkg</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="s">&quot; library name &quot;</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="accessing-the-model-within-pypgc">
+</section>
+<section id="accessing-the-model-within-pypgc">
 <h2>Accessing the model within pypgc<a class="headerlink" href="#accessing-the-model-within-pypgc" title="Permalink to this heading">#</a></h2>
 <p>In order to call the Julia function within pygpc, we have to set up a corresponding python model as shown below.
 During initialization we pass the function name <em>fname_julia</em>, which tells pygpc where to find the model .jl
@@ -858,9 +860,9 @@ function. During computation, pygpc accesses the Julia function.</p>
 
 <span class="k">class</span> <span class="nc">MyModel_julia</span><span class="p">(</span><span class="n">AbstractModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    MyModel evaluates something by loading a Julia file that contains a function. The parameters of the model</span>
-<span class="sd">     (constants and random parameters) are stored in the dictionary p. Their type is defined during the problem</span>
-<span class="sd">      definition.</span>
+<span class="sd">    MyModel evaluates something by loading a Julia file that contains a function. The parameters</span>
+<span class="sd">    of the model (constants and random parameters) are stored in the dictionary p. Their type is</span>
+<span class="sd">    defined during the problem definition.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -883,12 +885,13 @@ function. During computation, pygpc accesses the Julia function.</p>
 <span class="sd">        Results of the n_out quantities of interest the gPC is conducted for</span>
 <span class="sd">    additional_data : dict or list of dict [n_grid]</span>
 <span class="sd">        Additional data, will be saved under its keys in the .hdf5 file during gPC simulations.</span>
-<span class="sd">        If multiple grid-points are evaluated in one function call, return a dict for every grid-point in a list</span>
+<span class="sd">        If multiple grid-points are evaluated in one function call, return a dict for every</span>
+<span class="sd">        grid-point in a list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname_julia</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fname_julia</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fname_julia</span> <span class="o">=</span> <span class="n">fname_julia</span>                            <span class="c1"># filename of julia function</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fname_julia</span> <span class="o">=</span> <span class="n">fname_julia</span>                          <span class="c1"># filename of julia function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">())</span>        <span class="c1"># filename of python function</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -917,17 +920,16 @@ function. During computation, pygpc accesses the Julia function.</p>
         <span class="k">return</span> <span class="n">y</span>
 </pre></div>
 </div>
-<p>To enable libraries via an existing environment folder as described above use ‘Main.eval(‘import Pkg’)’ and
-‘Main.eval(‘Pkg.activate(” folder name of environment “)’)’ before including the .jl file. If the environment
+<p>To enable libraries via an existing environment folder as described above use <code class="code docutils literal notranslate"><span class="pre">Main.eval('import</span> <span class="pre">Pkg')</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">Main.eval('Pkg.activate(&quot;</span> <span class="pre">folder</span> <span class="pre">name</span> <span class="pre">of</span> <span class="pre">environment</span> <span class="pre">&quot;)')</span></code> before including the .jl file. If the environment
 folder is not in the same place as the .jl file the complete path is needed for this call as well.</p>
-</div>
-<div class="section" id="performance-tip">
+</section>
+<section id="performance-tip">
 <h2>Performance Tip<a class="headerlink" href="#performance-tip" title="Permalink to this heading">#</a></h2>
-<p>You can easily vectorize basic Julia operations like (+, -, etc.) by appending a dot before them: .+, .-, etc as shown
-in the function above. This can even be extended to entire functions by appending the dot after it:
-<em>y = function_name(args).</em> . With that the function should be able to process arrays for the input parameters passed
-in the dictionary <em>p</em>. And if that is the case you can set the
-algorithm option:</p>
+<p>You can easily vectorize basic Julia operations like (+, -, etc.) by appending a dot before them: <code class="code docutils literal notranslate"><span class="pre">.+</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">.-</span></code>, etc. as shown in the function above. This can even be extended to entire functions by appending the
+dot after it: <code class="code docutils literal notranslate"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">function_name(args).</span></code>. With that the function should be able to process arrays for the
+input parameters passed in the dictionary <em>p</em>. And if that is the case you can set the algorithm option:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
 <span class="c1"># ...</span>
@@ -938,9 +940,9 @@ algorithm option:</p>
 <p>To enable parallel processing in pygpc. In this way, multiple sampling points are passed to the function
 and processed in parallel, which speeds up your gPC analysis. A more detailed description about the parallel
 processing capabilities of pygpc is given in this
-<a class="reference external" href="plot_parallel_processing.html">example</a>.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.181 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-features-plot-julia-model-py">
+<a class="reference external" href="plot_parallelization.html">example</a>.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.385 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-features-plot-julia-model-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/f6ac108ab7434dd24d2a959023cf64e6/plot_julia_model.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_julia_model.py</span></code></a></p>
 </div>
@@ -949,8 +951,8 @@ processing capabilities of pygpc is given in this
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

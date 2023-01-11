@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Introduction to uncertainty analysis &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -788,13 +790,13 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-introduction-plot-introduction-ua-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="introduction-to-uncertainty-analysis">
+<section class="sphx-glr-example-title" id="introduction-to-uncertainty-analysis">
 <span id="sphx-glr-auto-introduction-plot-introduction-ua-py"></span><h1>Introduction to uncertainty analysis<a class="headerlink" href="#introduction-to-uncertainty-analysis" title="Permalink to this heading">#</a></h1>
 <p>Typically, we have some model, which depends on parameters, e.g., <span class="math notranslate nohighlight">\(\tau_{e,i}, \tau_{e,i}, ..., C_i\)</span>
 and we are interested in several quantities of interest (QOI), e.g., <span class="math notranslate nohighlight">\(y_j\)</span>, we can compute, when we
 run the model with the desired set of parameters.</p>
 <a class="reference internal image-reference" href="../_images/Uncertainty_Analysis.png"><img alt="../_images/Uncertainty_Analysis.png" class="align-center" src="../_images/Uncertainty_Analysis.png" style="width: 700px;" /></a>
-<div class="section" id="uncertainty-analysis-using-monte-carlo-methods">
+<section id="uncertainty-analysis-using-monte-carlo-methods">
 <h2>Uncertainty analysis using Monte Carlo methods<a class="headerlink" href="#uncertainty-analysis-using-monte-carlo-methods" title="Permalink to this heading">#</a></h2>
 <p>In order to determine the statistical information of the output quantities of a system, such as the mean
 or the variance, one of the most common methods is Monte Carlo sampling (MC). The MC method is based on
@@ -805,8 +807,8 @@ MC method. The mean for example converges with <span class="math notranslate noh
 forward calculations. This limits the applicability to problems with low computational cost.</p>
 <p>Hence, the whole UQ problem reduces to find the <em>unknown</em> transfer function (grey box) from which
 we can infer all necessary information (statistics, sensitivities, etc)</p>
-</div>
-<div class="section" id="example">
+</section>
+<section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
 <p>Three-dimensional test function of Ishigami.</p>
 <div class="math notranslate nohighlight">
@@ -872,32 +874,36 @@ The values of a and b used by Crestaux et al. (2007) and Marrel et al. (2009) ar
 </div>
 <img src="../_images/sphx_glr_plot_introduction_ua_001.png" srcset="../_images/sphx_glr_plot_introduction_ua_001.png" alt="plot introduction ua" class = "sphx-glr-single-img"/><p>It can be clearly seen that the mean and the standard deviation converge slowly with increasing <span class="math notranslate nohighlight">\(N\)</span>,
 demonstrating the bad convergence properties of standard Monte Carlo approaches.</p>
-</div>
-<div class="section" id="references">
+</section>
+<section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Ishigami, T., Homma, T. (1990, December). An importance quantification
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id1" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Ishigami, T., Homma, T. (1990, December). An importance quantification
 technique in uncertainty analysis for computer models. In Uncertainty
 Modeling and Analysis, 1990. Proceedings., First International Symposium
 on (pp. 398-403). IEEE.</p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Sobol’, I.M., Levitan, Y.L. (1999). On the use of variance reducing
+</aside>
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>Sobol’, I.M., Levitan, Y.L. (1999). On the use of variance reducing
 multipliers in Monte Carlo computations of a global sensitivity index.
 Computer Physics Communications, 117(1), 52-61.</p>
-</dd>
-<dt class="label" id="id3"><span class="brackets">3</span></dt>
-<dd><p>Crestaux, T., Martinez, J.-M., Le Maitre, O., &amp; Lafitte, O. (2007).
+</aside>
+<aside class="footnote brackets" id="id3" role="note">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<p>Crestaux, T., Martinez, J.-M., Le Maitre, O., &amp; Lafitte, O. (2007).
 Polynomial chaos expansion for uncertainties quantification and sensitivity analysis [PowerPoint slides].
 Retrieved from SAMO 2007 website: <a class="reference external" href="http://samo2007.chem.elte.hu/lectures/Crestaux.pdf">http://samo2007.chem.elte.hu/lectures/Crestaux.pdf</a>.</p>
-</dd>
-<dt class="label" id="id4"><span class="brackets">4</span></dt>
-<dd><p>Marrel, A., Iooss, B., Laurent, B., &amp; Roustant, O. (2009).
+</aside>
+<aside class="footnote brackets" id="id4" role="note">
+<span class="label"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></span>
+<p>Marrel, A., Iooss, B., Laurent, B., &amp; Roustant, O. (2009).
 Calculations of sobol indices for the gaussian process metamodel.
 Reliability Engineering &amp; System Safety, 94(3), 742-751.</p>
-</dd>
-</dl>
+</aside>
+</aside>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.625 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-introduction-plot-introduction-ua-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -908,8 +914,8 @@ Reliability Engineering &amp; System Safety, 94(3), 742-751.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

@@ -24,7 +24,7 @@ Example: Lorenz system of differential equations
 About the model
 ^^^^^^^^^^^^^^^
 This tutorial shows how to perform uncertainty and sensitivity analysis of systems of differential equations with pygpc.
-In the following, we will analyse a Lorenz oscillator. The governing equations are given by:
+In the following, we will analyse the Lorenz system. The governing equations are given by:
 
 .. math::
 
@@ -37,7 +37,7 @@ In the following, we will analyse a Lorenz oscillator. The governing equations a
 The equations are implemented in the testfunction
 :class:`Lorenz system <pygpc.testfunctions.testfunctions.Lorenz_System>`.
 The system is capable of showing chaotic behaviour and arises from simplified models for physical
-phenomena of lasers, electric circuits, thermodynamics and more. It returns time dependent x, y and z coordinates
+phenomena of lasers, electric circuits, thermodynamics and more. It returns time dependent *x*, *y* and *z* coordinates
 For each time point is treated as an independent quantity of interest and a separate gPC is performed to investigate
 the temporal evolutions of the uncertainties.
 The parameters :math:`\sigma`, :math:`\beta` and :math:`\rho` are usually assumed to be positive.
@@ -213,9 +213,9 @@ field from the gPC options dictionary.
     Extending grid from 185 to 185 by 0 sampling points
     Performing simulations 1 to 185
     It/Sub-it: 6/2 Performing simulation 001 from 185 [                                        ] 0.5%
-    Total parallel function evaluation: 0.2160205841064453 sec
+    Total parallel function evaluation: 0.570655107498169 sec
     Determine gPC coefficients using 'Moore-Penrose' solver ...
-    -> absolute nrmsd error = 0.005661443439043352
+    -> absolute nrmsd error = 0.005721887528738285
     Determine gPC coefficients using 'Moore-Penrose' solver ...
 
 
@@ -283,7 +283,7 @@ Postprocess gPC and add sensitivity coefficients to results .hdf5 file
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  23.762 seconds)
+   **Total running time of the script:** ( 1 minutes  8.081 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_Lorenz.py:

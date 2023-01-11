@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Latin Hypercube Sampling (LHS) &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -788,7 +790,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-sampling-plot-lhs-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="latin-hypercube-sampling-lhs">
+<section class="sphx-glr-example-title" id="latin-hypercube-sampling-lhs">
 <span id="sphx-glr-auto-sampling-plot-lhs-py"></span><h1>Latin Hypercube Sampling (LHS)<a class="headerlink" href="#latin-hypercube-sampling-lhs" title="Permalink to this heading">#</a></h1>
 <p>To prevent clustering or undersampling of specific regions in the probability space, LHS is a simple
 alternative to enhance the space-filling properties of the sampling scheme first established by
@@ -803,9 +805,9 @@ a matrix <span class="math notranslate nohighlight">\(\Pi\)</span> is constructe
 can lead to samples with high spurious correlation and the space filling capability
 in itself leaves room for improvement, some optimization criteria have been found to
 be adequate for compensating the initial designs shortcomings.</p>
-<div class="section" id="optimization-criteria-of-lhs-designs">
+<section id="optimization-criteria-of-lhs-designs">
 <h2>Optimization Criteria of LHS designs<a class="headerlink" href="#optimization-criteria-of-lhs-designs" title="Permalink to this heading">#</a></h2>
-<div class="section" id="spearman-rank-correlation">
+<section id="spearman-rank-correlation">
 <h3>Spearman Rank Correlation<a class="headerlink" href="#spearman-rank-correlation" title="Permalink to this heading">#</a></h3>
 <p>For a sample size of <span class="math notranslate nohighlight">\(n\)</span> the scores of each variable are converted to their Ranks <span class="math notranslate nohighlight">\(rg_{X_i}\)</span>
 the Spearman Rank Correlation Coefficient is then the Pearson Correlation Coefficient applied to the rank
@@ -814,8 +816,8 @@ variables <span class="math notranslate nohighlight">\(rg_{X_i}\)</span>:</p>
 \[r_s = \rho_{rg_{X_i}, rg_{X_j}} = \frac{cov(rg_{X_i}, rg_{X_j})}{\sigma_{rg_{X_i}} \sigma_{rg_{X_i}}}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\rho\)</span> is the pearson correlation coefficient, <span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation
 and <span class="math notranslate nohighlight">\(cov\)</span> is the covariance of the rank variables.</p>
-</div>
-<div class="section" id="maximum-minimal-distance">
+</section>
+<section id="maximum-minimal-distance">
 <h3>Maximum-Minimal-Distance<a class="headerlink" href="#maximum-minimal-distance" title="Permalink to this heading">#</a></h3>
 <p>For creating a so called maximin distance design that maximizes the minimum inter-site distance, proposed by
 Johnson et al. (1990).</p>
@@ -831,17 +833,17 @@ called the <span class="math notranslate nohighlight">\(\varphi_P\)</span> crite
 \[\min\varphi_P \quad \text{subject to} \quad \varphi_P = [ \sum_{k = 1} ^ {s} J_id_i  ^ p]^\frac{1}{p},\]</div>
 <p>where <span class="math notranslate nohighlight">\(s\)</span> is the number of distinct distances, <span class="math notranslate nohighlight">\(J\)</span> is an vector of indices of the distances
 and <span class="math notranslate nohighlight">\(p\)</span> is an integer. With a very large <span class="math notranslate nohighlight">\(p\)</span> this criterion is equivalent to the maximin criterion</p>
-</div>
-<div class="section" id="lhs-with-enhanced-stochastic-evolutionary-algorithm-ese">
+</section>
+<section id="lhs-with-enhanced-stochastic-evolutionary-algorithm-ese">
 <h3>LHS with enhanced stochastic evolutionary algorithm (ESE)<a class="headerlink" href="#lhs-with-enhanced-stochastic-evolutionary-algorithm-ese" title="Permalink to this heading">#</a></h3>
 <p>To achieve optimized designs with a more stable method and possibly quicker then by simply evaluating
 the criteria over a number of repetitions <strong>pygpc</strong> can use an ESE for achieving sufficient
 <span class="math notranslate nohighlight">\(\varphi_P\)</span>-value. This algorithm is more appealing in its efficacy and proves to
 decrease the samples for a stable recovery by over 10% for dense high dimensional functions.
 This method originated from Jin et al. (2005).</p>
-</div>
-</div>
-<div class="section" id="example">
+</section>
+</section>
+<section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
 <p>In order to create a grid of sampling points, we have to define the random parameters and create a gpc object.</p>
 <img src="../_images/sphx_glr_plot_LHS_001.png" srcset="../_images/sphx_glr_plot_LHS_001.png" alt="LHS (standard), LHS (corr opt), LHS (Phi-P opt), LHS (ese)" class = "sphx-glr-single-img"/><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygpc</span>
@@ -938,8 +940,8 @@ This method originated from Jin et al. (2005).</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

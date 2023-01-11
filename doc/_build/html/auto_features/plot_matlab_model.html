@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Analyzing MATLAB models with pygpc &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -787,7 +789,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-features-plot-matlab-model-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="analyzing-matlab-models-with-pygpc">
+<section class="sphx-glr-example-title" id="analyzing-matlab-models-with-pygpc">
 <span id="sphx-glr-auto-features-plot-matlab-model-py"></span><h1>Analyzing MATLAB models with pygpc<a class="headerlink" href="#analyzing-matlab-models-with-pygpc" title="Permalink to this heading">#</a></h1>
 <p>You can easily investigate your models written in MATLAB with pygpc. In order to do so, you have to
 install the MATLAB Engine API for Python.</p>
@@ -798,7 +800,7 @@ install the MATLAB Engine API for Python.</p>
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_matlab_model_001.png" srcset="../_images/sphx_glr_plot_matlab_model_001.png" alt="plot matlab model" class = "sphx-glr-single-img"/><div class="section" id="install-matlab-engine-api-for-python">
+<img src="../_images/sphx_glr_plot_matlab_model_001.png" srcset="../_images/sphx_glr_plot_matlab_model_001.png" alt="plot matlab model" class = "sphx-glr-single-img"/><section id="install-matlab-engine-api-for-python">
 <h2>Install MATLAB Engine API for Python<a class="headerlink" href="#install-matlab-engine-api-for-python" title="Permalink to this heading">#</a></h2>
 <p>To start the MATLAB engine within a Python session, you first must install the engine API as a Python package.
 MATLAB provides a standard Python setup.py file for building and installing the engine using the distutils module.
@@ -836,8 +838,8 @@ system<span class="o">(</span><span class="s1">&#39;python setup.py install&#39;
 <p>You can find an example model-file in <code class="code docutils literal notranslate"><span class="pre">.../templates/MyModel_matlab.py</span></code> and the associated gPC
 run-file in <code class="code docutils literal notranslate"><span class="pre">.../templates/MyGPC_matlab.py</span></code>.</p>
 <p>For additional readings visit the <a class="reference external" href="https://www.mathworks.com/help/matlab/matlab-engine-for-python.html?s_tid=CRUX_lftnav">Calling MATLAB from Python</a> homepage.</p>
-</div>
-<div class="section" id="setting-up-the-matlab-model">
+</section>
+<section id="setting-up-the-matlab-model">
 <h2>Setting up the Matlab model<a class="headerlink" href="#setting-up-the-matlab-model" title="Permalink to this heading">#</a></h2>
 <p>Setting up the model in Matlab is straight forward. You simply have to define your model as a matlab function
 within an .m file. In the following, you see an example model .m file:</p>
@@ -848,8 +850,8 @@ within an .m file. In the following, you see an example model .m file:</p>
 <span class="n">y</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="o">.^</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="n">x3</span><span class="o">.^</span><span class="mi">4</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="accessing-the-model-within-pypgc">
+</section>
+<section id="accessing-the-model-within-pypgc">
 <h2>Accessing the model within pypgc<a class="headerlink" href="#accessing-the-model-within-pypgc" title="Permalink to this heading">#</a></h2>
 <p>In order to call the Matlab function within pygpc, we have to set up a corresponding python model as shown below.
 During initialization we pass the function name <em>fname_matlab</em>, which tells pygpc where to find the model .m function.
@@ -930,8 +932,8 @@ matlab engine.</p>
         <span class="k">return</span> <span class="n">y</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="performance-tip">
+</section>
+<section id="performance-tip">
 <h2>Performance Tip<a class="headerlink" href="#performance-tip" title="Permalink to this heading">#</a></h2>
 <p>You can use the parallel computation capabilities of Matlab, i.e. its good handling with arrays and matrices.
 If your function can process arrays for the input parameters passed in the dictionary <em>p</em>, you can set the
@@ -957,8 +959,8 @@ processing capabilities of pygpc is given in this
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

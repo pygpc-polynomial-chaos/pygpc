@@ -26,6 +26,8 @@ One of the testcases for different grids was the Ishigami function, which is alr
 
 """
 
+# sphinx_gallery_thumbnail_path = 'examples/images/Ishigami_nrmsd.png'
+
 import numpy as np
 from pygpc.testfunctions import plot_testfunction as plot
 from collections import OrderedDict

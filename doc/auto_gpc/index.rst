@@ -1,9 +1,5 @@
 :orphan:
 
-
-
-.. _sphx_glr_auto_gpc:
-
 Generalized Polynomial Chaos
 ----------------------------
 
@@ -12,14 +8,127 @@ Generalized Polynomial Chaos
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The probability density function (pdf) p_i(\xi_i), with i=1,...,d, has to be defined for each r...">
 
 .. only:: html
 
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_problem_thumb.png
-     :alt: How to define a gPC problem
+  .. image:: /auto_gpc/images/thumb/sphx_glr_plot_problem_thumb.png
+    :alt: How to define a gPC problem
 
-     :ref:`sphx_glr_auto_gpc_plot_problem.py`
+  :ref:`sphx_glr_auto_gpc_plot_problem.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">How to define a gPC problem</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Validation of gPC approximation">
+
+.. only:: html
+
+  .. image:: /auto_gpc/images/thumb/sphx_glr_plot_gpc_validation_thumb.png
+    :alt: Validation of gPC approximation
+
+  :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Validation of gPC approximation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ A large number of models show redundancies in the form of correlation...">
+
+.. only:: html
+
+  .. image:: /auto_gpc/images/thumb/sphx_glr_plot_projection_thumb.png
+    :alt: Dimensionality reduction
+
+  :ref:`sphx_glr_auto_gpc_plot_projection.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Dimensionality reduction</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In some cases, the output quantities of a model are discontinuous in the investigated parameter...">
+
+.. only:: html
+
+  .. image:: /auto_gpc/images/thumb/sphx_glr_plot_multi_element_gpc_thumb.png
+    :alt: Modelling discontinuous model functions
+
+  :ref:`sphx_glr_auto_gpc_plot_multi_element_gpc.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Modelling discontinuous model functions</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Setting up a custom model">
+
+.. only:: html
+
+  .. image:: /auto_gpc/images/thumb/sphx_glr_plot_model_thumb.png
+    :alt: Setting up a custom model
+
+  :ref:`sphx_glr_auto_gpc_plot_model.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Setting up a custom model</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Polynomial basis functions">
+
+.. only:: html
+
+  .. image:: /auto_gpc/images/thumb/sphx_glr_plot_basis_thumb.png
+    :alt: Polynomial basis functions
+
+  :ref:`sphx_glr_auto_gpc_plot_basis.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Polynomial basis functions</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ It is possible to accelerate the identification of the gPC coefficien...">
+
+.. only:: html
+
+  .. image:: /auto_gpc/images/thumb/sphx_glr_plot_gradient_enhanced_gpc_thumb.png
+    :alt: Gradient enhanced gPC
+
+  :ref:`sphx_glr_auto_gpc_plot_gradient_enhanced_gpc.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Gradient enhanced gPC</div>
+    </div>
+
 
 .. raw:: html
 
@@ -30,153 +139,25 @@ Generalized Polynomial Chaos
    :hidden:
 
    /auto_gpc/plot_problem
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Validation of gPC approximation">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_gpc_validation_thumb.png
-     :alt: Validation of gPC approximation
-
-     :ref:`sphx_glr_auto_gpc_plot_gpc_validation.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_gpc/plot_gpc_validation
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ A large number of models show redundancies in the form of correlation...">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_projection_thumb.png
-     :alt: Dimensionality reduction
-
-     :ref:`sphx_glr_auto_gpc_plot_projection.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_gpc/plot_projection
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="In some cases, the output quantities of a model are discontinuous in the investigated parameter...">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_multi_element_gpc_thumb.png
-     :alt: Modelling discontinuous model functions
-
-     :ref:`sphx_glr_auto_gpc_plot_multi_element_gpc.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_gpc/plot_multi_element_gpc
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Setting up a custom model">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_model_thumb.png
-     :alt: Setting up a custom model
-
-     :ref:`sphx_glr_auto_gpc_plot_model.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_gpc/plot_model
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Polynomial basis functions">
-
-.. only:: html
-
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_basis_thumb.png
-     :alt: Polynomial basis functions
-
-     :ref:`sphx_glr_auto_gpc_plot_basis.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_gpc/plot_basis
+   /auto_gpc/plot_gradient_enhanced_gpc
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ It is possible to accelerate the identification of the gPC coefficien...">
 
 .. only:: html
 
- .. figure:: /auto_gpc/images/thumb/sphx_glr_plot_gradient_enhanced_gpc_thumb.png
-     :alt: Gradient enhanced gPC
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
 
-     :ref:`sphx_glr_auto_gpc_plot_gradient_enhanced_gpc.py`
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-.. raw:: html
+      :download:`Download all examples in Python source code: auto_gpc_python.zip </auto_gpc/auto_gpc_python.zip>`
 
-    </div>
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-.. toctree::
-   :hidden:
-
-   /auto_gpc/plot_gradient_enhanced_gpc
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-gallery
-
-
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-    :download:`Download all examples in Python source code: auto_gpc_python.zip </auto_gpc/auto_gpc_python.zip>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-    :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip </auto_gpc/auto_gpc_jupyter.zip>`
+      :download:`Download all examples in Jupyter notebooks: auto_gpc_jupyter.zip </auto_gpc/auto_gpc_jupyter.zip>`
 
 
 .. only:: html

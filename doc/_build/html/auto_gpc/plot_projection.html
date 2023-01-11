@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Dimensionality reduction &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -788,9 +790,9 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-gpc-plot-projection-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="dimensionality-reduction">
+<section class="sphx-glr-example-title" id="dimensionality-reduction">
 <span id="sphx-glr-auto-gpc-plot-projection-py"></span><h1>Dimensionality reduction<a class="headerlink" href="#dimensionality-reduction" title="Permalink to this heading">#</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
 <p>A large number of models show redundancies in the form of correlations between the parameters under investigation.
 Especially in the case of high-dimensional problems, the correlative behavior of the target variable as a function
@@ -809,8 +811,8 @@ Determining the projection matrix results in a separate optimization problem bes
 gPC coefficients. Several approaches where investigated in the literature from for example Tipireddy and Ghanem (2014)
 as well as Tsilifis et al. (2019). They solved the coupled optimization problems alternately, i.e. keeping the solution
 of the one fixed while solving the other until some convergence criterion is satisfied.</p>
-</div>
-<div class="section" id="method">
+</section>
+<section id="method">
 <h2>Method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
 <p>In pygpc, the projection matrix <span class="math notranslate nohighlight">\([\mathbf{W}]\)</span> is determined from the singular value decomposition of
 the gradients of the solution vector along the original parameter space. The gradients of the quantity of interest (QoI)
@@ -858,8 +860,8 @@ each QoI separately.</p>
 <li><p><a class="reference internal" href="../auto_algorithms/plot_algorithm_mestaticprojection.html#algorithm-mestaticprojection"><span class="std std-ref">Algorithm: MEStaticProjection</span></a></p></li>
 <li><p><a class="reference internal" href="../auto_algorithms/plot_algorithm_meregadaptiveprojection.html#algorithm-meregadaptiveprojection"><span class="std std-ref">Algorithm: MERegAdaptiveProjection</span></a></p></li>
 </ul>
-</div>
-<div class="section" id="example">
+</section>
+<section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
 <p>Lets consider the following <span class="math notranslate nohighlight">\(n_d\)</span> dimensional testfunction:</p>
 <div class="math notranslate nohighlight">
@@ -873,7 +875,7 @@ linear combination of the original random variables <span class="math notranslat
 <a class="reference internal" href="../pygpc.testfunctions.html#pygpc.testfunctions.testfunctions.GenzOscillatory" title="pygpc.testfunctions.testfunctions.GenzOscillatory"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenzOscillatory</span></code></a>. In the following,
 we will set up a static gPC with fixed order using the previously described projection approach to reduce the
 original dimensionality of the problem.</p>
-<div class="section" id="setting-up-the-problem">
+<section id="setting-up-the-problem">
 <h3>Setting up the problem<a class="headerlink" href="#setting-up-the-problem" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygpc</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -891,8 +893,8 @@ original dimensionality of the problem.</p>
 <span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="setting-up-the-algorithm">
+</section>
+<section id="setting-up-the-algorithm">
 <h3>Setting up the algorithm<a class="headerlink" href="#setting-up-the-algorithm" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># gPC options</span>
 <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -935,8 +937,8 @@ Including the mean (0th order coefficient) there will be 11 gPC coefficients in 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">StaticProjection</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="running-the-gpc">
+</section>
+<section id="running-the-gpc">
 <h3>Running the gpc<a class="headerlink" href="#running-the-gpc" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize gPC Session</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
@@ -960,8 +962,8 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver (gradient enhanc
 -&gt; relative nrmsd error = 0.000693256699171336
 </pre></div>
 </div>
-</div>
-<div class="section" id="inspecting-the-gpc-object">
+</section>
+<section id="inspecting-the-gpc-object">
 <h3>Inspecting the gpc object<a class="headerlink" href="#inspecting-the-gpc-object" title="Permalink to this heading">#</a></h3>
 <p>The SVD of the gradients of the solution vector resulted in the following projection matrix reducing the problem
 from the two dimensional case to the one dimensional case:</p>
@@ -1012,8 +1014,8 @@ containing the derivatives:</p>
 Reduced random variables: OrderedDict([(&#39;n0&#39;, &lt;pygpc.RandomParameter.Beta object at 0x7f68526ef610&gt;)])
 </pre></div>
 </div>
-</div>
-<div class="section" id="postprocessing">
+</section>
+<section id="postprocessing">
 <h3>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this heading">#</a></h3>
 <p>The post-processing works identical as in a standard gPC. The routines identify whether the problem is reduced
 and provide all sensitivity measures with respect to the original model parameters.</p>
@@ -1058,12 +1060,12 @@ x1            -0.151716
 x2            -0.151716
 </pre></div>
 </div>
-</div>
-<div class="section" id="validation">
+</section>
+<section id="validation">
 <h3>Validation<a class="headerlink" href="#validation" title="Permalink to this heading">#</a></h3>
-</div>
-</div>
-<div class="section" id="validate-gpc-vs-original-model-function-2d-surface">
+</section>
+</section>
+<section id="validate-gpc-vs-original-model-function-2d-surface">
 <h2>Validate gPC vs original model function (2D-surface)<a class="headerlink" href="#validate-gpc-vs-original-model-function-2d-surface" title="Permalink to this heading">#</a></h2>
 <p>The possibility of parameter reduction becomes best clear if one visualizes the function values in the parameter
 space. In this simple example there is almost no difference between the original model (left) and the reduced gPC
@@ -1078,20 +1080,22 @@ space. In this simple example there is almost no difference between the original
                         <span class="n">n_cpu</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_projection_001.png" srcset="../_images/sphx_glr_plot_projection_001.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></div>
-<div class="section" id="references">
+<img src="../_images/sphx_glr_plot_projection_001.png" srcset="../_images/sphx_glr_plot_projection_001.png" alt="Original model, gPC approximation, Difference (Original vs gPC)" class = "sphx-glr-single-img"/></section>
+<section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Tipireddy, R., &amp; Ghanem, R. (2014). Basis adaptation in homogeneous chaos spaces.
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id1" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Tipireddy, R., &amp; Ghanem, R. (2014). Basis adaptation in homogeneous chaos spaces.
 Journal of Computational Physics, 259, 304-317.</p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Tsilifis, P., Huan, X., Safta, C., Sargsyan, K., Lacaze, G., Oefelein, J. C., Najm, H. N.,
+</aside>
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>Tsilifis, P., Huan, X., Safta, C., Sargsyan, K., Lacaze, G., Oefelein, J. C., Najm, H. N.,
 &amp; Ghanem, R. G. (2019). Compressive sensing adaptation for polynomial chaos expansions.
 Journal of Computational Physics, 380, 29-47.</p>
-</dd>
-</dl>
+</aside>
+</aside>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.130 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-gpc-plot-projection-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -1102,8 +1106,8 @@ Journal of Computational Physics, 380, 29-47.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>

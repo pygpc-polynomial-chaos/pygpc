@@ -25,35 +25,25 @@ pygpc is capable of to evaluate multiple sampling points, i.e. multiple model in
 Depending on your model and its hardware requirements there exist three ways to evaluate your model
 controlled by the algorithm options "n_cpu":
 
-- n_cpu = 0 : Use this option if your model is capable of to evaluate sampling points in parallel. In this way,
+- :code:`n_cpu = 0` : Use this option if your model is capable of to evaluate sampling points in parallel. In this way,
   arrays are passed to your model for each parameter
-- n_cpu = 1 : The model is called in serial for every sampling point. A single floating point number is passed for
+- :code:`n_cpu = 1` : The model is called in serial for every sampling point. A single floating point number is passed for
   each parameter.
-- n_cpu > 1 : A multiprocessing.Pool will be opened and n_cpu sampling points are calculated in parallel.
+- :code:`n_cpu > 1` : A multiprocessing.Pool will be opened and n_cpu sampling points are calculated in parallel.
   In each thread, a single floating point number is passed for each parameter.
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-18
-
-.. code-block:: default
-
-    # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
-    # def main():
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 19-21
+.. GENERATED FROM PYTHON SOURCE LINES 17-19
 
 Example
 ^^^^^^^
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-71
+.. GENERATED FROM PYTHON SOURCE LINES 19-72
 
 .. code-block:: default
 
+
+    # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+    # def main():
 
     import time
     import pygpc
@@ -119,28 +109,23 @@ Example
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.469 seconds)
+   **Total running time of the script:** ( 0 minutes  1.577 seconds)
 
 
 .. _sphx_glr_download_auto_features_plot_parallelization.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_parallelization.py <plot_parallelization.py>`
 
-     :download:`Download Python source code: plot_parallelization.py <plot_parallelization.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_parallelization.ipynb <plot_parallelization.ipynb>`
+      :download:`Download Jupyter notebook: plot_parallelization.ipynb <plot_parallelization.ipynb>`
 
 
 .. only:: html

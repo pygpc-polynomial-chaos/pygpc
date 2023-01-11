@@ -111,7 +111,7 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
 
             return x_out
 
-The
+The model can then be called in the associated analysis script:
 
 .. code-block:: python
 
@@ -222,28 +222,23 @@ The
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.059 seconds)
+   **Total running time of the script:** ( 0 minutes  0.176 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_Lorenz_julia.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_Lorenz_julia.py <plot_Lorenz_julia.py>`
 
-     :download:`Download Python source code: plot_Lorenz_julia.py <plot_Lorenz_julia.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_Lorenz_julia.ipynb <plot_Lorenz_julia.ipynb>`
+      :download:`Download Jupyter notebook: plot_Lorenz_julia.ipynb <plot_Lorenz_julia.ipynb>`
 
 
 .. only:: html

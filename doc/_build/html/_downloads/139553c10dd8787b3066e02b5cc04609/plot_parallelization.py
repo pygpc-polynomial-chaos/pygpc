@@ -6,18 +6,19 @@ pygpc is capable of to evaluate multiple sampling points, i.e. multiple model in
 Depending on your model and its hardware requirements there exist three ways to evaluate your model
 controlled by the algorithm options "n_cpu":
 
-- n_cpu = 0 : Use this option if your model is capable of to evaluate sampling points in parallel. In this way,
+- :code:`n_cpu = 0` : Use this option if your model is capable of to evaluate sampling points in parallel. In this way,
   arrays are passed to your model for each parameter
-- n_cpu = 1 : The model is called in serial for every sampling point. A single floating point number is passed for
+- :code:`n_cpu = 1` : The model is called in serial for every sampling point. A single floating point number is passed for
   each parameter.
-- n_cpu > 1 : A multiprocessing.Pool will be opened and n_cpu sampling points are calculated in parallel.
+- :code:`n_cpu > 1` : A multiprocessing.Pool will be opened and n_cpu sampling points are calculated in parallel.
   In each thread, a single floating point number is passed for each parameter.
 """
-# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
-# def main():
 #%%
 # Example
 # ^^^^^^^
+
+# Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
+# def main():
 
 import time
 import pygpc

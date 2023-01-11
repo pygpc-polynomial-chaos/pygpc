@@ -5,7 +5,7 @@ Example: Lorenz system of differential equations
 About the model
 ^^^^^^^^^^^^^^^
 This tutorial shows how to perform uncertainty and sensitivity analysis of systems of differential equations with pygpc.
-In the following, we will analyse a Lorenz oscillator. The governing equations are given by:
+In the following, we will analyse the Lorenz system. The governing equations are given by:
 
 .. math::
 
@@ -18,7 +18,7 @@ In the following, we will analyse a Lorenz oscillator. The governing equations a
 The equations are implemented in the testfunction
 :class:`Lorenz system <pygpc.testfunctions.testfunctions.Lorenz_System>`.
 The system is capable of showing chaotic behaviour and arises from simplified models for physical
-phenomena of lasers, electric circuits, thermodynamics and more. It returns time dependent x, y and z coordinates
+phenomena of lasers, electric circuits, thermodynamics and more. It returns time dependent *x*, *y* and *z* coordinates
 For each time point is treated as an independent quantity of interest and a separate gPC is performed to investigate
 the temporal evolutions of the uncertainties.
 The parameters :math:`\\sigma`, :math:`\\beta` and :math:`\\rho` are usually assumed to be positive.

@@ -1,9 +1,5 @@
 :orphan:
 
-
-
-.. _sphx_glr_auto_algorithms:
-
 Algorithms
 ----------
 
@@ -12,14 +8,178 @@ Algorithms
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static_IO">
 
 .. only:: html
 
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_IO_thumb.png
-     :alt: Algorithm: Static_IO
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_IO_thumb.png
+    :alt: Algorithm: Static_IO
 
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_IO.py`
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_IO.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: Static_IO</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptive">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_regadaptive_thumb.png
+    :alt: Algorithm: RegAdaptive
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptive.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: RegAdaptive</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static (Quadrature)">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_quad_thumb.png
+    :alt: Algorithm: Static (Quadrature)
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_quad.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: Static (Quadrature)</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static (Regression)">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_reg_thumb.png
+    :alt: Algorithm: Static (Regression)
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_reg.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: Static (Regression)</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: StaticProjection">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_staticprojection_thumb.png
+    :alt: Algorithm: StaticProjection
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_staticprojection.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: StaticProjection</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptiveProjection">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_regadaptiveprojection_thumb.png
+    :alt: Algorithm: RegAdaptiveProjection
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptiveprojection.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: RegAdaptiveProjection</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestatic_thumb.png
+    :alt: Algorithm: MEStatic
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: MEStatic</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStaticProjection">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestaticprojection_thumb.png
+    :alt: Algorithm: MEStaticProjection
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestaticprojection.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: MEStaticProjection</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic_IO">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestatic_IO_thumb.png
+    :alt: Algorithm: MEStatic_IO
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic_IO.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: MEStatic_IO</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MERegAdaptiveProjection">
+
+.. only:: html
+
+  .. image:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_meregadaptiveprojection_thumb.png
+    :alt: Algorithm: MERegAdaptiveProjection
+
+  :ref:`sphx_glr_auto_algorithms_plot_algorithm_meregadaptiveprojection.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Algorithm: MERegAdaptiveProjection</div>
+    </div>
+
 
 .. raw:: html
 
@@ -30,216 +190,28 @@ Algorithms
    :hidden:
 
    /auto_algorithms/plot_algorithm_static_IO
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptive">
-
-.. only:: html
-
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_regadaptive_thumb.png
-     :alt: Algorithm: RegAdaptive
-
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptive.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_algorithms/plot_algorithm_regadaptive
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static (Quadrature)">
-
-.. only:: html
-
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_quad_thumb.png
-     :alt: Algorithm: Static (Quadrature)
-
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_quad.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_algorithms/plot_algorithm_static_quad
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static (Regression)">
-
-.. only:: html
-
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_static_reg_thumb.png
-     :alt: Algorithm: Static (Regression)
-
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_static_reg.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_algorithms/plot_algorithm_static_reg
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: StaticProjection">
-
-.. only:: html
-
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_staticprojection_thumb.png
-     :alt: Algorithm: StaticProjection
-
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_staticprojection.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_algorithms/plot_algorithm_staticprojection
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptiveProjection">
-
-.. only:: html
-
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_regadaptiveprojection_thumb.png
-     :alt: Algorithm: RegAdaptiveProjection
-
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_regadaptiveprojection.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_algorithms/plot_algorithm_regadaptiveprojection
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic">
-
-.. only:: html
-
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestatic_thumb.png
-     :alt: Algorithm: MEStatic
-
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_algorithms/plot_algorithm_mestatic
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStaticProjection">
-
-.. only:: html
-
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestaticprojection_thumb.png
-     :alt: Algorithm: MEStaticProjection
-
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestaticprojection.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_algorithms/plot_algorithm_mestaticprojection
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic_IO">
-
-.. only:: html
-
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_mestatic_IO_thumb.png
-     :alt: Algorithm: MEStatic_IO
-
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_mestatic_IO.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_algorithms/plot_algorithm_mestatic_IO
+   /auto_algorithms/plot_algorithm_meregadaptiveprojection
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MERegAdaptiveProjection">
 
 .. only:: html
 
- .. figure:: /auto_algorithms/images/thumb/sphx_glr_plot_algorithm_meregadaptiveprojection_thumb.png
-     :alt: Algorithm: MERegAdaptiveProjection
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
 
-     :ref:`sphx_glr_auto_algorithms_plot_algorithm_meregadaptiveprojection.py`
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-.. raw:: html
+      :download:`Download all examples in Python source code: auto_algorithms_python.zip </auto_algorithms/auto_algorithms_python.zip>`
 
-    </div>
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-.. toctree::
-   :hidden:
-
-   /auto_algorithms/plot_algorithm_meregadaptiveprojection
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-gallery
-
-
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-    :download:`Download all examples in Python source code: auto_algorithms_python.zip </auto_algorithms/auto_algorithms_python.zip>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-    :download:`Download all examples in Jupyter notebooks: auto_algorithms_jupyter.zip </auto_algorithms/auto_algorithms_jupyter.zip>`
+      :download:`Download all examples in Jupyter notebooks: auto_algorithms_jupyter.zip </auto_algorithms/auto_algorithms_jupyter.zip>`
 
 
 .. only:: html

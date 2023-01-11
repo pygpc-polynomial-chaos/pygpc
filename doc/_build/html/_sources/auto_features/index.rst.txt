@@ -1,9 +1,5 @@
 :orphan:
 
-
-
-.. _sphx_glr_auto_features:
-
 Features
 --------
 
@@ -12,14 +8,76 @@ Features
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="You can easily analyze your models written in Julia with pygpc. In order to do so, you have to ...">
 
 .. only:: html
 
- .. figure:: /auto_features/images/thumb/sphx_glr_plot_julia_model_thumb.png
-     :alt: Analyzing Julia models with pygpc
+  .. image:: /auto_features/images/thumb/sphx_glr_plot_julia_model_thumb.png
+    :alt: Analyzing Julia models with pygpc
 
-     :ref:`sphx_glr_auto_features_plot_julia_model.py`
+  :ref:`sphx_glr_auto_features_plot_julia_model.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Analyzing Julia models with pygpc</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="You can easily investigate your models written in MATLAB with pygpc. In order to do so, you hav...">
+
+.. only:: html
+
+  .. image:: /auto_features/images/thumb/sphx_glr_plot_matlab_model_thumb.png
+    :alt: Analyzing MATLAB models with pygpc
+
+  :ref:`sphx_glr_auto_features_plot_matlab_model.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Analyzing MATLAB models with pygpc</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="pygpc is capable of to evaluate multiple sampling points, i.e. multiple model instances, in par...">
+
+.. only:: html
+
+  .. image:: /auto_features/images/thumb/sphx_glr_plot_parallelization_thumb.png
+    :alt: Parallel processing capabilities of pygpc
+
+  :ref:`sphx_glr_auto_features_plot_parallelization.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Parallel processing capabilities of pygpc</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Accelerating pygpc by using different computing backends ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...">
+
+.. only:: html
+
+  .. image:: /auto_features/images/thumb/sphx_glr_plot_backends_thumb.png
+    :alt: OpenMP and CUDA
+
+  :ref:`sphx_glr_auto_features_plot_backends.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">OpenMP and CUDA</div>
+    </div>
+
 
 .. raw:: html
 
@@ -30,90 +88,22 @@ Features
    :hidden:
 
    /auto_features/plot_julia_model
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="You can easily investigate your models written in MATLAB with pygpc. In order to do so, you hav...">
-
-.. only:: html
-
- .. figure:: /auto_features/images/thumb/sphx_glr_plot_matlab_model_thumb.png
-     :alt: Analyzing MATLAB models with pygpc
-
-     :ref:`sphx_glr_auto_features_plot_matlab_model.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_features/plot_matlab_model
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="pygpc is capable of to evaluate multiple sampling points, i.e. multiple model instances, in par...">
-
-.. only:: html
-
- .. figure:: /auto_features/images/thumb/sphx_glr_plot_parallelization_thumb.png
-     :alt: Parallel processing capabilities of pygpc
-
-     :ref:`sphx_glr_auto_features_plot_parallelization.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_features/plot_parallelization
+   /auto_features/plot_backends
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Accelerating pygpc by using different computing backends ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...">
 
 .. only:: html
 
- .. figure:: /auto_features/images/thumb/sphx_glr_plot_backends_thumb.png
-     :alt: OpenMP and CUDA
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
 
-     :ref:`sphx_glr_auto_features_plot_backends.py`
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-.. raw:: html
+      :download:`Download all examples in Python source code: auto_features_python.zip </auto_features/auto_features_python.zip>`
 
-    </div>
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-.. toctree::
-   :hidden:
-
-   /auto_features/plot_backends
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-gallery
-
-
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-    :download:`Download all examples in Python source code: auto_features_python.zip </auto_features/auto_features_python.zip>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-    :download:`Download all examples in Jupyter notebooks: auto_features_jupyter.zip </auto_features/auto_features_jupyter.zip>`
+      :download:`Download all examples in Jupyter notebooks: auto_features_jupyter.zip </auto_features/auto_features_jupyter.zip>`
 
 
 .. only:: html

@@ -4,13 +4,12 @@ Example: Ishigami Testfunction
 
 About the model
 ^^^^^^^^^^^^^^^
-This easy tutorial shows the application of pygpc to the Ishigami function which can be found in the testfunctions
+This easy tutorial shows the application of pygpc to the Ishigami function, which can be found in the testfunctions
 section.
-The model consists of three random variables that will be tested as input parameters (x1, x2, x3) and two shape
-parameters that will stay constant in this tutorial (a, b)
+The model consists of three random variables that are considered as input parameters (*x1*, *x2*, *x3*). The shape
+parameters of the function are chosen to be :code:`a=7` and :code:`b=0.1`.
 
-The model returns an output array with a value y for every sampling point.
-
+The model returns an output array with a value *y* for every sampling point.
 """
 # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
 # def main():

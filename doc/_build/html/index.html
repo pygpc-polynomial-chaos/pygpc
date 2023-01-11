@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Basic features: &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
@@ -782,12 +784,12 @@
             <article class="bd-article" role="main">
               
   <a class="reference internal image-reference" href="_images/pygpc_logo_wide_mod.png"><img alt="_images/pygpc_logo_wide_mod.png" class="align-center" src="_images/pygpc_logo_wide_mod.png" style="width: 1400px;" /></a>
-<div class="section" id="basic-features">
+<section id="basic-features">
 <h1>Basic features:<a class="headerlink" href="#basic-features" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
 <li><p>Highly efficient <strong>uncertainty analysis of N-dimensional systems</strong></p></li>
 <li><p>Sensitivity analysis using <strong>Sobol indices</strong> and <strong>Global derivative based sensitivity indices</strong></p></li>
-<li><p>Easy <strong>coupling</strong> to user defined models written in Python, Matlab, etc…</p></li>
+<li><p>Easy <strong>coupling</strong> to user defined models written in Python, Matlab, Julia, etc…</p></li>
 <li><p>The <strong>parallelization</strong> concept allows to run model evaluations in parallel</p></li>
 <li><p>Highly efficient <strong>adaptive algorithms</strong> allow for analysis of complex systems</p></li>
 <li><p>Includes highly efficient <strong>CPU</strong> and <strong>GPU (CUDA)</strong> implementations to significantly accelerate algorithmic and post-processing routines for high-dimensional and complex problems</p></li>
@@ -803,8 +805,8 @@
 </dl>
 </li>
 </ul>
-</div>
-<div class="section" id="areas-of-application">
+</section>
+<section id="areas-of-application">
 <h1>Areas of application:<a class="headerlink" href="#areas-of-application" title="Permalink to this heading">#</a></h1>
 <p>pygpc can be used to analyze a variety of different of problems. It is used for example in the frameworks of:</p>
 <ul class="simple">
@@ -816,23 +818,31 @@
 <li><p>Noninvasive brain stimulation:</p>
 <ul>
 <li><p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1053811918322031">Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., &amp; Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834.</a></p></li>
-</ul>
-</li>
-<li><p>Transcranial magnetic stimulation:</p>
-<ul>
 <li><p><a class="reference external" href="https://ieeexplore.ieee.org/abstract/document/7006714">Weise, K., Di Rienzo, L., Brauer, H., Haueisen, J., &amp; Toepfer, H. (2015). Uncertainty analysis in transcranial magnetic stimulation using nonintrusive polynomial chaos expansion. IEEE Transactions on Magnetics, 51(7), 1-8.</a></p></li>
 <li><p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1053811919310778">Weise, K., Numssen, O., Thielscher, A., Hartwigsen, G., &amp; Knösche, T. R. (2020). A novel approach to localize cortical TMS effects. NeuroImage, 209, 116486.</a></p></li>
+<li><p><a class="reference external" href="https://www.fens.org/News-Activities/Calendar/Meetings/2019/10/SfN-Annual-Meeting-2019/">Kalloch, B., Weise, K., Bazin, P.-L., Lampea, L., Villringera, A., Hlawitschk, M., &amp; Sehm, B. (2019). The influence of white matter lesions on the electrical fieldduring transcranial electric stimulation - Preliminary results of a computational sensitivity analysis, SfN Annual Meeting 2019, Chicago, Illinois, USA, October 19th-23rd 2019</a></p></li>
 </ul>
 </li>
-<li><p>Transcranial direct current stimulation:</p>
+<li><p>Energy storage:</p>
 <ul>
-<li><p><a class="reference external" href="https://www.fens.org/News-Activities/Calendar/Meetings/2019/10/SfN-Annual-Meeting-2019/">Kalloch, B., Weise, K., Bazin, P.-L., Lampea, L., Villringera, A., Hlawitschk, M., &amp; Sehm, B. (2019). The influence of white matter lesions on the electrical fieldduring transcranial electric stimulation - Preliminary results of a computational sensitivity analysis, SfN Annual Meeting 2019, Chicago, Illinois, USA, October 19th-23rd 2019</a></p></li>
+<li><p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S2352152X22019363">Streb, M., Ohrelius, M., Klett, M., &amp; Lindbergh, G. (2022). Improving Li-ion battery parameter estimation by global optimal experiment design. Journal of Energy Storage, 56, 105948.</a></p></li>
+<li><p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0378775321013458">Andersson, M., Streb, M., Ko, J. Y., Klass, V. L., Klett, M., Ekström, H., … &amp; Lindbergh, G. (2022). Parametrization of physics-based battery models from input–output data: A review of methodology and current research. Journal of Power Sources, 521, 230859.</a></p></li>
+</ul>
+</li>
+<li><p>Aerospace engineering:</p>
+<ul>
+<li><p><a class="reference external" href="https://arc.aiaa.org/doi/abs/10.2514/1.J060842">Yang, T., Chen, Y., Shi, Y., Hua, J., Qin, F., &amp; Bai, J. (2022). Stochastic Investigation on the Robustness of Laminar-Flow Wings for Flight Tests. AIAA Journal, 60(4), 2266-2286.</a></p></li>
+</ul>
+</li>
+<li><p>Cancer treatment:</p>
+<ul>
+<li><p><a class="reference external" href="https://www.frontiersin.org/articles/10.3389/fonc.2022.878827/full">Atsou, K., Khou, S., Anjuère, F., Braud, V. M., &amp; Goudon, T. (2022). Analysis of the Equilibrium Phase in Immune-Controlled Tumors Provides Hints for Designing Better Strategies for Cancer Treatment. Frontiers in Oncology, 2392.</a></p></li>
 </ul>
 </li>
 </ul>
 <p>If you use pygpc in your studies, please contact <a class="reference external" href="https://www.cbs.mpg.de/person/51222/2470">Konstantin Weise</a> to extend the list above.</p>
-</div>
-<div class="section" id="installation">
+</section>
+<section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h1>
 <p><strong>Installation using pip:</strong></p>
 <p>Pygpc can be installed via the <cite>pip</cite> command with Python &gt;= 3.6. Simply run the following command in your terminal:</p>
@@ -879,43 +889,39 @@ If CMake and the CUDA-toolkit are installed on your machine you can build the ex
 </div>
 <p><strong>Troubleshooting for Windows:</strong></p>
 <p>On windows you might need a compiler to install pygpc. To install the <cite>Visual C++ Build Tools</cite>, please refer to: <a class="reference external" href="http://go.microsoft.com/fwlink/?LinkId=691126&amp;fixForIE=.exe">http://go.microsoft.com/fwlink/?LinkId=691126&amp;fixForIE=.exe</a>.</p>
-</div>
-<div class="section" id="documentation">
+</section>
+<section id="documentation">
 <h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h1>
 <p>For a full API of pygpc, see <a class="reference external" href="https://pygpc.readthedocs.io/en/latest/">https://pygpc.readthedocs.io/en/latest/</a>.
 For examplary simulations and model configurations, please have a look at the jupyter notebooks provided in the <code class="code docutils literal notranslate"><span class="pre">/tutorial</span></code> folder and the templates in the <code class="code docutils literal notranslate"><span class="pre">/templates</span></code> folder.</p>
-</div>
-<div class="section" id="reference">
+</section>
+<section id="reference">
 <h1>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h1>
 <p>If you use pygpc, please cite:</p>
 <p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S2352711020300078">Weise, K., Poßner, L., Müller, E., Gast, R., &amp; Knösche, T. R. (2020). Pygpc: A sensitivity and uncertainty analysis toolbox for Python. SoftwareX, 11, 100450.</a></p>
-</div>
-<div class="section" id="contact">
+</section>
+<section id="contact">
 <h1>Contact<a class="headerlink" href="#contact" title="Permalink to this heading">#</a></h1>
 <p>If you have questions, problems or suggestions regarding pygpc, please contact <a class="reference external" href="https://www.cbs.mpg.de/person/51222/2470">Konstantin Weise</a>.</p>
-<div class="section" id="examples-gallery">
+<section id="examples-gallery">
 <h2>Examples Gallery<a class="headerlink" href="#examples-gallery" title="Permalink to this heading">#</a></h2>
 <dl class="field-list simple">
-<dt class="field-odd">orphan</dt>
+<dt class="field-odd">orphan<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
+</section>
+</section>
+<section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="The primary focus of this tutorial rests on spectral methods, which are based on the determinat..."><img alt="Introduction to generalized Polynomial Chaos (gPC)" src="_images/sphx_glr_plot_introduction_gpc_thumb.png" />
+<p><a class="reference internal" href="auto_introduction/plot_introduction_gpc.html#sphx-glr-auto-introduction-plot-introduction-gpc-py"><span class="std std-ref">Introduction to generalized Polynomial Chaos (gPC)</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Introduction to generalized Polynomial Chaos (gPC)</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Typically, we have some model, which depends on parameters, e.g., \tau_{e,i}, \tau_{e,i}, ..., ..."><img alt="Introduction to uncertainty analysis" src="_images/sphx_glr_plot_introduction_ua_thumb.png" />
+<p><a class="reference internal" href="auto_introduction/plot_introduction_ua.html#sphx-glr-auto-introduction-plot-introduction-ua-py"><span class="std std-ref">Introduction to uncertainty analysis</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Introduction to uncertainty analysis</div>
+</div></div><div class="toctree-wrapper compound">
 </div>
-</div>
-<div class="section" id="introduction">
-<span id="sphx-glr-auto-introduction"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="The primary focus of this tutorial rests on spectral methods, which are based on the determinat..."><div class="figure align-default" id="id7">
-<img alt="Introduction to generalized Polynomial Chaos (gPC)" src="_images/sphx_glr_plot_introduction_gpc_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_introduction/plot_introduction_gpc.html#sphx-glr-auto-introduction-plot-introduction-gpc-py"><span class="std std-ref">Introduction to generalized Polynomial Chaos (gPC)</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Typically, we have some model, which depends on parameters, e.g., \tau_{e,i}, \tau_{e,i}, ..., ..."><div class="figure align-default" id="id8">
-<img alt="Introduction to uncertainty analysis" src="_images/sphx_glr_plot_introduction_ua_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_introduction/plot_introduction_ua.html#sphx-glr-auto-introduction-plot-introduction-ua-py"><span class="std std-ref">Introduction to uncertainty analysis</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-footer sphx-glr-footer-gallery docutils container">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="_downloads/08726c86e640a5f9a962faa4fcb5fea0/auto_introduction_python.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">auto_introduction_python.zip</span></code></a></p>
 </div>
@@ -925,55 +931,36 @@ For examplary simulations and model configurations, please have a look at the ju
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">orphan</dt>
+<dt class="field-odd">orphan<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
+</section>
+<section id="generalized-polynomial-chaos">
+<h1>Generalized Polynomial Chaos<a class="headerlink" href="#generalized-polynomial-chaos" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="The probability density function (pdf) p_i(\xi_i), with i=1,...,d, has to be defined for each r..."><img alt="How to define a gPC problem" src="_images/sphx_glr_plot_problem_thumb.png" />
+<p><a class="reference internal" href="auto_gpc/plot_problem.html#sphx-glr-auto-gpc-plot-problem-py"><span class="std std-ref">How to define a gPC problem</span></a></p>
+  <div class="sphx-glr-thumbnail-title">How to define a gPC problem</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Validation of gPC approximation"><img alt="Validation of gPC approximation" src="_images/sphx_glr_plot_gpc_validation_thumb.png" />
+<p><a class="reference internal" href="auto_gpc/plot_gpc_validation.html#sphx-glr-auto-gpc-plot-gpc-validation-py"><span class="std std-ref">Validation of gPC approximation</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Validation of gPC approximation</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ A large number of models show redundancies in the form of correlation..."><img alt="Dimensionality reduction" src="_images/sphx_glr_plot_projection_thumb.png" />
+<p><a class="reference internal" href="auto_gpc/plot_projection.html#sphx-glr-auto-gpc-plot-projection-py"><span class="std std-ref">Dimensionality reduction</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Dimensionality reduction</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In some cases, the output quantities of a model are discontinuous in the investigated parameter..."><img alt="Modelling discontinuous model functions" src="_images/sphx_glr_plot_multi_element_gpc_thumb.png" />
+<p><a class="reference internal" href="auto_gpc/plot_multi_element_gpc.html#sphx-glr-auto-gpc-plot-multi-element-gpc-py"><span class="std std-ref">Modelling discontinuous model functions</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Modelling discontinuous model functions</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Setting up a custom model"><img alt="Setting up a custom model" src="_images/sphx_glr_plot_model_thumb.png" />
+<p><a class="reference internal" href="auto_gpc/plot_model.html#sphx-glr-auto-gpc-plot-model-py"><span class="std std-ref">Setting up a custom model</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Setting up a custom model</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Polynomial basis functions"><img alt="Polynomial basis functions" src="_images/sphx_glr_plot_basis_thumb.png" />
+<p><a class="reference internal" href="auto_gpc/plot_basis.html#sphx-glr-auto-gpc-plot-basis-py"><span class="std std-ref">Polynomial basis functions</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Polynomial basis functions</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ It is possible to accelerate the identification of the gPC coefficien..."><img alt="Gradient enhanced gPC" src="_images/sphx_glr_plot_gradient_enhanced_gpc_thumb.png" />
+<p><a class="reference internal" href="auto_gpc/plot_gradient_enhanced_gpc.html#sphx-glr-auto-gpc-plot-gradient-enhanced-gpc-py"><span class="std std-ref">Gradient enhanced gPC</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Gradient enhanced gPC</div>
+</div></div><div class="toctree-wrapper compound">
 </div>
-<div class="section" id="generalized-polynomial-chaos">
-<span id="sphx-glr-auto-gpc"></span><h1>Generalized Polynomial Chaos<a class="headerlink" href="#generalized-polynomial-chaos" title="Permalink to this heading">#</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="The probability density function (pdf) p_i(\xi_i), with i=1,...,d, has to be defined for each r..."><div class="figure align-default" id="id9">
-<img alt="How to define a gPC problem" src="_images/sphx_glr_plot_problem_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_problem.html#sphx-glr-auto-gpc-plot-problem-py"><span class="std std-ref">How to define a gPC problem</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Validation of gPC approximation"><div class="figure align-default" id="id10">
-<img alt="Validation of gPC approximation" src="_images/sphx_glr_plot_gpc_validation_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_gpc_validation.html#sphx-glr-auto-gpc-plot-gpc-validation-py"><span class="std std-ref">Validation of gPC approximation</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ A large number of models show redundancies in the form of correlation..."><div class="figure align-default" id="id11">
-<img alt="Dimensionality reduction" src="_images/sphx_glr_plot_projection_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_projection.html#sphx-glr-auto-gpc-plot-projection-py"><span class="std std-ref">Dimensionality reduction</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="In some cases, the output quantities of a model are discontinuous in the investigated parameter..."><div class="figure align-default" id="id12">
-<img alt="Modelling discontinuous model functions" src="_images/sphx_glr_plot_multi_element_gpc_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_multi_element_gpc.html#sphx-glr-auto-gpc-plot-multi-element-gpc-py"><span class="std std-ref">Modelling discontinuous model functions</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Setting up a custom model"><div class="figure align-default" id="id13">
-<img alt="Setting up a custom model" src="_images/sphx_glr_plot_model_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_model.html#sphx-glr-auto-gpc-plot-model-py"><span class="std std-ref">Setting up a custom model</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Polynomial basis functions"><div class="figure align-default" id="id14">
-<img alt="Polynomial basis functions" src="_images/sphx_glr_plot_basis_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_basis.html#sphx-glr-auto-gpc-plot-basis-py"><span class="std std-ref">Polynomial basis functions</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Introduction ^^^^^^^^^^^^ It is possible to accelerate the identification of the gPC coefficien..."><div class="figure align-default" id="id15">
-<img alt="Gradient enhanced gPC" src="_images/sphx_glr_plot_gradient_enhanced_gpc_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_gpc/plot_gradient_enhanced_gpc.html#sphx-glr-auto-gpc-plot-gradient-enhanced-gpc-py"><span class="std std-ref">Gradient enhanced gPC</span></a></span><a class="headerlink" href="#id15" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-footer sphx-glr-footer-gallery docutils container">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="_downloads/a694aade4f47a0ad09ecc8901700b66f/auto_gpc_python.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">auto_gpc_python.zip</span></code></a></p>
 </div>
@@ -983,73 +970,45 @@ For examplary simulations and model configurations, please have a look at the ju
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">orphan</dt>
+<dt class="field-odd">orphan<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
+</section>
+<section id="algorithms">
+<h1>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static_IO"><img alt="Algorithm: Static_IO" src="_images/sphx_glr_plot_algorithm_static_IO_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_static_IO.html#sphx-glr-auto-algorithms-plot-algorithm-static-io-py"><span class="std std-ref">Algorithm: Static_IO</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: Static_IO</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptive"><img alt="Algorithm: RegAdaptive" src="_images/sphx_glr_plot_algorithm_regadaptive_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_regadaptive.html#sphx-glr-auto-algorithms-plot-algorithm-regadaptive-py"><span class="std std-ref">Algorithm: RegAdaptive</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: RegAdaptive</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static (Quadrature)"><img alt="Algorithm: Static (Quadrature)" src="_images/sphx_glr_plot_algorithm_static_quad_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_static_quad.html#sphx-glr-auto-algorithms-plot-algorithm-static-quad-py"><span class="std std-ref">Algorithm: Static (Quadrature)</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: Static (Quadrature)</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static (Regression)"><img alt="Algorithm: Static (Regression)" src="_images/sphx_glr_plot_algorithm_static_reg_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_static_reg.html#sphx-glr-auto-algorithms-plot-algorithm-static-reg-py"><span class="std std-ref">Algorithm: Static (Regression)</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: Static (Regression)</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: StaticProjection"><img alt="Algorithm: StaticProjection" src="_images/sphx_glr_plot_algorithm_staticprojection_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_staticprojection.html#sphx-glr-auto-algorithms-plot-algorithm-staticprojection-py"><span class="std std-ref">Algorithm: StaticProjection</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: StaticProjection</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptiveProjection"><img alt="Algorithm: RegAdaptiveProjection" src="_images/sphx_glr_plot_algorithm_regadaptiveprojection_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_regadaptiveprojection.html#sphx-glr-auto-algorithms-plot-algorithm-regadaptiveprojection-py"><span class="std std-ref">Algorithm: RegAdaptiveProjection</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: RegAdaptiveProjection</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic"><img alt="Algorithm: MEStatic" src="_images/sphx_glr_plot_algorithm_mestatic_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_mestatic.html#sphx-glr-auto-algorithms-plot-algorithm-mestatic-py"><span class="std std-ref">Algorithm: MEStatic</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: MEStatic</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStaticProjection"><img alt="Algorithm: MEStaticProjection" src="_images/sphx_glr_plot_algorithm_mestaticprojection_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_mestaticprojection.html#sphx-glr-auto-algorithms-plot-algorithm-mestaticprojection-py"><span class="std std-ref">Algorithm: MEStaticProjection</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: MEStaticProjection</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic_IO"><img alt="Algorithm: MEStatic_IO" src="_images/sphx_glr_plot_algorithm_mestatic_IO_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_mestatic_IO.html#sphx-glr-auto-algorithms-plot-algorithm-mestatic-io-py"><span class="std std-ref">Algorithm: MEStatic_IO</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: MEStatic_IO</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MERegAdaptiveProjection"><img alt="Algorithm: MERegAdaptiveProjection" src="_images/sphx_glr_plot_algorithm_meregadaptiveprojection_thumb.png" />
+<p><a class="reference internal" href="auto_algorithms/plot_algorithm_meregadaptiveprojection.html#sphx-glr-auto-algorithms-plot-algorithm-meregadaptiveprojection-py"><span class="std std-ref">Algorithm: MERegAdaptiveProjection</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Algorithm: MERegAdaptiveProjection</div>
+</div></div><div class="toctree-wrapper compound">
 </div>
-<div class="section" id="algorithms">
-<span id="sphx-glr-auto-algorithms"></span><h1>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this heading">#</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static_IO"><div class="figure align-default" id="id16">
-<img alt="Algorithm: Static_IO" src="_images/sphx_glr_plot_algorithm_static_IO_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_static_IO.html#sphx-glr-auto-algorithms-plot-algorithm-static-io-py"><span class="std std-ref">Algorithm: Static_IO</span></a></span><a class="headerlink" href="#id16" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptive"><div class="figure align-default" id="id17">
-<img alt="Algorithm: RegAdaptive" src="_images/sphx_glr_plot_algorithm_regadaptive_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_regadaptive.html#sphx-glr-auto-algorithms-plot-algorithm-regadaptive-py"><span class="std std-ref">Algorithm: RegAdaptive</span></a></span><a class="headerlink" href="#id17" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static (Quadrature)"><div class="figure align-default" id="id18">
-<img alt="Algorithm: Static (Quadrature)" src="_images/sphx_glr_plot_algorithm_static_quad_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_static_quad.html#sphx-glr-auto-algorithms-plot-algorithm-static-quad-py"><span class="std std-ref">Algorithm: Static (Quadrature)</span></a></span><a class="headerlink" href="#id18" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: Static (Regression)"><div class="figure align-default" id="id19">
-<img alt="Algorithm: Static (Regression)" src="_images/sphx_glr_plot_algorithm_static_reg_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_static_reg.html#sphx-glr-auto-algorithms-plot-algorithm-static-reg-py"><span class="std std-ref">Algorithm: Static (Regression)</span></a></span><a class="headerlink" href="#id19" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: StaticProjection"><div class="figure align-default" id="id20">
-<img alt="Algorithm: StaticProjection" src="_images/sphx_glr_plot_algorithm_staticprojection_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_staticprojection.html#sphx-glr-auto-algorithms-plot-algorithm-staticprojection-py"><span class="std std-ref">Algorithm: StaticProjection</span></a></span><a class="headerlink" href="#id20" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: RegAdaptiveProjection"><div class="figure align-default" id="id21">
-<img alt="Algorithm: RegAdaptiveProjection" src="_images/sphx_glr_plot_algorithm_regadaptiveprojection_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_regadaptiveprojection.html#sphx-glr-auto-algorithms-plot-algorithm-regadaptiveprojection-py"><span class="std std-ref">Algorithm: RegAdaptiveProjection</span></a></span><a class="headerlink" href="#id21" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic"><div class="figure align-default" id="id22">
-<img alt="Algorithm: MEStatic" src="_images/sphx_glr_plot_algorithm_mestatic_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_mestatic.html#sphx-glr-auto-algorithms-plot-algorithm-mestatic-py"><span class="std std-ref">Algorithm: MEStatic</span></a></span><a class="headerlink" href="#id22" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStaticProjection"><div class="figure align-default" id="id23">
-<img alt="Algorithm: MEStaticProjection" src="_images/sphx_glr_plot_algorithm_mestaticprojection_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_mestaticprojection.html#sphx-glr-auto-algorithms-plot-algorithm-mestaticprojection-py"><span class="std std-ref">Algorithm: MEStaticProjection</span></a></span><a class="headerlink" href="#id23" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MEStatic_IO"><div class="figure align-default" id="id24">
-<img alt="Algorithm: MEStatic_IO" src="_images/sphx_glr_plot_algorithm_mestatic_IO_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_mestatic_IO.html#sphx-glr-auto-algorithms-plot-algorithm-mestatic-io-py"><span class="std std-ref">Algorithm: MEStatic_IO</span></a></span><a class="headerlink" href="#id24" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Algorithm: MERegAdaptiveProjection"><div class="figure align-default" id="id25">
-<img alt="Algorithm: MERegAdaptiveProjection" src="_images/sphx_glr_plot_algorithm_meregadaptiveprojection_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_algorithms/plot_algorithm_meregadaptiveprojection.html#sphx-glr-auto-algorithms-plot-algorithm-meregadaptiveprojection-py"><span class="std std-ref">Algorithm: MERegAdaptiveProjection</span></a></span><a class="headerlink" href="#id25" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-footer sphx-glr-footer-gallery docutils container">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="_downloads/077ac1e3198a2a48bd62330e654a2ee0/auto_algorithms_python.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">auto_algorithms_python.zip</span></code></a></p>
 </div>
@@ -1059,37 +1018,27 @@ For examplary simulations and model configurations, please have a look at the ju
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">orphan</dt>
+<dt class="field-odd">orphan<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
+</section>
+<section id="sampling-schemes">
+<h1>Sampling schemes<a class="headerlink" href="#sampling-schemes" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="For evaluating the efficiency of the sampling schemes in pygpc we compared L1 optimal sampling ..."><img alt="Comparison of sampling schemes" src="_images/sphx_glr_plot_grid_comparison_thumb.png" />
+<p><a class="reference internal" href="auto_sampling/plot_grid_comparison.html#sphx-glr-auto-sampling-plot-grid-comparison-py"><span class="std std-ref">Comparison of sampling schemes</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Comparison of sampling schemes</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="To calculate the coefficients of the gPC matrix, a number of model evaluations need to be perfo..."><img alt="Standard Random sampling" src="_images/sphx_glr_plot_random_thumb.png" />
+<p><a class="reference internal" href="auto_sampling/plot_random.html#sphx-glr-auto-sampling-plot-random-py"><span class="std std-ref">Standard Random sampling</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Standard Random sampling</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="To prevent clustering or undersampling of specific regions in the probability space, LHS is a s..."><img alt="Latin Hypercube Sampling (LHS)" src="_images/sphx_glr_plot_LHS_thumb.png" />
+<p><a class="reference internal" href="auto_sampling/plot_LHS.html#sphx-glr-auto-sampling-plot-lhs-py"><span class="std std-ref">Latin Hypercube Sampling (LHS)</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Latin Hypercube Sampling (LHS)</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Before explaining the different types of L1 optimal grids a brief motivation for the L1-optimiz..."><img alt="L1 optimal sampling" src="_images/sphx_glr_plot_L1_thumb.png" />
+<p><a class="reference internal" href="auto_sampling/plot_L1.html#sphx-glr-auto-sampling-plot-l1-py"><span class="std std-ref">L1 optimal sampling</span></a></p>
+  <div class="sphx-glr-thumbnail-title">L1 optimal sampling</div>
+</div></div><div class="toctree-wrapper compound">
 </div>
-<div class="section" id="sampling-schemes">
-<span id="sphx-glr-auto-sampling"></span><h1>Sampling schemes<a class="headerlink" href="#sampling-schemes" title="Permalink to this heading">#</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="For evaluating the efficiency of the sampling schemes in pygpc we compared L1 optimal sampling ..."><div class="figure align-default" id="id26">
-<img alt="Comparison of sampling schemes" src="_images/sphx_glr_plot_grid_comparison_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_sampling/plot_grid_comparison.html#sphx-glr-auto-sampling-plot-grid-comparison-py"><span class="std std-ref">Comparison of sampling schemes</span></a></span><a class="headerlink" href="#id26" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="To calculate the coefficients of the gPC matrix, a number of model evaluations need to be perfo..."><div class="figure align-default" id="id27">
-<img alt="Standard Random sampling" src="_images/sphx_glr_plot_random_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_sampling/plot_random.html#sphx-glr-auto-sampling-plot-random-py"><span class="std std-ref">Standard Random sampling</span></a></span><a class="headerlink" href="#id27" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="To prevent clustering or undersampling of specific regions in the probability space, LHS is a s..."><div class="figure align-default" id="id28">
-<img alt="Latin Hypercube Sampling (LHS)" src="_images/sphx_glr_plot_LHS_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_sampling/plot_LHS.html#sphx-glr-auto-sampling-plot-lhs-py"><span class="std std-ref">Latin Hypercube Sampling (LHS)</span></a></span><a class="headerlink" href="#id28" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Before explaining the different types of L1 optimal grids a brief motivation for the L1-optimiz..."><div class="figure align-default" id="id29">
-<img alt="L1 optimal sampling" src="_images/sphx_glr_plot_L1_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_sampling/plot_L1.html#sphx-glr-auto-sampling-plot-l1-py"><span class="std std-ref">L1 optimal sampling</span></a></span><a class="headerlink" href="#id29" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-footer sphx-glr-footer-gallery docutils container">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="_downloads/29345a13b4fe34bb65b33d2fe1ca34b4/auto_sampling_python.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">auto_sampling_python.zip</span></code></a></p>
 </div>
@@ -1099,37 +1048,27 @@ For examplary simulations and model configurations, please have a look at the ju
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">orphan</dt>
+<dt class="field-odd">orphan<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
+</section>
+<section id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="You can easily analyze your models written in Julia with pygpc. In order to do so, you have to ..."><img alt="Analyzing Julia models with pygpc" src="_images/sphx_glr_plot_julia_model_thumb.png" />
+<p><a class="reference internal" href="auto_features/plot_julia_model.html#sphx-glr-auto-features-plot-julia-model-py"><span class="std std-ref">Analyzing Julia models with pygpc</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Analyzing Julia models with pygpc</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="You can easily investigate your models written in MATLAB with pygpc. In order to do so, you hav..."><img alt="Analyzing MATLAB models with pygpc" src="_images/sphx_glr_plot_matlab_model_thumb.png" />
+<p><a class="reference internal" href="auto_features/plot_matlab_model.html#sphx-glr-auto-features-plot-matlab-model-py"><span class="std std-ref">Analyzing MATLAB models with pygpc</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Analyzing MATLAB models with pygpc</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="pygpc is capable of to evaluate multiple sampling points, i.e. multiple model instances, in par..."><img alt="Parallel processing capabilities of pygpc" src="_images/sphx_glr_plot_parallelization_thumb.png" />
+<p><a class="reference internal" href="auto_features/plot_parallelization.html#sphx-glr-auto-features-plot-parallelization-py"><span class="std std-ref">Parallel processing capabilities of pygpc</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Parallel processing capabilities of pygpc</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Accelerating pygpc by using different computing backends ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^..."><img alt="OpenMP and CUDA" src="_images/sphx_glr_plot_backends_thumb.png" />
+<p><a class="reference internal" href="auto_features/plot_backends.html#sphx-glr-auto-features-plot-backends-py"><span class="std std-ref">OpenMP and CUDA</span></a></p>
+  <div class="sphx-glr-thumbnail-title">OpenMP and CUDA</div>
+</div></div><div class="toctree-wrapper compound">
 </div>
-<div class="section" id="features">
-<span id="sphx-glr-auto-features"></span><h1>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="You can easily analyze your models written in Julia with pygpc. In order to do so, you have to ..."><div class="figure align-default" id="id30">
-<img alt="Analyzing Julia models with pygpc" src="_images/sphx_glr_plot_julia_model_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_features/plot_julia_model.html#sphx-glr-auto-features-plot-julia-model-py"><span class="std std-ref">Analyzing Julia models with pygpc</span></a></span><a class="headerlink" href="#id30" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="You can easily investigate your models written in MATLAB with pygpc. In order to do so, you hav..."><div class="figure align-default" id="id31">
-<img alt="Analyzing MATLAB models with pygpc" src="_images/sphx_glr_plot_matlab_model_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_features/plot_matlab_model.html#sphx-glr-auto-features-plot-matlab-model-py"><span class="std std-ref">Analyzing MATLAB models with pygpc</span></a></span><a class="headerlink" href="#id31" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="pygpc is capable of to evaluate multiple sampling points, i.e. multiple model instances, in par..."><div class="figure align-default" id="id32">
-<img alt="Parallel processing capabilities of pygpc" src="_images/sphx_glr_plot_parallelization_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_features/plot_parallelization.html#sphx-glr-auto-features-plot-parallelization-py"><span class="std std-ref">Parallel processing capabilities of pygpc</span></a></span><a class="headerlink" href="#id32" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Accelerating pygpc by using different computing backends ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^..."><div class="figure align-default" id="id33">
-<img alt="OpenMP and CUDA" src="_images/sphx_glr_plot_backends_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_features/plot_backends.html#sphx-glr-auto-features-plot-backends-py"><span class="std std-ref">OpenMP and CUDA</span></a></span><a class="headerlink" href="#id33" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-footer sphx-glr-footer-gallery docutils container">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="_downloads/2a45fe78c9990544af5d124947d9a70a/auto_features_python.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">auto_features_python.zip</span></code></a></p>
 </div>
@@ -1139,37 +1078,27 @@ For examplary simulations and model configurations, please have a look at the ju
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">orphan</dt>
+<dt class="field-odd">orphan<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
+</section>
+<section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This tutorial treats the same problem as in Example: Lorenz sys..."><img alt="Example: Lorenz system of differential equations (Julia)" src="_images/sphx_glr_plot_Lorenz_julia_thumb.png" />
+<p><a class="reference internal" href="auto_examples/plot_Lorenz_julia.html#sphx-glr-auto-examples-plot-lorenz-julia-py"><span class="std std-ref">Example: Lorenz system of differential equations (Julia)</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Example: Lorenz system of differential equations (Julia)</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This tutorial shows how to perform uncertainty and sensitivity ..."><img alt="Example: Lorenz system of differential equations" src="_images/sphx_glr_plot_Lorenz_thumb.png" />
+<p><a class="reference internal" href="auto_examples/plot_Lorenz.html#sphx-glr-auto-examples-plot-lorenz-py"><span class="std std-ref">Example: Lorenz system of differential equations</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Example: Lorenz system of differential equations</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This easy tutorial shows the application of pygpc to the Ishiga..."><img alt="Example: Ishigami Testfunction" src="_images/sphx_glr_plot_ishigami_thumb.png" />
+<p><a class="reference internal" href="auto_examples/plot_ishigami.html#sphx-glr-auto-examples-plot-ishigami-py"><span class="std std-ref">Example: Ishigami Testfunction</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Example: Ishigami Testfunction</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ This tutorial shows th..."><img alt="Example: Modelling of an electrode" src="_images/sphx_glr_plot_electrode_thumb.png" />
+<p><a class="reference internal" href="auto_examples/plot_electrode.html#sphx-glr-auto-examples-plot-electrode-py"><span class="std std-ref">Example: Modelling of an electrode</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Example: Modelling of an electrode</div>
+</div></div><div class="toctree-wrapper compound">
 </div>
-<div class="section" id="examples">
-<span id="sphx-glr-auto-examples"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This tutorial treats the same problem as in Example: Lorenz sys..."><div class="figure align-default" id="id34">
-<img alt="Example: Lorenz system of differential equations (Julia)" src="_images/sphx_glr_plot_Lorenz_julia_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/plot_Lorenz_julia.html#sphx-glr-auto-examples-plot-lorenz-julia-py"><span class="std std-ref">Example: Lorenz system of differential equations (Julia)</span></a></span><a class="headerlink" href="#id34" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This tutorial shows how to perform uncertainty and sensitivity ..."><div class="figure align-default" id="id35">
-<img alt="Example: Lorenz system of differential equations" src="_images/sphx_glr_plot_Lorenz_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/plot_Lorenz.html#sphx-glr-auto-examples-plot-lorenz-py"><span class="std std-ref">Example: Lorenz system of differential equations</span></a></span><a class="headerlink" href="#id35" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^ This easy tutorial shows the application of pygpc to the Ishiga..."><div class="figure align-default" id="id36">
-<img alt="Example: Ishigami Testfunction" src="_images/sphx_glr_plot_ishigami_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/plot_ishigami.html#sphx-glr-auto-examples-plot-ishigami-py"><span class="std std-ref">Example: Ishigami Testfunction</span></a></span><a class="headerlink" href="#id36" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="About the model ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ This tutorial shows th..."><div class="figure align-default" id="id37">
-<img alt="Example: Modelling of an electrode" src="_images/sphx_glr_plot_electrode_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/plot_electrode.html#sphx-glr-auto-examples-plot-electrode-py"><span class="std std-ref">Example: Modelling of an electrode</span></a></span><a class="headerlink" href="#id37" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-footer sphx-glr-footer-gallery docutils container">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="_downloads/07fcc19ba03226cd3d83d4e40ec44385/auto_examples_python.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">auto_examples_python.zip</span></code></a></p>
 </div>
@@ -1178,18 +1107,18 @@ For examplary simulations and model configurations, please have a look at the ju
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-<div class="section" id="table-of-contents">
+</section>
+<section id="table-of-contents">
 <h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">#</a></h1>
-<div class="section" id="indices-and-tables">
+<section id="indices-and-tables">
 <h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>
@@ -1263,43 +1192,31 @@ For examplary simulations and model configurations, please have a look at the ju
   <a class="reference internal nav-link" href="#introduction">
    Introduction
   </a>
-  <ul class="visible nav section-nav flex-column">
-  </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#generalized-polynomial-chaos">
    Generalized Polynomial Chaos
   </a>
-  <ul class="visible nav section-nav flex-column">
-  </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#algorithms">
    Algorithms
   </a>
-  <ul class="visible nav section-nav flex-column">
-  </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#sampling-schemes">
    Sampling schemes
   </a>
-  <ul class="visible nav section-nav flex-column">
-  </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#features">
    Features
   </a>
-  <ul class="visible nav section-nav flex-column">
-  </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#examples">
    Examples
   </a>
-  <ul class="visible nav section-nav flex-column">
-  </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#table-of-contents">

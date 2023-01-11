@@ -139,7 +139,8 @@ html_theme_options = {
         "alt_text": "pygpc",
     },
     "show_nav_level": 1,
-    "navigation_depth": 1
+    "navigation_depth": 1,
+    "navbar_center": ["navbar-nav"],
 }
 
 pngmath_latex_preamble = r"""

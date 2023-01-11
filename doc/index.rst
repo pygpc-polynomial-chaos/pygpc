@@ -36,15 +36,22 @@ pygpc can be used to analyze a variety of different of problems. It is used for 
 - Noninvasive brain stimulation:
   
   - `Saturnino, G. B., Thielscher, A., Madsen, K. H., Knösche, T. R., & Weise, K. (2019). A principled approach to conductivity uncertainty analysis in electric field calculations. NeuroImage, 188, 821-834. <https://www.sciencedirect.com/science/article/pii/S1053811918322031>`_  
-
-- Transcranial magnetic stimulation:
-  
   - `Weise, K., Di Rienzo, L., Brauer, H., Haueisen, J., & Toepfer, H. (2015). Uncertainty analysis in transcranial magnetic stimulation using nonintrusive polynomial chaos expansion. IEEE Transactions on Magnetics, 51(7), 1-8. <https://ieeexplore.ieee.org/abstract/document/7006714>`_
   - `Weise, K., Numssen, O., Thielscher, A., Hartwigsen, G., & Knösche, T. R. (2020). A novel approach to localize cortical TMS effects. NeuroImage, 209, 116486. <https://www.sciencedirect.com/science/article/pii/S1053811919310778>`_
-
-- Transcranial direct current stimulation:
-  
   - `Kalloch, B., Weise, K., Bazin, P.-L., Lampea, L., Villringera, A., Hlawitschk, M., & Sehm, B. (2019). The influence of white matter lesions on the electrical fieldduring transcranial electric stimulation - Preliminary results of a computational sensitivity analysis, SfN Annual Meeting 2019, Chicago, Illinois, USA, October 19th-23rd 2019 <https://www.fens.org/News-Activities/Calendar/Meetings/2019/10/SfN-Annual-Meeting-2019/>`_
+
+- Energy storage:
+
+  - `Streb, M., Ohrelius, M., Klett, M., & Lindbergh, G. (2022). Improving Li-ion battery parameter estimation by global optimal experiment design. Journal of Energy Storage, 56, 105948. <https://www.sciencedirect.com/science/article/pii/S2352152X22019363>`_
+  - `Andersson, M., Streb, M., Ko, J. Y., Klass, V. L., Klett, M., Ekström, H., ... & Lindbergh, G. (2022). Parametrization of physics-based battery models from input–output data: A review of methodology and current research. Journal of Power Sources, 521, 230859. <https://www.sciencedirect.com/science/article/pii/S0378775321013458>`_
+
+- Aerospace engineering:
+
+  - `Yang, T., Chen, Y., Shi, Y., Hua, J., Qin, F., & Bai, J. (2022). Stochastic Investigation on the Robustness of Laminar-Flow Wings for Flight Tests. AIAA Journal, 60(4), 2266-2286. <https://arc.aiaa.org/doi/abs/10.2514/1.J060842>`_
+
+- Cancer treatment:
+
+  - `Atsou, K., Khou, S., Anjuère, F., Braud, V. M., & Goudon, T. (2022). Analysis of the Equilibrium Phase in Immune-Controlled Tumors Provides Hints for Designing Better Strategies for Cancer Treatment. Frontiers in Oncology, 2392. <https://www.frontiersin.org/articles/10.3389/fonc.2022.878827/full>`_
 
 If you use pygpc in your studies, please contact `Konstantin Weise <https://www.cbs.mpg.de/person/51222/2470>`_ to extend the list above.
 

@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Polynomial basis functions &#8212; pygpc 0.3.4 documentation</title>
   
   
@@ -26,6 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
@@ -788,18 +790,20 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-gpc-plot-basis-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="polynomial-basis-functions">
+<section class="sphx-glr-example-title" id="polynomial-basis-functions">
 <span id="sphx-glr-auto-gpc-plot-basis-py"></span><h1>Polynomial basis functions<a class="headerlink" href="#polynomial-basis-functions" title="Permalink to this heading">#</a></h1>
+<section id="total-order-gpc">
+<h2>Total-order gPC<a class="headerlink" href="#total-order-gpc" title="Permalink to this heading">#</a></h2>
+<p>In general, the set <span class="math notranslate nohighlight">\(\mathcal{A}(\mathbf{p})\)</span> of multi-indices can be freely chosen according
+to the problem under investigation. In the following figures, the blue boxes correspond to polynomials
+included in the gPC expansion. The coordinates of the boxes correspond to the multi-indices
+<span class="math notranslate nohighlight">\(\mathbf{\alpha}\)</span>, which correspond to the polynomial degrees of the individual basis functions
+forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
+coefficients to determine, increases exponentially in this case <span class="math notranslate nohighlight">\(N_c=(P+1)^d\)</span></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.</span>
 <span class="c1"># def main():</span>
-</pre></div>
-</div>
-<div class="section" id="test-problem">
-<h2>Test problem<a class="headerlink" href="#test-problem" title="Permalink to this heading">#</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygpc</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">pygpc</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
@@ -811,21 +815,12 @@ to download the full example code</p>
 <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">pdf_shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pdf_limits</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
 <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;x2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">pdf_shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pdf_limits</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
 <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;x3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">pdf_shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pdf_limits</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
-<span class="c1"># test</span>
+
 <span class="c1"># define problem</span>
 <span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="section" id="total-order-gpc">
-<h3>Total-order gPC<a class="headerlink" href="#total-order-gpc" title="Permalink to this heading">#</a></h3>
-<p>In general, the set <span class="math notranslate nohighlight">\(\mathcal{A}(\mathbf{p})\)</span> of multi-indices can be freely chosen according
-to the problem under investigation. In the following figures, the blue boxes correspond to polynomials
-included in the gPC expansion. The coordinates of the boxes correspond to the multi-indices
-<span class="math notranslate nohighlight">\(\mathbf{\alpha}\)</span>, which correspond to the polynomial degrees of the individual basis functions
-forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
-coefficients to determine, increases exponentially in this case <span class="math notranslate nohighlight">\(N_c=(P+1)^d\)</span>
-sphinx_gallery_thumbnail_number = 2</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">basis</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Basis</span><span class="p">()</span>
+
+<span class="c1"># define basis</span>
+<span class="n">basis</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Basis</span><span class="p">()</span>
 <span class="n">basis</span><span class="o">.</span><span class="n">init_basis_sgpc</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
                       <span class="n">order</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
                       <span class="n">order_max</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
@@ -835,9 +830,9 @@ sphinx_gallery_thumbnail_number = 2</p>
 <span class="n">basis</span><span class="o">.</span><span class="n">plot_basis</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_basis_001.png" srcset="../_images/sphx_glr_plot_basis_001.png" alt="plot basis" class = "sphx-glr-single-img"/></div>
-<div class="section" id="maximum-order-gpc">
-<h3>Maximum-order gPC<a class="headerlink" href="#maximum-order-gpc" title="Permalink to this heading">#</a></h3>
+<img src="../_images/sphx_glr_plot_basis_001.png" srcset="../_images/sphx_glr_plot_basis_001.png" alt="plot basis" class = "sphx-glr-single-img"/></section>
+<section id="maximum-order-gpc">
+<h2>Maximum-order gPC<a class="headerlink" href="#maximum-order-gpc" title="Permalink to this heading">#</a></h2>
 <p>In practical applications, the more economical maximum total order gPC is preferably used.
 In this case, the set <span class="math notranslate nohighlight">\(\mathcal{A}(p_g)\)</span> includes all polynomials whose total order
 does not exceed a predefined value <span class="math notranslate nohighlight">\(P_g\)</span>.</p>
@@ -858,10 +853,8 @@ and hence, the dimension of the space spanned by the polynomials, is:</p>
 <span class="n">basis</span><span class="o">.</span><span class="n">plot_basis</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_basis_002.png" srcset="../_images/sphx_glr_plot_basis_002.png" alt="plot basis" class = "sphx-glr-single-img"/></div>
-</div>
-<div class="section" id="reduced-basis-gpc">
-<h2>Reduced-basis gPC<a class="headerlink" href="#reduced-basis-gpc" title="Permalink to this heading">#</a></h2>
+<img src="../_images/sphx_glr_plot_basis_002.png" srcset="../_images/sphx_glr_plot_basis_002.png" alt="plot basis" class = "sphx-glr-single-img"/><section id="reduced-basis-gpc">
+<h3>Reduced-basis gPC<a class="headerlink" href="#reduced-basis-gpc" title="Permalink to this heading">#</a></h3>
 <p>The concept of the <em>maximum-order</em> gPC is extended by introducing three new parameters:
 - the <em>univariate</em> expansion order <span class="math notranslate nohighlight">\(\mathbf{p}_u = (p_{u,1},...,p_{u,d})\)</span> with
 <span class="math notranslate nohighlight">\(p_{u,i}&gt;p_g \forall i={1,...,d}\)</span>
@@ -893,8 +886,10 @@ may be added to the set of basis functions.</p>
 <span class="n">basis</span><span class="o">.</span><span class="n">plot_basis</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_basis_003.png" srcset="../_images/sphx_glr_plot_basis_003.png" alt="plot basis" class = "sphx-glr-single-img"/><div class="section" id="isotropic-adaptive-basis">
-<h3>Isotropic adaptive basis<a class="headerlink" href="#isotropic-adaptive-basis" title="Permalink to this heading">#</a></h3>
+<img src="../_images/sphx_glr_plot_basis_003.png" srcset="../_images/sphx_glr_plot_basis_003.png" alt="plot basis" class = "sphx-glr-single-img"/></section>
+</section>
+<section id="isotropic-adaptive-basis">
+<h2>Isotropic adaptive basis<a class="headerlink" href="#isotropic-adaptive-basis" title="Permalink to this heading">#</a></h2>
 <p>The basic problem in gPC is to find a suitable basis while reducing the number of necessary forward
 simulations to determine the gPC coefficients! To do this two basis increment strategies exist. This first is called
 isotropic and is the default option for the gpc. It determines which multi-indices are picked to be added to the
@@ -954,7 +949,7 @@ Extending grid from 664 to 664 by 0 sampling points
 Performing simulations 1 to 664
 
 It/Sub-it: 10/2 Performing simulation 001 from 664 [                                        ] 0.2%
-Total parallel function evaluation: 0.00032901763916015625 sec
+Total parallel function evaluation: 0.0009629726409912109 sec
 Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 
 LOOCV 01 from 25 [=                                       ] 4.0%
@@ -1006,14 +1001,14 @@ LOOCV 23 from 25 [====================================    ] 92.0%
 LOOCV 24 from 25 [======================================  ] 96.0%
 
 LOOCV 25 from 25 [========================================] 100.0%
-LOOCV computation time: 0.4485130310058594 sec
--&gt; relative loocv error = 0.008882993213940598
+LOOCV computation time: 7.975844383239746 sec
+-&gt; relative loocv error = 0.003700657535101174
 Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 </pre></div>
 </div>
-</div>
-<div class="section" id="anisotropic-adaptive-basis">
-<h3>Anisotropic adaptive basis<a class="headerlink" href="#anisotropic-adaptive-basis" title="Permalink to this heading">#</a></h3>
+</section>
+<section id="anisotropic-adaptive-basis">
+<h2>Anisotropic adaptive basis<a class="headerlink" href="#anisotropic-adaptive-basis" title="Permalink to this heading">#</a></h2>
 <p>In addition to the adaptive selection from the previous method, the specification options[“basis_increment_strategy”]
 = anisotropic can be used for the gpc object to use an algorithm by Gerstner and Griebel [1] for an anisotropic basis
 increment strategy. The motivation behind it lies in reducing the variance of the output data of the gpc.</p>
@@ -1099,7 +1094,7 @@ Extending grid from 664 to 664 by 0 sampling points
 Performing simulations 1 to 664
 
 It/Sub-it: 10/2 Performing simulation 001 from 664 [                                        ] 0.2%
-Total parallel function evaluation: 0.0003311634063720703 sec
+Total parallel function evaluation: 0.000560760498046875 sec
 Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 
 LOOCV 01 from 25 [=                                       ] 4.0%
@@ -1151,12 +1146,12 @@ LOOCV 23 from 25 [====================================    ] 92.0%
 LOOCV 24 from 25 [======================================  ] 96.0%
 
 LOOCV 25 from 25 [========================================] 100.0%
-LOOCV computation time: 0.5663723945617676 sec
--&gt; relative loocv error = 0.002040690798602467
+LOOCV computation time: 3.1844444274902344 sec
+-&gt; relative loocv error = 0.0010463610901777784
 Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.901 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  22.560 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-gpc-plot-basis-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/f0b7700d226b4372261733021b6c566f/plot_basis.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_basis.py</span></code></a></p>
@@ -1166,9 +1161,8 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
 
 
             </article>
@@ -1209,38 +1203,31 @@ Determine gPC coefficients using &#39;Moore-Penrose&#39; solver ...
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#test-problem">
-   Test problem
+  <a class="reference internal nav-link" href="#total-order-gpc">
+   Total-order gPC
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#maximum-order-gpc">
+   Maximum-order gPC
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#total-order-gpc">
-     Total-order gPC
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#maximum-order-gpc">
-     Maximum-order gPC
+    <a class="reference internal nav-link" href="#reduced-basis-gpc">
+     Reduced-basis gPC
     </a>
    </li>
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#reduced-basis-gpc">
-   Reduced-basis gPC
+  <a class="reference internal nav-link" href="#isotropic-adaptive-basis">
+   Isotropic adaptive basis
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#isotropic-adaptive-basis">
-     Isotropic adaptive basis
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#anisotropic-adaptive-basis">
-     Anisotropic adaptive basis
-    </a>
-   </li>
-  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#anisotropic-adaptive-basis">
+   Anisotropic adaptive basis
+  </a>
  </li>
 </ul>
 

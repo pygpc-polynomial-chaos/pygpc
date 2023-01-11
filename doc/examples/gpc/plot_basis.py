@@ -2,16 +2,22 @@
 Polynomial basis functions
 ==========================
 """
+#%%
+# Total-order gPC
+# ^^^^^^^^^^^^^^^
+# In general, the set :math:`\mathcal{A}(\mathbf{p})` of multi-indices can be freely chosen according
+# to the problem under investigation. In the following figures, the blue boxes correspond to polynomials
+# included in the gPC expansion. The coordinates of the boxes correspond to the multi-indices
+# :math:`\mathbf{\alpha}`, which correspond to the polynomial degrees of the individual basis functions
+# forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
+# coefficients to determine, increases exponentially in this case :math:`N_c=(P+1)^d`
+
+# sphinx_gallery_thumbnail_number = 2
+
 # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
 # def main():
-#%%
-# Test problem
-# ------------
-
 import pygpc
-import time
 import numpy as np
-import matplotlib.pyplot as plt
 from IPython import display
 from collections import OrderedDict
 
@@ -23,21 +29,11 @@ parameters = OrderedDict()
 parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
 parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
-# test
+
 # define problem
 problem = pygpc.Problem(model, parameters)
 
-#%%
-# Total-order gPC
-# ^^^^^^^^^^^^^^^
-# In general, the set :math:`\mathcal{A}(\mathbf{p})` of multi-indices can be freely chosen according
-# to the problem under investigation. In the following figures, the blue boxes correspond to polynomials
-# included in the gPC expansion. The coordinates of the boxes correspond to the multi-indices
-# :math:`\mathbf{\alpha}`, which correspond to the polynomial degrees of the individual basis functions
-# forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
-# coefficients to determine, increases exponentially in this case :math:`N_c=(P+1)^d`
-# sphinx_gallery_thumbnail_number = 2
-
+# define basis
 basis = pygpc.Basis()
 basis.init_basis_sgpc(problem=problem,
                       order=[5, 5, 5],
