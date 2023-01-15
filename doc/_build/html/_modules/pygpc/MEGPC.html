@@ -1,0 +1,1818 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pygpc.MEGPC &#8212; pygpc 0.12.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pygpc/MEGPC';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pydata-sphinx-theme.readthedocs.io/en/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.12.0';
+        </script>
+    <link rel="canonical" href="http://127.0.0.1:8000/_modules/pygpc/MEGPC.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">  
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<script>
+$.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_templates/custom-template.html", success=(data)=>{
+      $("#header-announcement").html(`<div class="bd-header-announcement__content">${data}</div>`);
+  }).fail(() => {
+  console.log("[PST]: Failed to load announcement at: https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_templates/custom-template.html")
+});
+</script>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/" class="logo__image only-light" alt="pygpc">
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt="pygpc">
+  
+  
+    <p class="title logo__title">pygpc</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v0.12.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_gpc.html">
+                        Introduction to generalized Polynomial Chaos (gPC)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_ua.html">
+                        Introduction to uncertainty analysis
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_model.html">
+                        Setting up your model
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_basis.html">
+                        Polynomial basis functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gradient_enhanced_gpc.html">
+                        Gradient enhanced gPC
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_IO.html">
+                        Algorithm: Static_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptive.html">
+                        Algorithm: RegAdaptive
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_quad.html">
+                        Algorithm: Static (Quadrature)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_reg.html">
+                        Algorithm: Static (Regression)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_staticprojection.html">
+                        Algorithm: StaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptiveprojection.html">
+                        Algorithm: RegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic.html">
+                        Algorithm: MEStatic
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestaticprojection.html">
+                        Algorithm: MEStaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic_IO.html">
+                        Algorithm: MEStatic_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_meregadaptiveprojection.html">
+                        Algorithm: MERegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_julia_model.html">
+                        Analyzing julia models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_matlab_model.html">
+                        Analyzing MATLAB models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_parallelization.html">
+                        Parallel processing capabilities of pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_backends.html">
+                        OpenMP and CUDA
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_electrode.html">
+                        Example: Modelling of an electrode
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pygpc.html">
+                        pygpc package
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/index.html">
+                        Introduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/index.html">
+                        Generalized Polynomial Chaos
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/index.html">
+                        Algorithms
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/index.html">
+                        Features
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/k_weise_" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pygpc/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+            
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pydata.org" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v0.12.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_gpc.html">
+                        Introduction to generalized Polynomial Chaos (gPC)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_ua.html">
+                        Introduction to uncertainty analysis
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_model.html">
+                        Setting up your model
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_basis.html">
+                        Polynomial basis functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gradient_enhanced_gpc.html">
+                        Gradient enhanced gPC
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_IO.html">
+                        Algorithm: Static_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptive.html">
+                        Algorithm: RegAdaptive
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_quad.html">
+                        Algorithm: Static (Quadrature)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_reg.html">
+                        Algorithm: Static (Regression)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_staticprojection.html">
+                        Algorithm: StaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptiveprojection.html">
+                        Algorithm: RegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic.html">
+                        Algorithm: MEStatic
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestaticprojection.html">
+                        Algorithm: MEStaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic_IO.html">
+                        Algorithm: MEStatic_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_meregadaptiveprojection.html">
+                        Algorithm: MERegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_julia_model.html">
+                        Analyzing julia models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_matlab_model.html">
+                        Analyzing MATLAB models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_parallelization.html">
+                        Parallel processing capabilities of pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_backends.html">
+                        OpenMP and CUDA
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_electrode.html">
+                        Example: Modelling of an electrode
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pygpc.html">
+                        pygpc package
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/index.html">
+                        Introduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/index.html">
+                        Generalized Polynomial Chaos
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/index.html">
+                        Algorithms
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/index.html">
+                        Features
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/k_weise_" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pygpc/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+            
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pydata.org" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+               <h1>Source code for pygpc.MEGPC</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">fastmat</span> <span class="k">as</span> <span class="nn">fm</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">get_cartesian_product</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">get_gradient_idx_domain</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">display_fancy_bar</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">nrmsd</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">mat2ten</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">ten2mat</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">increment_basis</span>
+<span class="kn">from</span> <span class="nn">.Gradient</span> <span class="kn">import</span> <span class="n">get_gradient</span>
+<span class="kn">from</span> <span class="nn">.ValidationSet</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.Computation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.Classifier</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.Grid</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.SGPC</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="MEGPC"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC">[docs]</a><span class="k">class</span> <span class="nc">MEGPC</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    General Multi-Element gPC base class</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    problem: Problem class instance</span>
+<span class="sd">        GPC Problem under investigation</span>
+<span class="sd">    options : dict</span>
+<span class="sd">        Options of gPC algorithm</span>
+<span class="sd">    validation: ValidationSet object (optional)</span>
+<span class="sd">        Object containing a set of validation points and corresponding solutions. Can be used</span>
+<span class="sd">        to validate gpc approximation setting options[&quot;error_type&quot;]=&quot;nrmsd&quot;.</span>
+<span class="sd">        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)</span>
+<span class="sd">        - results: ndarray [n_grid x n_out] results</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    problem: Problem class instance</span>
+<span class="sd">        GPC Problem under investigation</span>
+<span class="sd">    grid: Grid class instance</span>
+<span class="sd">        Grid of the derived gPC approximation</span>
+<span class="sd">    validation: ValidationSet object (optional)</span>
+<span class="sd">        Object containing a set of validation points and corresponding solutions. Can be used</span>
+<span class="sd">        to validate gpc approximation setting options[&quot;error_type&quot;]=&quot;nrmsd&quot;.</span>
+<span class="sd">        - grid: Grid object containing the validation points (grid.coords, grid.coords_norm)</span>
+<span class="sd">        - results: ndarray [n_grid x n_out] results</span>
+<span class="sd">    n_grid: int or list of int</span>
+<span class="sd">        Number of grid points (for iterative solvers, this is a list of its history)</span>
+<span class="sd">    solver: str</span>
+<span class="sd">        Default solver to determine the gPC coefficients (can be chosen during GPC.solve)</span>
+<span class="sd">        - &#39;Moore-Penrose&#39; ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)</span>
+<span class="sd">        - &#39;OMP&#39; ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)</span>
+<span class="sd">        - &#39;LarsLasso&#39; ... {&quot;alpha&quot;: float 0...1} Regularization parameter</span>
+<span class="sd">        - &#39;NumInt&#39; ... Numerical integration, spectral projection (SGPC.Quad)</span>
+<span class="sd">    verbose: bool</span>
+<span class="sd">        boolean value to determine if to print out the progress into the standard output</span>
+<span class="sd">    fn_results : string, optional, default=None</span>
+<span class="sd">        If provided, model evaluations are saved in fn_results.hdf5 file and gpc object in fn_results.pkl file</span>
+<span class="sd">    options : dict</span>
+<span class="sd">        Options of gPC algorithm</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor; Initializes MEGPC class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">problem</span>
+        <span class="c1"># self.sub_problems = None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation</span> <span class="o">=</span> <span class="n">validation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_grid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_gpc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_error_loocv</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_error_nrmsd</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;gradient_enhanced&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="s2">&quot;fn_results&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">&quot;fn_results&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fn_results</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;fn_results&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matlab_model</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;matlab_model&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="MEGPC.init_classifier"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.init_classifier">[docs]</a>    <span class="k">def</span> <span class="nf">init_classifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes Classifier object in MEGPC class</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coords : ndarray of float [n_grid, n_dim]</span>
+<span class="sd">            Set of n_grid parameter combinations</span>
+<span class="sd">        results : ndarray [n_grid x n_out]</span>
+<span class="sd">            Results of the model evaluation</span>
+<span class="sd">        algorithm : str, optional, default: &quot;learning&quot;</span>
+<span class="sd">            Algorithm to classify grid points</span>
+<span class="sd">            - &quot;learning&quot; ... 2-step procedure with unsupervised and supervised learning</span>
+<span class="sd">            - ...</span>
+<span class="sd">        options : dict, optional, default=None</span>
+<span class="sd">            Classifier options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">Classifier</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+                                     <span class="n">results</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
+                                     <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span>
+                                     <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">domains</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_gpc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MEGPC.update_classifier"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.update_classifier">[docs]</a>    <span class="k">def</span> <span class="nf">update_classifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates self.classifier and keeps the existing class labels</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coords : ndarray of float [n_grid, n_dim]</span>
+<span class="sd">            Set of n_grid parameter combinations</span>
+<span class="sd">        results : ndarray [n_grid x n_out]</span>
+<span class="sd">            Results of the model evaluation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="n">results</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">domains</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_gpc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MEGPC.add_sub_gpc"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.add_sub_gpc">[docs]</a>    <span class="k">def</span> <span class="nf">add_sub_gpc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">order_max</span><span class="p">,</span> <span class="n">order_max_norm</span><span class="p">,</span> <span class="n">interaction_order</span><span class="p">,</span>
+                    <span class="n">interaction_order_current</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add sub-gPC</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_gpc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_gpc</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">domain</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">domain</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span> <span class="o">+</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">domain</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">))]</span>
+
+        <span class="c1"># create sub-gpc objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">Reg</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+                               <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                               <span class="n">order_max</span><span class="o">=</span><span class="n">order_max</span><span class="p">,</span>
+                               <span class="n">order_max_norm</span><span class="o">=</span><span class="n">order_max_norm</span><span class="p">,</span>
+                               <span class="n">interaction_order</span><span class="o">=</span><span class="n">interaction_order</span><span class="p">,</span>
+                               <span class="n">interaction_order_current</span><span class="o">=</span><span class="n">interaction_order_current</span><span class="p">,</span>
+                               <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+                               <span class="n">validation</span><span class="o">=</span><span class="n">validation</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGPC.init_gpc_matrices"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.init_gpc_matrices">[docs]</a>    <span class="k">def</span> <span class="nf">init_gpc_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets self.gpc_matrix with given self.basis and self.grid</span>
+<span class="sd">        The gradient_idx of the sub-gPCs are already assigned in assign_grids()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">gpc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">:</span>
+            <span class="n">gpc</span><span class="o">.</span><span class="n">init_gpc_matrix</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MEGPC.assign_grids"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.assign_grids">[docs]</a>    <span class="k">def</span> <span class="nf">assign_grids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign sub-grids to sub-gPCs</span>
+<span class="sd">        (including transformation in case of projection and gradient_idx)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        gradient_idx : ndarray of int [gradient_results.shape[0]]</span>
+<span class="sd">            Indices of grid points where the gradient in gradient_results is provided</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span> <span class="o">=</span> <span class="n">gradient_idx</span>
+
+        <span class="c1"># update domain indices if grid points were added</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">):</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">coords_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">coords_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_id</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+            <span class="c1"># transform variables of original grid to reduced parameter space</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+                <span class="n">coords_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">coords_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">/</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix_norm</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_gradient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">coords_gradient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_gradient</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                <span class="n">coords_gradient_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_gradient_norm</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                <span class="n">coords_gradient_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_gradient_id</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">coords_gradient</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">coords_gradient_norm</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">coords_gradient_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">,</span>
+                                    <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+                                    <span class="n">coords_norm</span><span class="o">=</span><span class="n">coords_norm</span><span class="p">,</span>
+                                    <span class="n">coords_gradient</span><span class="o">=</span><span class="n">coords_gradient</span><span class="p">,</span>
+                                    <span class="n">coords_gradient_norm</span><span class="o">=</span><span class="n">coords_gradient_norm</span><span class="p">,</span>
+                                    <span class="n">coords_id</span><span class="o">=</span><span class="n">coords_id</span><span class="p">,</span>
+                                    <span class="n">coords_gradient_id</span><span class="o">=</span><span class="n">coords_gradient_id</span><span class="p">)</span>
+
+            <span class="c1"># assign gradient_idx for sub-gPCs</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">gradient_idx</span> <span class="o">=</span> <span class="n">get_gradient_idx_domain</span><span class="p">(</span><span class="n">domains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">,</span>
+                                                                   <span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">,</span>
+                                                                   <span class="n">gradient_idx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGPC.loocv"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.loocv">[docs]</a>    <span class="k">def</span> <span class="nf">loocv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">error_norm</span><span class="o">=</span><span class="s2">&quot;relative&quot;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.</span>
+<span class="sd">        The loocv error is calculated analytically after eq. (35) in [1] but omitting the &quot;1 - &quot; term, i.e. it</span>
+<span class="sd">        corresponds to 1 - Q^2.</span>
+
+<span class="sd">        relative_error_loocv = GPC.loocv(sim_results, coeffs)</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\epsilon_{LOOCV} = \\frac{\\frac{1}{N}\sum_{i=1}^N \\left( \\frac{y(\\xi_i) - \hat{y}(\\xi_i)}{1-h_i}</span>
+<span class="sd">           \\right)^2}{\\frac{1}{N-1}\sum_{i=1}^N \\left( y(\\xi_i) - \\bar{y} \\right)^2}</span>
+
+<span class="sd">        with</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\mathbf{h} = \mathrm{diag}(\\mathbf{\\Psi} (\\mathbf{\\Psi}^T \\mathbf{\\Psi})^{-1} \\mathbf{\\Psi}^T)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        results : ndarray of float [n_grid x n_out]</span>
+<span class="sd">            Results from n_grid simulations with n_out output quantities</span>
+<span class="sd">        error_norm : str, optional, default=&quot;relative&quot;</span>
+<span class="sd">            Decide if error is determined &quot;relative&quot; or &quot;absolute&quot;</span>
+<span class="sd">        domain : int, optional, default: None</span>
+<span class="sd">            Determine error in specified domain only. Default: None (all domains)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        relative_error_loocv : float</span>
+<span class="sd">            Relative mean error of leave one out cross validation</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        .. [1] Blatman, G., &amp; Sudret, B. (2010). An adaptive algorithm to build up sparse polynomial chaos expansions</span>
+<span class="sd">           for stochastic finite element analysis. Probabilistic Engineering Mechanics, 25(2), 183-197.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n_loocv</span> <span class="o">=</span> <span class="mi">25</span>
+
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">results_domain</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">domain</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="n">domain_idx</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">results_domain</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+
+        <span class="c1"># define number of performed cross validations (max 25)</span>
+        <span class="n">n_loocv_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">results_domain</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_loocv</span><span class="p">))</span>
+
+        <span class="c1"># make list of indices, which are randomly sampled (this index is w.r.t. to all points if domain is None)</span>
+        <span class="n">loocv_point_idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">results_domain</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">n_loocv_points</span><span class="p">)</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">relative_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_loocv_points</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loocv_points</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># determine domain of loocv point</span>
+                <span class="n">domain_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[</span><span class="n">loocv_point_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]))</span>
+                <span class="n">results_domain</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">domain_idx</span><span class="p">,</span> <span class="p">]</span>
+
+            <span class="c1"># determine row in sub-gPC matrix of loocv point</span>
+            <span class="n">loocv_point_idx_domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">domain_idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="n">loocv_point_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+
+            <span class="c1"># get mask of eliminated row</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">results_domain</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">loocv_point_idx_domain</span>
+
+            <span class="c1"># select right gpc matrix</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">domain_idx</span><span class="p">]</span><span class="o">.</span><span class="n">gpc_matrix</span>
+
+            <span class="c1"># determine gpc coefficients (this takes a lot of time for large problems)</span>
+            <span class="n">coeffs_loo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">domain_idx</span><span class="p">]</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">results</span><span class="o">=</span><span class="n">results_domain</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:],</span>
+                                                    <span class="n">solver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;solver&quot;</span><span class="p">],</span>
+                                                    <span class="n">matrix</span><span class="o">=</span><span class="n">matrix</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:],</span>
+                                                    <span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">],</span>
+                                                    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">sim_results_temp</span> <span class="o">=</span> <span class="n">results_domain</span><span class="p">[</span><span class="n">loocv_point_idx_domain</span><span class="p">,</span> <span class="p">:]</span>
+
+            <span class="k">if</span> <span class="n">error_norm</span> <span class="o">==</span> <span class="s2">&quot;relative&quot;</span><span class="p">:</span>
+                <span class="n">norm</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sim_results_temp</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">norm</span> <span class="o">=</span> <span class="mf">1.</span>
+
+            <span class="c1"># determine error</span>
+            <span class="n">relative_error</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sim_results_temp</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="n">loocv_point_idx_domain</span><span class="p">,</span> <span class="p">:],</span>
+                                                                            <span class="n">coeffs_loo</span><span class="p">))</span> \
+                                <span class="o">/</span> <span class="n">norm</span>
+            <span class="n">display_fancy_bar</span><span class="p">(</span><span class="s2">&quot;LOOCV&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_loocv_points</span><span class="p">))</span>
+
+        <span class="c1"># store result in relative_error_loocv</span>
+        <span class="n">relative_error_loocv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span>
+        <span class="n">iprint</span><span class="p">(</span><span class="s2">&quot;LOOCV computation time: </span><span class="si">{}</span><span class="s2"> sec&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">),</span> <span class="n">tab</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">relative_error_loocv</span></div>
+
+<div class="viewcode-block" id="MEGPC.validate"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gradient_results</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate gPC approximation using the ValidationSet object contained in the Problem object.</span>
+<span class="sd">        Determines the normalized root mean square deviation between the gpc approximation and the</span>
+<span class="sd">        original model. Skips this step if no validation set is present</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coeffs: list of ndarray of float [n_gpc][n_coeffs x n_out]</span>
+<span class="sd">            GPC coefficients</span>
+<span class="sd">        results: ndarray of float [n_grid x n_out]</span>
+<span class="sd">            Results from n_grid simulations with n_out output quantities</span>
+<span class="sd">        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None</span>
+<span class="sd">            Gradient of results in original parameter space (tensor)</span>
+<span class="sd">        domain : int, optional, default: None</span>
+<span class="sd">            Determine error in specified domain only. Default: None (all domains)</span>
+<span class="sd">        output_idx : int or list of int</span>
+<span class="sd">            Index of the QOI the provided coeffs and results are referring to. The correct QOI will be</span>
+<span class="sd">            selected from the validation set in case of nrmsd error.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        error: float</span>
+<span class="sd">            Estimated difference between gPC approximation and original model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">output_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">output_idx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">output_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">output_idx</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">output_idx</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">domain_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coeffs</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">domain_idx</span> <span class="o">=</span> <span class="n">domain</span>
+
+        <span class="c1"># Determine QOIs with NaN in results and exclude them from validation</span>
+        <span class="n">non_nan_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">results</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_nan</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">non_nan_mask</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="k">if</span> <span class="n">n_nan</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">iprint</span><span class="p">(</span><span class="s2">&quot;In </span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2"> output quantities NaN&#39;s were found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_nan</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                   <span class="n">tab</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">])</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="p">[:,</span> <span class="n">non_nan_mask</span><span class="p">]</span>
+
+        <span class="c1"># always determine nrmsd if a validation set is present</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation</span><span class="p">,</span> <span class="n">ValidationSet</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask_domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+                <span class="n">gpc_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_approximation</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">,</span> <span class="n">output_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask_domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">)</span> <span class="o">==</span> <span class="n">domain</span>
+                <span class="n">coords_domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[</span><span class="n">mask_domain</span><span class="p">,</span> <span class="p">]</span>
+                <span class="n">gpc_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">get_approximation</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">domain</span><span class="p">],</span>
+                                                                 <span class="n">coords_domain</span><span class="p">,</span>
+                                                                 <span class="n">output_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">gpc_results</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">gpc_results</span> <span class="o">=</span> <span class="n">gpc_results</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+            <span class="n">validation_results_passed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">mask_domain</span><span class="p">),</span> <span class="n">output_idx</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">validation_results_passed</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">validation_results_passed</span> <span class="o">=</span> <span class="n">validation_results_passed</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+            <span class="n">error_nrmsd</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">nrmsd</span><span class="p">(</span><span class="n">gpc_results</span><span class="p">,</span>
+                                              <span class="n">validation_results_passed</span><span class="p">,</span>
+                                              <span class="n">error_norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;error_norm&quot;</span><span class="p">],</span>
+                                              <span class="n">x_axis</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">relative_error_nrmsd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_nrmsd</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;error_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;nrmsd&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_error_nrmsd</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;error_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;loocv&quot;</span><span class="p">:</span>
+            <span class="n">error_loocv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loocv</span><span class="p">(</span><span class="n">results</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
+                                     <span class="n">error_norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;error_norm&quot;</span><span class="p">],</span>
+                                     <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">relative_error_loocv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_loocv</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_error_loocv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;error_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;nrmsd&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">error_nrmsd</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;error_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;loocv&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">error_loocv</span></div>
+
+<div class="viewcode-block" id="MEGPC.get_pdf"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.get_pdf">[docs]</a>    <span class="k">def</span> <span class="nf">get_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">output_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determine the estimated pdfs of the output quantities</span>
+
+<span class="sd">        pdf_x, pdf_y = MEGPC.get_pdf(coeffs, n_samples, output_idx=None)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coeffs: list of ndarray of float [n_gpc][n_coeffs x n_out]</span>
+<span class="sd">            GPC coefficients</span>
+<span class="sd">        n_samples: int</span>
+<span class="sd">            Number of samples used to estimate output pdfs</span>
+<span class="sd">        output_idx: ndarray, optional, default=None [1 x n_out]</span>
+<span class="sd">            Index of output quantities to consider (if output_idx=None, all output quantities are considered)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdf_x: ndarray of float [100 x n_out]</span>
+<span class="sd">            x-coordinates of output pdfs of output quantities</span>
+<span class="sd">        pdf_y: ndarray of float [100 x n_out]</span>
+<span class="sd">            y-coordinates of output pdfs (probability density of output quantity)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># handle (N,) arrays</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">n_out</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_out</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># if output index array is not provided, determine pdfs of all outputs</span>
+        <span class="k">if</span> <span class="n">output_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_out</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_out</span><span class="p">)</span>
+            <span class="n">output_idx</span> <span class="o">=</span> <span class="n">output_idx</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># sample gPC expansion</span>
+        <span class="n">samples_in</span><span class="p">,</span> <span class="n">samples_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_samples</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">output_idx</span><span class="o">=</span><span class="n">output_idx</span><span class="p">)</span>
+
+        <span class="c1"># determine kernel density estimates using Gaussian kernel</span>
+        <span class="n">pdf_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="n">n_out</span><span class="p">])</span>
+        <span class="n">pdf_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="n">n_out</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">i_out</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_out</span><span class="p">):</span>
+            <span class="n">pdf_y</span><span class="p">[:,</span> <span class="n">i_out</span><span class="p">],</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">samples_out</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">pdf_x</span><span class="p">[:,</span> <span class="n">i_out</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.</span>
+
+            <span class="c1"># kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))</span>
+            <span class="c1"># pdf_y[:, i_out] = kde(pdf_x[:, i_out])</span>
+            <span class="c1"># pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)</span>
+
+        <span class="k">return</span> <span class="n">pdf_x</span><span class="p">,</span> <span class="n">pdf_y</span></div>
+
+<div class="viewcode-block" id="MEGPC.get_samples"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.get_samples">[docs]</a>    <span class="k">def</span> <span class="nf">get_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">output_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Randomly sample gPC expansion.</span>
+
+<span class="sd">        x, pce = SGPC.get_pdf_mc(n_samples, coeffs, output_idx=None)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coeffs: list of ndarray of float [n_gpc][n_basis x n_out]</span>
+<span class="sd">            GPC coefficients for each sub-domain</span>
+<span class="sd">        n_samples: int</span>
+<span class="sd">            Number of random samples drawn from the respective input pdfs.</span>
+<span class="sd">        output_idx: ndarray of int [1 x n_out] optional, default=None</span>
+<span class="sd">            Index of output quantities to consider.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x: ndarray of float [n_samples x dim]</span>
+<span class="sd">            Generated samples in normalized coordinates [-1, 1]. (original parameter space)</span>
+<span class="sd">        pce: ndarray of float [n_samples x n_out]</span>
+<span class="sd">            GPC approximation at points x.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># seed the random numbers generator</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+
+        <span class="c1"># generate temporary grid with random samples for each random input variable [n_samples x dim]</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">,</span>
+                      <span class="n">n_grid</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span>
+                      <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># if output index list is not provided, sample all gpc outputs</span>
+        <span class="k">if</span> <span class="n">output_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_out</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_out</span><span class="p">)</span>
+
+        <span class="n">pce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_approximation</span><span class="p">(</span><span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">,</span> <span class="n">output_idx</span><span class="o">=</span><span class="n">output_idx</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">,</span> <span class="n">pce</span></div>
+
+<div class="viewcode-block" id="MEGPC.get_approximation"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.get_approximation">[docs]</a>    <span class="k">def</span> <span class="nf">get_approximation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">output_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the gPC approximation in points with output_idx and normalized parameters xi (interval: [-1, 1]).</span>
+
+<span class="sd">        pce = MEGPC.get_approximation(coeffs, x, output_idx=None)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coeffs: list of ndarray of float [n_gpc][n_basis x n_out]</span>
+<span class="sd">            GPC coefficients for each output variable of each sub-domain</span>
+<span class="sd">        x: ndarray of float [n_x x n_dim]</span>
+<span class="sd">            Normalized coordinates, where the gPC approximation is calculated (original parameter space)</span>
+<span class="sd">        output_idx: ndarray of int, optional, default=None [n_out]</span>
+<span class="sd">            Indices of output quantities to consider (Default: all).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pce: ndarray of float [n_x x n_out]</span>
+<span class="sd">            GPC approximation at normalized coordinates x.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">output_idx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">output_idx</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">output_idx</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="ow">and</span> <span class="n">output_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">output_idx</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">coeffs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">pce</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_idx</span><span class="p">)))</span>
+
+        <span class="c1"># get classes of grid-points</span>
+        <span class="n">domains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># determine gPC approximation for sub-domains</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">domains</span><span class="p">):</span>
+            <span class="n">pce</span><span class="p">[</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">get_approximation</span><span class="p">(</span><span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">[</span><span class="n">d</span><span class="p">],</span>
+                                                                 <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">[(</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">:],</span>
+                                                                 <span class="n">output_idx</span><span class="o">=</span><span class="n">output_idx</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pce</span></div>
+
+<div class="viewcode-block" id="MEGPC.update_gpc_matrices"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.update_gpc_matrices">[docs]</a>    <span class="k">def</span> <span class="nf">update_gpc_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update gPC matrix according to existing self.grid and self.basis.</span>
+
+<span class="sd">        Call this method when self.gpc_matrix does not fit to self.grid and self.basis objects anymore</span>
+<span class="sd">        The old gPC matrix with their self.gpc_matrix_b_id and self.gpc_matrix_coords_id is compared</span>
+<span class="sd">        to self.basis.b_id and self.grid.coords_id. New rows and columns are computed when differences are found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">gpc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">):</span>
+            <span class="n">gpc</span><span class="o">.</span><span class="n">update_gpc_matrix</span><span class="p">(</span><span class="n">gradient</span><span class="o">=</span><span class="n">gradient</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGPC.save_gpc_matrices_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.save_gpc_matrices_hdf5">[docs]</a>    <span class="k">def</span> <span class="nf">save_gpc_matrices_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save gPC matrix and gPC gradient matrix in .hdf5 file &lt;&quot;fn_results&quot; + &quot;.hdf5&quot;&gt; under the key &quot;gpc_matrix/dom_x&quot;</span>
+<span class="sd">        and &quot;gpc_matrix_gradient/dom_x&quot;. If matrices are already present, check for equality and save only appended</span>
+<span class="sd">        rows and columns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">gpc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">):</span>
+            <span class="n">gpc</span><span class="o">.</span><span class="n">save_gpc_matrix_hdf5</span><span class="p">(</span><span class="n">hdf5_path_gpc_matrix</span><span class="o">=</span><span class="s2">&quot;gpc_matrix/dom_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                                     <span class="n">hdf5_path_gpc_matrix_gradient</span><span class="o">=</span><span class="s2">&quot;gpc_matrix_gradient/dom_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MEGPC.solve"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">gradient_results</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines gPC coefficients of sub-gPCs</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        results : ndarray of float [n_grid x n_out]</span>
+<span class="sd">            Results from simulations with n_out output quantities</span>
+<span class="sd">        gradient_results : ndarray of float [n_gradient x n_out x dim], optional, default: None</span>
+<span class="sd">            Gradient of results in original parameter space in specific grid points</span>
+<span class="sd">        solver : str</span>
+<span class="sd">            Solver to determine the gPC coefficients</span>
+<span class="sd">            - &#39;Moore-Penrose&#39; ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)</span>
+<span class="sd">            - &#39;OMP&#39; ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)</span>
+<span class="sd">            - &#39;LarsLasso&#39; ... Least-Angle Regression using Lasso model (SGPC.Reg, EGPC)</span>
+<span class="sd">            - &#39;NumInt&#39; ... Numerical integration, spectral projection (SGPC.Quad)</span>
+<span class="sd">        settings : dict</span>
+<span class="sd">            Solver settings</span>
+<span class="sd">            - &#39;Moore-Penrose&#39; ... None</span>
+<span class="sd">            - &#39;OMP&#39; ... {&quot;n_coeffs_sparse&quot;: int} Number of gPC coefficients != 0 or &quot;sparsity&quot;: float 0...1</span>
+<span class="sd">            - &#39;LarsLasso&#39; ... {&quot;alpha&quot;: float 0...1} Regularization parameter</span>
+<span class="sd">            - &#39;NumInt&#39; ... None</span>
+<span class="sd">        verbose : bool</span>
+<span class="sd">            boolean value to determine if to print out the progress into the standard output</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        coeffs: list of ndarray of float [n_gpc][n_coeffs x n_out]</span>
+<span class="sd">            gPC coefficients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># use default solver if not specified</span>
+        <span class="k">if</span> <span class="n">solver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
+
+        <span class="c1"># use default solver settings if not specified</span>
+        <span class="k">if</span> <span class="n">solver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+        <span class="n">coeffs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_gpc</span><span class="p">)]</span>
+
+        <span class="c1"># determine coeffs of sub-gPCs</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">gradient_results</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">gradient_results_passed</span> <span class="o">=</span> <span class="n">gradient_results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gradient_results_passed</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">coeffs</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">results</span><span class="o">=</span><span class="n">results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:],</span>
+                                          <span class="n">gradient_results</span><span class="o">=</span><span class="n">gradient_results_passed</span><span class="p">,</span>
+                                          <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+                                          <span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span>
+                                          <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">coeffs</span></div>
+
+    <span class="c1"># def extract_domain(self, data, domain):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Extract data from dataset of specified domain</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     data : ndarray of float [n_data x m]</span>
+    <span class="c1">#         Dataset</span>
+    <span class="c1">#     domain : int</span>
+    <span class="c1">#         Domain index to extract</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     mask_results = self.domains == domain</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # determine mask</span>
+    <span class="c1">#     if self.gpc[domain].gpc_matrix_gradient is not None:</span>
+    <span class="c1">#         mask_gradient = np.zeros((self.grid.coords_norm.shape[0], 1, self.problem.dim)).astype(bool)</span>
+    <span class="c1">#         mask_gradient[mask_results, :, :] = True</span>
+    <span class="c1">#         mask = np.vstack((mask_results[:, np.newaxis], ten2mat(mask_gradient)))</span>
+    <span class="c1">#</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         mask = np.zeros((data.shape[0], 1)).astype(bool)</span>
+    <span class="c1">#         mask[mask_results, :] = True</span>
+    <span class="c1">#</span>
+    <span class="c1">#     return data[mask.flatten(), :]</span>
+
+<div class="viewcode-block" id="MEGPC.create_validation_set"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.create_validation_set">[docs]</a>    <span class="k">def</span> <span class="nf">create_validation_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a ValidationSet instance (calls the model)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_samples : int</span>
+<span class="sd">            Number of sampling points contained in the validation set</span>
+<span class="sd">        n_cpu : int</span>
+<span class="sd">            Number of parallel function evaluations to evaluate validation set (n_cpu=0 assumes that the</span>
+<span class="sd">            model is capable to evaluate all grid points in parallel)</span>
+<span class="sd">        gradient : bool, optional, default: False</span>
+<span class="sd">            Determine gradient of results in each grid points</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create set of validation points</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">n_samples</span>
+
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">,</span>
+                      <span class="n">n_grid</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span>
+                      <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;seed&quot;</span><span class="p">]})</span>
+
+        <span class="c1"># Evaluate original model at grid points</span>
+        <span class="n">com</span> <span class="o">=</span> <span class="n">Computation</span><span class="p">(</span><span class="n">n_cpu</span><span class="o">=</span><span class="n">n_cpu</span><span class="p">,</span> <span class="n">matlab_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">matlab_model</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">com</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">problem</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">results</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+        <span class="c1"># Determine gradient of results at grid points</span>
+        <span class="k">if</span> <span class="n">gradient</span><span class="p">:</span>
+            <span class="n">gradient_results</span><span class="p">,</span> <span class="n">gradient_idx</span> <span class="o">=</span> <span class="n">get_gradient</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                                                          <span class="n">problem</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span>
+                                                          <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+                                                          <span class="n">results</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
+                                                          <span class="n">com</span><span class="o">=</span><span class="n">com</span><span class="p">,</span>
+                                                          <span class="n">method</span><span class="o">=</span><span class="s2">&quot;FD_fwd&quot;</span><span class="p">,</span>
+                                                          <span class="n">gradient_results_present</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                          <span class="n">gradient_idx_skip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                          <span class="n">i_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                          <span class="n">i_subiter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                          <span class="n">print_func_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                          <span class="n">dx</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+                                                          <span class="n">distance_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gradient_results</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">gradient_idx</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation</span> <span class="o">=</span> <span class="n">ValidationSet</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+                                        <span class="n">results</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
+                                        <span class="n">gradient_results</span><span class="o">=</span><span class="n">gradient_results</span><span class="p">,</span>
+                                        <span class="n">gradient_idx</span><span class="o">=</span><span class="n">gradient_idx</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGPC.get_mean"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.get_mean">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_mean</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the expected value.</span>
+
+<span class="sd">        mean = MEGPC.get_mean(samples)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        samples : ndarray of float [n_x x n_out], optional, default: None</span>
+<span class="sd">            Model evaluations from MEGPC approximation</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mean: ndarray of float [1 x n_out]</span>
+<span class="sd">            Expected value of output quantities</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">mean</span></div>
+
+<div class="viewcode-block" id="MEGPC.get_std"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.get_std">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_std</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the standard deviation.</span>
+
+<span class="sd">        std = MEGPC.get_std(samples)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        samples : ndarray of float [n_samples x n_out], optional, default: None</span>
+<span class="sd">            Model evaluations from MEGPC approximation</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        std: ndarray of float [1 x n_out]</span>
+<span class="sd">            Standard deviation of output quantities</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">std</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">std</span></div>
+
+    <span class="c1"># noinspection PyTypeChecker</span>
+<div class="viewcode-block" id="MEGPC.get_sobol_indices"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.get_sobol_indices">[docs]</a>    <span class="k">def</span> <span class="nf">get_sobol_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mf">1e4</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the available sobol indices from the gPC coefficients by sampling up to second order.</span>
+
+<span class="sd">        sobol, sobol_idx, sobol_idx_bool = MEGPC.get_sobol_indices(coeffs, n_samples=1e4)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coeffs:  list of ndarray of float [n_gpc][n_basis x n_out]</span>
+<span class="sd">            GPC coefficients</span>
+<span class="sd">        n_samples : int, optional, default: 1e4</span>
+<span class="sd">            Number of samples to determine Sobol indices by sampling. The efficient number of samples</span>
+<span class="sd">            increases to n_samples * (2*dim + 2) in Saltelli&#39;s Sobol sampling sequence.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sobol: ndarray of float [n_sobol x n_out]</span>
+<span class="sd">            Normalized Sobol indices w.r.t. total variance</span>
+<span class="sd">        sobol_idx: list of ndarray of int [n_sobol x (n_sobol_included)]</span>
+<span class="sd">            Parameter combinations in rows of sobol.</span>
+<span class="sd">        sobol_idx_bool: ndarray of bool [n_sobol x dim]</span>
+<span class="sd">            Boolean mask which contains unique multi indices.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        .. [1] Sobol, I. M. (2001).  &quot;Global sensitivity indices for nonlinear</span>
+<span class="sd">               mathematical models and their Monte Carlo estimates.&quot;  Mathematics</span>
+<span class="sd">               and Computers in Simulation, 55(1-3):271-280,</span>
+<span class="sd">               doi:10.1016/S0378-4754(00)00270-6.</span>
+<span class="sd">        .. [2] Saltelli, A. (2002).  &quot;Making best use of model evaluations to</span>
+<span class="sd">               compute sensitivity indices.&quot;  Computer Physics Communications,</span>
+<span class="sd">               145(2):280-297, doi:10.1016/S0010-4655(02)00280-1.</span>
+<span class="sd">        .. [3] Saltelli, A., P. Annoni, I. Azzini, F. Campolongo, M. Ratto, and</span>
+<span class="sd">               S. Tarantola (2010).  &quot;Variance based sensitivity analysis of model</span>
+<span class="sd">               output.  Design and estimator for the total sensitivity index.&quot;</span>
+<span class="sd">               Computer Physics Communications, 181(2):259-270,</span>
+<span class="sd">               doi:10.1016/j.cpc.2009.09.018.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># iprint(&quot;Determining Sobol indices...&quot;, tab=0)</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">dim</span>
+
+        <span class="n">problem_original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span>
+
+        <span class="c1"># generate uniform distributed sobol sequence (parameter space [0, 1])</span>
+        <span class="n">coords_norm_01</span> <span class="o">=</span> <span class="n">saltelli_sampling</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">calc_second_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">coords_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">coords_norm_01</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c1"># transform to respective input pdfs using inverse cdfs</span>
+        <span class="k">for</span> <span class="n">i_key</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">problem_original</span><span class="o">.</span><span class="n">parameters_random</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">coords_norm</span><span class="p">[:,</span> <span class="n">i_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">problem_original</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">icdf</span><span class="p">(</span><span class="n">coords_norm_01</span><span class="p">[:,</span> <span class="n">i_key</span><span class="p">])</span>
+
+        <span class="c1"># run model evaluations</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_approximation</span><span class="p">(</span><span class="n">coeffs</span><span class="o">=</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">coords_norm</span><span class="p">)</span>
+
+        <span class="c1"># determine sobol indices</span>
+        <span class="n">sobol</span><span class="p">,</span> <span class="n">sobol_idx</span><span class="p">,</span> <span class="n">sobol_idx_bool</span> <span class="o">=</span> <span class="n">get_sobol_indices_saltelli</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+                                                                      <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span>
+                                                                      <span class="n">calc_second_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                      <span class="n">num_resamples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                                                      <span class="n">conf_level</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+
+        <span class="c1"># sort</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">sobol</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">sobol</span> <span class="o">=</span> <span class="n">sobol</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">sobol_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">sobol_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
+        <span class="n">sobol_idx_bool</span> <span class="o">=</span> <span class="n">sobol_idx_bool</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">sobol</span><span class="p">,</span> <span class="n">sobol_idx</span><span class="p">,</span> <span class="n">sobol_idx_bool</span></div>
+
+    <span class="c1"># noinspection PyTypeChecker</span>
+<div class="viewcode-block" id="MEGPC.get_global_sens"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.get_global_sens">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_sens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mf">1e5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the global derivative based sensitivity coefficients after Xiu (2009) [1].</span>
+
+<span class="sd">        global_sens = MEGPC.get_global_sens(coeffs, n_samples=1e5)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coeffs: list of ndarray of float [n_gpc][n_basis x n_out], optional, default: None</span>
+<span class="sd">            GPC coefficients</span>
+<span class="sd">        n_samples : int, optional, default: 1e4</span>
+<span class="sd">            Number of samples</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        global_sens: ndarray [dim x n_out]</span>
+<span class="sd">            Global derivative based sensitivity coefficients</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        .. [1] D. Xiu, Fast Numerical Methods for Stochastic Computations: A Review,</span>
+<span class="sd">           Commun. Comput. Phys., 5 (2009), pp. 242-272 eq. (3.14) page 255</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># generate sample coordinates (original parameter space)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">,</span>
+                      <span class="n">n_grid</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span>
+                      <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">local_sens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_sens</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">)</span>
+
+        <span class="c1"># average the results and reshape [dim x n_out]</span>
+        <span class="n">global_sens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">local_sens</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">global_sens</span></div>
+
+    <span class="c1"># noinspection PyTypeChecker</span>
+<div class="viewcode-block" id="MEGPC.get_local_sens"><a class="viewcode-back" href="../../pygpc.html#pygpc.MEGPC.MEGPC.get_local_sens">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_sens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the local derivative based sensitivity coefficients in the point of interest x</span>
+<span class="sd">        (normalized coordinates [-1, 1]).</span>
+
+<span class="sd">        local_sens = MEGPC.calc_localsens(coeffs, x)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coeffs: list of ndarray of float [n_gpc][n_basis x n_out]</span>
+<span class="sd">            GPC coefficients</span>
+<span class="sd">        x: ndarray of float [n_points x dim], optional, default: center of parameter space</span>
+<span class="sd">            Points in variable space to evaluate local sensitivity in (normalized coordinates [-1, 1])</span>
+<span class="sd">            (original parameter space)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        local_sens: ndarray [n_points x n_out x dim]</span>
+<span class="sd">            Local sensitivity of output quantities in point x</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">dim</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># classify coordinates</span>
+        <span class="n">domains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">local_sens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">domains</span><span class="p">):</span>
+            <span class="c1"># project coordinate to reduced parameter space if necessary</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">x_passed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">/</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix_norm</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x_passed</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:]</span>
+
+            <span class="c1"># construct gPC gradient matrix [n_samples x n_basis x dim(_red)]</span>
+            <span class="n">gpc_matrix_gradient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">create_gpc_matrix</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">b</span><span class="p">,</span>
+                                                                <span class="n">x</span><span class="o">=</span><span class="n">x_passed</span><span class="p">,</span>
+                                                                <span class="n">gradient</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                <span class="n">gradient_idx</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_passed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="n">local_sens_domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">gpc_matrix_gradient</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">d</span><span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># project the gradient back to the original space if necessary</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">local_sens_domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">local_sens_domain</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix</span> <span class="o">/</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">gpc</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">p_matrix_norm</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+
+            <span class="n">local_sens</span><span class="p">[</span><span class="n">domains</span> <span class="o">==</span> <span class="n">d</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">local_sens_domain</span>
+
+        <span class="k">return</span> <span class="n">local_sens</span></div></div>
+
+</pre></div>
+<div class="section">
+   
+</div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, Konstantin Weise.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

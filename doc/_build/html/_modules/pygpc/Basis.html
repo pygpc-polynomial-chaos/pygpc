@@ -1,0 +1,1418 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pygpc.Basis &#8212; pygpc 0.2.7.5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pygpc/Basis';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/" class="logo__image only-light" alt="pygpc">
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt="pygpc">
+  
+  
+    <p class="title logo__title">pygpc documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_gpc.html">
+                        Introduction to generalized Polynomial Chaos (gPC)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_ua.html">
+                        Introduction to uncertainty analysis
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_model.html">
+                        Setting up your model
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_basis.html">
+                        Polynomial basis functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gradient_enhanced_gpc.html">
+                        Gradient enhanced gPC
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_IO.html">
+                        Algorithm: Static_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptive.html">
+                        Algorithm: RegAdaptive
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_quad.html">
+                        Algorithm: Static (Quadrature)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_reg.html">
+                        Algorithm: Static (Regression)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_staticprojection.html">
+                        Algorithm: StaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptiveprojection.html">
+                        Algorithm: RegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic.html">
+                        Algorithm: MEStatic
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestaticprojection.html">
+                        Algorithm: MEStaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic_IO.html">
+                        Algorithm: MEStatic_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_meregadaptiveprojection.html">
+                        Algorithm: MERegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_grid_comparison.html">
+                        Comparison of sampling schemes
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_random.html">
+                        Standard Random sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_LHS.html">
+                        Latin Hypercube Sampling (LHS)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_L1.html">
+                        L1 optimal sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_julia_model.html">
+                        Analyzing julia models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_matlab_model.html">
+                        Analyzing MATLAB models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_parallelization.html">
+                        Parallel processing capabilities of pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_backends.html">
+                        OpenMP and CUDA
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (julia)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_ishigami.html">
+                        Example: Ishigami Testfunction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_electrode.html">
+                        Example: Modelling of an electrode
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pygpc.html">
+                        pygpc package
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/index.html">
+                        Introduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/index.html">
+                        Generalized Polynomial Chaos
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/index.html">
+                        Algorithms
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/index.html">
+                        Sampling schemes
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/index.html">
+                        Features
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/k_weise_" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pygpc/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+            
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_gpc.html">
+                        Introduction to generalized Polynomial Chaos (gPC)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_ua.html">
+                        Introduction to uncertainty analysis
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_model.html">
+                        Setting up your model
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_basis.html">
+                        Polynomial basis functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gradient_enhanced_gpc.html">
+                        Gradient enhanced gPC
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_IO.html">
+                        Algorithm: Static_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptive.html">
+                        Algorithm: RegAdaptive
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_quad.html">
+                        Algorithm: Static (Quadrature)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_reg.html">
+                        Algorithm: Static (Regression)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_staticprojection.html">
+                        Algorithm: StaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptiveprojection.html">
+                        Algorithm: RegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic.html">
+                        Algorithm: MEStatic
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestaticprojection.html">
+                        Algorithm: MEStaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic_IO.html">
+                        Algorithm: MEStatic_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_meregadaptiveprojection.html">
+                        Algorithm: MERegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_grid_comparison.html">
+                        Comparison of sampling schemes
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_random.html">
+                        Standard Random sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_LHS.html">
+                        Latin Hypercube Sampling (LHS)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/plot_L1.html">
+                        L1 optimal sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_julia_model.html">
+                        Analyzing julia models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_matlab_model.html">
+                        Analyzing MATLAB models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_parallelization.html">
+                        Parallel processing capabilities of pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_backends.html">
+                        OpenMP and CUDA
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (julia)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_ishigami.html">
+                        Example: Ishigami Testfunction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_electrode.html">
+                        Example: Modelling of an electrode
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pygpc.html">
+                        pygpc package
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/index.html">
+                        Introduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/index.html">
+                        Generalized Polynomial Chaos
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/index.html">
+                        Algorithms
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_sampling/index.html">
+                        Sampling schemes
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/index.html">
+                        Features
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/k_weise_" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pygpc/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+            
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for pygpc.Basis</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">multiprocessing.pool</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">_functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">get_multi_indices</span>
+<span class="c1"># from mpl_toolkits.mplot3d import Axes3D</span>
+<span class="kn">from</span> <span class="nn">.BasisFunction</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="Basis"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis">[docs]</a><span class="k">class</span> <span class="nc">Basis</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basis class of gPC</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    b : list of list of BasisFunction object instances [n_basis][n_dim]</span>
+<span class="sd">        Parameter wise basis function objects used in gPC.</span>
+<span class="sd">        Multiplying all elements in a row at location xi = (x1, x2, ..., x_dim) yields the global basis function.</span>
+<span class="sd">    b_array : ndarray of float [n_poly_coeffs]</span>
+<span class="sd">        Polynomial coefficients of basis functions</span>
+<span class="sd">    b_id : list of UUID objects (version 4) [n_basis]</span>
+<span class="sd">        Unique IDs of global basis functions</span>
+<span class="sd">    b_norm : ndarray of float [n_basis x dim]</span>
+<span class="sd">        Normalization factor of individual basis functions</span>
+<span class="sd">    b_norm_basis : ndarray of float [n_basis x 1]</span>
+<span class="sd">        Normalization factor of global basis functions</span>
+<span class="sd">    dim : int</span>
+<span class="sd">        Number of variables</span>
+<span class="sd">    n_basis : int</span>
+<span class="sd">        Total number of (global) basis function</span>
+<span class="sd">    multi_indices: ndarray [n_basis x dim]</span>
+<span class="sd">        Multi-indices of polynomial basis functions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor; initializes the Basis class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_array_grad</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_norm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_norm_basis</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_basis</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_indices</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Basis.set_basis"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.set_basis">[docs]</a>    <span class="k">def</span> <span class="nf">set_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_basis</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Worker function to initialize a global basis function (called by multiprocessing.pool).</span>
+<span class="sd">        It also initializes polynomial basis coefficients for fast processing. Converts list of lists of basis</span>
+<span class="sd">        into np.ndarray that can be processed on multi core systems.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i_basis : int</span>
+<span class="sd">            Index of global basis function</span>
+<span class="sd">        problem : Problem class instance</span>
+<span class="sd">            gPC problem</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        b_ : list [n_dim]</span>
+<span class="sd">            List containing the individual basis functions of the parameters</span>
+<span class="sd">        b_a_ : ndarray of int</span>
+<span class="sd">            Concatenated list of polynomial basis coefficients</span>
+<span class="sd">        b_a_grad_ : ndarray of int</span>
+<span class="sd">            Concatenated list of polynomial basis coefficients for gradient evaluation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">b_</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">dim</span><span class="p">)]</span>
+        <span class="n">b_a_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">b_a_grad_</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i_dim</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">):</span>   <span class="c1"># OrderedDict of RandomParameter objects</span>
+            <span class="n">b_</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">init_basis_function</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_indices</span><span class="p">[</span><span class="n">i_basis</span><span class="p">,</span> <span class="n">i_dim</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">i_dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">dim</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i_dim_inner</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">dim</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i_dim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">b_a_</span> <span class="o">=</span> <span class="n">b_a_</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b_</span><span class="p">[</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                   <span class="n">b_</span><span class="p">[</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">i_dim</span> <span class="o">==</span> <span class="n">i_dim_inner</span><span class="p">:</span>
+                    <span class="n">b_a_grad_</span> <span class="o">=</span> <span class="n">b_a_grad_</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b_</span><span class="p">[</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                             <span class="n">b_</span><span class="p">[</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">b_a_grad_</span> <span class="o">=</span> <span class="n">b_a_grad_</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b_</span><span class="p">[</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                             <span class="n">b_</span><span class="p">[</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+
+        <span class="n">b_a_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">b_a_</span><span class="p">)</span>
+        <span class="n">b_a_grad_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">b_a_grad_</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">b_</span><span class="p">,</span> <span class="n">b_a_</span><span class="p">,</span> <span class="n">b_a_grad_</span></div>
+
+<div class="viewcode-block" id="Basis.init_basis_sgpc"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.init_basis_sgpc">[docs]</a>    <span class="k">def</span> <span class="nf">init_basis_sgpc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">order_max</span><span class="p">,</span> <span class="n">order_max_norm</span><span class="p">,</span> <span class="n">interaction_order</span><span class="p">,</span>
+                        <span class="n">interaction_order_current</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes basis functions for standard gPC.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        problem : Problem object</span>
+<span class="sd">            GPC Problem to analyze</span>
+<span class="sd">        order : list of int [dim]</span>
+<span class="sd">            Maximum individual expansion order</span>
+<span class="sd">            Generates individual polynomials also if maximum expansion order in order_max is exceeded</span>
+<span class="sd">        order_max : int</span>
+<span class="sd">            Maximum global expansion order.</span>
+<span class="sd">            The maximum expansion order considers the sum of the orders of combined polynomials together with the</span>
+<span class="sd">            chosen norm &quot;order_max_norm&quot;. Typically this norm is 1 such that the maximum order is the sum of all</span>
+<span class="sd">            monomial orders.</span>
+<span class="sd">        order_max_norm : float</span>
+<span class="sd">            Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number</span>
+<span class="sd">            of polynomials in the expansion such that interaction terms are penalized more. This truncation scheme</span>
+<span class="sd">            is also referred to &quot;hyperbolic polynomial chaos expansion&quot; such that sum(a_i^q)^1/q &lt;= p,</span>
+<span class="sd">            where p is order_max and q is order_max_norm (for more details see eq. (27) in [1]).</span>
+<span class="sd">        interaction_order : int</span>
+<span class="sd">            Number of random variables, which can interact with each other</span>
+<span class="sd">        interaction_order_current : int, optional, default: interaction_order</span>
+<span class="sd">            Number of random variables currently interacting with respect to the highest order.</span>
+<span class="sd">            (interaction_order_current &lt;= interaction_order)</span>
+<span class="sd">            The parameters for lower orders are all interacting with &quot;interaction order&quot;.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        .. [1] Blatman, G., &amp; Sudret, B. (2011). Adaptive sparse polynomial chaos expansion based on least angle</span>
+<span class="sd">           regression. Journal of Computational Physics, 230(6), 2345-2367.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\begin{tabular}{l*{4}{c}}</span>
+<span class="sd">            Polynomial Index    &amp; Dimension 1 &amp; Dimension 2 &amp; ... &amp; Dimension M \\\\</span>
+<span class="sd">           \\hline</span>
+<span class="sd">            Basis 1             &amp; [Order D1] &amp; [Order D2] &amp; \\vdots &amp; [Order M] \\\\</span>
+<span class="sd">            Basis 2             &amp; [Order D1] &amp; [Order D2] &amp; \\vdots &amp; [Order M] \\\\</span>
+<span class="sd">           \\vdots              &amp; [Order D1] &amp; [Order D2] &amp; \\vdots  &amp; [Order M] \\\\</span>
+<span class="sd">            Basis N           &amp; [Order D1] &amp; [Order D2] &amp; \\vdots &amp; [Order M] \\\\</span>
+<span class="sd">           \\end{tabular}</span>
+
+<span class="sd">        Adds Attributes:</span>
+
+<span class="sd">        b: list of BasisFunction object instances [n_basis x n_dim]</span>
+<span class="sd">            Parameter wise basis function objects used in gPC.</span>
+<span class="sd">            Multiplying all elements in a row at location xi = (x1, x2, ..., x_dim) yields the global basis function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">dim</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">),</span> <span class="s2">&quot;gPC order does not fit to number of random variables&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multi_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order_max</span><span class="p">,</span> <span class="n">order_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multi_indices</span> <span class="o">=</span> <span class="n">get_multi_indices</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                                                   <span class="n">order_max</span><span class="o">=</span><span class="n">order_max</span><span class="p">,</span>
+                                                   <span class="n">order_max_norm</span><span class="o">=</span><span class="n">order_max_norm</span><span class="p">,</span>
+                                                   <span class="n">interaction_order</span><span class="o">=</span><span class="n">interaction_order</span><span class="p">,</span>
+                                                   <span class="n">interaction_order_current</span><span class="o">=</span><span class="n">interaction_order_current</span><span class="p">)</span>
+
+        <span class="c1"># get total number of basis functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_basis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># construct 2D list with BasisFunction objects and array with coefficients and</span>
+        <span class="c1"># initialize array of basis coefficients</span>
+        <span class="n">workhorse_partial</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_basis</span><span class="p">,</span> <span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">workhorse_partial</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_basis</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">o</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">out</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b_array_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">o</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">out</span><span class="p">])</span>
+
+        <span class="c1"># This is the single core implementation:</span>
+        <span class="c1"># self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]</span>
+        <span class="c1">#</span>
+        <span class="c1"># for i_basis in range(self.n_basis):</span>
+        <span class="c1">#     for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects</span>
+        <span class="c1">#         self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(</span>
+        <span class="c1">#             order=self.multi_indices[i_basis, i_dim])</span>
+
+        <span class="c1"># Generate unique IDs of basis functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_basis</span><span class="p">)]</span>
+
+        <span class="c1"># initialize normalization factor (self.b_norm and self.b_norm_basis)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_basis_norm</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Basis.init_basis_norm"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.init_basis_norm">[docs]</a>    <span class="k">def</span> <span class="nf">init_basis_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct array of scaling factors self.b_norm [n_basis x dim] and self.b_norm_basis [n_basis x 1]</span>
+<span class="sd">        to normalize basis functions &lt;psi^2&gt; = int(psi^2*p)dx</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># read individual normalization factors from function objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">fun_norm</span><span class="p">,</span> <span class="n">_b</span><span class="p">))</span> <span class="k">for</span> <span class="n">_b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">])</span>
+
+        <span class="c1"># determine global normalization factor of basis function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_norm_basis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b_norm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Basis.set_basis_poly"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.set_basis_poly">[docs]</a>    <span class="k">def</span> <span class="nf">set_basis_poly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">order_max</span><span class="p">,</span> <span class="n">order_max_norm</span><span class="p">,</span> <span class="n">interaction_order</span><span class="p">,</span> <span class="n">interaction_order_current</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up polynomial basis self.b for given order, order_max_norm and interaction order. Adds only the basis</span>
+<span class="sd">        functions, which are not yet included.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : list of int</span>
+<span class="sd">            Maximum individual expansion order</span>
+<span class="sd">            Generates individual polynomials also if maximum expansion order in order_max is exceeded</span>
+<span class="sd">        order_max : int</span>
+<span class="sd">            Maximum global expansion order.</span>
+<span class="sd">            The maximum expansion order considers the sum of the orders of combined polynomials together with the</span>
+<span class="sd">            chosen norm &quot;order_max_norm&quot;. Typically this norm is 1 such that the maximum order is the sum of all</span>
+<span class="sd">            monomial orders.</span>
+<span class="sd">        order_max_norm : float</span>
+<span class="sd">            Norm for which the maximum global expansion order is defined [0, 1]. Values &lt; 1 decrease the total number</span>
+<span class="sd">            of polynomials in the expansion such that interaction terms are penalized more.</span>
+<span class="sd">            sum(a_i^q)^1/q &lt;= p, where p is order_max and q is order_max_norm (for more details see eq (11) in [1]).</span>
+<span class="sd">        interaction_order : int</span>
+<span class="sd">            Number of random variables, which can interact with each other</span>
+<span class="sd">            All polynomials are ignored, which have an interaction order greater than specified</span>
+<span class="sd">        interaction_order_current : int, optional, default: interaction_order</span>
+<span class="sd">            Number of random variables currently interacting with respect to the highest order.</span>
+<span class="sd">            (interaction_order_current &lt;= interaction_order)</span>
+<span class="sd">            The parameters for lower orders are all interacting with interaction_order.</span>
+<span class="sd">        problem : Problem class instance</span>
+<span class="sd">            GPC Problem to analyze</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">b_added</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+
+        <span class="c1"># determine new possible set of basis functions for next main iteration</span>
+        <span class="n">multi_indices_all_new</span> <span class="o">=</span> <span class="n">get_multi_indices</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                                                  <span class="n">order_max</span><span class="o">=</span><span class="n">order_max</span><span class="p">,</span>
+                                                  <span class="n">order_max_norm</span><span class="o">=</span><span class="n">order_max_norm</span><span class="p">,</span>
+                                                  <span class="n">interaction_order</span><span class="o">=</span><span class="n">interaction_order</span><span class="p">,</span>
+                                                  <span class="n">interaction_order_current</span><span class="o">=</span><span class="n">interaction_order_current</span><span class="p">)</span>
+
+        <span class="c1"># delete multi-indices, which are already present</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">multi_indices_all_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">],</span> <span class="n">_b</span><span class="p">))</span> <span class="k">for</span> <span class="n">_b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">])</span>
+
+            <span class="n">idx_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">multi_indices_all_current</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">multi_indices_all_new</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_indices_all_current</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+
+            <span class="n">multi_indices_all_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">multi_indices_all_new</span><span class="p">,</span> <span class="n">idx_old</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">multi_indices_all_new</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+
+            <span class="c1"># construct 2D list with new BasisFunction objects</span>
+            <span class="n">b_added</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_indices_all_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+
+            <span class="k">for</span> <span class="n">i_basis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_indices_all_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">i_p</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">):</span>
+                    <span class="n">b_added</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_p</span><span class="p">]</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">init_basis_function</span><span class="p">(</span>
+                        <span class="n">order</span><span class="o">=</span><span class="n">multi_indices_all_new</span><span class="p">[</span><span class="n">i_basis</span><span class="p">,</span> <span class="n">i_p</span><span class="p">])</span>
+
+            <span class="c1"># extend basis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">extend_basis</span><span class="p">(</span><span class="n">b_added</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">b_added</span></div>
+
+<div class="viewcode-block" id="Basis.add_basis_poly_by_order"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.add_basis_poly_by_order">[docs]</a>    <span class="k">def</span> <span class="nf">add_basis_poly_by_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multi_indices</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds polynomial basis self.b for given order, order_max_norm and interaction order. Adds only the basis</span>
+<span class="sd">        functions, which are not yet included.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        multi_indices : ndarray of int [n_basis_new, dim]</span>
+<span class="sd">            Array containing the orders of the polynomials to be added to the basis</span>
+<span class="sd">        problem : Problem class instance</span>
+<span class="sd">            GPC Problem to analyze</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># delete multi-indices, which are already present</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">multi_indices_all_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">],</span> <span class="n">_b</span><span class="p">))</span> <span class="k">for</span> <span class="n">_b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">])</span>
+
+            <span class="n">idx_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">multi_indices_all_current</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">multi_indices</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_indices_all_current</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+
+            <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">,</span> <span class="n">idx_old</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">multi_indices</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="c1"># construct 2D list with new BasisFunction objects</span>
+            <span class="n">b_added</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">dim</span><span class="p">)]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+
+            <span class="k">for</span> <span class="n">i_basis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">i_p</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">):</span>
+                    <span class="n">b_added</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_p</span><span class="p">]</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">parameters_random</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">init_basis_function</span><span class="p">(</span>
+                        <span class="n">order</span><span class="o">=</span><span class="n">multi_indices</span><span class="p">[</span><span class="n">i_basis</span><span class="p">,</span> <span class="n">i_p</span><span class="p">])</span>
+
+            <span class="c1"># extend basis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">extend_basis</span><span class="p">(</span><span class="n">b_added</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">b_added</span></div>
+
+<div class="viewcode-block" id="Basis.extend_basis"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.extend_basis">[docs]</a>    <span class="k">def</span> <span class="nf">extend_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_added</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extend set of basis functions. Skips basis functions, which are already present in self.b.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        b_added: list of list of BasisFunction instances [n_b_added][dim]</span>
+<span class="sd">            Individual BasisFunctions to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b_id</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># add b_added to b (check for duplicates) and generate IDs</span>
+        <span class="k">for</span> <span class="n">i_row</span><span class="p">,</span> <span class="n">_b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">b_added</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">_b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_b</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">b_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">multi_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_indices</span><span class="p">,</span>
+                                               <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_b</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i_dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)])))</span>
+
+        <span class="c1"># update size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_basis</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="c1"># update normalization factors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_basis_norm</span><span class="p">()</span>
+
+        <span class="c1"># extend array of basis coefficients</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extend_basis_array</span><span class="p">(</span><span class="n">b_added</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Basis.init_basis_array"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.init_basis_array">[docs]</a>    <span class="k">def</span> <span class="nf">init_basis_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize polynomial basis coefficients for fast processing. Converts list of lists of self.b</span>
+<span class="sd">        into np.ndarray that can be processed on multi core systems.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_b_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_b_array_grad</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i_basis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_basis</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i_dim_outer</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i_dim_inner</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">i_dim_outer</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">_b_array</span> <span class="o">=</span> <span class="n">_b_array</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">i_dim_outer</span> <span class="o">==</span> <span class="n">i_dim_inner</span><span class="p">:</span>
+                        <span class="n">_b_array_grad</span> <span class="o">=</span> <span class="n">_b_array_grad</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">_b_array_grad</span> <span class="o">=</span> <span class="n">_b_array_grad</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">_b_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b_array_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">_b_array_grad</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Basis.extend_basis_array"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.extend_basis_array">[docs]</a>    <span class="k">def</span> <span class="nf">extend_basis_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_added</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extends polynomial basis coefficients for fast processing. Converts list of lists of b_added</span>
+<span class="sd">        into np.ndarray that can be processed on multi core systems.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        b_added: list of list of BasisFunction instances [n_b_added][dim]</span>
+<span class="sd">            Individual BasisFunctions to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_b_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_b_array_grad</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i_basis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b_added</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">i_dim_outer</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i_dim_inner</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">i_dim_outer</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">_b_array</span> <span class="o">=</span> <span class="n">_b_array</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b_added</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                               <span class="n">b_added</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">i_dim_outer</span> <span class="o">==</span> <span class="n">i_dim_inner</span><span class="p">:</span>
+                        <span class="n">_b_array_grad</span> <span class="o">=</span> <span class="n">_b_array_grad</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b_added</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                                         <span class="n">b_added</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">_b_array_grad</span> <span class="o">=</span> <span class="n">_b_array_grad</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b_added</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">order</span><span class="p">]),</span>
+                                                         <span class="n">b_added</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim_inner</span><span class="p">]</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="n">c</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">b_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">_b_array</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">_b_array</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_array_grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b_array_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">b_array_grad</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">_b_array_grad</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b_array_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">_b_array_grad</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Basis.plot_basis"><a class="viewcode-back" href="../../pygpc.html#pygpc.Basis.Basis.plot_basis">[docs]</a>    <span class="k">def</span> <span class="nf">plot_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">fn_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dynamic_plot_update</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate 2D or 3D cube-plot of basis functions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dims : list of int of length [2] or [3]</span>
+<span class="sd">            Indices of parameters in gPC expansion to plot</span>
+<span class="sd">        fn_plot : str, optional, default: None</span>
+<span class="sd">            Filename of plot to save (with .png or .pdf extension)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        &lt;File&gt; : *.png and *.pdf file</span>
+<span class="sd">            Plot of basis functions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+        <span class="n">multi_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">],</span> <span class="n">_b</span><span class="p">))</span> <span class="k">for</span> <span class="n">_b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">])</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i_poly</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">[</span><span class="n">i_poly</span><span class="p">,</span> <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>  <span class="c1"># lower corner coordinates</span>
+                           <span class="n">multi_indices</span><span class="p">[</span><span class="n">i_poly</span><span class="p">,</span> <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                           <span class="n">c</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">51</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">255</span><span class="p">]])</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">,</span>  <span class="c1"># bar colour</span>
+                           <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span>
+                           <span class="n">s</span><span class="o">=</span><span class="mi">450</span><span class="p">)</span>  <span class="c1"># transparency of the bars</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$x_1$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$x_2$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="s1">&#39;box&#39;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">bar3d</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">[</span><span class="n">i_poly</span><span class="p">,</span> <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="mf">0.4</span><span class="p">,</span>  <span class="c1"># lower corner coordinates</span>
+                         <span class="n">multi_indices</span><span class="p">[</span><span class="n">i_poly</span><span class="p">,</span> <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="mf">0.4</span><span class="p">,</span>
+                         <span class="n">multi_indices</span><span class="p">[</span><span class="n">i_poly</span><span class="p">,</span> <span class="n">dims</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">-</span> <span class="mf">0.4</span><span class="p">,</span>
+                         <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span>  <span class="c1"># width, depth and height</span>
+                         <span class="n">color</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">51</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">,</span>  <span class="c1"># bar colour</span>
+                         <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># transparency of the bars</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">elev</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">azim</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$x_1$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$x_2$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s2">&quot;$x_3$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_zticklabels</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_zticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">multi_indices</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+                <span class="c1"># ax.set_xlim([0, 5])</span>
+                <span class="c1"># ax.set_ylim([0, 5])</span>
+                <span class="c1"># ax.set_zlim([0, 5])</span>
+                <span class="c1">#</span>
+                <span class="c1"># ax.set_xticklabels(range(5))</span>
+                <span class="c1"># ax.set_xticks(range(5))</span>
+                <span class="c1"># ax.set_yticklabels(range(5))</span>
+                <span class="c1"># ax.set_yticks(range(5))</span>
+                <span class="c1"># ax.set_zticklabels(range(5))</span>
+                <span class="c1"># ax.set_zticks(range(5))</span>
+
+        <span class="k">if</span> <span class="n">fn_plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fn_plot</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.png&quot;</span><span class="p">]:</span>
+                <span class="n">fn_plot</span> <span class="o">=</span> <span class="n">fn_plot</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fn_plot</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span></div></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2020, Konstantin Weise.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

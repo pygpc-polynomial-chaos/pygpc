@@ -1,0 +1,1271 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>L1 optimal sampling &#8212; pygpc 0.3.4 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_sampling/plot_L1';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Analyzing Julia models with pygpc" href="../auto_features/plot_julia_model.html" />
+    <link rel="prev" title="Latin Hypercube Sampling (LHS)" href="plot_LHS.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/logo.png" class="logo__image only-light" alt="pygpc">
+    <img src="../_static/logo.png" class="logo__image only-dark" alt="pygpc">
+  
+  
+    <p class="title logo__title">pygpc documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_introduction/plot_introduction_gpc.html">
+                        Introduction to generalized Polynomial Chaos (gPC)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_introduction/plot_introduction_ua.html">
+                        Introduction to uncertainty analysis
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
+                        Modelling discontinuous model functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_model.html">
+                        Setting up a custom model
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_basis.html">
+                        Polynomial basis functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_gradient_enhanced_gpc.html">
+                        Gradient enhanced gPC
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_static_IO.html">
+                        Algorithm: Static_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_regadaptive.html">
+                        Algorithm: RegAdaptive
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_static_quad.html">
+                        Algorithm: Static (Quadrature)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_static_reg.html">
+                        Algorithm: Static (Regression)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_staticprojection.html">
+                        Algorithm: StaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_regadaptiveprojection.html">
+                        Algorithm: RegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_mestatic.html">
+                        Algorithm: MEStatic
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_mestaticprojection.html">
+                        Algorithm: MEStaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_mestatic_IO.html">
+                        Algorithm: MEStatic_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_meregadaptiveprojection.html">
+                        Algorithm: MERegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="plot_grid_comparison.html">
+                        Comparison of sampling schemes
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="plot_random.html">
+                        Standard Random sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="plot_LHS.html">
+                        Latin Hypercube Sampling (LHS)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        L1 optimal sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_features/plot_julia_model.html">
+                        Analyzing Julia models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_features/plot_matlab_model.html">
+                        Analyzing MATLAB models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_features/plot_parallelization.html">
+                        Parallel processing capabilities of pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_features/plot_backends.html">
+                        OpenMP and CUDA
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (Julia)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_ishigami.html">
+                        Example: Ishigami Testfunction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_electrode.html">
+                        Example: Modelling of an electrode
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/k_weise_" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pygpc/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+            
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_introduction/plot_introduction_gpc.html">
+                        Introduction to generalized Polynomial Chaos (gPC)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_introduction/plot_introduction_ua.html">
+                        Introduction to uncertainty analysis
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_multi_element_gpc.html">
+                        Modelling discontinuous model functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_model.html">
+                        Setting up a custom model
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_basis.html">
+                        Polynomial basis functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_gpc/plot_gradient_enhanced_gpc.html">
+                        Gradient enhanced gPC
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_static_IO.html">
+                        Algorithm: Static_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_regadaptive.html">
+                        Algorithm: RegAdaptive
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_static_quad.html">
+                        Algorithm: Static (Quadrature)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_static_reg.html">
+                        Algorithm: Static (Regression)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_staticprojection.html">
+                        Algorithm: StaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_regadaptiveprojection.html">
+                        Algorithm: RegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_mestatic.html">
+                        Algorithm: MEStatic
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_mestaticprojection.html">
+                        Algorithm: MEStaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_mestatic_IO.html">
+                        Algorithm: MEStatic_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_algorithms/plot_algorithm_meregadaptiveprojection.html">
+                        Algorithm: MERegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="plot_grid_comparison.html">
+                        Comparison of sampling schemes
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="plot_random.html">
+                        Standard Random sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="plot_LHS.html">
+                        Latin Hypercube Sampling (LHS)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        L1 optimal sampling
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_features/plot_julia_model.html">
+                        Analyzing Julia models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_features/plot_matlab_model.html">
+                        Analyzing MATLAB models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_features/plot_parallelization.html">
+                        Parallel processing capabilities of pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_features/plot_backends.html">
+                        OpenMP and CUDA
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz_julia.html">
+                        Example: Lorenz system of differential equations (Julia)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_Lorenz.html">
+                        Example: Lorenz system of differential equations
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_ishigami.html">
+                        Example: Ishigami Testfunction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/plot_electrode.html">
+                        Example: Modelling of an electrode
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/k_weise_" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pygpc/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+            
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-sampling-plot-l1-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="l1-optimal-sampling">
+<span id="sphx-glr-auto-sampling-plot-l1-py"></span><h1>L1 optimal sampling<a class="headerlink" href="#l1-optimal-sampling" title="Permalink to this heading">#</a></h1>
+<p>Before explaining the different types of L1 optimal grids a brief motivation for the L1-optimization and
+further the L1 optimal sampling that aims to strengthen the benefit from this procedure is given. L1 optimization is
+used for solving the following linear algebra problem at the core of the gPC for underdetermined system where
+the number of model evaluations is less than the number of gPC coefficients to be determined.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{Y_{M}} = \mathbf{\Psi_{M \times N}} \mathbf{c_{N}}\]</div>
+<p>In this case the matrix <span class="math notranslate nohighlight">\(\mathbf{\Psi}\)</span> is of size <span class="math notranslate nohighlight">\(M\times N\)</span> and the coefficient vector <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> of
+size <span class="math notranslate nohighlight">\(N\)</span>, where <span class="math notranslate nohighlight">\(N&lt;M\)</span>. In other words we’re trying to fit more coefficients then we have data points. This
+procedure is most effective if the vector or array of coefficients has a high amount of vanishing and thus not needed
+entries. This type of problem can also be called sparse recovery or compressive sensing.</p>
+<p>L1 optimal sampling seeks to tune the grid composition for solving such a problem efficiently.
+Most grids in this category are based on coherence optimal samples drawn from a sampling strategy introduced by Hampton
+and Doostan (2015) in the framework of gPC.</p>
+<p>A variety of grid types can be build upon this idea:</p>
+<section id="coherence-optimal-sampling-co">
+<h2>Coherence optimal sampling (CO)<a class="headerlink" href="#coherence-optimal-sampling-co" title="Permalink to this heading">#</a></h2>
+<p>Coherence optimal sampling seeks to minimize the spectral matrix norm between the Gram matrix of the gPC matrix
+and the identify matrix. The Gram matrix is defined by:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{G_\Psi} = \frac{1}{N_g}[\mathbf{\Psi^T}] [\mathbf{\Psi}]\]</div>
+<p>and its distance from the identity matrix by:</p>
+<div class="math notranslate nohighlight">
+\[||\mathbf{G_\Psi}-\mathbf{I}||\]</div>
+<p>This objective is usually sidestepped by minimizing the coherence parameter <span class="math notranslate nohighlight">\(\mu\)</span> instead:</p>
+<div class="math notranslate nohighlight">
+\[\mu = \sup_{\mathbf{\xi}\in\Omega} \sum_{j=1}^P |w(\mathbf{\xi})\psi_j(\mathbf{\xi})|^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(\xi\)</span> are the random variables representing the input parameters, <span class="math notranslate nohighlight">\(\Omega\)</span> is the entirety of all
+random variables <span class="math notranslate nohighlight">\(w\)</span> are weighting functions discussed below and <span class="math notranslate nohighlight">\(\psi_j\)</span> are the elements of the matrix
+<span class="math notranslate nohighlight">\(\mathbf{\Psi}\)</span>. The minimization can be realized by sampling the input parameters with an alternative
+distribution:</p>
+<div class="math notranslate nohighlight">
+\[P_{\mathbf{Y}}(\mathbf{\xi}) := c^2 P(\mathbf{\xi}) B^2(\mathbf{\xi})\]</div>
+<p>where <span class="math notranslate nohighlight">\(c\)</span> is a normalization constant, <span class="math notranslate nohighlight">\(P(\mathbf{\xi})\)</span> is the joint probability density function of the
+original input distributions and <span class="math notranslate nohighlight">\(B(\mathbf{\xi})\)</span> is an upper bound of the polynomial chaos basis:</p>
+<div class="math notranslate nohighlight">
+\[B(\mathbf{\xi}):= \sqrt{\sum_{j=1}^P|\psi_j(\mathbf{\xi})|^2}\]</div>
+<p>To avoid defining the normalization constant $c$ a Markov Chain Monte Carlo approach using a Metropolis-Hastings sampler
+[2] is used to draw samples from <span class="math notranslate nohighlight">\(P_{\mathbf{Y}}(\mathbf{\xi})\)</span>. For the Mertopolis-Hastings sampler it is necessary
+to define a sufficient candidate distribution. For a coherence optimal sampling this is realized by a proposal
+distribution <span class="math notranslate nohighlight">\(g(\xi)\)</span> (see the method introduced by Hampton). By sampling from a different distribution then
+:math:’P(xi)’ however it is not possible to guarantee <span class="math notranslate nohighlight">\(\mathbf{\Psi}\)</span> to be a matrix of orthonormal
+polynomials.</p>
+<p>Therefore <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> needs to be a diagonal positive-definite matrix of weight-functions <span class="math notranslate nohighlight">\(w(\xi)\)</span> which
+is then applied to:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{W} \mathbf{Y} =  \mathbf{W} \mathbf{\Psi}\mathbf{c}\]</div>
+<p>In practice it is possible to compute <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> with:</p>
+<div class="math notranslate nohighlight">
+\[w_i(\xi) = \frac{1}{B_i(\xi)}\]</div>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
+<p>In order to create a coherence optimal grid of sampling points, we have to define the random parameters and create
+a gpc object.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygpc</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="c1"># define model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">testfunctions</span><span class="o">.</span><span class="n">RosenbrockFunction</span><span class="p">()</span>
+
+<span class="c1"># define parameters</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">pdf_shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pdf_limits</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;x2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">pdf_shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pdf_limits</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
+
+<span class="c1"># define problem</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+<span class="c1"># create gpc object</span>
+<span class="n">gpc</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">Reg</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+                <span class="n">order</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="n">problem</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span>
+                <span class="n">order_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">order_max_norm</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">interaction_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">interaction_order_current</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">validation</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># create a coherence optimal grid</span>
+<span class="n">grid_co</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">CO</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                   <span class="n">n_grid</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                   <span class="n">gpc</span><span class="o">=</span><span class="n">gpc</span><span class="p">,</span>
+                   <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="s2">&quot;n_warmup&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">})</span>
+
+<span class="c1"># An example of how the samples are distributed in the probability space is given below:</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">grid_co</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">grid_co</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+              <span class="n">color</span><span class="o">=</span><span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;bright&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$x_1$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$x_2$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;CO&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_L1_001.png" srcset="../_images/sphx_glr_plot_L1_001.png" alt="CO" class = "sphx-glr-single-img"/></section>
+</section>
+<section id="mutual-coherence-optimal-sampling-mc">
+<h2>Mutual coherence optimal sampling (mc)<a class="headerlink" href="#mutual-coherence-optimal-sampling-mc" title="Permalink to this heading">#</a></h2>
+<p>The mutual coherence of a matrix measures the cross-correlations between its columns by evaluating the largest
+absolute and normalized inner product between different columns. It is given by:</p>
+<div class="math notranslate nohighlight">
+\[\mu(\mathbf{\Psi}) = \max_ {1 \leq i, j\leq N_c, j\neq i} \quad \frac{|\psi_i^T \psi_j|}{||\psi_i||_2||
+\psi_j||_2}\]</div>
+<p>The objective is to select sampling points to minimize <span class="math notranslate nohighlight">\(\mu(\mathbf{\Psi})\)</span> for a desired L1 optimal design.
+Minimizing the mutual-coherence considers only the worst-case scenario and does not account to improve
+compressive sampling performance in general.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a mutual coherence optimal grid</span>
+<span class="n">grid_mc</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">L1</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                   <span class="n">n_grid</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                   <span class="n">gpc</span><span class="o">=</span><span class="n">gpc</span><span class="p">,</span>
+                   <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;mc&quot;</span><span class="p">],</span>
+                            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;greedy&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;n_pool&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                            <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+
+<span class="c1"># An example of how the samples are distributed in the probability space is given below:</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">grid_mc</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">grid_mc</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+              <span class="n">color</span><span class="o">=</span><span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;bright&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$x_1$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$x_2$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;MC&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_L1_002.png" srcset="../_images/sphx_glr_plot_L1_002.png" alt="MC" class = "sphx-glr-single-img"/></section>
+<section id="mutual-coherence-and-average-cross-correlation-optimal-sampling-mc-cc">
+<h2>Mutual coherence and average cross-correlation optimal sampling (mc-cc)<a class="headerlink" href="#mutual-coherence-and-average-cross-correlation-optimal-sampling-mc-cc" title="Permalink to this heading">#</a></h2>
+<p>An improvement of sampling designs that are only optimized in the mutual coherence is done by adding the average cross-
+correlation as a measure for a two-fold optimization with the benefit of further robustness in its efficient sparse
+recovery. The average cross-correlation is defined by:</p>
+<div class="math notranslate nohighlight">
+\[\gamma(\mathbf{\Psi}) = \frac{1}{N} \min_{\mathbf{\Psi} \in R^{M \times N_c}} ||I_{N_c} -
+\mathbf{G_\mathbf{\Psi}}||^2_F\]</div>
+<p>where <span class="math notranslate nohighlight">\(||\cdot||_F\)</span> denotes the Frobenius norm and <span class="math notranslate nohighlight">\(N := K \times (K - 1)\)</span> is the total number of column
+pairs. In this context, Alemazkoor and Meidani (2018) proposed a hybrid optimization criteria, which minimizes the
+average-cross correlation <span class="math notranslate nohighlight">\(\gamma(\mathbf{\Psi})\)</span> and the mutual coherence <span class="math notranslate nohighlight">\(\mu(\mathbf{\Psi})\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\text{argmin}\left(f\left(\mathbf{\Psi}\right)\right) = \text{argmin}\left(\left(\frac{\mu_{i} -\min
+\left(\boldsymbol\mu \right)}{\max \left (\boldsymbol\mu \right)
+ - \min \left(\boldsymbol\mu \right)} \right)^2 + \left(\frac{\gamma_i -\min \left(\boldsymbol\gamma \right)}{\max \left(\boldsymbol\gamma \right)
+ - \min \left(\boldsymbol\gamma \right)} \right)^2 \right)\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol\mu = (\mu_{1}, \mu_{2}, ..., \mu_{i})\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol\gamma = (\gamma_1,
+\gamma_2, ..., \gamma_i)\)</span></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a mutual coherence and cross correlation optimal grid</span>
+<span class="n">grid_mc_cc</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">L1</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                      <span class="n">n_grid</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                      <span class="n">gpc</span><span class="o">=</span><span class="n">gpc</span><span class="p">,</span>
+                      <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;mc&quot;</span><span class="p">,</span> <span class="s2">&quot;cc&quot;</span><span class="p">],</span>
+                               <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;greedy&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;n_pool&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                               <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+
+<span class="c1"># An example of how the samples are distributed in the probability space is given below:</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">grid_mc_cc</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">grid_mc_cc</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+              <span class="n">color</span><span class="o">=</span><span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;bright&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$x_1$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$x_2$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;MC-CC&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_L1_003.png" srcset="../_images/sphx_glr_plot_L1_003.png" alt="MC-CC" class = "sphx-glr-single-img"/></section>
+<section id="d-optimal-sampling">
+<h2>D-optimal sampling<a class="headerlink" href="#d-optimal-sampling" title="Permalink to this heading">#</a></h2>
+<p>Further a selection of optimization criteria derived from <span class="math notranslate nohighlight">\(\mathbf{G_\Psi}\)</span> and the identification of
+corresponding optimal sampling locations is the core concept of optimal design of experiment (ODE). The most popular
+criterion for that is <span class="math notranslate nohighlight">\(D\)</span>-optimality where it the goal to increase the information content from a given amount of
+sampling points by minimizing the determinant of the inverse of the Gramian:</p>
+<div class="math notranslate nohighlight">
+\[\phi_D = |\mathbf{G_\Psi}^{-1}|^{1/N_c}\]</div>
+<p><span class="math notranslate nohighlight">\(D\)</span>-optimal designs are focused on precise estimation of the coefficients. Besides <span class="math notranslate nohighlight">\(D\)</span>-optimal designs,
+there exist are a lot of other alphabetic optimal designs such as <span class="math notranslate nohighlight">\(A\)</span>-, <span class="math notranslate nohighlight">\(E\)</span>-, <span class="math notranslate nohighlight">\(I\)</span>-, or <span class="math notranslate nohighlight">\(V\)</span>-
+optimal designs with different goals and criteria. A nice overview about them can be found by Atkinson (2007) and
+Pukelsheim (2006).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a D optimal grid</span>
+<span class="n">grid_d</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">L1</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                      <span class="n">n_grid</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                      <span class="n">gpc</span><span class="o">=</span><span class="n">gpc</span><span class="p">,</span>
+                      <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">],</span>
+                               <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;greedy&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;n_pool&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                               <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+
+<span class="c1"># An example of how the samples are distributed in the probability space is given below:</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">grid_d</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">grid_d</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+              <span class="n">color</span><span class="o">=</span><span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;bright&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$x_1$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$x_2$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_L1_004.png" srcset="../_images/sphx_glr_plot_L1_004.png" alt="D" class = "sphx-glr-single-img"/></section>
+<section id="d-coherence-optimal-sampling">
+<h2>D-coherence optimal sampling<a class="headerlink" href="#d-coherence-optimal-sampling" title="Permalink to this heading">#</a></h2>
+<p><span class="math notranslate nohighlight">\(D\)</span>-optimal designs can even be combined with coherence optimal designs by using a pool of already coherence
+optimal samples and then applying the optimization of the <span class="math notranslate nohighlight">\(D\)</span> criterion on it. This has been shown to be a
+promising approach for special cases of functions by Diaz et al. (2017). For that and the other L1 optimal sampling schemes we
+used a greedy algorithm to determine the sets of sampling points. In this algorithm, we generate a pool of coherence
+optimal samples using the Metropolis-Hastings sampler and randomly pick an initial sample. In the next iteration we
+successively add a sampling point and calculate the respective optimization criteria. After evaluating all possible
+candidates, we add the sampling point yielding the best criterion and append it to the existing set. This is repeated
+until the sampling set has the desired size.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a D-coherence optimal grid</span>
+<span class="n">grid_d_coh</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">L1</span><span class="p">(</span><span class="n">parameters_random</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                      <span class="n">n_grid</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                      <span class="n">gpc</span><span class="o">=</span><span class="n">gpc</span><span class="p">,</span>
+                      <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;D-coh&quot;</span><span class="p">],</span>
+                               <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;greedy&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;n_pool&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                               <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+
+<span class="c1"># An example of how the samples are distributed in the probability space is given below:</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">grid_d_coh</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">grid_d_coh</span><span class="o">.</span><span class="n">coords_norm</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+              <span class="n">color</span><span class="o">=</span><span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;bright&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$x_1$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$x_2$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;D-Coh&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+<span class="c1"># L1 designs with different optimization criteria can be created using the &quot;criterion&quot; argument in the options</span>
+<span class="c1"># dictionary.</span>
+<span class="c1">#</span>
+<span class="c1"># Options</span>
+<span class="c1"># ^^^^^^^</span>
+<span class="c1">#</span>
+<span class="c1"># The following options are available for L1-optimal grids:</span>
+<span class="c1">#</span>
+<span class="c1"># **pygpc.CO()**</span>
+<span class="c1">#</span>
+<span class="c1"># - seed: set a seed to reproduce the results (default: None)</span>
+<span class="c1"># - n_warmup: the number of samples that are discarded in the Metropolis-Hastings sampler before samples are accepted (default: max(200, 2*n_grid), here n_grid is the amount of samples that are meant to be generated)</span>
+<span class="c1">#</span>
+<span class="c1"># **pygpc.L1()**</span>
+<span class="c1">#</span>
+<span class="c1"># - seed: set a seed to reproduce the results (default: None)</span>
+<span class="c1"># - method:</span>
+<span class="c1">#    - &quot;greedy&quot;: greedy algorithm (default, recommended)</span>
+<span class="c1">#    - &quot;iter&quot;: iterative algorithm (faster but does not perform as good as &quot;greedy&quot;)</span>
+<span class="c1"># - criterion:</span>
+<span class="c1">#    - [&quot;mc&quot;]: mutual coherence optimal</span>
+<span class="c1">#    - [&quot;mc&quot;, &quot;cc&quot;]: mutual coherence and cross correlation optimal</span>
+<span class="c1">#    - [&quot;D&quot;]: D optimal</span>
+<span class="c1">#    - [&quot;D-coh&quot;]: D and coherence optimal</span>
+<span class="c1"># - n_pool: number of grid points in overall pool to select optimal points from (default: 10.000)</span>
+<span class="c1"># - n_iter: number of iterations used for the &quot;iter&quot; method (default: 1000)</span>
+
+<span class="c1"># The sampling method can be selected accordingly for each gPC algorithm by setting the following options</span>
+<span class="c1"># when setting up the algorithm:</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygpc</span><span class="o">.</span><span class="n">L1</span>
+<span class="n">options</span><span class="p">[</span><span class="s2">&quot;grid_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;greedy&quot;</span><span class="p">,</span>
+                           <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;mc&quot;</span><span class="p">,</span> <span class="s2">&quot;cc&quot;</span><span class="p">],</span>
+                           <span class="s2">&quot;n_pool&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">}</span>
+<span class="o">...</span>
+
+<span class="c1"># References</span>
+<span class="c1"># ^^^^^^^^^</span>
+<span class="c1"># .. [1] Hampton, J., Doostan A., Coherence motivated sampling and convergence analysis of least</span>
+<span class="c1">#     squares polynomial Chaos regression, Computer Methods in Applied Mechanics and Engineering,</span>
+<span class="c1">#     290 (2015), 73–97.</span>
+<span class="c1"># .. [2] Hastings, W. K., Monte Carlo sampling methods using Markov chains and their applications,</span>
+<span class="c1">#     1970.</span>
+<span class="c1"># .. [3] Alemazkoor N., Meidani, H., A near-optimal sampling strategy for sparse recovery of polynomial</span>
+<span class="c1">#     chaos expansions, Journal of Computational Physics, 371 (2018), 137–151</span>
+<span class="c1"># .. [4] Atkinson, A. C., Optimum experimental designs, with SAS, vol. 34 of Oxford statistical</span>
+<span class="c1">#    science series, Oxford Univ. Press, Oxford, 2007, URL http://site.ebrary.com/lib/academiccompletetitles/home.action.</span>
+<span class="c1"># .. [5] Pukelsheim, F., Optimal design of experiments, SIAM, 2006.</span>
+<span class="c1"># .. [6] Diaz, P., Doostan, A., and Hampton, J., Sparse polynomial chaos expansions via compressed sensing</span>
+<span class="c1">#    and D-optimal design, Computer Methods in Applied Mechanics and Engineering, 336 (2018), 640–666.</span>
+
+<span class="c1"># When using Windows you need to encapsulate the code in a main function and insert an</span>
+<span class="c1"># if __name__ == &#39;__main__&#39;: guard in the main module to avoid creating subprocesses recursively:</span>
+<span class="c1">#</span>
+<span class="c1"># if __name__ == &#39;__main__&#39;:</span>
+<span class="c1">#     main()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_L1_005.png" srcset="../_images/sphx_glr_plot_L1_005.png" alt="D-Coh" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Ellipsis
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.679 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-sampling-plot-l1-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/140058cbe67bd2ea9d2d8e5e1fbb2dee/plot_L1.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_L1.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/05312a5ba9b255bc35a86a12a9bee2cf/plot_L1.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_L1.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="plot_LHS.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Latin Hypercube Sampling (LHS)</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../auto_features/plot_julia_model.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Analyzing Julia models with pygpc</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#coherence-optimal-sampling-co">
+   Coherence optimal sampling (CO)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#example">
+     Example
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mutual-coherence-optimal-sampling-mc">
+   Mutual coherence optimal sampling (mc)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mutual-coherence-and-average-cross-correlation-optimal-sampling-mc-cc">
+   Mutual coherence and average cross-correlation optimal sampling (mc-cc)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#d-optimal-sampling">
+   D-optimal sampling
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#d-coherence-optimal-sampling">
+   D-coherence optimal sampling
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="../_sources/auto_sampling/plot_L1.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, Konstantin Weise.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

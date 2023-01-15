@@ -1,8 +1,10 @@
 import h5py
 import numpy as np
-from .io import read_session
+import pandas as pd
+
 from .Grid import *
 from .MEGPC import *
+from .io import read_session
 
 
 def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_global_sens=False, calc_pdf=False,
@@ -516,3 +518,228 @@ def get_sobol_composition(sobol, sobol_idx_bool, random_vars=None, verbose=False
     return sobol_rel_order_mean, sobol_rel_order_std, \
            sobol_rel_1st_order_mean, sobol_rel_1st_order_std, \
            sobol_rel_2nd_order_mean, sobol_rel_2nd_order_std
+
+
+def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
+    """
+    Print summary of Sobol indices and global derivative based sensitivity coefficients
+
+    Parameters
+    ----------
+    fn_gpc : str
+        Filename of gpc results file (without .hdf5 extension)
+    parameters_random: OrderedDict containing the RandomParameter class instances
+        Dictionary (ordered) containing the properties of the random parameters
+    fn_out : str
+        Filename of output .txt file containing the Sobol coefficient summary
+
+    Returns
+    -------
+    sobol : pandas DataFrame
+        Pandas DataFrame containing the normalized Sobol indices by significance
+    gsens : pandas DataFrame
+        Pandas DataFrame containing the global derivative based sensitivity coefficients
+    """
+
+    parameter_names = list(parameters_random.keys())
+
+    with h5py.File(fn_gpc + ".hdf5", "r") as f:
+        sobol_idx_bool = f["/sens/sobol_idx_bool"][:]
+        sobol_norm = f["/sens/sobol_norm"][:]
+        global_sens = f["/sens/global_sens"][:]
+
+    global_sens_sort_idx = np.flip(np.argsort(global_sens[:, 0]))
+
+    sobol_dict = OrderedDict()
+    p_length = []
+    params = []
+
+    # Extract Sobol coefficients
+    for i_s, s in enumerate(sobol_norm):
+        params.append([p for i_p, p in enumerate(parameter_names) if sobol_idx_bool[i_s, i_p]])
+        sobol_dict[str(params[-1])] = s
+        p_length.append(len(str(params[-1])))
+
+    sobol = pd.DataFrame.from_dict(sobol_dict, orient="index", columns=[f"sobol_norm (qoi {i})"
+                                                                        for i in range(sobol_norm.shape[1])])
+    len_max = np.max(p_length)
+
+    # Extract global derivative sensitivity coefficients
+    gsens_dict = OrderedDict()
+    for i_p, p in enumerate(parameter_names):
+        gsens_dict[p] = global_sens[i_p, :]
+
+    gsens = pd.DataFrame.from_dict(gsens_dict, orient="index", columns=[f"global_sens (qoi {i})"
+                                                                        for i in range(sobol_norm.shape[1])])
+
+    # write output file
+    if fn_out:
+        # Sobol indices
+        sep = " " * 4
+        sobol_text = []
+        sobol_text.append("Normalized Sobol indices:\n")
+        sobol_text.append("=" * (len_max + 10) + "\n")
+
+        for i_p, p in enumerate(params):
+            len_diff = len_max - p_length[i_p]
+            sobol_text.append(f"{str(p)}: " + " " * len_diff)
+            for i_qoi in range(sobol_norm.shape[1]):
+                sobol_text[-1] += sep + f"{sobol_norm[i_p, i_qoi]:.6f}"
+            sobol_text.append("\n")
+
+        len_max_sobol = np.max([len(line) for line in sobol_text])
+        sobol_text[1] = "=" * (len_max_sobol) + "\n"
+
+        # Derivative based sensitivity coefficients
+        gsens_text = []
+        gsens_text.append("Average derivatives:\n")
+        gsens_text.append("=" * (len_max + 10) + "\n")
+
+        for i_p, p in enumerate(parameter_names):
+            len_diff = len_max - len(parameter_names[global_sens_sort_idx[i_p]]) - 4
+
+            gsens_text.append(f"['{str(parameter_names[global_sens_sort_idx[i_p]])}']: " + " " * len_diff)
+            for i_qoi in range(sobol_norm.shape[1]):
+                if global_sens[global_sens_sort_idx[i_p]][0] < 0:
+                    sep = " " * 3
+                else:
+                    sep = " " * 4
+                gsens_text[-1] += sep + f"{global_sens[global_sens_sort_idx[i_p], i_qoi]:.2e}"
+            gsens_text.append("\n")
+
+        len_max_gsens = np.max([len(line) for line in gsens_text])
+        gsens_text[1] = "=" * (len_max_gsens) + "\n"
+
+        # write in file
+        with open(fn_out, 'w') as f:
+            for line in sobol_text:
+                f.write(line)
+            f.write("\n")
+            for line in gsens_text:
+                f.write(line)
+
+    return sobol, gsens
+
+
+def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
+                      y_label="y", x_label="x", sobol_donut=True):
+    """
+    Plot summary of Sobol indices and global derivative based sensitivity coefficients
+
+    Parameters
+    ----------
+    sobol : pandas DataFrame
+        Pandas DataFrame containing the normalized Sobol indices from get_sens_summary()
+    gsens: pandas DataFrame
+        Pandas DataFrame containing the global derivative based sensitivity coefficients from get_sens_summary()
+    sobol_donut : Boolean
+        Option to plot the sobol indices as donut (pie) chart instead of bars, default is True
+    multiple_qoi: Boolean
+        Option to plot over a quantity of interest, needs an array of qoi values and results
+    qois: numpy ndarray
+        Quantities of interest
+    results: numpy ndarray
+        Results from gpc session
+    """
+    import matplotlib.pyplot as plt
+
+    glob_sens = gsens.values.flatten()
+    gsens_keys = gsens["global_sens (qoi 0)"].keys()
+    sobols = sobol.values.flatten()
+    sobol_keys = sobol["sobol_norm (qoi 0)"].keys()
+
+    # ignore very low Sobol indices
+    mask = sobols >= 0.001
+
+    # format keys for plot ticks
+    sobol_labels = [(x[1:-1].replace("'", " ")).replace(" ,", ",") for x in sobol_keys]
+
+    sobols = sobols[mask]
+    sobol_labels = [s for i, s in enumerate(sobol_labels) if mask[i]]
+
+    if multiple_qoi == False:
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 7))
+        if sobol_donut:
+            wedgeprops = {"linewidth": 0.5, 'width': 0.5, "edgecolor": "k"}
+            wedges, texts = ax1.pie(sobols, wedgeprops=wedgeprops, startangle=-40)
+            bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="w", lw=0.72)
+            kw = dict(arrowprops=dict(arrowstyle="-"), bbox=bbox_props, zorder=0, va="center")
+
+            last_label = False
+            for i, p in enumerate(wedges):
+                ang = (p.theta2 - p.theta1) / 2. + p.theta1
+
+                if not last_label:
+                    y = np.sin(np.deg2rad(ang))
+                    x = np.cos(np.deg2rad(ang))
+                    horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+                    connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+                    kw["arrowprops"].update({"connectionstyle": connectionstyle})
+                    ax1.annotate(sobol_labels[i] + f" ({sobols[i]*100:.1f}%)", xy=(x, y), xytext=(1.35 * np.sign(x), 1.4 * y),
+                                horizontalalignment=horizontalalignment, **kw)
+                    if ang > 310:
+                        last_label = True
+
+            # for i, p in enumerate(wedges):
+            #     ang = (p.theta2 - p.theta1) / 2. + p.theta1
+            #     y = np.sin(np.deg2rad(ang))
+            #     x = np.cos(np.deg2rad(ang))
+            #     horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+            #     connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+            #     kw["arrowprops"].update({"connectionstyle": connectionstyle})
+            #     ax1.annotate(sobol_labels[i], xy=(x, y), xytext=(1.35 * np.sign(x), 1.4 * y),
+            #                 horizontalalignment=horizontalalignment, **kw)
+
+            # ax1.legend(wedges, sobol_labels,
+            #           title="Parameter",
+            #           loc="center left",
+            #           bbox_to_anchor=(1, 0, 0.5, 1))
+
+            ax1.set_title("Normalized Sobol indices")
+        else:
+            ax1.bar(np.arange(len(sobol_keys)) + 1, sobols, width=0.8)
+            ax1.set_xticklabels([" "] + sobol_labels)
+            ax1.set_yscale('log')
+            ax1.set_ylabel('Sobol indices', fontsize=14)
+            ax1.set_xlabel('parameter', fontsize=14)
+            ax1.set_xlim(0, len(sobol_keys) + 1)
+            ax1.set_ylim(0., 1.0)
+        ax2.bar(np.arange(len(gsens_keys)) + 1, glob_sens, color='orange')
+        ax2.set_xticks(list(np.arange(len(gsens_keys)) + 1))
+        ax2.set_xticklabels(list(gsens_keys))
+        ax2.set_ylabel('global sensitivities', fontsize=14)
+        ax2.set_xlabel('parameter', fontsize=14)
+        ax2.axhline(y=0, color='k', alpha=0.5)
+        plt.tight_layout()
+        plt.show()
+    else:
+        if not (type(qois) == np.ndarray and type(results) == np.ndarray):
+            raise ValueError("Please specifiy qois and results as a numpy array of values!")
+        else:
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=[8, 6])
+            for i in range(sobol.values.shape[0]):
+                ax1.plot(qois, sobol.values[i])
+                ax1.set_title("Sobol indices of the parameters over the qois", fontsize=14)
+                ax1.set_xlabel(x_label, fontsize=14)
+                ax1.set_ylabel("Sobol index", fontsize=14)
+                ax1.set_yscale('log')
+            sobol_labels = [(x[1:-1].replace("'", " ")).replace(" ,", ",") for x in sobol_keys]
+            ax1.legend(sobol_labels)
+            # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
+            ax1.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+            ax1.grid()
+
+            # Plot mean and std of the model
+            mean_results = np.mean(results, axis=0)
+            std_results = np.std(results, axis=0)
+            ax2.plot(qois, mean_results)
+            ax2.grid()
+            ax2.set_ylabel(y_label, fontsize=14)
+            ax2.set_xlabel(x_label, fontsize=14)
+            ax2.legend(["mean of " + y_label], loc='upper left')
+            ax2.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+            ax2.set_title("Mean and standard deviation of " + y_label, fontsize=14)
+            # ax2.set_ylim(np.min(results) + np.max(std_results), np.max(results) + np.max(std_results))
+            ax2.fill_between(qois, mean_results - std_results, mean_results + std_results, color="grey", alpha=0.5)
+            plt.tight_layout()
+            plt.show()

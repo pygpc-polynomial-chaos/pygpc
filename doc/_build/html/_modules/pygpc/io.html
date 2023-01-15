@@ -1,0 +1,2244 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pygpc.io &#8212; pygpc 0.12.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pygpc/io';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://pydata-sphinx-theme.readthedocs.io/en/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.12.0';
+        </script>
+    <link rel="canonical" href="http://127.0.0.1:8000/_modules/pygpc/io.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">  
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<script>
+$.get("https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_templates/custom-template.html", success=(data)=>{
+      $("#header-announcement").html(`<div class="bd-header-announcement__content">${data}</div>`);
+  }).fail(() => {
+  console.log("[PST]: Failed to load announcement at: https://raw.githubusercontent.com/pydata/pydata-sphinx-theme/main/docs/_templates/custom-template.html")
+});
+</script>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/" class="logo__image only-light" alt="pygpc">
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt="pygpc">
+  
+  
+    <p class="title logo__title">pygpc</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v0.12.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_gpc.html">
+                        Introduction to generalized Polynomial Chaos (gPC)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_ua.html">
+                        Introduction to uncertainty analysis
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_model.html">
+                        Setting up your model
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_basis.html">
+                        Polynomial basis functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gradient_enhanced_gpc.html">
+                        Gradient enhanced gPC
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_IO.html">
+                        Algorithm: Static_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptive.html">
+                        Algorithm: RegAdaptive
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_quad.html">
+                        Algorithm: Static (Quadrature)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_reg.html">
+                        Algorithm: Static (Regression)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_staticprojection.html">
+                        Algorithm: StaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptiveprojection.html">
+                        Algorithm: RegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic.html">
+                        Algorithm: MEStatic
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestaticprojection.html">
+                        Algorithm: MEStaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic_IO.html">
+                        Algorithm: MEStatic_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_meregadaptiveprojection.html">
+                        Algorithm: MERegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_julia_model.html">
+                        Analyzing julia models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_matlab_model.html">
+                        Analyzing MATLAB models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_parallelization.html">
+                        Parallel processing capabilities of pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_backends.html">
+                        OpenMP and CUDA
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_electrode.html">
+                        Example: Modelling of an electrode
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pygpc.html">
+                        pygpc package
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/index.html">
+                        Introduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/index.html">
+                        Generalized Polynomial Chaos
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/index.html">
+                        Algorithms
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/index.html">
+                        Features
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/k_weise_" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pygpc/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+            
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pydata.org" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v0.12.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_gpc.html">
+                        Introduction to generalized Polynomial Chaos (gPC)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/plot_introduction_ua.html">
+                        Introduction to uncertainty analysis
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_projection.html">
+                        Dimensionality reduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_problem.html">
+                        How to define a gPC problem
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gpc_validation.html">
+                        Validation of gPC approximation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_model.html">
+                        Setting up your model
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_basis.html">
+                        Polynomial basis functions
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/plot_gradient_enhanced_gpc.html">
+                        Gradient enhanced gPC
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_IO.html">
+                        Algorithm: Static_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptive.html">
+                        Algorithm: RegAdaptive
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_quad.html">
+                        Algorithm: Static (Quadrature)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_static_reg.html">
+                        Algorithm: Static (Regression)
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_staticprojection.html">
+                        Algorithm: StaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_regadaptiveprojection.html">
+                        Algorithm: RegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic.html">
+                        Algorithm: MEStatic
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestaticprojection.html">
+                        Algorithm: MEStaticProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_mestatic_IO.html">
+                        Algorithm: MEStatic_IO
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/plot_algorithm_meregadaptiveprojection.html">
+                        Algorithm: MERegAdaptiveProjection
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_julia_model.html">
+                        Analyzing julia models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_matlab_model.html">
+                        Analyzing MATLAB models with pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_parallelization.html">
+                        Parallel processing capabilities of pygpc
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/plot_backends.html">
+                        OpenMP and CUDA
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/plot_electrode.html">
+                        Example: Modelling of an electrode
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pygpc.html">
+                        pygpc package
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_introduction/index.html">
+                        Introduction
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_gpc/index.html">
+                        Generalized Polynomial Chaos
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_algorithms/index.html">
+                        Algorithms
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_features/index.html">
+                        Features
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pygpc-polynomial-chaos/pygpc" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/k_weise_" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pygpc/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+            
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pydata.org" title="pygpc" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><img src="../../_static/logo.png" class="icon-link-image" alt="pygpc"/></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+               <h1>Source code for pygpc.io</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">is_instance</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+
+
+<div class="viewcode-block" id="write_session"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_session">[docs]</a><span class="k">def</span> <span class="nf">write_session</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Saves a gpc session in pickle or hdf5 file formal depending on the</span>
+<span class="sd">    file extension in fname (.pkl or .hdf5)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : Session object</span>
+<span class="sd">        Session class instance containing the gPC information</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Path to output file (.pkl or .hdf5)</span>
+<span class="sd">    folder : str, optional, default: &quot;session&quot;</span>
+<span class="sd">        Path in .hdf5 file (for .hdf5 format only)</span>
+<span class="sd">    overwrite : bool, optional, default: True</span>
+<span class="sd">        Overwrite existing file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    &lt;file&gt;: .hdf5 or .pkl file</span>
+<span class="sd">        .hdf5 or .pkl file containing the gpc session</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">file_format</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s2">&quot;.pkl&quot;</span><span class="p">:</span>
+        <span class="n">write_session_pkl</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s2">&quot;.hdf5&quot;</span><span class="p">:</span>
+        <span class="n">write_session_hdf5</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Session can only be saved in .pkl or .hdf5 format.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_session_pkl"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_session_pkl">[docs]</a><span class="k">def</span> <span class="nf">write_session_pkl</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write Session object including information about the Basis, Problem and Model as pickle file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj: GPC or derived class</span>
+<span class="sd">        Class instance containing the gPC information</span>
+<span class="sd">    fname: str</span>
+<span class="sd">        Path to output file</span>
+<span class="sd">    overwrite : bool, optional, default: True</span>
+<span class="sd">        Overwrite existing file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    &lt;file&gt;: .pkl file</span>
+<span class="sd">        File containing the GPC object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="ne">Warning</span><span class="p">(</span><span class="s2">&quot;File already exists.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_session_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_session_hdf5">[docs]</a><span class="k">def</span> <span class="nf">write_session_hdf5</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write Session object including information about the Basis, Problem and Model as .hdf5 file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : Session object</span>
+<span class="sd">        Session class instance containing the gPC information</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Path to output file</span>
+<span class="sd">    folder : str, optional, default: &quot;session&quot;</span>
+<span class="sd">        Path in .hdf5 file</span>
+<span class="sd">    overwrite : bool, optional, default: True</span>
+<span class="sd">        Overwrite existing file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    &lt;file&gt;: .hdf5 file</span>
+<span class="sd">        .hdf5 file containing the gpc session</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="n">write_dict_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_session"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_session">[docs]</a><span class="k">def</span> <span class="nf">read_session</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a gpc session in pickle or hdf5 file formal depending on the</span>
+<span class="sd">    file extension in fname (.pkl or .hdf5)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        path to input file</span>
+<span class="sd">    folder : str, optional, default: &quot;session&quot;</span>
+<span class="sd">        Path in .hdf5 file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    obj : Session Object</span>
+<span class="sd">        Session object containing instances of Basis, Problem and Model etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">file_format</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s2">&quot;.pkl&quot;</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">read_session_pkl</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s2">&quot;.hdf5&quot;</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">read_session_hdf5</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Session can only be read from .pkl or .hdf5 files.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="read_session_pkl"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_session_pkl">[docs]</a><span class="k">def</span> <span class="nf">read_session_pkl</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read Session object in pickle format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname: str</span>
+<span class="sd">        path to input file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    obj: Session Object</span>
+<span class="sd">        Session object containing instances of Basis, Problem and Model etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="read_session_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_session_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_session_hdf5</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read gPC object including information about input pdfs, polynomials, grid etc.</span>
+
+<span class="sd">    object = read_gpc_obj(fname)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        path to input file</span>
+<span class="sd">    folder : str, optional, default: &quot;session&quot;</span>
+<span class="sd">        Path in .hdf5 file</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    obj: GPC Object</span>
+<span class="sd">        GPC object containing instances of Basis, Problem and Model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.Problem</span> <span class="kn">import</span> <span class="n">Problem</span>
+    <span class="kn">from</span> <span class="nn">.Session</span> <span class="kn">import</span> <span class="n">Session</span>
+    <span class="kn">from</span> <span class="nn">.RandomParameter</span> <span class="kn">import</span> <span class="n">RandomParameter</span>
+
+    <span class="c1"># model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">read_model_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/model&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># parameters</span>
+    <span class="n">parameters_unsorted</span> <span class="o">=</span> <span class="n">read_parameters_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/problem/parameters&quot;</span><span class="p">,</span>
+                                                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">problem_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/problem&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">parameters_random</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">problem_dict</span><span class="p">[</span><span class="s2">&quot;parameters_keys&quot;</span><span class="p">]:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters_unsorted</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameters_unsorted</span><span class="p">[</span><span class="n">p</span><span class="p">],</span> <span class="n">RandomParameter</span><span class="p">):</span>
+            <span class="n">parameters_random</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters_unsorted</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+    <span class="c1"># problem(model, parameters)</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="c1"># options</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/algorithm/options&quot;</span><span class="p">)</span>
+
+    <span class="c1"># validation</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">validation</span> <span class="o">=</span> <span class="n">read_validation_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/validation&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">validation</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># grid</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">read_grid_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/grid&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># algorithm</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.Algorithm&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;pygpc&quot;</span><span class="p">)</span>
+    <span class="n">algorithm_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/algorithm&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">algorithm_dict</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">alg</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="s2">&quot;gpc&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()[</span><span class="n">a</span><span class="p">]</span>
+
+    <span class="n">algorithm</span> <span class="o">=</span> <span class="n">alg</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+    <span class="c1"># gpc</span>
+    <span class="n">gpc_raw_list</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/gpc&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.Algorithm&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;pygpc&quot;</span><span class="p">)</span>
+
+    <span class="n">gpc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gpc_raw_list</span><span class="p">))]</span>
+    <span class="k">for</span> <span class="n">i_gpc</span><span class="p">,</span> <span class="n">gpc_raw</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gpc_raw_list</span><span class="p">):</span>
+
+        <span class="c1"># read and initialize classifier if present</span>
+        <span class="k">if</span> <span class="s2">&quot;classifier&quot;</span> <span class="ow">in</span> <span class="n">gpc_raw</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">classifier</span> <span class="o">=</span> <span class="n">read_classifier_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span>
+                                                   <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/gpc/</span><span class="si">{}</span><span class="s2">/classifier&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_gpc</span><span class="p">),</span>
+                                                   <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># read SGPC object if present (sub-gpc)</span>
+        <span class="k">if</span> <span class="s2">&quot;gpc&quot;</span> <span class="ow">in</span> <span class="n">gpc_raw</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">gpc</span> <span class="o">=</span> <span class="n">read_sgpc_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span>
+                                      <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/gpc/</span><span class="si">{}</span><span class="s2">/gpc&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_gpc</span><span class="p">),</span>
+                                      <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># get gpc class (SGPC or MEGPC)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">gpc_raw</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">del</span> <span class="n">gpc_raw</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span>
+
+        <span class="c1"># SGPC</span>
+        <span class="k">if</span> <span class="s2">&quot;SGPC&quot;</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="vm">__module__</span><span class="p">:</span>
+            <span class="n">gpc_list</span> <span class="o">=</span> <span class="n">read_sgpc_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span>
+                                           <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/gpc/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_gpc</span><span class="p">),</span>
+                                           <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="c1"># MEGPC with sub-gpcs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># get input parameters of gpc</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+            <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()[</span><span class="n">a</span><span class="p">]</span>
+
+            <span class="c1"># initialize gpc</span>
+            <span class="n">gpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+            <span class="c1"># loop over entries and save in self (if we have it in locals() we take this,</span>
+            <span class="c1"># e.g. gpc, grid, validation etc)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">gpc_raw</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">gpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="nb">locals</span><span class="p">()[</span><span class="n">key</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">gpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="n">gpc_raw</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="c1"># session(algorithm)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
+
+    <span class="c1"># read session hdf5 content</span>
+    <span class="n">session_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">session_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="nb">locals</span><span class="p">()[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">session_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="c1"># add path of .hdf5 script to python which generated the session (needed in case of relative imports)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">session_dict</span><span class="p">[</span><span class="s2">&quot;fn_script&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># set gpc type in session</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">set_gpc</span><span class="p">(</span><span class="n">gpc_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">session</span></div>
+
+
+<div class="viewcode-block" id="read_problem_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_problem_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_problem_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads problem from hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    problem : Problem object</span>
+<span class="sd">        Problem</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.Problem</span> <span class="kn">import</span> <span class="n">Problem</span>
+
+    <span class="c1"># read content of problem</span>
+    <span class="n">problem_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">read_model_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/model&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># parameters</span>
+    <span class="n">parameters_unsorted</span> <span class="o">=</span> <span class="n">read_parameters_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/parameters&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># sort parameters</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">problem_dict</span><span class="p">[</span><span class="s2">&quot;parameters_keys&quot;</span><span class="p">]:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters_unsorted</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+    <span class="c1"># initialize problem</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">Problem</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">problem</span></div>
+
+
+<div class="viewcode-block" id="read_classifier_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_classifier_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_classifier_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads classifier from hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    classifier : classifier object</span>
+<span class="sd">        Classifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">classifier_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.Classifier&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;pygpc&quot;</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">classifier_dict</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># get input parameters of classifier</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">classifier_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+
+    <span class="n">init_classifier</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># for some reason the domains may be swapped in very rare cases so we do the init again</span>
+    <span class="k">while</span> <span class="n">init_classifier</span><span class="p">:</span>
+        <span class="c1"># initialize classifier</span>
+        <span class="n">classifier</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+        <span class="c1"># ensure that domains are not swapped</span>
+        <span class="n">classifier</span><span class="o">.</span><span class="n">domains</span> <span class="o">=</span> <span class="n">classifier_dict</span><span class="p">[</span><span class="s2">&quot;domains&quot;</span><span class="p">]</span>
+        <span class="n">classifier</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="n">classifier_dict</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">],</span>
+                          <span class="n">results</span><span class="o">=</span><span class="n">classifier_dict</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="n">classifier_dict</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="n">classifier_dict</span><span class="p">[</span><span class="s2">&quot;domains&quot;</span><span class="p">])</span><span class="o">/</span> \
+                <span class="nb">len</span><span class="p">(</span><span class="n">classifier_dict</span><span class="p">[</span><span class="s2">&quot;domains&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.95</span><span class="p">:</span>
+            <span class="n">init_classifier</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">classifier</span></div>
+
+
+<div class="viewcode-block" id="read_basis_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_basis_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_basis_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads Basis from hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    basis : Basis object</span>
+<span class="sd">        basis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">basis_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">module_basis</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.Basis&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;pygpc&quot;</span><span class="p">)</span>
+    <span class="n">module_basis_function</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.BasisFunction&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;pygpc&quot;</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module_basis</span><span class="p">,</span> <span class="n">basis_dict</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># get arguments to initialize basis</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># collect arguments from hdf5 file content</span>
+    <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">basis_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+
+    <span class="c1"># initialize basis</span>
+    <span class="n">basis</span> <span class="o">=</span> <span class="n">b</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+    <span class="c1"># write content in self</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">basis_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>  <span class="n">basis_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">basis_dict</span><span class="p">[</span><span class="s2">&quot;dim&quot;</span><span class="p">])]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">basis_dict</span><span class="p">[</span><span class="s2">&quot;n_basis&quot;</span><span class="p">])]</span>
+    <span class="k">for</span> <span class="n">i_basis</span><span class="p">,</span> <span class="n">b_lst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">basis_dict</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">i_dim</span><span class="p">,</span> <span class="n">b_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">b_lst</span><span class="p">):</span>
+            <span class="c1"># get type of basis function</span>
+            <span class="n">bf</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module_basis_function</span><span class="p">,</span> <span class="n">b_</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c1"># read content of hdf5</span>
+            <span class="n">bf_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                           <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/b/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_basis</span><span class="p">,</span> <span class="n">i_dim</span><span class="p">),</span>
+                                           <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+            <span class="c1"># get arguments to initialize basis function</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">bf</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+            <span class="c1"># collect arguments from hdf5 file content</span>
+            <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">bf_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+
+            <span class="c1"># initialize basis function</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">i_basis</span><span class="p">][</span><span class="n">i_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">bf</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+    <span class="c1"># extend basis</span>
+    <span class="n">basis</span><span class="o">.</span><span class="n">extend_basis</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">basis</span></div>
+
+
+<div class="viewcode-block" id="read_sgpc_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_sgpc_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_sgpc_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads SGPC from hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sgpc : SGPC object or list of SGPC objects</span>
+<span class="sd">        SGPC</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sgpc_raw_list</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.SGPC&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;pygpc&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">sgpc_raw_list</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">sgpc_raw_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">sgpc_raw_list</span><span class="p">]</span>
+        <span class="n">sub_gpc</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sub_gpc</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">sgpc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sgpc_raw_list</span><span class="p">))]</span>
+
+    <span class="k">for</span> <span class="n">i_gpc</span><span class="p">,</span> <span class="n">sgpc_raw</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sgpc_raw_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sub_gpc</span><span class="p">:</span>
+            <span class="n">hdf5_loc</span> <span class="o">=</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_gpc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hdf5_loc</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
+
+        <span class="c1"># get gpc by type</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">sgpc_raw</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># get input parameters of classifier</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="s2">&quot;problem&quot;</span><span class="p">:</span>
+                <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_problem_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                                      <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="n">hdf5_loc</span> <span class="o">+</span> <span class="n">a</span><span class="p">,</span>
+                                                      <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">a</span> <span class="o">==</span> <span class="s2">&quot;validation&quot;</span><span class="p">:</span>
+                <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_validation_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                                         <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="n">hdf5_loc</span> <span class="o">+</span> <span class="n">a</span><span class="p">,</span>
+                                                         <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">sgpc_raw</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+
+        <span class="c1"># initialize SGPC object</span>
+        <span class="n">sgpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+        <span class="c1"># write objects in self</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sgpc_raw</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">sgpc_raw</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="s2">&quot;pygpc.Basis&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">:</span>
+                    <span class="n">basis</span> <span class="o">=</span> <span class="n">read_basis_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                                 <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="n">hdf5_loc</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                                                 <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">sgpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="n">basis</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="s2">&quot;pygpc.Grid&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">:</span>
+                    <span class="n">grid</span> <span class="o">=</span> <span class="n">read_grid_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                               <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="n">hdf5_loc</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                                               <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">sgpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="s2">&quot;pygpc.Problem&quot;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">:</span>
+                    <span class="n">problem</span> <span class="o">=</span> <span class="n">read_problem_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                                     <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="n">hdf5_loc</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                                                     <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">sgpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="n">problem</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">sgpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="n">sgpc_raw</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">sgpc_list</span><span class="p">[</span><span class="n">i_gpc</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="n">sgpc_raw</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">sgpc_list</span></div>
+
+
+<div class="viewcode-block" id="read_model_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_model_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_model_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads model from hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    model : Model object</span>
+<span class="sd">        Model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">model_dict</span><span class="p">[</span><span class="s2">&quot;fname&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">model_dict</span><span class="p">[</span><span class="s2">&quot;fname&quot;</span><span class="p">])[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">model_dict</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])()</span>
+
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="read_parameters_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_parameters_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_parameters_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads parameters from hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    parameters : OrderedDict</span>
+<span class="sd">        OrdererDict containing the parameters (random and deterministic)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">parameters_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.RandomParameter&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;pygpc&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parameters_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">parameters_dict</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">parameters_dict</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="ow">is</span> <span class="n">OrderedDict</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="s2">&quot;RandomParameter&quot;</span> <span class="ow">in</span> <span class="n">parameters_dict</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]:</span>
+            <span class="n">rp</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">parameters_dict</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">rp</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+            <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters_dict</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">a</span><span class="p">]</span>
+
+            <span class="n">parameters</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">rp</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters_dict</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">parameters</span></div>
+
+
+<div class="viewcode-block" id="read_grid_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_grid_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_grid_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads and initializes grid from hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    grid : Grid object</span>
+<span class="sd">        Grid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">grid_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.Grid&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;pygpc&quot;</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">grid_dict</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># get arguments of grid function</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># read content of hdf5 and relate to arguments</span>
+    <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">,</span> <span class="s2">&quot;coords_norm&quot;</span><span class="p">,</span> <span class="s2">&quot;coords_gradient&quot;</span><span class="p">,</span> <span class="s2">&quot;coords_gradient_norm&quot;</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">]:</span>
+            <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid_dict</span><span class="p">[</span><span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">a</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">a</span> <span class="o">==</span> <span class="s2">&quot;parameters_random&quot;</span><span class="p">:</span>
+            <span class="n">parameters_random</span> <span class="o">=</span> <span class="n">read_parameters_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                                          <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/parameters_random&quot;</span><span class="p">,</span>
+                                                          <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters_random</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+
+    <span class="c1"># regenerate unique grid IDs</span>
+    <span class="n">args_dict</span><span class="p">[</span><span class="s2">&quot;coords_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_dict</span><span class="p">[</span><span class="s2">&quot;n_grid&quot;</span><span class="p">])]</span>
+
+    <span class="k">if</span> <span class="n">args_dict</span><span class="p">[</span><span class="s2">&quot;coords_gradient&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args_dict</span><span class="p">[</span><span class="s2">&quot;coords_gradient_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args_dict</span><span class="p">[</span><span class="s2">&quot;coords_id&quot;</span><span class="p">]</span>
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">grid</span></div>
+
+
+<div class="viewcode-block" id="read_validation_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_validation_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_validation_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads and initializes ValidatioSet from hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    validation : ValidationSet object</span>
+<span class="sd">        ValidationSet</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.ValidationSet</span> <span class="kn">import</span> <span class="n">ValidationSet</span>
+    <span class="n">validation_dict</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">validation_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">validation</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">args_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">ValidationSet</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
+                <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_grid_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/grid&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">args_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">validation_dict</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+
+        <span class="n">validation</span> <span class="o">=</span> <span class="n">ValidationSet</span><span class="p">(</span><span class="o">**</span><span class="n">args_dict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">validation</span></div>
+
+
+<div class="viewcode-block" id="read_group_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_group_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read data from group (folder) in hdf5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : dict or list or OrderedDict</span>
+<span class="sd">        Folder content</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+    <span class="n">attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="n">folder</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">folder</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">folder</span><span class="p">],</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">folder</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="n">folder</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">folder</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attrs</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_array_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                             <span class="n">arr_name</span><span class="o">=</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">folder</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;list&quot;</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;attrs&quot;</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;dict&quot;</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;collections.OrderedDict&quot;</span><span class="p">:</span>
+                <span class="n">data_ordered</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;attrs&quot;</span><span class="p">:</span>
+                        <span class="n">data_ordered</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data_ordered</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="read_array_from_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_array_from_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_array_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">arr_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data</span>
+
+<span class="sd">    attrs</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">arr_name</span><span class="p">],</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">read_group_from_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">arr_name</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">arr_name</span><span class="p">][()]</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">bytes_</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="ow">and</span> <span class="p">(</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span> <span class="ow">or</span> <span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;N/A&quot;</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="write_dict_to_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_dict_to_hdf5">[docs]</a><span class="k">def</span> <span class="nf">write_dict_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes dict and passes its keys to write_arr_to_hdf5()</span>
+
+<span class="sd">    fn_hdf5:folder/</span>
+<span class="sd">                  |--key1</span>
+<span class="sd">                  |--key2</span>
+<span class="sd">                  |...</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file to write in</span>
+<span class="sd">    data : dict</span>
+<span class="sd">        Dictionary to save in .hdf5 file</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        Folder inside .hdf5 file where dict is saved</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print output info</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">max_recursion_depth</span> <span class="o">=</span> <span class="mi">12</span>
+
+    <span class="c1"># object (dict)</span>
+    <span class="k">if</span> <span class="n">is_instance</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">):</span>
+
+        <span class="n">t</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">get_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># do not save uuids in hdf5</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="s2">&quot;uuid.UUID&quot;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># create group and set type and dtype attributes</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># write content</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">folder</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+
+                <span class="n">write_arr_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                  <span class="n">arr_name</span><span class="o">=</span><span class="n">folder</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">key</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                                  <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># mappingproxy (can not be saved)</span>
+    <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;&lt;class &#39;mappingproxy&#39;&gt;&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;mappingproxy&quot;</span>
+        <span class="n">write_arr_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                          <span class="n">arr_name</span><span class="o">=</span><span class="s2">&quot;mappingproxy&quot;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                          <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># list or tuple</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">get_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># create group and set type and dtype attributes</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
+            <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">lst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">folder</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+                <span class="n">lst</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+
+            <span class="n">write_arr_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                              <span class="n">arr_name</span><span class="o">=</span><span class="n">folder</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span>
+                              <span class="n">data</span><span class="o">=</span><span class="n">lst</span><span class="p">,</span>
+                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># dict or OrderedDict</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">get_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># create group and set type and dtype attributes</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">folder</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+
+            <span class="n">write_arr_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                              <span class="n">arr_name</span><span class="o">=</span><span class="n">folder</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+                              <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_arr_to_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_arr_to_hdf5">[docs]</a><span class="k">def</span> <span class="nf">write_arr_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="n">arr_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite_arr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes an array and adds it to an .hdf5 file</span>
+
+<span class="sd">    If data is list of dict, write_dict_to_hdf5() is called for each dict with adapted hdf5-folder name</span>
+<span class="sd">    Otherwise, data is casted to np.ndarray and dtype of unicode data casted to &#39;|S&#39;.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fn_hdf5 : str</span>
+<span class="sd">        Filename of .hdf5 file</span>
+<span class="sd">    arr_name : str</span>
+<span class="sd">        Complete path in .hdf5 file with array name</span>
+<span class="sd">    data : ndarray, list or dict</span>
+<span class="sd">        Data to write</span>
+<span class="sd">    overwrite_arr : bool, optional, default: True</span>
+<span class="sd">        Overwrite existing array</span>
+<span class="sd">    verbose : bool, optional, default: False</span>
+<span class="sd">        Print information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">max_recursion_depth</span> <span class="o">=</span> <span class="mi">12</span>
+
+    <span class="c1"># dict or OrderedDict</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">write_dict_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                               <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                               <span class="n">folder</span><span class="o">=</span><span class="n">arr_name</span><span class="p">,</span>
+                               <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="c1"># list of dictionaries:</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_instance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">get_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># do not save uuids in hdf5</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="s2">&quot;uuid.UUID&quot;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create group and set type and dtype attributes</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">))</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">lst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+                    <span class="n">lst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">)</span>
+
+                <span class="n">write_dict_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                                   <span class="n">data</span><span class="o">=</span><span class="n">lst</span><span class="p">,</span>
+                                   <span class="n">folder</span><span class="o">=</span><span class="n">arr_name</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span>
+                                   <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="c1"># object</span>
+    <span class="k">elif</span> <span class="n">is_instance</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">get_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># create group and set type and dtype attributes</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">))</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+            <span class="n">write_dict_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                               <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span>
+                               <span class="n">folder</span><span class="o">=</span><span class="n">arr_name</span><span class="p">,</span>
+                               <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="c1"># list or tuple</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;None&quot;</span><span class="p">])</span>
+
+        <span class="n">t</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">get_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># do not save uuids in hdf5</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="s2">&quot;uuid.UUID&quot;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create group and set type and dtype attributes</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">))</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+            <span class="n">data_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">lst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">lst</span>
+
+            <span class="n">write_dict_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                               <span class="n">data</span><span class="o">=</span><span class="n">data_dict</span><span class="p">,</span>
+                               <span class="n">folder</span><span class="o">=</span><span class="n">arr_name</span><span class="p">,</span>
+                               <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+            <span class="k">return</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># np.arrays of np.arrays</span>
+    <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;O&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">max_recursion_depth</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">get_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># create group and set type and dtype attributes</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">))</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">write_dict_to_hdf5</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="o">=</span><span class="n">fn_hdf5</span><span class="p">,</span>
+                               <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                               <span class="n">folder</span><span class="o">=</span><span class="n">arr_name</span><span class="p">,</span>
+                               <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="c1"># do some type casting from numpy/pd -&gt; h5py</span>
+    <span class="c1"># date column from experiment.csv is O</span>
+    <span class="c1"># plotsetting[&quot;view&quot;] is O list of list of different length</span>
+    <span class="c1"># coil1 and coil2 columns names from experiment.csv is &lt;U8</span>
+    <span class="c1"># coil_mean column name from experiment.csv is &lt;U12</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;O&#39;</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;|S&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Converting array &quot;</span> <span class="o">+</span> <span class="n">arr_name</span> <span class="o">+</span> <span class="s2">&quot; to string&quot;</span><span class="p">)</span>
+
+    <span class="n">t</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">get_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn_hdf5</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="c1"># create data_set</span>
+        <span class="k">if</span> <span class="n">overwrite_arr</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">f</span><span class="p">[</span><span class="n">arr_name</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">arr_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arr_name</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="get_dtype"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.get_dtype">[docs]</a><span class="k">def</span> <span class="nf">get_dtype</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get type and datatype of object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : Object</span>
+<span class="sd">        Input object (any)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type : str</span>
+<span class="sd">        Type of object (e.g. &#39;class&#39;)</span>
+<span class="sd">    dtype : str</span>
+<span class="sd">        Datatype of object (e.g. &#39;numpy.ndarray&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">type_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+    <span class="n">type_attr</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\&lt;(.*?)\ &#39;&quot;</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="n">type_str</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dtype_attr</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&#39;(.*?)&#39;&quot;</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="n">type_str</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">type_attr</span><span class="p">,</span> <span class="n">dtype_attr</span></div>
+
+
+<div class="viewcode-block" id="write_data_txt"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_data_txt">[docs]</a><span class="k">def</span> <span class="nf">write_data_txt</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write data (quantity of interest) in .txt file (e.g. coeffs, mean, std, ...).</span>
+
+<span class="sd">    write_data_txt(data, fname)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: ndarray of float</span>
+<span class="sd">        Data to save</span>
+<span class="sd">    fname: str</span>
+<span class="sd">        Path to output file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    &lt;file&gt;: .txt file</span>
+<span class="sd">        File containing the data (tab delimited)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.10e</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">footer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_data_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_data_hdf5">[docs]</a><span class="k">def</span> <span class="nf">read_data_hdf5</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read data from .hdf5 file (e.g. coeffs, mean, std, ...).</span>
+
+<span class="sd">    load_data_hdf5(fname, loc)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname: str</span>
+<span class="sd">        path to input file</span>
+<span class="sd">    loc: str</span>
+<span class="sd">        location (folder and name) in hdf5 file (e.g. data/phi)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data: ndarray of float</span>
+<span class="sd">        Loaded data from .hdf5 file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+<div class="viewcode-block" id="write_data_hdf5"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_data_hdf5">[docs]</a><span class="k">def</span> <span class="nf">write_data_hdf5</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write quantity of interest in .hdf5 file (e.g. coeffs, mean, std, ...).</span>
+
+<span class="sd">    write_data_hdf5(data, fname, loc)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: np.ndarray</span>
+<span class="sd">        data to save</span>
+<span class="sd">    fname: str</span>
+<span class="sd">        path to output file</span>
+<span class="sd">    loc: str</span>
+<span class="sd">        location (folder and name) in hdf5 file (e.g. data/phi)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_sobol_idx_txt"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_sobol_idx_txt">[docs]</a><span class="k">def</span> <span class="nf">write_sobol_idx_txt</span><span class="p">(</span><span class="n">sobol_idx</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write sobol_idx list in file.</span>
+
+<span class="sd">    write_sobol_idx_txt(sobol_idx, filename)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sobol_idx: [N_sobol] list of np.ndarray</span>
+<span class="sd">        List of parameter label indices belonging to Sobol indices</span>
+<span class="sd">    fname: str</span>
+<span class="sd">        Path to output file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    &lt;file&gt;: .txt file</span>
+<span class="sd">        File containing the sobol index list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Parameter index list of Sobol indices:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">sobol_idx</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">entry</span> <span class="o">!=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">line</span> <span class="o">!=</span> <span class="n">sobol_idx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="read_sobol_idx_txt"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.read_sobol_idx_txt">[docs]</a><span class="k">def</span> <span class="nf">read_sobol_idx_txt</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read sobol_idx list from file.</span>
+
+<span class="sd">    read_sobol_idx_txt(fname)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname: str</span>
+<span class="sd">        Path to input file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sobol_idx: [N_sobol] list of np.array</span>
+<span class="sd">        List of parameter label indices belonging to Sobol indices</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">sobol_idx</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">while</span> <span class="n">line</span><span class="p">:</span>
+
+        <span class="c1"># ignore comments in text file</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># read comma separated indices and convert to ndarray</span>
+            <span class="n">sobol_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="p">]))</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sobol_idx</span></div>
+
+
+<div class="viewcode-block" id="write_log_sobol"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.write_log_sobol">[docs]</a><span class="k">def</span> <span class="nf">write_log_sobol</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">random_vars</span><span class="p">,</span> <span class="n">sobol_rel_order_mean</span><span class="p">,</span> <span class="n">sobol_rel_1st_order_mean</span><span class="p">,</span> <span class="n">sobol_extracted_idx_1st</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write average ratios of Sobol indices into logfile.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname: str</span>
+<span class="sd">        Path of logfile</span>
+<span class="sd">    random_vars: list of str</span>
+<span class="sd">        Labels of random variables</span>
+<span class="sd">    sobol_rel_order_mean: np.ndarray</span>
+<span class="sd">        Average proportion of the Sobol indices of the different order to the total variance (1st, 2nd, etc..,).</span>
+<span class="sd">        (over all output quantities)</span>
+<span class="sd">    sobol_rel_1st_order_mean: np.ndarray</span>
+<span class="sd">        Average proportion of the random variables of the 1st order Sobol indices to the total variance.</span>
+<span class="sd">        (over all output quantities)</span>
+<span class="sd">    sobol_extracted_idx_1st: list of int [N_sobol_1st]</span>
+<span class="sd">        Indices of extracted 1st order Sobol indices corresponding to SGPC.random_vars.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    &lt;File&gt;: .txt file</span>
+<span class="sd">        Logfile containing information about the average ratios of 1st order Sobol indices w.r.t. the total variance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># start log</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Sobol indices:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;==============</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># print order ratios</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Ratio: order / total variance over all output quantities:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sobol_rel_order_mean</span><span class="p">)):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Order </span><span class="si">{}</span><span class="s2">: </span><span class="si">{:.4f}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sobol_rel_order_mean</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># print 1st order ratios of parameters</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Ratio: 1st order Sobol indices of parameters / total variance over all output quantities</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;----------------------------------------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># random_vars = []</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">random_vars</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">random_vars</span><span class="p">))])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sobol_rel_1st_order_mean</span><span class="p">)):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}{:s}</span><span class="s2">: </span><span class="si">{:.4f}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">max_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_vars</span><span class="p">[</span><span class="n">sobol_extracted_idx_1st</span><span class="p">[</span><span class="n">i</span><span class="p">]]))</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span><span class="p">,</span>
+            <span class="n">random_vars</span><span class="p">[</span><span class="n">sobol_extracted_idx_1st</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+            <span class="n">sobol_rel_1st_order_mean</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="c1"># random_vars.append(self.random_vars[sobol_extracted_idx_1st[i]])</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="c1"># # initialize logger</span>
+<span class="c1"># file_logger = logging.getLogger(&#39;gPC&#39;)</span>
+<span class="c1"># file_logger.setLevel(logging.DEBUG)</span>
+<span class="c1"># file_logger_handler = logging.FileHandler(&#39;gPC.log&#39;)</span>
+<span class="c1"># file_logger_formatter = logging.Formatter(&#39;%(asctime)s - %(name)s - %(message)s&#39;)</span>
+<span class="c1"># file_logger_handler.setFormatter(file_logger_formatter)</span>
+<span class="c1"># file_logger.addHandler(file_logger_handler)</span>
+
+<span class="n">console_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;gPC_console_output&#39;</span><span class="p">)</span>
+<span class="n">console_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">console_logger_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">console_logger_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">console_logger_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">console_logger_formatter</span><span class="p">)</span>
+<span class="n">console_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_logger_handler</span><span class="p">)</span>
+
+<span class="c1"># file_logger.disabled = False</span>
+<span class="n">console_logger</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="c1"># def activate_terminal_output():</span>
+<span class="c1">#     console_logger.disabled = False</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def activate_logfile_output():</span>
+<span class="c1">#     file_logger.disabled = False</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def deactivate_terminal_output():</span>
+<span class="c1">#     console_logger.disabled = True</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def deactivate_logfile_output():</span>
+<span class="c1">#     file_logger.disabled = True</span>
+
+
+<div class="viewcode-block" id="iprint"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.iprint">[docs]</a><span class="k">def</span> <span class="nf">iprint</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function that prints out a message over the python logging module</span>
+
+<span class="sd">    iprint(message, verbose=True)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    message: string</span>
+<span class="sd">        String to print in standard output</span>
+<span class="sd">    verbose: bool, optional, default=True</span>
+<span class="sd">        Determines if string is printed out</span>
+<span class="sd">    tab: int</span>
+<span class="sd">        Number of tabs before message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tab</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="n">tab</span> <span class="o">+</span> <span class="n">message</span>
+        <span class="c1"># console_logger.info(message)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="wprint"><a class="viewcode-back" href="../../pygpc.html#pygpc.io.wprint">[docs]</a><span class="k">def</span> <span class="nf">wprint</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function that prints out a warning message over the python logging module</span>
+
+<span class="sd">    wprint(message, verbose=True)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    message: string</span>
+<span class="sd">        String to print in standard output</span>
+<span class="sd">    verbose: bool, optional, default=True</span>
+<span class="sd">        Determines if string is printed out</span>
+<span class="sd">    tab: int</span>
+<span class="sd">        Number of tabs before message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tab</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="n">tab</span> <span class="o">+</span> <span class="n">message</span>
+        <span class="n">console_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+</pre></div>
+<div class="section">
+   
+</div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, Konstantin Weise.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

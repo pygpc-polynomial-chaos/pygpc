@@ -2611,6 +2611,7 @@ class Lim2002(AbstractModel):
 
         return y_out
 
+
 class Ishigami(AbstractModel):
     """
     Three-dimensional test function of Ishigami.
@@ -3765,62 +3766,130 @@ class ElectrodeModel(AbstractModel):
 
         return Z
 
-# class Euber(AbstractModel):
-#     """
-#     Euler-Bernouli Model for multi-layered beam
-#
-#
-#     Parameters
-#     ----------
-#     p["x1"]: float or ndarray of float [n_grid]
-#         First parameter defined in [n, n]
-#
-#     Returns
-#     -------
-#     y: ndarray of float [n_grid x 1]
-#         Output data
-#     """
-#
-#     def __init__(self, matlab_model=False):
-#         super(type(self), self).__init__(matlab_model=matlab_model)
-#         self.fname = inspect.getfile(inspect.currentframe())
-#
-#     def validate(self):
-#         pass
-#
-#     def simulate(self, process_id=None, matlab_engine=None):
-#
-#
-#         # Platin
-#         rho_pt = 21450  # kg/m³
-#         E_pt = 126.8e9  # Pa
-#         # Scandiumaluminiumnitrit
-#         rho_scaln = 3318  # kg/m³
-#         E_scaln = 315.2e9  # Pa
-#         # Nickel
-#         rho_ni = 8908  # kg/m³
-#         E_ni = 200e9  # Pa
-#
-#         mat_param = [E_pt, E_scaln, E_ni,
-#                      rho_pt, rho_scaln, rho_ni]
-#
-#         y = np.zeros(len(self.p["x1"]))
-#
-#         for i in range(len(self.p["x1"])):
-#             bndmiddl = [self.p["x1"][i], self.p["x2"][i], self.p["x3"][i], self.p["x4"][i], self.p["x5"][i], self.p["x6"][i], self.p["x7"][i]]
-#
-#             beam = euber()
-#             beam.prec = 600
-#             beam.lyrd_beam_reduced_params(*bndmiddl, *mat_param, N=100)
-#             try:
-#                 y[i] = beam.get_first_n_ekf_bruteforce(n=1, om=80, stepsize=70)[0][0] / 2 / np.pi
-#             except IndexError:
-#                 a = 0
-#
-#
-#         if type(y) is not np.ndarray:
-#             y = np.array([y])
-#
-#         y_out = y[:, np.newaxis]
-#
-#         return y_out
+
+class Lorenz_System(AbstractModel):
+    """
+    Model for the Lorenz System of differential equations. It is nonlinear and shows chaotic behaviour specifically for
+    the three parameter values sigma = 10.0, beta = 28.0 and rho = 8.0/3.0. The lorenz attractor can then be observed in
+    any three dimensional trajectory.
+
+    Parameters
+    ----------
+    p["sigma"] : float or ndarray of float [n_grid]
+        Parameter of the system
+    p["beta"] : float or ndarray of float [n_grid]
+        Parameter of the system
+    p["rho"] : float or ndarray of float [n_grid]
+        Parameter of the system
+    p["y1_0"] : float
+        initial value of first variable
+    p["y2_0"] : float
+        initial value of second variable
+    p["y3_0"] : float
+        initial value of third variable
+    p["t_end"] : float
+        the end of the timespan for which the system will be evaluated
+    p["step_size"] : float
+        the step size for the time increments during which the system will be evaluated
+
+    Returns
+    -------
+    x : ndarray of float [n_grid x n_time_steps]
+        Results of x coordinate of the system in time steps, the gPC is conducted for the three parameters sigma, beta
+        and rho
+    """
+
+    def __init__(self):
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        def lorenz(t, state, sigma, beta, rho):
+            x, y, z = state
+            dx = sigma * (y - x)
+            dy = x * (rho - z) - y
+            dz = x * y - beta * z
+
+            return [dx, dy, dz]
+
+        x_out_shape = self.p["sigma"].shape[0]
+        t_span = (0.0, self.p["t_end"])
+        t = np.arange(0.0, self.p["t_end"][0], self.p["step_size"][0])
+        sols = np.zeros((x_out_shape, t.shape[0]))
+        for i in range(x_out_shape):
+            p = (self.p["sigma"][i], self.p["beta"][i], self.p["rho"][i])
+            y0 = [self.p["x_0"][i], self.p["y_0"][i], self.p["z_0"][i]]
+            # only save x-coordinate (index 0)
+            sols[i, :] = odeint(lorenz, y0, t, p, tfirst=True)[:, 0]
+        x_out = sols
+
+        return x_out
+
+class Lorenz_System_julia(AbstractModel):
+    """
+    Model for the Lorenz System of differential equations in julia. It is nonlinear and shows chaotic behaviour
+    specifically for the three parameter values sigma = 10.0, beta = 28.0 and rho = 8.0/3.0. The lorenz attractor can
+    then be observed in any three dimensional trajectory.
+
+    Parameters
+    ----------
+    p["sigma"] : float or ndarray of float [n_grid]
+        Parameter of the system
+    p["beta"] : float or ndarray of float [n_grid]
+        Parameter of the system
+    p["rho"] : float or ndarray of float [n_grid]
+        Parameter of the system
+    p["y1_0"] : float
+        initial value of first variable
+    p["y2_0"] : float
+        initial value of second variable
+    p["y3_0"] : float
+        initial value of third variable
+    p["t_end"] : float
+        the end of the timespan for which the system will be evaluated
+    p["step_size"] : float
+        the step size for the time increments during which the system will be evaluated
+
+    Returns
+    -------
+    x : ndarray of float [n_grid x n_time_steps]
+        Results of x coordinate of the system in time steps, the gPC is conducted for the three parameters sigma, beta
+        and rho
+    """
+
+    def __init__(self, fname_julia=None):
+        if fname_julia is not None:
+            self.fname_julia = fname_julia
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        from julia import Main
+        # the package DifferentialEquations.jl needs to be installed in the julia environment
+        # for this example the folder "julia_env" is located in the same folder as the julia file
+        fname_folder = os.path.split(self.fname_julia)[0]
+        Main.fname_environment = os.path.join(fname_folder, 'julia_env')
+        Main.eval('import Pkg; Pkg.activate(fname_environment)')
+
+        # access .jl file
+        Main.fname_julia = self.fname_julia
+        Main.include(Main.fname_julia)
+
+        x_out_shape = self.p["sigma"].shape[0]
+        t_span = (0.0, self.p["t_end"][0])
+        t = np.arange(0.0, self.p["t_end"][0], self.p["step_size"][0])
+        sols = np.zeros((x_out_shape, t.shape[0]))
+        for i in range(x_out_shape):
+            p = [self.p["sigma"][i], self.p["beta"][i], self.p["rho"][i]]
+            y0 = [self.p["y1_0"][i], self.p["y2_0"][i], self.p["y3_0"][i]]
+            # only save x-coordinate (index 0)
+            sols[i, :] = Main.Julia_Lorenz(p, y0, t)[0]
+        x_out = sols
+
+        return x_out

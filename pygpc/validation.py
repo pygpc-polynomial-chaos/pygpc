@@ -32,7 +32,7 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
         If available, data of original model function at grid, containing all QOIs
     n_samples : int
         Number of samples to validate the gPC approximation (ignored if coords and data_original is provided)
-    output_idx : ndarray or list, optional, default=None [1 x n_out]
+    output_idx : int or ndarray of int or list of int, optional, default=None [1 x n_out]
         Index of output quantities to consider (if output_idx=None, all output quantities are considered)
     n_cpu : int, optional, default=1
         Number of CPU cores to use (parallel function evaluations) to evaluate original model function
@@ -160,7 +160,7 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
             matplotlib.rc('xtick', labelsize=12)
             matplotlib.rc('ytick', labelsize=12)
 
-            fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(5.5, 5))
+            fig1, ax1 = plt.subplots(nrows=1, ncols=1, squeeze=True, figsize=(6, 5))
 
             if hist is None:
                 ax1.plot(pdf_x_gpc, pdf_y_gpc, pdf_x_orig, pdf_y_orig)
@@ -176,6 +176,7 @@ def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=
             ax1.text(0.05, 0.95, r'$error=%.2f$' % (100 * relative_error_nrmsd[0],) + "%",
                      transform=ax1.transAxes, fontsize=12, verticalalignment='top',
                      bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+            plt.tight_layout()
 
             if fn_out:
                 plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(o_idx) + '.pdf')
@@ -222,8 +223,8 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
         A cartesian grid is generated based on the limits of the specified random_vars
     coords : ndarray of float [n_coords x n_dim]
         Parameter combinations for the random_vars the comparison is conducted with
-    output_idx : int, optional, default=0
-        Indices of output quantity to consider
+    output_idx : int or list of int, optional, default=0
+        List of indices of output quantity to consider
     data_original: ndarray of float [n_coords x n_out], optional, default: None
         If available, data of original model function at grid, containing all QOIs
     fn_out : str, optional, default: None
@@ -416,7 +417,8 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
 
 
-def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_idx=0, fn_out=None, camera_pos=None):
+def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_idx=0, fn_out=None, camera_pos=None,
+             zlim=None):
     """
     Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
     calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
@@ -443,6 +445,8 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
         Filename of plot comparing original vs gPC model (*.png or *.pdf)
     camera_pos : list [2], optional, default: None
         Camera position of 3D surface plot (for 2 random variables only) [azimuth, elevation]
+    zlim : list of float, optional, default: None
+        Limits of 3D plot in z direction
 
     Returns
     -------
@@ -451,11 +455,14 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
     <file> : .png and .pdf file
         Plot comparing original vs gPC model
     """
+
     if type(output_idx) is int:
         output_idx = [output_idx]
 
     if type(random_vars) is not list:
         random_vars = random_vars.tolist()
+
+    assert len(random_vars) <= 2
 
     if n_grid and type(n_grid) is not list:
         n_grid = n_grid.tolist()
@@ -485,7 +492,8 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
                              n_grid[i_p]))
 
     coords_gpc = get_cartesian_product(x)
-    x1_2d, x2_2d = np.meshgrid(x[0], x[1])
+    if len(random_vars) == 2:
+        x1_2d, x2_2d = np.meshgrid(x[0], x[1])
 
     grid[:, idx_global] = coords_gpc
 
@@ -524,14 +532,14 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
     matplotlib.rc('ytick', labelsize=13)
     fs = 14
 
-    for i in range(len(output_idx)):
+    for i in output_idx:
         fig = plt.figure(figsize=(9.75, 5))
 
         # One random variable
         if len(random_vars) == 1:
             ax1 = fig.add_subplot(1, 2, 1)
             ax1.plot(coords_gpc, y_gpc[:, i])
-            ax1.scatter(coords, y_orig[:, i], 'k', edgecolors='k')
+            ax1.scatter(coords[:, idx_global[0]], y_orig[:, i], s=7*np.ones(len(y_orig[:, i])), facecolor='w', edgecolors='k')
             ax1.legend([r"gPC", r"original",], fontsize=fs)
             ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
             ax1.set_ylabel(r"y(%s)" % random_vars[0], fontsize=fs)
@@ -540,9 +548,9 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
         # Two random variables
         elif len(random_vars) == 2:
             ax1 = fig.add_subplot(1, 2, 1, projection='3d')
-            im1 = ax1.plot_surface(x1_2d, x2_2d, np.reshape(y_gpc[:, 0], (x[1].size, x[0].size), order='f'),
+            im1 = ax1.plot_surface(x1_2d, x2_2d, np.reshape(y_gpc[:, i], (x[1].size, x[0].size), order='f'),
                                    cmap="jet", alpha=0.75, linewidth=0, edgecolors=None)
-            ax1.scatter(coords[:, 0], coords[:, 1], results,
+            ax1.scatter(coords[:, idx_global[0]], coords[:, idx_global[1]], results,
                         'k', alpha=1, edgecolors='k', depthshade=False)
             ax1.set_title(r'gPC approximation', fontsize=fs)
             ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
@@ -552,6 +560,9 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
                 ax1.view_init(elev=camera_pos[0], azim=camera_pos[1])
 
             fig.colorbar(im1, ax=ax1, orientation='vertical')
+
+            if zlim is not None:
+                ax1.set_zlim(zlim)
 
         # plot histogram of output data and gPC estimated pdf
         ax2 = fig.add_subplot(1, 2, 2)
@@ -566,6 +577,9 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
         if fn_out is not None:
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=1200)
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
+            plt.close()
+
+
 
 
 # def plot_gpc(gpc, coeffs, random_vars, n_grid=None, coords=None, output_idx=0, fn_out=None):
