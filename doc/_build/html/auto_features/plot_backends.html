@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>OpenMP and CUDA &#8212; pygpc 0.3.4 documentation</title>
+    <title>OpenMP and CUDA &#8212; pygpc 0.3.3 documentation</title>
   
   
   
@@ -38,9 +38,6 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_features/plot_backends';</script>
@@ -807,22 +804,22 @@ At the moment, the following backends are available:</p>
 <p>Pygpc also provides a CUDA-backend to speed up some computations. To use the backend you need to build it manually.
 This requires the CUDA-toolkit and CMake. CMake can be installd via the <cite>pip</cite> command.
 Simply run the following command in your terminal:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install cmake
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>cmake
 </pre></div>
 </div>
 <p>For the installation of the CUDA-toolkit please refer to:
 <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html">https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html</a>.
 If CMake and the CUDA-toolkit are installed on your machine you can build the extension with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python build_pygpc_extensions_cuda.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>build_pygpc_extensions_cuda.py
 </pre></div>
 </div>
 <p><strong>Troubleshooting for OSX:</strong></p>
 <p>On a mac you need GCC to install pygpc. If you are using the <cite>brew</cite> package manager you can simply run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew install gcc libomp
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>libomp
 </pre></div>
 </div>
 <p>Then install pygpc with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CC</span><span class="o">=</span>gcc-9 <span class="nv">CXX</span><span class="o">=</span>g++-9 python setup.py install
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CC</span><span class="o">=</span>gcc-9<span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>g++-9<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
 </pre></div>
 </div>
 <p><strong>Troubleshooting for Windows:</strong></p>
@@ -1094,7 +1091,7 @@ It is the fastest one and outperforms all other backends.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2022, Konstantin Weise.<br>
+    &copy; Copyright 2023, Konstantin Weise.<br>
 
 </p>
 
@@ -1113,7 +1110,7 @@ It is the fastest one and outperforms all other backends.</p>
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br>
 </p>
 
   </div>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Analyzing MATLAB models with pygpc &#8212; pygpc 0.3.4 documentation</title>
+    <title>Analyzing MATLAB models with pygpc &#8212; pygpc 0.3.3 documentation</title>
   
   
   
@@ -38,9 +38,6 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_features/plot_matlab_model';</script>
@@ -816,17 +813,17 @@ by matlabroot.</p></li>
 <p>To install the engine API, choose one of the following. (You might need administrator privileges
 to execute these commands.)</p>
 <p><strong>Windows</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> <span class="s2">&quot;matlabroot\extern\engines\python&quot;</span>
-&gt; python setup.py install
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="s2">&quot;matlabroot\extern\engines\python&quot;</span>
+&gt;<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
 </pre></div>
 </div>
 <p><strong>macOS or Linux</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> <span class="s2">&quot;matlabroot/extern/engines/python&quot;</span>
-&gt; python setup.py install
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="s2">&quot;matlabroot/extern/engines/python&quot;</span>
+&gt;<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
 </pre></div>
 </div>
 <p><strong>Withing MATLAB</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="o">(</span>fullfile<span class="o">(</span>matlabroot,<span class="s1">&#39;extern&#39;</span>,<span class="s1">&#39;engines&#39;</span>,<span class="s1">&#39;python&#39;</span><span class="o">))</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="o">(</span>fullfile<span class="o">(</span>matlabroot,<span class="s1">&#39;extern&#39;</span>,<span class="s1">&#39;engines&#39;</span>,<span class="s1">&#39;python&#39;</span><span class="o">))</span>
 system<span class="o">(</span><span class="s1">&#39;python setup.py install&#39;</span><span class="o">)</span>
 </pre></div>
 </div>
@@ -843,11 +840,11 @@ run-file in <code class="code docutils literal notranslate"><span class="pre">..
 <h2>Setting up the Matlab model<a class="headerlink" href="#setting-up-the-matlab-model" title="Permalink to this heading">#</a></h2>
 <p>Setting up the model in Matlab is straight forward. You simply have to define your model as a matlab function
 within an .m file. In the following, you see an example model .m file:</p>
-<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Three-dimensional test function of Ishigami.</span><span class="w"></span>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Three-dimensional test function of Ishigami.</span>
 
-<span class="k">function</span><span class="w"> </span>y<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nf">Ishigami</span><span class="p">(</span>x1, x2, x3, a, b<span class="p">)</span><span class="w"></span>
+<span class="k">function</span><span class="w"> </span>y<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nf">Ishigami</span><span class="p">(</span>x1, x2, x3, a, b<span class="p">)</span>
 
-<span class="n">y</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="o">.^</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="n">x3</span><span class="o">.^</span><span class="mi">4</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">);</span><span class="w"></span>
+<span class="n">y</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="o">.^</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="n">x3</span><span class="o">.^</span><span class="mi">4</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="nb">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -866,7 +863,7 @@ matlab engine.</p>
 
 
 <span class="k">class</span> <span class="nc">MyModel_matlab</span><span class="p">(</span><span class="n">AbstractModel</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    MyModel evaluates something using Matlab. The parameters of the model</span>
 <span class="sd">    (constants and random parameters) are stored in the dictionary p.</span>
 <span class="sd">    Their type is defined during the problem definition.</span>
@@ -1070,7 +1067,7 @@ processing capabilities of pygpc is given in this
     
 <p class="copyright">
 
-    &copy; Copyright 2022, Konstantin Weise.<br>
+    &copy; Copyright 2023, Konstantin Weise.<br>
 
 </p>
 
@@ -1089,7 +1086,7 @@ processing capabilities of pygpc is given in this
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br>
 </p>
 
   </div>
