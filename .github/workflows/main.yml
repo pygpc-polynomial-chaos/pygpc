@@ -114,9 +114,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        brew update
         brew install gcc@9
-        brew upgrade
         python -m pip install --upgrade pip
         pip install Cython matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
