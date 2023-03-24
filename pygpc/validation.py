@@ -417,8 +417,8 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
 
 
-def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_idx=0, fn_out=None, camera_pos=None,
-             zlim=None):
+def plot_gpc(session, coeffs, random_vars, coords, results=None, n_grid=None, output_idx=0, fn_out=None, camera_pos=None,
+             zlim=None, plot_pdf_over_output_idx=False):
     """
     Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
     calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
@@ -447,6 +447,8 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
         Camera position of 3D surface plot (for 2 random variables only) [azimuth, elevation]
     zlim : list of float, optional, default: None
         Limits of 3D plot in z direction
+    plot_pdf_over_output_idx : bool, optional, default: False
+        Plots pdf as a surface plot over output index (e.g. a time axis)
 
     Returns
     -------
@@ -455,6 +457,7 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
     <file> : .png and .pdf file
         Plot comparing original vs gPC model
     """
+    y_orig = None
 
     if type(output_idx) is int:
         output_idx = [output_idx]
@@ -469,7 +472,6 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
 
     # Create grid such that it includes the mean values of other random variables
     grid = np.zeros((np.prod(n_grid), len(session.parameters_random)))
-
 
     idx = []
     idx_global = []
@@ -517,14 +519,15 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
         y_gpc = session.gpc[0].get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx)
         pdf_x, pdf_y = session.gpc[0].get_pdf(coeffs=coeffs, n_samples=1e5, output_idx=output_idx)
 
-    y_orig = results[:, output_idx]
+    if results is not None:
+        y_orig = results[:, output_idx]
+
+        if y_orig.ndim == 1:
+            y_orig = y_orig[:, np.newaxis]
 
     # add axes if necessary
     if y_gpc.ndim == 1:
         y_gpc = y_gpc[:, np.newaxis]
-
-    if y_orig.ndim == 1:
-        y_orig = y_orig[:, np.newaxis]
 
     # Plot results
     matplotlib.rc('text', usetex=False)
@@ -532,52 +535,88 @@ def plot_gpc(session, coeffs, random_vars, coords, results, n_grid=None, output_
     matplotlib.rc('ytick', labelsize=13)
     fs = 14
 
-    for i in output_idx:
-        fig = plt.figure(figsize=(9.75, 5))
+    if plot_pdf_over_output_idx:
+        # interpolate pdf data on common grid
+        x_interp = np.linspace(0, np.max(pdf_x), 1000)
+        y_interp = np.zeros((len(x_interp), np.shape(pdf_x)[1]))
 
-        # One random variable
-        if len(random_vars) == 1:
-            ax1 = fig.add_subplot(1, 2, 1)
-            ax1.plot(coords_gpc, y_gpc[:, i])
-            ax1.scatter(coords[:, idx_global[0]], y_orig[:, i], s=7*np.ones(len(y_orig[:, i])), facecolor='w', edgecolors='k')
-            ax1.legend([r"gPC", r"original",], fontsize=fs)
-            ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
-            ax1.set_ylabel(r"y(%s)" % random_vars[0], fontsize=fs)
-            ax1.grid()
+        for i in range(np.shape(pdf_x)[1]):
+            y_interp[:, i] = np.interp(x_interp, pdf_x[:, i], pdf_y[:, i], left=0, right=0)
 
-        # Two random variables
-        elif len(random_vars) == 2:
-            ax1 = fig.add_subplot(1, 2, 1, projection='3d')
-            im1 = ax1.plot_surface(x1_2d, x2_2d, np.reshape(y_gpc[:, i], (x[1].size, x[0].size), order='f'),
-                                   cmap="jet", alpha=0.75, linewidth=0, edgecolors=None)
-            ax1.scatter(coords[:, idx_global[0]], coords[:, idx_global[1]], results,
-                        'k', alpha=1, edgecolors='k', depthshade=False)
-            ax1.set_title(r'gPC approximation', fontsize=fs)
-            ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
-            ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
+        xx, yy = np.meshgrid(np.arange(0, len(output_idx)), x_interp)
 
-            if camera_pos is not None:
-                ax1.view_init(elev=camera_pos[0], azim=camera_pos[1])
+        if zlim is not None:
+            vmin = zlim[0]
+            vmax = zlim[1]
+        else:
+            vmin = np.min(y_interp)
+            vmax = np.max(y_interp)
 
-            fig.colorbar(im1, ax=ax1, orientation='vertical')
-
-            if zlim is not None:
-                ax1.set_zlim(zlim)
-
-        # plot histogram of output data and gPC estimated pdf
-        ax2 = fig.add_subplot(1, 2, 2)
-        ax2.hist(results, density=True, bins=20, edgecolor='k')
-        ax2.plot(pdf_x, pdf_y, 'r')
-        ax2.grid()
-        ax2.set_title("Probability density", fontsize=fs)
-        ax2.set_xlabel(r'$y$', fontsize=16)
-        ax2.set_ylabel(r'$p(y)$', fontsize=16)
-        plt.tight_layout()
+        # plot pdf over output_idx
+        plt.figure(figsize=[10, 6])
+        plt.pcolor(xx, yy, y_interp, cmap="bone_r", vmin=vmin, vmax=vmax)
+        plt.plot(np.arange(0, len(output_idx)), np.mean(y_gpc, axis=0), "r", linewidth=1.5)
+        plt.xlabel("Index of output_idx")
+        plt.grid()
 
         if fn_out is not None:
-            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=1200)
-            plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
+            plt.savefig(os.path.splitext(fn_out)[0] + "_pdf_qoi.png", dpi=1200)
+            plt.savefig(os.path.splitext(fn_out)[0] + "_pdf_qoi.pdf")
             plt.close()
+
+    else:
+        for _i, i in enumerate(output_idx):
+            fig = plt.figure(figsize=(12, 5))
+
+            # One random variable
+            if len(random_vars) == 1:
+                ax1 = fig.add_subplot(1, 2, 1)
+                ax1.plot(coords_gpc, y_gpc[:, i])
+                if y_orig is not None:
+                    ax1.scatter(coords[:, idx_global[0]], y_orig[:, _i], s=7*np.ones(len(y_orig[:, i])), facecolor='w', edgecolors='k')
+                    legend = [r"gPC", r"original"]
+                else:
+                    legend = [r"gPC"]
+                ax1.legend(legend, fontsize=fs)
+                ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+                ax1.set_ylabel(r"y(%s)" % random_vars[0], fontsize=fs)
+                ax1.grid()
+
+            # Two random variables
+            elif len(random_vars) == 2:
+                ax1 = fig.add_subplot(1, 2, 1, projection='3d')
+                im1 = ax1.plot_surface(x1_2d, x2_2d, np.reshape(y_gpc[:, _i], (x[1].size, x[0].size), order='f'),
+                                       cmap="jet", alpha=0.75, linewidth=0, edgecolors=None)
+                if y_orig is not None:
+                    ax1.scatter(coords[:, idx_global[0]], coords[:, idx_global[1]], y_orig[:, _i],
+                                'k', alpha=1, edgecolors='k', depthshade=False)
+                ax1.set_title(r'gPC approximation', fontsize=fs)
+                ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+                ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
+
+                if camera_pos is not None:
+                    ax1.view_init(elev=camera_pos[0], azim=camera_pos[1])
+
+                fig.colorbar(im1, ax=ax1, orientation='vertical')
+
+                if zlim is not None:
+                    ax1.set_zlim(zlim)
+
+            # plot histogram of output data and gPC estimated pdf
+            ax2 = fig.add_subplot(1, 2, 2)
+            if y_orig is not None:
+                ax2.hist(y_orig[:, _i], density=True, bins=20, edgecolor='k')
+            ax2.plot(pdf_x[:, _i], pdf_y[:, _i], 'r')
+            ax2.grid()
+            ax2.set_title("Probability density", fontsize=fs)
+            ax2.set_xlabel(r'$y$', fontsize=16)
+            ax2.set_ylabel(r'$p(y)$', fontsize=16)
+            plt.tight_layout()
+
+            if fn_out is not None:
+                plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=1200)
+                plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
+                plt.close()
 
 
 

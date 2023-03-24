@@ -716,30 +716,45 @@ def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
         if not (type(qois) == np.ndarray and type(results) == np.ndarray):
             raise ValueError("Please specifiy qois and results as a numpy array of values!")
         else:
-            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=[8, 6])
-            for i in range(sobol.values.shape[0]):
-                ax1.plot(qois, sobol.values[i])
-                ax1.set_title("Sobol indices of the parameters over the qois", fontsize=14)
-                ax1.set_xlabel(x_label, fontsize=14)
-                ax1.set_ylabel("Sobol index", fontsize=14)
-                ax1.set_yscale('log')
-            sobol_labels = [(x[1:-1].replace("'", " ")).replace(" ,", ",") for x in sobol_keys]
-            ax1.legend(sobol_labels)
-            # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
-            ax1.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
-            ax1.grid()
+            fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=[8, 9])
 
-            # Plot mean and std of the model
+            # mean and std
             mean_results = np.mean(results, axis=0)
             std_results = np.std(results, axis=0)
-            ax2.plot(qois, mean_results)
-            ax2.grid()
-            ax2.set_ylabel(y_label, fontsize=14)
-            ax2.set_xlabel(x_label, fontsize=14)
-            ax2.legend(["mean of " + y_label], loc='upper left')
-            ax2.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
-            ax2.set_title("Mean and standard deviation of " + y_label, fontsize=14)
+            ax1.plot(qois, mean_results)
+            ax1.grid()
+            ax1.set_ylabel(y_label, fontsize=14)
+            ax1.set_xlabel(x_label, fontsize=14)
+            ax1.legend(["mean of " + y_label], loc='upper left')
+            ax1.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+            ax1.set_title("Mean and standard deviation of " + y_label, fontsize=14)
             # ax2.set_ylim(np.min(results) + np.max(std_results), np.max(results) + np.max(std_results))
-            ax2.fill_between(qois, mean_results - std_results, mean_results + std_results, color="grey", alpha=0.5)
+            ax1.fill_between(qois, mean_results - std_results, mean_results + std_results, color="grey", alpha=0.5)
             plt.tight_layout()
             plt.show()
+
+            # sobol
+            for i in range(sobol.values.shape[0]):
+                ax2.plot(qois, sobol.values[i])
+                ax2.set_title("Sobol indices of the parameters over the qois", fontsize=14)
+                ax2.set_xlabel(x_label, fontsize=14)
+                ax2.set_ylabel("Sobol index", fontsize=14)
+                ax2.set_yscale('log')
+            sobol_labels = [(x[1:-1].replace("'", " ")).replace(" ,", ",") for x in sobol_keys]
+            ax2.legend(sobol_labels)
+            # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
+            ax2.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+            ax2.grid()
+
+            # gsens
+            for i in range(gsens.values.shape[0]):
+                ax3.plot(qois, gsens.values[i])
+                ax3.set_title("Global derivatives of the parameters over the qois", fontsize=14)
+                ax3.set_xlabel(x_label, fontsize=14)
+                ax3.set_ylabel("Global sensitivity", fontsize=14)
+                # ax3.set_yscale('log')
+            gsens_labels = [x for x in gsens_keys]
+            ax3.legend(gsens_labels)
+            # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
+            ax3.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+            ax3.grid()

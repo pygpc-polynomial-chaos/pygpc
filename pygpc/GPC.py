@@ -473,7 +473,7 @@ class GPC(object):
 
         return self.error[-1]
 
-    def get_pdf(self, coeffs, n_samples, output_idx=None):
+    def get_pdf(self, coeffs, n_samples, output_idx=None, filter=True):
         """ Determine the estimated pdfs of the output quantities
 
         pdf_x, pdf_y = SGPC.get_pdf(coeffs, n_samples, output_idx=None)
@@ -486,6 +486,8 @@ class GPC(object):
             Number of samples used to estimate output pdfs
         output_idx: ndarray, optional, default=None [1 x n_out]
             Index of output quantities to consider (if output_idx=None, all output quantities are considered)
+        filter : bool, optional, default: True
+            Use savgol_filter to smooth probability density
 
         Returns
         -------
@@ -501,7 +503,7 @@ class GPC(object):
 
         # if output index array is not provided, determine pdfs of all outputs
         if output_idx is None:
-            output_idx = np.linspace(0, coeffs.shape[1])
+            output_idx = np.arange(0, coeffs.shape[1])
             output_idx = output_idx[np.newaxis, :]
 
         n_out = len(output_idx)
@@ -518,7 +520,8 @@ class GPC(object):
             pdf_y[:, i_out], tmp = np.histogram(samples_out[:, i_out], bins=100, density=True)
             pdf_x[:, i_out] = (tmp[1:] + tmp[0:-1]) / 2.
 
-            pdf_y[:, i_out] = savgol_filter(pdf_y[:, i_out], 51, 5)
+            if filter:
+                pdf_y[:, i_out] = savgol_filter(pdf_y[:, i_out], 51, 5)
 
             # kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
             # pdf_y[:, i_out] = kde(pdf_x[:, i_out])
