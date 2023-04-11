@@ -471,6 +471,9 @@ class GPC(object):
                                              error_norm=self.options["error_norm"]))
             self.error.append(self.relative_error_loocv[-1])
 
+        elif self.options["error_type"] is None:
+            self.error.append(None)
+
         return self.error[-1]
 
     def get_pdf(self, coeffs, n_samples, output_idx=None, filter=True):

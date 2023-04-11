@@ -138,7 +138,7 @@ class Algorithm(object):
             self.options["error_norm"] = "relative"
 
         if "error_type" not in self.options.keys():
-            self.options["error_type"] = "loocv"
+            self.options["error_type"] = None
 
         if "fn_results" not in self.options.keys():
             self.options["fn_results"] = None
@@ -324,12 +324,12 @@ class Static_IO(Algorithm):
         if "interaction_order" not in self.options.keys():
             self.options["interaction_order"] = self.problem.dim
 
-        if "error_type" not in self.options.keys():
-            self.options["error_type"] = "loocv"
+        #if "error_type" not in self.options.keys():
+        #    self.options["error_type"] = "loocv"
 
-        if self.options["error_type"] != "loocv":
-            self.options["error_type"] = "loocv"
-            warnings.warn("Changing error calculation type to loocv ...")
+        #if self.options["error_type"] != "loocv":
+            #    self.options["error_type"] = "loocv"
+            #warnings.warn("Changing error calculation type to loocv ...")
 
     def run(self):
         """
