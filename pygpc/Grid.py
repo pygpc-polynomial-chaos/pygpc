@@ -1059,7 +1059,13 @@ class RandomGrid(Grid):
                     self.coords = np.vstack([self.coords, coords])
                     self.coords_norm = np.vstack([self.coords_norm, coords_norm])
 
-        elif coords is not None and coords_norm is not None:
+        elif coords is not None or coords_norm is not None:
+            # append points to existing grid
+            if coords_norm is None and coords is not None:
+                coords_norm = self.get_normalized_coordinates(coords=coords)
+            if coords is None and coords_norm is not None:
+                coords = self.get_denormalized_coordinates(coords_norm=coords_norm)
+
             # Number of new grid points
             n_grid_add = coords.shape[0]
 
@@ -1068,12 +1074,11 @@ class RandomGrid(Grid):
                 if not (classifier.predict(coords_norm) == domain).all():
                     raise AssertionError("Specified coordinates are not lying in right domain!")
 
-            # append points to existing grid
             self.coords = np.vstack([self.coords, coords])
             self.coords_norm = np.vstack([self.coords_norm, coords_norm])
 
         else:
-            raise ValueError("Specify either n_grid_new or coords and coords_norm")
+            raise ValueError("Specify either n_grid_new or coords or coords_norm")
 
         # Generate and append unique IDs of new grid points
         self.coords_id = self.coords_id + [uuid.uuid4() for _ in range(n_grid_add)]
