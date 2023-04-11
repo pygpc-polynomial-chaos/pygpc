@@ -1238,9 +1238,9 @@ class MEStatic_IO(Algorithm):
         else:
             self.qoi_specific = False
 
-        if self.options["error_type"] != "loocv":
-            self.options["error_type"] = "loocv"
-            warnings.warn("Changing error calculation type to loocv ...")
+        # if self.options["error_type"] != "loocv":
+            # self.options["error_type"] = "loocv"
+            # warnings.warn("Changing error calculation type to loocv ...")
 
     def run(self):
         """
