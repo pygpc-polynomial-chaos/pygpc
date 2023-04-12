@@ -417,7 +417,7 @@ def validate_gpc_plot(session, coeffs, random_vars, n_grid=None, coords=None, ou
             plt.savefig(os.path.splitext(fn_out)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
 
 
-def plot_gpc(session, coeffs, random_vars, coords, results=None, n_grid=None, output_idx=0, fn_out=None, camera_pos=None,
+def plot_gpc(session, coeffs, random_vars=None, coords=None, results=None, n_grid=None, output_idx=0, fn_out=None, camera_pos=None,
              zlim=None, plot_pdf_over_output_idx=False):
     """
     Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
@@ -437,7 +437,7 @@ def plot_gpc(session, coeffs, random_vars, coords, results=None, n_grid=None, ou
         A cartesian grid is generated based on the limits of the specified random_vars
     coords : ndarray of float [n_coords x n_dim]
         Parameter combinations for the random_vars the comparison is conducted with
-    output_idx : int, optional, default=0
+    output_idx : int, str or None, optional, default=0
         Indices of output quantity to consider
     results: ndarray of float [n_coords x n_out]
         If available, data of original model function at grid, containing all QOIs
@@ -462,45 +462,52 @@ def plot_gpc(session, coeffs, random_vars, coords, results=None, n_grid=None, ou
     if type(output_idx) is int:
         output_idx = [output_idx]
 
-    if type(random_vars) is not list:
-        random_vars = random_vars.tolist()
+    if output_idx is None or output_idx == "all":
+        output_idx = np.arange(coeffs.shape[1])
 
-    assert len(random_vars) <= 2
+    if random_vars is not None:
+        if type(random_vars) is not list:
+            random_vars = random_vars.tolist()
+        assert len(random_vars) <= 2
 
-    if n_grid and type(n_grid) is not list:
-        n_grid = n_grid.tolist()
+    if n_grid is not None:
+        if n_grid and type(n_grid) is not list:
+            n_grid = n_grid.tolist()
+    else:
+        n_grid = [10, 10]
 
-    # Create grid such that it includes the mean values of other random variables
-    grid = np.zeros((np.prod(n_grid), len(session.parameters_random)))
+    if random_vars is not None:
+        # Create grid such that it includes the mean values of other random variables
+        grid = np.zeros((np.prod(n_grid), len(session.parameters_random)))
 
-    idx = []
-    idx_global = []
+        idx = []
+        idx_global = []
 
-    # sort random_vars according to gpc.parameters
-    for i_p, p in enumerate(session.parameters_random.keys()):
-        if p not in random_vars:
-            grid[:, i_p] = session.parameters_random[p].mean
+        # sort random_vars according to gpc.parameters
+        for i_p, p in enumerate(session.parameters_random.keys()):
+            if p not in random_vars:
+                grid[:, i_p] = session.parameters_random[p].mean
 
-        else:
-            idx.append(random_vars.index(p))
-            idx_global.append(i_p)
+            else:
+                idx.append(random_vars.index(p))
+                idx_global.append(i_p)
 
-    random_vars = [random_vars[i] for i in idx]
-    x = []
+        random_vars = [random_vars[i] for i in idx]
+        x = []
 
-    for i_p, p in enumerate(random_vars):
-        x.append(np.linspace(session.parameters_random[p].pdf_limits[0],
-                             session.parameters_random[p].pdf_limits[1],
-                             n_grid[i_p]))
+        for i_p, p in enumerate(random_vars):
+            x.append(np.linspace(session.parameters_random[p].pdf_limits[0],
+                                 session.parameters_random[p].pdf_limits[1],
+                                 n_grid[i_p]))
 
-    coords_gpc = get_cartesian_product(x)
-    if len(random_vars) == 2:
-        x1_2d, x2_2d = np.meshgrid(x[0], x[1])
+        coords_gpc = get_cartesian_product(x)
+        if len(random_vars) == 2:
+            x1_2d, x2_2d = np.meshgrid(x[0], x[1])
 
-    grid[:, idx_global] = coords_gpc
+        grid[:, idx_global] = coords_gpc
 
-    # Normalize grid
-    grid_norm = Grid(parameters_random=session.parameters_random).get_normalized_coordinates(grid)
+        # Normalize grid
+        grid_norm = Grid(parameters_random=session.parameters_random).get_normalized_coordinates(grid)
 
     # Evaluate gPC expansion on grid and estimate output pdf
     if session.qoi_specific:
@@ -516,18 +523,26 @@ def plot_gpc(session, coeffs, random_vars, coords, results=None, n_grid=None, ou
             pdf_x[:, i] = pdf_x_tmp.flatten()
             pdf_y[:, i] = pdf_y_tmp.flatten()
     else:
-        y_gpc = session.gpc[0].get_approximation(coeffs=coeffs, x=grid_norm, output_idx=output_idx)
-        pdf_x, pdf_y = session.gpc[0].get_pdf(coeffs=coeffs, n_samples=1e5, output_idx=output_idx)
+        if not plot_pdf_over_output_idx:
+            y_gpc = session.gpc[0].get_approximation(coeffs=coeffs,
+                                                     x=grid_norm,
+                                                     output_idx=output_idx)
 
-    if results is not None:
-        y_orig = results[:, output_idx]
+        pdf_x, pdf_y, _, y_gpc_samples = session.gpc[0].get_pdf(coeffs=coeffs,
+                                                                n_samples=1e5,
+                                                                output_idx=output_idx,
+                                                                return_samples=True)
 
-        if y_orig.ndim == 1:
-            y_orig = y_orig[:, np.newaxis]
+    if not plot_pdf_over_output_idx:
+        if results is not None:
+            y_orig = results[:, output_idx]
 
-    # add axes if necessary
-    if y_gpc.ndim == 1:
-        y_gpc = y_gpc[:, np.newaxis]
+            if y_orig.ndim == 1:
+                y_orig = y_orig[:, np.newaxis]
+
+        # add axes if necessary
+        if y_gpc.ndim == 1:
+            y_gpc = y_gpc[:, np.newaxis]
 
     # Plot results
     matplotlib.rc('text', usetex=False)
@@ -555,9 +570,10 @@ def plot_gpc(session, coeffs, random_vars, coords, results=None, n_grid=None, ou
         # plot pdf over output_idx
         plt.figure(figsize=[10, 6])
         plt.pcolor(xx, yy, y_interp, cmap="bone_r", vmin=vmin, vmax=vmax)
-        plt.plot(np.arange(0, len(output_idx)), np.mean(y_gpc, axis=0), "r", linewidth=1.5)
+        plt.plot(np.arange(0, len(output_idx)), np.mean(y_gpc_samples, axis=0), "r", linewidth=1.5)
         plt.xlabel("Index of output_idx")
         plt.grid()
+        plt.tight_layout()
 
         if fn_out is not None:
             plt.savefig(os.path.splitext(fn_out)[0] + "_pdf_qoi.png", dpi=1200)

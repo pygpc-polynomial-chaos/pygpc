@@ -730,8 +730,6 @@ def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
             ax1.set_title("Mean and standard deviation of " + y_label, fontsize=14)
             # ax2.set_ylim(np.min(results) + np.max(std_results), np.max(results) + np.max(std_results))
             ax1.fill_between(qois, mean_results - std_results, mean_results + std_results, color="grey", alpha=0.5)
-            plt.tight_layout()
-            plt.show()
 
             # sobol
             for i in range(sobol.values.shape[0]):
@@ -758,3 +756,5 @@ def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
             # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
             ax3.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
             ax3.grid()
+            plt.tight_layout()
+            plt.show()

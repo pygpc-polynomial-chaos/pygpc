@@ -111,6 +111,13 @@ pygpc.plot_sens_summary(sobol=sobol,
                         x_label="t in s",
                         y_label="x(t)")
 
+# plot probability density of output over time (qoi)
+pygpc.plot_gpc(session=session,
+               coeffs=coeffs,
+               output_idx="all",
+               zlim=[0, 0.4],
+               plot_pdf_over_output_idx=True)
+
 #
 # On Windows subprocesses will import (i.e. execute) the main module at start.
 # You need to insert an if __name__ == '__main__': guard in the main module to avoid

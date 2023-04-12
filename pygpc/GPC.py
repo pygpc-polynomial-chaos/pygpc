@@ -476,7 +476,7 @@ class GPC(object):
 
         return self.error[-1]
 
-    def get_pdf(self, coeffs, n_samples, output_idx=None, filter=True):
+    def get_pdf(self, coeffs, n_samples, output_idx=None, filter=True, return_samples=False):
         """ Determine the estimated pdfs of the output quantities
 
         pdf_x, pdf_y = SGPC.get_pdf(coeffs, n_samples, output_idx=None)
@@ -491,6 +491,8 @@ class GPC(object):
             Index of output quantities to consider (if output_idx=None, all output quantities are considered)
         filter : bool, optional, default: True
             Use savgol_filter to smooth probability density
+        return_samples : bool, optional, default: False
+            Additionally returns in and output samples with which the pdfs were computed
 
         Returns
         -------
@@ -498,6 +500,10 @@ class GPC(object):
             x-coordinates of output pdfs of output quantities
         pdf_y: ndarray of float [100 x n_out]
             y-coordinates of output pdfs (probability density of output quantity)
+        samples_in : ndarray of float [n_samples x dim] (optional)
+            Input samples (if return_samples=True)
+        samples_out : ndarray of float [n_samples x n_out] (optional)
+            Output samples (if return_samples=True)
         """
 
         # handle (N,) arrays
@@ -530,7 +536,10 @@ class GPC(object):
             # pdf_y[:, i_out] = kde(pdf_x[:, i_out])
             # pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
 
-        return pdf_x, pdf_y
+        if return_samples:
+            return pdf_x, pdf_y, samples_in, samples_out
+        else:
+            return pdf_x, pdf_y
 
     def get_samples(self, coeffs, n_samples, output_idx=None):
         """
