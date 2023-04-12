@@ -138,7 +138,7 @@ class Algorithm(object):
             self.options["error_norm"] = "relative"
 
         if "error_type" not in self.options.keys():
-            self.options["error_type"] = None
+            self.options["error_type"] = "loocv"
 
         if "fn_results" not in self.options.keys():
             self.options["fn_results"] = None
