@@ -901,6 +901,77 @@ class RandomGrid(Grid):
             # Seed of random grid (if necessary to reproduce random grid)
             np.random.seed(self.seed)
 
+    def resample(self, idx, classifier=None, domain=None, gradient=False, results=None, type=None):
+        """
+        Replace grid points specified by index. Modifies grid object in place.
+
+        Parameters
+        ----------
+        idx : np.ndarray of int [n_grid_points_replace]
+            Indices of grid points to replace by resampling.
+        classifier : Classifier object, optional, default: None
+            Classifier
+        domain : int, optional, default: None
+            Adds grid points only in specified domain (needs Classifier object including a predict() method)
+        gradient : bool, optional, default: False
+            Add corresponding gradient grid points
+        results : np.ndarray of float [n_grid x n_qoi]
+            Results computed so far before adding additional grid points
+        type : str, optional, default: None
+            Type of adding new grid points
+            - "GP": Gaussian process regression (points are added where the uncertainty of sampling is very high).
+            Does only work for Random, LHS, and GP grids.
+            - None: grid points are added according to the grid type.
+        """
+        # create temporary grid
+        grid_tmp = copy.deepcopy(self)
+        n_grid = self.n_grid
+
+        # extend grid by number of grid points to resample
+        grid_tmp.extend_random_grid(n_grid_new=self.n_grid + len(idx),
+                                    classifier=classifier,
+                                    domain=domain,
+                                    gradient=gradient,
+                                    results=results,
+                                    type=type)
+
+        # overwrite grid points to resample in original grid with new grid points from temporary grid
+        self.coords[idx, ] = grid_tmp.coords[n_grid:, ]
+        self.coords_norm[idx, ] = grid_tmp.coords_norm[n_grid:, ]
+
+        # generate and replace unique IDs of new grid points
+        for _idx in idx:
+            self.coords_id[_idx] = uuid.uuid4()
+
+        # create new gradient grid points if required
+        if self.coords_gradient is not None:
+            self.create_gradient_grid()
+
+    def delete(self, idx):
+        """
+        Delete grid points by index. Modifies grid object in place.
+
+        Parameters
+        ----------
+        idx : int or np.ndarray of int
+            Indices of grid points to delete.
+        """
+
+        if type(idx) in [int, float, np.ndarray, list]:
+            idx = np.array(idx)
+
+        # delete grid points
+        self.coords = np.delete(self.coords, idx, axis=0)
+        self.coords_norm = np.delete(self.coords_norm, idx, axis=0)
+
+        # remove unique IDs of grid points
+        self.coords_id = [self.coords_id[i] for i in range(self.n_grid) if i not in idx]
+
+        # delete gradient grid points
+        if self.coords_gradient is not None:
+            self.coords_gradient = np.delete(self.coords_gradient, idx, axis=0)
+            self.coords_gradient_norm = np.delete(self.coords_gradient_norm, idx, axis=0)
+
     def extend_random_grid(self, n_grid_new=None, coords=None, coords_norm=None, classifier=None, domain=None,
                            gradient=False, results=None, type=None):
         """

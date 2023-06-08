@@ -112,7 +112,7 @@ nrmsd = pygpc.validate_gpc_mc(session=session,
 #%%
 # Sensitivity analysis
 # ^^^^^^^^^^^^^^^^^^^^
-sobol, gsens = pygpc.get_sens_summary(fn_results, parameters_random)
+sobol, gsens = pygpc.get_sens_summary(fn_results, parameters_random, fn_results + "_sens_summary.txt")
 pygpc.plot_sens_summary(sobol, gsens)
 
 #

@@ -257,6 +257,102 @@ class Algorithm(object):
         if "grid_extension_method" not in self.options.keys():
             self.options["grid_extension_method"] = "GPR"
 
+    def check_results(self, results, gpc, gradient_results=None, gradient_results_idx=None, com=None, resample=True):
+        """
+        Check the validity of the results and resample if required.
+        Updates the gPC object, the containing grid, and the results array.
+
+        Parameters
+        ----------
+        results : np.ndarray of float [n_samples x n_qoi]
+            Model output at sampling points.
+        gpc : SGPC or MEGPC object instance or list of SGPC or MEGPC object instances
+            GPC object(s) containing the basis functions and the grid.
+        gradient_results : ndarray of float [n_grid x n_out x dim]
+            Gradient of model function in grid points.
+        gradient_results_idx : ndarray of int [n_grid]
+            Indices of grid points where the gradient was evaluated.
+        com : Computation class instance, optional, default: None
+            Computation class instance to run the model if resample is True.
+        resample : bool, optional, default: True
+            Resample grid points and rerun model (requires Computational class instance to run model).
+            If False, the grid points and results are just deleted.
+
+        Returns
+        -------
+        results : np.ndarray of float [n_samples x n_qoi]
+            Updated (fixed) model output at sampling points.
+        gpc : SGPC or MEGPC object instance or list of SGPC or MEGPC object instances
+            GPC object(s) containing the basis functions and the updated grid.
+        gradient_results : ndarray of float [n_grid x n_out x dim]
+            Updated (fixed) gradients of model function in grid points.
+        """
+        # get the indices of the sampling points where any of the QOIs where NaN
+        idx_nan = np.unique(np.where(np.isnan(results))[0])
+
+        if gradient_results is not None:
+            idx_nan_gradient = np.unique(np.where(np.isnan(gradient_results))[0])
+
+            if len(idx_nan_gradient) > 0:
+                idx_nan_gradient = gradient_results_idx[idx_nan_gradient]
+
+        else:
+            idx_nan_gradient = np.array([])
+
+        idx_nan = np.hstack((idx_nan, idx_nan_gradient))
+
+        if resample:
+            while len(idx_nan) > 0:
+                if self.options["verbose"]:
+                    print(f"WARNING! Detected {len(idx_nan)} grid points with NaN results. Resampling ...")
+
+                # resample grid points
+                gpc.grid.resample(idx=idx_nan)
+
+                # determine results at resampled grid points
+                results_resample = com.run(model=self.problem.model,
+                                           problem=self.problem,
+                                           coords=gpc.grid.coords[idx_nan, :],
+                                           coords_norm=gpc.grid.coords_norm[idx_nan, :],
+                                           i_iter=gpc.order_max,
+                                           i_subiter=gpc.interaction_order,
+                                           fn_results=None,
+                                           print_func_time=self.options["print_func_time"],
+                                           verbose=self.options["verbose"])
+
+                # Determine gradient [n_grid x n_out x dim]
+                if gradient_results is not None:
+                    gradient_results, gradient_results_idx = get_gradient(
+                        model=self.problem.model,
+                        problem=self.problem,
+                        grid=gpc.grid,
+                        results=results,
+                        com=com,
+                        method=self.options["gradient_calculation"],
+                        gradient_results_present=None,
+                        gradient_idx_skip=None,
+                        i_iter=gpc.order_max,
+                        i_subiter=gpc.interaction_order,
+                        print_func_time=self.options["print_func_time"],
+                        dx=self.options["gradient_calculation_options"]["dx"],
+                        distance_weight=
+                        self.options["gradient_calculation_options"]["distance_weight"],
+                        verbose=self.options["verbose"])
+
+                # replace NaN results with new results at resampled grid points
+                results[idx_nan, :] = results_resample
+
+                # get the indices of the sampling points where any of the QOIs where NaN
+                idx_nan = np.unique(np.where(np.isnan(results))[0])
+        else:
+            # remove grid points with NaN results
+            gpc.grid.delete(idx=idx_nan)
+
+            # remove NaN results
+            results = np.delete(results, idx_nan, axis=0)
+
+        return results, gpc
+
 
 class Static_IO(Algorithm):
     """
@@ -652,6 +748,13 @@ class Static(Algorithm):
 
                 iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                        tab=0, verbose=self.options["verbose"])
+
+            # check validity of results and resample in case the model could not be evaluated at some sampling points
+            res, gpc = self.check_results(results=res,
+                                          gradient_results=grad_res_3D,
+                                          gradient_results_idx=gradient_idx,
+                                          gpc=gpc,
+                                          com=com)
 
             # Initialize gpc matrix
             gpc.init_gpc_matrix(gradient_idx=gradient_idx)
