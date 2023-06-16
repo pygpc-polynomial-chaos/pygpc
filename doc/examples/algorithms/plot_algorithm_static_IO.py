@@ -87,6 +87,11 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              calc_pdf=True,
                              algorithm="standard")
 
+# get a summary of the sensitivity coefficients
+sobol, gsens = pygpc.get_sens_summary(fn_results, parameters)
+print(sobol)
+print(gsens)
+
 # plot gPC approximation and IO data
 pygpc.plot_gpc(session=session,
                coeffs=coeffs,
