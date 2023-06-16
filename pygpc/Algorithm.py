@@ -257,7 +257,7 @@ class Algorithm(object):
         if "grid_extension_method" not in self.options.keys():
             self.options["grid_extension_method"] = "GPR"
 
-    def check_results(self, results, gpc, gradient_results=None, gradient_results_idx=None, com=None, resample=True):
+    def check_results(self, results, grid, gradient_results=None, gradient_results_idx=None, com=None, resample=True):
         """
         Check the validity of the results and resample if required.
         Updates the gPC object, the containing grid, and the results array.
@@ -266,11 +266,11 @@ class Algorithm(object):
         ----------
         results : np.ndarray of float [n_samples x n_qoi]
             Model output at sampling points.
-        gpc : SGPC or MEGPC object instance or list of SGPC or MEGPC object instances
-            GPC object(s) containing the basis functions and the grid.
-        gradient_results : ndarray of float [n_grid x n_out x dim]
+        grid : Grid object instance
+            Grid object instance the results are computed for.
+        gradient_results : ndarray of float [n_grid x n_out x dim], optional, default: None
             Gradient of model function in grid points.
-        gradient_results_idx : ndarray of int [n_grid]
+        gradient_results_idx : ndarray of int [n_grid], optional, default: None
             Indices of grid points where the gradient was evaluated.
         com : Computation class instance, optional, default: None
             Computation class instance to run the model if resample is True.
@@ -285,12 +285,21 @@ class Algorithm(object):
         gpc : SGPC or MEGPC object instance or list of SGPC or MEGPC object instances
             GPC object(s) containing the basis functions and the updated grid.
         gradient_results : ndarray of float [n_grid x n_out x dim]
-            Updated (fixed) gradients of model function in grid points.
+            Updated (fixed) gradients of model function in grid points not containing the points where
+            the gradients were NaN.
+        gradient_results_idx : ndarray of int [n_grid], optional, default: None
+            Updated (fixed) indices of grid points where the gradient was evaluated not containing the points where
+            the gradients were NaN.
+        grid : Grid object instance
+            Updated (fixed) grid object instance the results are computed for not containing the grid points where
+            the results were NaN.
         """
         # get the indices of the sampling points where any of the QOIs where NaN
         idx_nan = np.unique(np.where(np.isnan(results))[0])
 
         if gradient_results is not None:
+            # TODO: distinguish between cases where gradients were "for free" and where we actually sampled additional
+            # points to get them
             idx_nan_gradient = np.unique(np.where(np.isnan(gradient_results))[0])
 
             if len(idx_nan_gradient) > 0:
@@ -307,15 +316,15 @@ class Algorithm(object):
                     print(f"WARNING! Detected {len(idx_nan)} grid points with NaN results. Resampling ...")
 
                 # resample grid points
-                gpc.grid.resample(idx=idx_nan)
+                grid.resample(idx=idx_nan)
 
                 # determine results at resampled grid points
                 results_resample = com.run(model=self.problem.model,
                                            problem=self.problem,
-                                           coords=gpc.grid.coords[idx_nan, :],
-                                           coords_norm=gpc.grid.coords_norm[idx_nan, :],
-                                           i_iter=gpc.order_max,
-                                           i_subiter=gpc.interaction_order,
+                                           coords=grid.coords[idx_nan, :],
+                                           coords_norm=grid.coords_norm[idx_nan, :],
+                                           i_iter=None,
+                                           i_subiter=None,
                                            fn_results=None,
                                            print_func_time=self.options["print_func_time"],
                                            verbose=self.options["verbose"])
@@ -325,14 +334,14 @@ class Algorithm(object):
                     gradient_results, gradient_results_idx = get_gradient(
                         model=self.problem.model,
                         problem=self.problem,
-                        grid=gpc.grid,
+                        grid=grid,
                         results=results,
                         com=com,
                         method=self.options["gradient_calculation"],
                         gradient_results_present=None,
                         gradient_idx_skip=None,
-                        i_iter=gpc.order_max,
-                        i_subiter=gpc.interaction_order,
+                        i_iter=None,
+                        i_subiter=None,
                         print_func_time=self.options["print_func_time"],
                         dx=self.options["gradient_calculation_options"]["dx"],
                         distance_weight=
@@ -346,12 +355,12 @@ class Algorithm(object):
                 idx_nan = np.unique(np.where(np.isnan(results))[0])
         else:
             # remove grid points with NaN results
-            gpc.grid.delete(idx=idx_nan)
+            grid.delete(idx=idx_nan)
 
             # remove NaN results
             results = np.delete(results, idx_nan, axis=0)
 
-        return results, gpc
+        return results, gradient_results, gradient_results_idx, grid
 
 
 class Static_IO(Algorithm):
@@ -750,11 +759,11 @@ class Static(Algorithm):
                        tab=0, verbose=self.options["verbose"])
 
             # check validity of results and resample in case the model could not be evaluated at some sampling points
-            res, gpc = self.check_results(results=res,
-                                          gradient_results=grad_res_3D,
-                                          gradient_results_idx=gradient_idx,
-                                          gpc=gpc,
-                                          com=com)
+            res, grad_res_3D, gradient_idx, gpc.grid = self.check_results(results=res,
+                                                                          gradient_results=grad_res_3D,
+                                                                          gradient_results_idx=gradient_idx,
+                                                                          grid=gpc.grid,
+                                                                          com=com)
 
             # Initialize gpc matrix
             gpc.init_gpc_matrix(gradient_idx=gradient_idx)
@@ -1076,6 +1085,12 @@ class MEStatic(Algorithm):
                         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                tab=0, verbose=self.options["verbose"])
 
+                    # check validity of results and resample in case the model could not be evaluated at some sampling points
+                    res_all, grad_res_3D_all, gradient_idx, grid = self.check_results(results=res_all,
+                                                                                      gradient_results=grad_res_3D_all,
+                                                                                      gradient_results_idx=gradient_idx,
+                                                                                      grid=grid,
+                                                                                      com=com)
                 # crop results to considered qoi
                 if self.options["qoi"] != "all":
                     res = copy.deepcopy(res_all)
@@ -1750,6 +1765,13 @@ class StaticProjection(Algorithm):
 
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
+
+                    # check validity of results and resample in case the model could not be evaluated at some sampling points
+                    res_all, grad_res_3D_all, gradient_idx, grid_original = self.check_results(results=res_all,
+                                                                                               gradient_results=grad_res_3D_all,
+                                                                                               gradient_results_idx=gradient_idx,
+                                                                                               grid=grid_original,
+                                                                                               com=com)
 
                 # crop results to considered qoi
                 if self.options["qoi"] != "all":
