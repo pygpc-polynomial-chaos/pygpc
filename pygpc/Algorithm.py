@@ -2166,6 +2166,13 @@ class MEStaticProjection(Algorithm):
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
+                    # check validity of results and resample in case the model could not be evaluated at some sampling points
+                    res_all, grad_res_3D_all, gradient_idx, grid = self.check_results(results=res_all,
+                                                                                      gradient_results=grad_res_3D_all,
+                                                                                      gradient_results_idx=gradient_idx,
+                                                                                      grid=grid,
+                                                                                      com=com)
+
                 # crop results to considered qoi
                 if self.options["qoi"] != "all":
                     res = copy.deepcopy(res_all)
@@ -2691,6 +2698,13 @@ class RegAdaptive(Algorithm):
                             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                    tab=0, verbose=self.options["verbose"])
 
+                        # check validity of results and resample in case the model could not be evaluated at some sampling points
+                        res, grad_res_3D, gradient_idx, gpc.grid = self.check_results(results=res,
+                                                                                      gradient_results=grad_res_3D,
+                                                                                      gradient_results_idx=gradient_idx,
+                                                                                      grid=gpc.grid,
+                                                                                      com=com)
+
                         i_grid = gpc.grid.coords.shape[0]
 
                     # update gpc matrix
@@ -3028,6 +3042,13 @@ class MERegAdaptiveProjection(Algorithm):
             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                    tab=0, verbose=self.options["verbose"])
 
+        # check validity of results and resample in case the model could not be evaluated at some sampling points
+        res_all, grad_res_3D_all, gradient_idx, grid = self.check_results(results=res_all,
+                                                                          gradient_results=grad_res_3D_all,
+                                                                          gradient_results_idx=gradient_idx,
+                                                                          grid=grid,
+                                                                          com=com)
+
         megpc = [0 for _ in range(n_qoi)]
         coeffs = [0 for _ in range(n_qoi)]
 
@@ -3212,6 +3233,13 @@ class MERegAdaptiveProjection(Algorithm):
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
 
+                # check validity of results and resample in case the model could not be evaluated at some sampling points
+                res_all, grad_res_3D_all, gradient_idx, grid = self.check_results(results=res_all,
+                                                                                  gradient_results=grad_res_3D_all,
+                                                                                  gradient_results_idx=gradient_idx,
+                                                                                  grid=grid,
+                                                                                  com=com)
+
                 megpc[i_qoi].grid = copy.deepcopy(grid)
 
                 # update classifier
@@ -3315,6 +3343,13 @@ class MERegAdaptiveProjection(Algorithm):
 
                     iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                            tab=0, verbose=self.options["verbose"])
+
+                # check validity of results and resample in case the model could not be evaluated at some sampling points
+                res_all, grad_res_3D_all, gradient_idx, grid = self.check_results(results=res_all,
+                                                                                  gradient_results=grad_res_3D_all,
+                                                                                  gradient_results_idx=gradient_idx,
+                                                                                  grid=grid,
+                                                                                  com=com)
 
                 i_grid = grid.n_grid
 
@@ -3613,6 +3648,14 @@ class MERegAdaptiveProjection(Algorithm):
 
                                         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                                tab=0, verbose=self.options["verbose"])
+
+                                    # check validity of results and resample in case the model could not be evaluated at some sampling points
+                                    res_all, grad_res_3D_all, gradient_idx, grid = self.check_results(
+                                        results=res_all,
+                                        gradient_results=grad_res_3D_all,
+                                        gradient_results_idx=gradient_idx,
+                                        grid=grid,
+                                        com=com)
 
                                     # crop results to considered qoi
                                     if self.options["qoi"] != "all":
@@ -4133,6 +4176,14 @@ class RegAdaptiveProjection(Algorithm):
         iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                tab=0, verbose=self.options["verbose"])
 
+        # check validity of results and resample in case the model could not be evaluated at some sampling points
+        res_all, grad_res_3D_all, gradient_idx, grid_original = self.check_results(
+            results=res_all,
+            gradient_results=grad_res_3D_all,
+            gradient_results_idx=gradient_idx,
+            grid=grid_original,
+            com=com)
+
         # set qoi indices
         if self.options["qoi"] == "all":
             qoi_idx = np.arange(res_all.shape[1])
@@ -4331,6 +4382,14 @@ class RegAdaptiveProjection(Algorithm):
 
                             i_grid = grid_original.coords.shape[0]
 
+                            # check validity of results and resample in case the model could not be evaluated at some sampling points
+                            res_all, grad_res_3D_all, gradient_idx, grid_original = self.check_results(
+                                results=res_all,
+                                gradient_results=grad_res_3D_all,
+                                gradient_results_idx=gradient_idx,
+                                grid=grid_original,
+                                com=com)
+
                             # Determine gradient and update projection matrix in case of gradient enhanced gPC
                             if self.options["gradient_enhanced"]:
                                 start_time = time.time()
@@ -4355,6 +4414,14 @@ class RegAdaptiveProjection(Algorithm):
 
                                 iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                        tab=0, verbose=self.options["verbose"])
+
+                                # check validity of results and resample in case the model could not be evaluated at some sampling points
+                                res_all, grad_res_3D_all, gradient_idx, grid_original = self.check_results(
+                                    results=res_all,
+                                    gradient_results=grad_res_3D_all,
+                                    gradient_results_idx=gradient_idx,
+                                    grid=grid_original,
+                                    com=com)
 
                                 # Determine projection matrix
                                 p_matrix, p_matrix_complete = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
