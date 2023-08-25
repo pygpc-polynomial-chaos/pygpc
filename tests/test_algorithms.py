@@ -79,7 +79,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: TensorGrid
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_000_Static_gpc_quad'
+        test_name = 'test_algorithms_000_Static_gpc_quad'
         print(test_name)
 
         # define model
@@ -175,7 +175,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_001_Static_gpc'
+        test_name = 'test_algorithms_001_Static_gpc'
         print(test_name)
 
         # define model
@@ -264,6 +264,64 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
+    def test_algorithms_001_Static_gpc_NaN(self):
+        """
+        Algorithm: Static
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithms_001_Static_gpc_NaN'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.Peaks_NaN()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[1.2, 2])
+        parameters["x2"] = 1.25
+        parameters["x3"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 0.6])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "Moore-Penrose"
+        options["settings"] = None
+        options["order"] = [9, 9]
+        options["order_max"] = 9
+        options["interaction_order"] = 2
+        options["matrix_ratio"] = 0.7
+        options["error_type"] = "loocv"
+        options["n_cpu"] = 0
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["gradient_enhanced"] = True
+        options["gradient_calculation"] = "FD_1st2nd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["backend"] = "omp"
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": seed}
+        options["adaptive_sampling"] = True
+
+        # define algorithm
+        algorithm = pygpc.Static(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC algorithm
+        session, coeffs, results = session.run()
+
+        # read session
+        nrmsd = session.gpc[0].error[-1]*100
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        self.expect_true(nrmsd < 1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+
+        print("done!\n")
+
     def test_algorithms_002_MEStatic_gpc(self):
         """
         Algorithm: MEStatic
@@ -272,7 +330,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_002_MEStatic_gpc'
+        test_name = 'test_algorithms_002_MEStatic_gpc'
         print(test_name)
 
         # define model
@@ -367,6 +425,76 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
+    def test_algorithms_002_MEStatic_gpc_NaN(self):
+        """
+        Algorithm: MEStatic
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithms_002_MEStatic_gpc_NaN'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.SurfaceCoverageSpecies_NaN()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["rho_0"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["beta"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 20])
+        parameters["alpha"] = 1.
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "LarsLasso"
+        options["settings"] = None
+        options["order"] = [15, 15]
+        options["order_max"] = 12
+        options["interaction_order"] = 2
+        options["n_grid"] = 1000
+        options["matrix_ratio"] = None
+        options["n_cpu"] = 0
+        options["gradient_enhanced"] = True
+        options["gradient_calculation"] = "FD_fwd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["error_type"] = "loocv"
+        options["qoi"] = "all"
+        options["classifier"] = "learning"
+        options["classifier_options"] = {"clusterer": "KMeans",
+                                         "n_clusters": 2,
+                                         "classifier": "MLPClassifier",
+                                         "classifier_solver": "lbfgs"}
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": seed}
+
+        # define algorithm
+        algorithm = pygpc.MEStatic(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC algorithm
+        session, coeffs, results = session.run()
+
+        # read session
+        session = pygpc.read_session(fname=session.fn_session, folder=session.fn_session_folder)
+
+        nrmsd = session.gpc[0].error[-1] * 100
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
+
     def test_algorithms_003_StaticProjection_gpc(self):
         """
         Algorithm: StaticProjection
@@ -375,7 +503,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_003_StaticProjection_gpc'
+        test_name = 'test_algorithms_003_StaticProjection_gpc'
         print(test_name)
 
         # define model
@@ -392,17 +520,17 @@ class TestPygpcMethods(unittest.TestCase):
         options["method"] = "reg"
         options["solver"] = "LarsLasso"
         options["settings"] = None
-        options["order"] = [10]
-        options["order_max"] = 10
+        options["order"] = [15, 15]
+        options["order_max"] = 15
         options["interaction_order"] = 1
         options["n_cpu"] = 0
         options["error_type"] = "nrmsd"
         options["n_samples_validation"] = 1e3
         options["eps"] = 1e-3
         options["error_norm"] = "relative"
-        options["matrix_ratio"] = 2
+        options["matrix_ratio"] = None
         options["qoi"] = 0
-        options["n_grid"] = 5
+        options["n_grid"] = 500
         options["fn_results"] = os.path.join(folder, test_name)
         options["save_session_format"] = save_session_format
         options["gradient_enhanced"] = False
@@ -459,7 +587,72 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
+
+    def test_algorithms_003_StaticProjection_gpc_NaN(self):
+        """
+        Algorithm: StaticProjection
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithms_003_StaticProjection_gpc_NaN'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.GenzOscillatory_NaN()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "LarsLasso"
+        options["settings"] = None
+        options["order"] = [15, 15]
+        options["order_max"] = 15
+        options["interaction_order"] = 1
+        options["n_cpu"] = 0
+        options["error_type"] = "loocv"
+        options["eps"] = 1e-3
+        options["error_norm"] = "relative"
+        options["matrix_ratio"] = None
+        options["qoi"] = 0
+        options["n_grid"] = 500
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["gradient_enhanced"] = False
+        options["gradient_calculation"] = "FD_fwd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["grid"] = pygpc.LHS_L1
+        options["grid_options"] = {"criterion": ["tmc", "cc"]}
+
+        # define algorithm
+        algorithm = pygpc.StaticProjection(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC algorithm
+        session, coeffs, results = session.run()
+
+        # read session
+        session = pygpc.read_session(fname=session.fn_session, folder=session.fn_session_folder)
+        nrmsd = session.gpc[0].error[-1]*100
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        self.expect_true(nrmsd < 1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -475,7 +668,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_004_MEStaticProjection_gpc'
+        test_name = 'test_algorithms_004_MEStaticProjection_gpc'
         print(test_name)
 
         # define model
@@ -492,8 +685,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["method"] = "reg"
         options["solver"] = "LarsLasso"
         options["settings"] = None
-        options["order"] = [3, 3]
-        options["order_max"] = 3
+        options["order"] = [5, 5]
+        options["order_max"] = 5
         options["interaction_order"] = 2
         options["matrix_ratio"] = 2
         options["n_cpu"] = 0
@@ -570,6 +763,74 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
+    def test_algorithms_004_MEStaticProjection_gpc_NaN(self):
+        """
+        Algorithm: MEStaticProjection
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithms_004_MEStaticProjection_gpc_NaN'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay_NaN()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "LarsLasso"
+        options["settings"] = None
+        options["order"] = [5, 5]
+        options["order_max"] = 5
+        options["interaction_order"] = 2
+        options["matrix_ratio"] = 2
+        options["n_cpu"] = 0
+        options["gradient_enhanced"] = False
+        options["gradient_calculation"] = "FD_fwd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["n_grid"] = 2000
+        options["error_type"] = "loocv"
+        options["n_samples_validation"] = 1e3
+        options["qoi"] = "all"
+        options["classifier"] = "learning"
+        options["classifier_options"] = {"clusterer": "KMeans",
+                                         "n_clusters": 2,
+                                         "classifier": "MLPClassifier",
+                                         "classifier_solver": "lbfgs"}
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": 1}
+
+        # define algorithm
+        algorithm = pygpc.MEStaticProjection(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
+
+        # read session
+        nrmsd = session.gpc[0].error[-1] * 100
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
+
     def test_algorithms_005_RegAdaptive_gpc(self):
         """
         Algorithm: RegAdaptive
@@ -578,7 +839,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_005_RegAdaptive_gpc'
+        test_name = 'test_algorithms_005_RegAdaptive_gpc'
         print(test_name)
 
         # Model
@@ -666,7 +927,76 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
+
+    def test_algorithms_005_RegAdaptive_gpc_NaN(self):
+        """
+        Algorithm: RegAdaptive
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithms_005_RegAdaptive_gpc_NaN'
+        print(test_name)
+
+        # Model
+        model = pygpc.testfunctions.Ishigami_NaN()
+
+        # Problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["x3"] = 0.
+        parameters["a"] = 7.
+        parameters["b"] = 0.1
+
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["order_start"] = 8
+        options["order_end"] = 20
+        options["solver"] = "LarsLasso"
+        options["interaction_order"] = 2
+        options["order_max_norm"] = 1.0
+        options["n_cpu"] = 0
+        options["adaptive_sampling"] = False
+        options["gradient_enhanced"] = True
+        options["gradient_calculation"] = "FD_fwd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["eps"] = 0.0075
+        # options["grid"] = pygpc.LHS
+        # options["grid_options"] = {"criterion": "ese", "seed": seed}
+
+        options["grid"] = pygpc.L1
+        options["grid_options"] = {"criterion": ["mc"],
+                                   "method": "iter",
+                                   "n_iter": 1000,
+                                   "seed": seed}
+
+        # define algorithm
+        algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
+
+        # read session
+        session = pygpc.read_session(fname=session.fn_session, folder=session.fn_session_folder)
+        nrmsd = session.gpc[0].error[-1] * 100
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        self.expect_true(nrmsd < 1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -682,7 +1012,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_006_RegAdaptiveAnisotropic_gpc'
+        test_name = 'test_algorithms_006_RegAdaptive_anisotropic_gpc'
         print(test_name)
 
         # Model
@@ -763,7 +1093,74 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
+
+    def test_algorithms_006_RegAdaptive_anisotropic_gpc_NaN(self):
+        """
+        Algorithm: RegAdaptive
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithms_006_RegAdaptive_anisotropic_gpc_NaN'
+        print(test_name)
+
+        # Model
+        model = pygpc.testfunctions.Ishigami_NaN()
+
+        # Problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["x3"] = 1.  # pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["a"] = 7.
+        parameters["b"] = 0.1
+
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["order_start"] = 0
+        options["order_end"] = 20
+        options["solver"] = "Moore-Penrose"
+        options["interaction_order"] = 2
+        options["order_max_norm"] = 1.0
+        options["n_cpu"] = 0
+        options["adaptive_sampling"] = False
+        options["gradient_enhanced"] = False
+        options["gradient_calculation"] = "FD_fwd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["eps"] = 0.0075
+        options["basis_increment_strategy"] = "anisotropic"
+        options["matrix_ratio"] = 2
+
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": seed}
+
+        # define algorithm
+        algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
+
+        # read session
+        session = pygpc.read_session(fname=session.fn_session, folder=session.fn_session_folder)
+        nrmsd = session.gpc[0].error[-1] * 100
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        self.expect_true(nrmsd < 1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -779,7 +1176,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_006_RegAdaptiveProjection_gpc'
+        test_name = 'test_algorithms_007_RegAdaptiveProjection_gpc'
         print(test_name)
 
         # define model
@@ -811,11 +1208,8 @@ class TestPygpcMethods(unittest.TestCase):
         options["qoi"] = 0
         options["error_type"] = "nrmsd"
         options["eps"] = 1e-3
-        options["grid"] = pygpc.L1
-        options["grid_options"] = {"method": "greedy",
-                                   "criterion": ["mc"],
-                                   "n_pool": 1000,
-                                   "seed": seed}
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": seed}
 
         # define algorithm
         algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
@@ -865,7 +1259,72 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
+
+    def test_algorithms_007_RegAdaptiveProjection_gpc_NaN(self):
+        """
+        Algorithm: RegAdaptiveProjection
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithms_007_RegAdaptiveProjection_gpc_NaN'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.GenzOscillatory_NaN()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1., 1.], pdf_limits=[0., 1.])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["order_start"] = 2
+        options["order_end"] = 12
+        options["interaction_order"] = 2
+        options["solver"] = "LarsLasso"
+        options["settings"] = None
+        options["seed"] = 1
+        options["matrix_ratio"] = 10
+        options["n_cpu"] = 0
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["adaptive_sampling"] = False
+        options["gradient_enhanced"] = True
+        options["gradient_calculation"] = "FD_fwd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["n_grid_gradient"] = 5
+        options["qoi"] = 0
+        options["error_type"] = "loocv"
+        options["eps"] = 1e-3
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": seed}
+
+        # define algorithm
+        algorithm = pygpc.RegAdaptiveProjection(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
+
+        # read session
+        session = pygpc.read_session(fname=session.fn_session, folder=session.fn_session_folder)
+        nrmsd = session.gpc[0].error[-1] * 100
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        self.expect_true(nrmsd < 1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -881,7 +1340,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_007_MERegAdaptiveProjection_gpc'
+        test_name = 'test_algorithms_008_MERegAdaptiveProjection_gpc'
         print(test_name)
 
         # define model
@@ -910,7 +1369,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
         options["error_type"] = "nrmsd"
         options["error_norm"] = "absolute"
-        options["n_samples_validations"] = "absolute"
+        options["n_samples_validations"] = 1e3
         options["qoi"] = 0
         options["classifier"] = "learning"
         options["classifier_options"] = {"clusterer": "KMeans",
@@ -924,7 +1383,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["fn_results"] = os.path.join(folder, test_name)
         options["save_session_format"] = save_session_format
         options["grid"] = pygpc.Random
-        options["grid_options"] = None
+        options["grid_options"] = {"seed": seed}
 
         # define algorithm
         algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
@@ -974,7 +1433,78 @@ class TestPygpcMethods(unittest.TestCase):
                                fn_out=options["fn_results"] + ".txt")
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        # self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
+
+    def test_algorithms_008_MERegAdaptiveProjection_gpc_NaN(self):
+        """
+        Algorithm: MERegAdaptiveProjection
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithms_008_MERegAdaptiveProjection_gpc_NaN'
+        print(test_name)
+
+        # define model
+        model = pygpc.testfunctions.DiscontinuousRidgeManufactureDecay_NaN()
+
+        # define problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["method"] = "reg"
+        options["solver"] = "LarsLasso"
+        options["settings"] = None
+        options["order_start"] = 3
+        options["order_end"] = 15
+        options["interaction_order"] = 2
+        options["matrix_ratio"] = 2
+        options["n_cpu"] = 0
+        options["projection"] = True
+        options["adaptive_sampling"] = True
+        options["gradient_enhanced"] = True
+        options["gradient_calculation"] = "FD_fwd"
+        options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+        options["error_type"] = "loocv"
+        options["error_norm"] = "absolute"
+        options["qoi"] = 0
+        options["classifier"] = "learning"
+        options["classifier_options"] = {"clusterer": "KMeans",
+                                         "n_clusters": 2,
+                                         "classifier": "MLPClassifier",
+                                         "classifier_solver": "lbfgs"}
+        options["n_samples_discontinuity"] = 12
+        options["eps"] = 0.75
+        options["n_grid_init"] = 100
+        options["backend"] = "omp"
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": seed}
+
+        # define algorithm
+        algorithm = pygpc.MERegAdaptiveProjection(problem=problem, options=options)
+
+        # Initialize gPC Session
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run gPC session
+        session, coeffs, results = session.run()
+
+        nrmsd = session.gpc[0].error[0][0] * 100
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
+        self.expect_true(nrmsd < 0.1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -990,7 +1520,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_022_clustering_3_domains'
+        test_name = 'test_algorithms_009_clustering_3_domains'
         print(test_name)
 
         # define model
@@ -1094,7 +1624,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Custom (Random)
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_026_Static_IO_gpc'
+        test_name = 'test_algorithms_010_Static_IO_gpc'
         print(test_name)
 
         # define input data
@@ -1175,7 +1705,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Custom (Random)
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_027_MEStatic_IO_gpc'
+        test_name = 'test_algorithms_011_MEStatic_IO_gpc'
         print(test_name)
 
         # define input data

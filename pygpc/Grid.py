@@ -106,6 +106,9 @@ class Grid(object):
 
     @coords.setter
     def coords(self, value):
+        if value.ndim == 1:
+            value = value[np.newaxis, :]
+
         self._coords = value
 
         if value is not None:
@@ -121,6 +124,9 @@ class Grid(object):
 
     @coords_norm.setter
     def coords_norm(self, value):
+        if value.ndim == 1:
+            value = value[np.newaxis, :]
+
         self._coords_norm = value
 
         if value is not None:
@@ -136,6 +142,8 @@ class Grid(object):
 
     @coords_gradient.setter
     def coords_gradient(self, value):
+        assert value.ndim == 3, "Specify coords_gradient as 3D tensor of shape [n_grid x dim x dim]"
+
         self._coords_gradient = value
 
         if value is not None:
@@ -151,6 +159,7 @@ class Grid(object):
 
     @coords_gradient_norm.setter
     def coords_gradient_norm(self, value):
+        assert value.ndim == 3, "Specify coords_gradient_norm as 3D tensor of shape [n_grid x dim x dim]"
         self._coords_gradient_norm = value
 
         if value is not None:
@@ -935,6 +944,9 @@ class RandomGrid(Grid):
                                     results=results,
                                     type=type)
 
+        # copy options (seed increment)
+        self.options = copy.deepcopy(grid_tmp.options)
+
         # overwrite grid points to resample in original grid with new grid points from temporary grid
         self.coords[idx, ] = grid_tmp.coords[n_grid:, ]
         self.coords_norm[idx, ] = grid_tmp.coords_norm[n_grid:, ]
@@ -945,6 +957,9 @@ class RandomGrid(Grid):
 
         # create new gradient grid points if required
         if self.coords_gradient is not None:
+            self._coords_gradient = None
+            self._coords_gradient_norm = None
+            self.n_grid_gradient = None
             self.create_gradient_grid()
 
     def delete(self, idx):
@@ -1030,13 +1045,20 @@ class RandomGrid(Grid):
                             self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
 
                         elif type == "GP":
+                            if "n_pool" not in list(self.options.keys()):
+                                self.options["n_pool"] = 1000
+
                             # If results are given, determine optimal hyperparameters for Gaussian Process Regression
                             if results is not None:
                                 self.options["lengthscale"], self.options["variance"] = \
                                     get_parameters_gaussian_process(Xtrain=self.coords_norm,
                                                                     ytrain=results[:, 0])
 
-                            tqdm.write(f"Adding GP grid points #{self.n_grid + 1} ... #{n_grid_new}")
+                            if (self.n_grid + 1) == n_grid_new:
+                                tqdm.write(f"Adding GP grid point #{self.n_grid + 1}")
+                            else:
+                                tqdm.write(f"Adding GP grid points #{self.n_grid + 1} ... #{n_grid_new}")
+
                             for _ in tqdm(range(n_grid_add)):
                                 # Determine new grid points where uncertainty of output is highest
                                 new_grid = self.get_coords_gaussian_process(n_grid_add=1,
@@ -1063,13 +1085,20 @@ class RandomGrid(Grid):
                             self.coords_norm = np.vstack([self.coords_norm, new_grid.coords_norm])
 
                         elif type == "GP":
+                            if "n_pool" not in list(self.options.keys()):
+                                self.options["n_pool"] = 1000
+
                             # If results are given, determine optimal hyperparameters for Gaussian Process Regression
                             if results is not None:
                                 self.options["lengthscale"], self.options["variance"] = \
                                     get_parameters_gaussian_process(Xtrain=self.coords_norm,
                                                                     ytrain=results[:, 0])
 
-                            print(f"Adding GP grid points #{self.n_grid + 1} ... #{n_grid_new})")
+                            if (self.n_grid + 1) == n_grid_new:
+                                tqdm.write(f"Adding GP grid point #{self.n_grid + 1}")
+                            else:
+                                tqdm.write(f"Adding GP grid points #{self.n_grid + 1} ... #{n_grid_new}")
+
                             for _ in tqdm(range(n_grid_add)):
                                 # Determine new grid points where uncertainty of output is highest
                                 new_grid = self.get_coords_gaussian_process(n_grid_add=1,
@@ -1271,27 +1300,32 @@ class RandomGrid(Grid):
         covariance = Kss - (v.T @ v)
 
         # we get the standard deviation from the covariance matrix
-        try:
-            std = np.sqrt(np.diag(covariance))
-        except RuntimeWarning:
-            pass
+        std = np.sqrt(np.diag(covariance))
 
-        # weight std with joint probability
-        joint_pdf = np.ones(n_pool)
-        for i_p, p in enumerate(self.parameters_random):
-            _, tmp = self.parameters_random[p].pdf_norm(x=grid_test.coords_norm[:, i_p])
-            joint_pdf *= tmp
-        std_weighted = std * joint_pdf
+        if np.isnan(std).all():
+            print("Warning: GP failed, adding random grid points instead.")
 
-        idx_sorted = np.flip(np.argsort(std_weighted))
-        idx_sorted = idx_sorted[~np.isnan(std_weighted[idx_sorted])]
+            # take random samples if GP failed
+            coords = grid_test.coords[:n_grid_add, :]
+            coords_norm = grid_test.coords_norm[:n_grid_add, :]
+        else:
+            # weight std with joint probability
+            joint_pdf = np.ones(n_pool)
+            for i_p, p in enumerate(self.parameters_random):
+                _, tmp = self.parameters_random[p].pdf_norm(x=grid_test.coords_norm[:, i_p])
+                joint_pdf *= tmp
+            std_weighted = std * joint_pdf
 
-        coords = grid_test.coords[idx_sorted[:n_grid_add], :]
-        coords_norm = grid_test.coords_norm[idx_sorted[:n_grid_add], :]
+            idx_sorted = np.flip(np.argsort(std_weighted))
+            idx_sorted = idx_sorted[~np.isnan(std_weighted[idx_sorted])]
+
+            coords = grid_test.coords[idx_sorted[:n_grid_add], :]
+            coords_norm = grid_test.coords_norm[idx_sorted[:n_grid_add], :]
 
         grid_new = Random(coords=coords, coords_norm=coords_norm, parameters_random=self.parameters_random)
 
         return grid_new
+
 
 class Random(RandomGrid):
     """

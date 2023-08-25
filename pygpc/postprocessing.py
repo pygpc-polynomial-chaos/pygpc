@@ -1,4 +1,5 @@
 import h5py
+import matplotlib
 import numpy as np
 import pandas as pd
 
@@ -621,13 +622,18 @@ def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
     return sobol, gsens
 
 
-def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
-                      y_label="y", x_label="x", sobol_donut=True):
+def plot_sens_summary(sobol, gsens, session=None, coeffs=None, qois=None, mean=None, std=None, output_idx=None,
+                      y_label="y", x_label="x", zlim=None, sobol_donut=True, plot_pdf_over_output_idx=False,
+                      fn_plot=None):
     """
     Plot summary of Sobol indices and global derivative based sensitivity coefficients
 
     Parameters
     ----------
+    session : GPC Session object instance
+        GPC session object containing all information i.e., gPC, Problem, Model, Grid, Basis, RandomParameter instances
+    coeffs : ndarray of float [n_coeffs x n_out] or list of ndarray of float [n_qoi][n_coeffs x n_out]
+        GPC coefficients
     sobol : pandas DataFrame
         Pandas DataFrame containing the normalized Sobol indices from get_sens_summary()
     gsens: pandas DataFrame
@@ -637,15 +643,40 @@ def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
     multiple_qoi: Boolean
         Option to plot over a quantity of interest, needs an array of qoi values and results
     qois: numpy ndarray
-        Quantities of interest
-    results: numpy ndarray
-        Results from gpc session
+        Axis of quantities of interest (x-axis, e.g. time)
+    mean: numpy ndarray
+        Mean from gpc session (determined with e.g.: pygpc.SGPC.get_mean(coeffs))
+    std: numpy ndarray
+        Std from gpc session (determined with e.g.: pygpc.SGPC.get_std(coeffs))
+        (can be given and plotted when plot_pdf_over_output_idx=False)
+    output_idx : int, str or None, optional, default=0
+        Indices of output quantity to consider
+    x_label : str
+        Label of x-axis in case of multiple QOI plots
+    y_label : str
+        Label of y-axis in case of multiple QOI plots
+    zlim : list of float, optional, default: None
+        Limits of 3D plot (e.g. pdf) in z direction
+    plot_pdf_over_output_idx : bool, optional, default: False
+        Plots pdf as a surface plot over output index (e.g. a time axis)
+    fn_plot : str, optional, default: None
+        Filename of the plot to save (.png or .pdf)
     """
     import matplotlib.pyplot as plt
 
-    glob_sens = gsens.values.flatten()
+    if type(output_idx) is int:
+        output_idx = [output_idx]
+
+    if output_idx is None or output_idx == "all":
+        if coeffs is not None:
+            output_idx = np.arange(coeffs.shape[1])
+        else:
+            output_idx = np.array([0])
+
+    glob_sens = gsens.values[:, output_idx].flatten()
     gsens_keys = gsens["global_sens (qoi 0)"].keys()
-    sobols = sobol.values.flatten()
+
+    sobols = sobol.values[:, output_idx].flatten()
     sobol_keys = sobol["sobol_norm (qoi 0)"].keys()
 
     # ignore very low Sobol indices
@@ -657,7 +688,7 @@ def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
     sobols = sobols[mask]
     sobol_labels = [s for i, s in enumerate(sobol_labels) if mask[i]]
 
-    if multiple_qoi == False:
+    if len(output_idx) == 1:
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 7))
         if sobol_donut:
             wedgeprops = {"linewidth": 0.5, 'width': 0.5, "edgecolor": "k"}
@@ -711,17 +742,65 @@ def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
         ax2.set_xlabel('parameter', fontsize=14)
         ax2.axhline(y=0, color='k', alpha=0.5)
         plt.tight_layout()
-        plt.show()
-    else:
-        if not (type(qois) == np.ndarray and type(results) == np.ndarray):
-            raise ValueError("Please specifiy qois and results as a numpy array of values!")
-        else:
-            fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=[8, 9])
 
+    else:
+        fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=[8, 9])
+
+        # Estimate output pdf
+        if plot_pdf_over_output_idx:
+            if session.qoi_specific:
+                pdf_x = np.zeros((100, len(output_idx)))
+                pdf_y = np.zeros((100, len(output_idx)))
+
+                for i, o_idx in enumerate(output_idx):
+                    pdf_x_tmp, pdf_y_tmp = session.gpc[o_idx].get_pdf(coeffs=coeffs[o_idx], n_samples=1e5, output_idx=0)
+                    pdf_x[:, i] = pdf_x_tmp.flatten()
+                    pdf_y[:, i] = pdf_y_tmp.flatten()
+            else:
+                pdf_x, pdf_y, _, y_gpc_samples = session.gpc[0].get_pdf(coeffs=coeffs,
+                                                                        n_samples=1e5,
+                                                                        output_idx=output_idx,
+                                                                        return_samples=True)
+
+            # interpolate pdf data on common grid
+            x_interp = np.linspace(0, np.max(pdf_x), 1000)
+            y_interp = np.zeros((len(x_interp), np.shape(pdf_x)[1]))
+
+            for i in range(np.shape(pdf_x)[1]):
+                y_interp[:, i] = np.interp(x_interp, pdf_x[:, i], pdf_y[:, i], left=0, right=0)
+
+            if zlim is not None:
+                vmin = zlim[0]
+                vmax = zlim[1]
+            else:
+                vmin = np.min(y_interp)
+                vmax = np.max(y_interp)
+
+            if qois is not None:
+                x_axis = qois
+            else:
+                x_axis = np.arange(0, len(output_idx))
+
+            xx, yy = np.meshgrid(x_axis, x_interp)
+
+            # plot pdf over output_idx
+            ax1.pcolor(xx, yy, y_interp, cmap="bone_r", vmin=vmin, vmax=vmax)
+            ax1.plot(x_axis, mean, "r", linewidth=1.5)
+            legend_elements = [matplotlib.lines.Line2D([0], [0], color='r', lw=2, label='mean'),
+                               matplotlib.patches.Patch(facecolor='grey', edgecolor='k', label='pdf')]
+            ax1.legend(handles=legend_elements)
+
+            ax1.grid()
+
+            if x_label is not None:
+                ax1.set_xlabel(x_label, fontsize=14)
+
+            if y_label is not None:
+                ax1.set_ylabel(y_label, fontsize=14)
+
+        else:
             # mean and std
-            mean_results = np.mean(results, axis=0)
-            std_results = np.std(results, axis=0)
-            ax1.plot(qois, mean_results)
+            ax1.plot(qois, mean)
             ax1.grid()
             ax1.set_ylabel(y_label, fontsize=14)
             ax1.set_xlabel(x_label, fontsize=14)
@@ -729,32 +808,271 @@ def plot_sens_summary(sobol, gsens, multiple_qoi=False, qois=None, results=None,
             ax1.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
             ax1.set_title("Mean and standard deviation of " + y_label, fontsize=14)
             # ax2.set_ylim(np.min(results) + np.max(std_results), np.max(results) + np.max(std_results))
-            ax1.fill_between(qois, mean_results - std_results, mean_results + std_results, color="grey", alpha=0.5)
+            ax1.fill_between(qois, mean - std, mean + std, color="grey", alpha=0.5)
 
-            # sobol
-            for i in range(sobol.values.shape[0]):
-                ax2.plot(qois, sobol.values[i])
-                ax2.set_title("Sobol indices of the parameters over the qois", fontsize=14)
-                ax2.set_xlabel(x_label, fontsize=14)
-                ax2.set_ylabel("Sobol index", fontsize=14)
-                ax2.set_yscale('log')
-            sobol_labels = [(x[1:-1].replace("'", " ")).replace(" ,", ",") for x in sobol_keys]
-            ax2.legend(sobol_labels)
-            # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
-            ax2.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+        # sobol
+        for i in range(sobol.values.shape[0]):
+            ax2.plot(qois, sobol.values[i])
+            ax2.set_title("Sobol indices of the parameters over the qois", fontsize=14)
+            ax2.set_xlabel(x_label, fontsize=14)
+            ax2.set_ylabel("Sobol index", fontsize=14)
+            ax2.set_yscale('log')
+        sobol_labels = [(x[1:-1].replace("'", " ")).replace(" ,", ",") for x in sobol_keys]
+        ax2.legend(sobol_labels)
+        # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
+        ax2.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+        ax2.grid()
+
+        # gsens
+        for i in range(gsens.values.shape[0]):
+            ax3.plot(qois, gsens.values[i])
+            ax3.set_title("Global derivatives of the parameters over the qois", fontsize=14)
+            ax3.set_xlabel(x_label, fontsize=14)
+            ax3.set_ylabel("Global sensitivity", fontsize=14)
+            # ax3.set_yscale('log')
+        gsens_labels = [x for x in gsens_keys]
+        ax3.legend(gsens_labels)
+        # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
+        ax3.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
+        ax3.grid()
+        plt.tight_layout()
+
+    if fn_plot is not None:
+        plt.savefig(fn_plot, dpi=600)
+        plt.close()
+
+
+def plot_gpc(session, coeffs, random_vars=None, coords=None, results=None, n_grid=None, output_idx=0, fn_plot=None,
+             camera_pos=None, zlim=None, plot_pdf_over_output_idx=False, qois=None, x_label=None, y_label=None):
+    """
+    Compares gPC approximation with original model function. Evaluates both at n_grid (x n_grid) sampling points and
+    calculate the difference between two solutions at the output quantity with output_idx and saves the plot as
+    *_QOI_idx_<output_idx>.png/pdf. Also generates one .hdf5 results file with the evaluation results.
+
+    Parameters
+    ----------
+    session : GPC Session object instance
+        GPC session object containing all information i.e., gPC, Problem, Model, Grid, Basis, RandomParameter instances
+    coeffs : ndarray of float [n_coeffs x n_out] or list of ndarray of float [n_qoi][n_coeffs x n_out]
+        GPC coefficients
+    random_vars: str or list of str [2]
+        Names of the random variables, the analysis is performed for one or max. two random variables
+    n_grid : int or list of int [2], optional
+        Number of samples in each dimension to compare the gPC approximation with the original model function.
+        A cartesian grid is generated based on the limits of the specified random_vars
+    coords : ndarray of float [n_coords x n_dim]
+        Parameter combinations for the random_vars the comparison is conducted with
+    output_idx : int, str or None, optional, default=0
+        Indices of output quantity to consider
+    results: ndarray of float [n_coords x n_out]
+        If available, data of original model function at grid, containing all QOIs
+    fn_plot : str, optional, default: None
+        Filename of plot comparing original vs gPC model (*.png or *.pdf)
+    camera_pos : list [2], optional, default: None
+        Camera position of 3D surface plot (for 2 random variables only) [azimuth, elevation]
+    zlim : list of float, optional, default: None
+        Limits of 3D plot (e.g. pdf) in z direction
+    plot_pdf_over_output_idx : bool, optional, default: False
+        Plots pdf as a surface plot over output index (e.g. a time axis)
+    qois: numpy ndarray
+        Axis of quantities of interest (x-axis, e.g. time)
+    x_label : str
+        Label of x-axis in case of multiple QOI plots
+    y_label : str
+        Label of y-axis in case of multiple QOI plots
+
+    Returns
+    -------
+    <file> : .hdf5 file
+        Data file containing the grid points and the results of the original and the gpc approximation
+    <file> : .png and .pdf file
+        Plot comparing original vs gPC model
+    """
+    y_orig = None
+
+    if type(output_idx) is int:
+        output_idx = [output_idx]
+
+    if output_idx is None or output_idx == "all":
+        output_idx = np.arange(coeffs.shape[1])
+
+    if random_vars is not None:
+        if type(random_vars) is not list:
+            random_vars = random_vars.tolist()
+        assert len(random_vars) <= 2
+
+    if n_grid is not None:
+        if n_grid and type(n_grid) is not list:
+            n_grid = n_grid.tolist()
+    else:
+        n_grid = [10, 10]
+
+    if random_vars is not None:
+        # Create grid such that it includes the mean values of other random variables
+        grid = np.zeros((np.prod(n_grid), len(session.parameters_random)))
+
+        idx = []
+        idx_global = []
+
+        # sort random_vars according to gpc.parameters
+        for i_p, p in enumerate(session.parameters_random.keys()):
+            if p not in random_vars:
+                grid[:, i_p] = session.parameters_random[p].mean
+
+            else:
+                idx.append(random_vars.index(p))
+                idx_global.append(i_p)
+
+        random_vars = [random_vars[i] for i in idx]
+        x = []
+
+        for i_p, p in enumerate(random_vars):
+            x.append(np.linspace(session.parameters_random[p].pdf_limits[0],
+                                 session.parameters_random[p].pdf_limits[1],
+                                 n_grid[i_p]))
+
+        coords_gpc = get_cartesian_product(x)
+        if len(random_vars) == 2:
+            x1_2d, x2_2d = np.meshgrid(x[0], x[1])
+
+        grid[:, idx_global] = coords_gpc
+
+        # Normalize grid
+        grid_norm = Grid(parameters_random=session.parameters_random).get_normalized_coordinates(grid)
+
+    # Evaluate gPC expansion on grid and estimate output pdf
+    if session.qoi_specific:
+        y_gpc = np.zeros((grid_norm.shape[0], len(output_idx)))
+        pdf_x = np.zeros((100, len(output_idx)))
+        pdf_y = np.zeros((100, len(output_idx)))
+
+        for i, o_idx in enumerate(output_idx):
+            y_gpc[:, i] = session.gpc[o_idx].get_approximation(coeffs=coeffs[o_idx], x=grid_norm,
+                                                               output_idx=0).flatten()
+
+            pdf_x_tmp, pdf_y_tmp = session.gpc[o_idx].get_pdf(coeffs=coeffs[o_idx], n_samples=1e5, output_idx=0)
+            pdf_x[:, i] = pdf_x_tmp.flatten()
+            pdf_y[:, i] = pdf_y_tmp.flatten()
+    else:
+        if not plot_pdf_over_output_idx:
+            y_gpc = session.gpc[0].get_approximation(coeffs=coeffs,
+                                                     x=grid_norm,
+                                                     output_idx=output_idx)
+
+        pdf_x, pdf_y, _, y_gpc_samples = session.gpc[0].get_pdf(coeffs=coeffs,
+                                                                n_samples=1e5,
+                                                                output_idx=output_idx,
+                                                                return_samples=True)
+
+    if not plot_pdf_over_output_idx:
+        if results is not None:
+            y_orig = results[:, output_idx]
+
+            if y_orig.ndim == 1:
+                y_orig = y_orig[:, np.newaxis]
+
+        # add axes if necessary
+        if y_gpc.ndim == 1:
+            y_gpc = y_gpc[:, np.newaxis]
+
+    # Plot results
+    matplotlib.rc('text', usetex=False)
+    matplotlib.rc('xtick', labelsize=13)
+    matplotlib.rc('ytick', labelsize=13)
+    fs = 14
+
+    if plot_pdf_over_output_idx:
+        # interpolate pdf data on common grid
+        x_interp = np.linspace(0, np.max(pdf_x), 1000)
+        y_interp = np.zeros((len(x_interp), np.shape(pdf_x)[1]))
+
+        for i in range(np.shape(pdf_x)[1]):
+            y_interp[:, i] = np.interp(x_interp, pdf_x[:, i], pdf_y[:, i], left=0, right=0)
+
+        if zlim is not None:
+            vmin = zlim[0]
+            vmax = zlim[1]
+        else:
+            vmin = np.min(y_interp)
+            vmax = np.max(y_interp)
+
+        if qois is not None:
+            x_axis = qois
+        else:
+            x_axis = np.arange(0, len(output_idx))
+
+        xx, yy = np.meshgrid(x_axis, x_interp)
+
+        # plot pdf over output_idx
+        plt.figure(figsize=[10, 6])
+        plt.pcolor(xx, yy, y_interp, cmap="bone_r", vmin=vmin, vmax=vmax)
+        plt.plot(x_axis, np.mean(y_gpc_samples, axis=0), "r", linewidth=1.5)
+        plt.grid()
+
+        if x_label is not None:
+            plt.xlabel(x_label, fontsize=14)
+
+        if y_label is not None:
+            plt.ylabel(y_label, fontsize=14)
+
+        plt.tight_layout()
+
+        if fn_plot is not None:
+            plt.savefig(os.path.splitext(fn_plot)[0] + "_pdf_qoi.png", dpi=1200)
+            plt.savefig(os.path.splitext(fn_plot)[0] + "_pdf_qoi.pdf")
+            plt.close()
+
+    else:
+        for _i, i in enumerate(output_idx):
+            fig = plt.figure(figsize=(12, 5))
+
+            # One random variable
+            if len(random_vars) == 1:
+                ax1 = fig.add_subplot(1, 2, 1)
+                ax1.plot(coords_gpc, y_gpc[:, i])
+                if y_orig is not None:
+                    ax1.scatter(coords[:, idx_global[0]], y_orig[:, _i], s=7 * np.ones(len(y_orig[:, i])),
+                                facecolor='w', edgecolors='k')
+                    legend = [r"gPC", r"original"]
+                else:
+                    legend = [r"gPC"]
+                ax1.legend(legend, fontsize=fs)
+                ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+                ax1.set_ylabel(r"y(%s)" % random_vars[0], fontsize=fs)
+                ax1.grid()
+
+            # Two random variables
+            elif len(random_vars) == 2:
+                ax1 = fig.add_subplot(1, 2, 1, projection='3d')
+                im1 = ax1.plot_surface(x1_2d, x2_2d, np.reshape(y_gpc[:, _i], (x[1].size, x[0].size), order='f'),
+                                       cmap="jet", alpha=0.75, linewidth=0, edgecolors=None)
+                if y_orig is not None:
+                    ax1.scatter(coords[:, idx_global[0]], coords[:, idx_global[1]], y_orig[:, _i],
+                                'k', alpha=1, edgecolors='k', depthshade=False)
+                ax1.set_title(r'gPC approximation', fontsize=fs)
+                ax1.set_xlabel(r"%s" % random_vars[0], fontsize=fs)
+                ax1.set_ylabel(r"%s" % random_vars[1], fontsize=fs)
+
+                if camera_pos is not None:
+                    ax1.view_init(elev=camera_pos[0], azim=camera_pos[1])
+
+                fig.colorbar(im1, ax=ax1, orientation='vertical')
+
+                if zlim is not None:
+                    ax1.set_zlim(zlim)
+
+            # plot histogram of output data and gPC estimated pdf
+            ax2 = fig.add_subplot(1, 2, 2)
+            if y_orig is not None:
+                ax2.hist(y_orig[:, _i], density=True, bins=20, edgecolor='k')
+            ax2.plot(pdf_x[:, _i], pdf_y[:, _i], 'r')
             ax2.grid()
-
-            # gsens
-            for i in range(gsens.values.shape[0]):
-                ax3.plot(qois, gsens.values[i])
-                ax3.set_title("Global derivatives of the parameters over the qois", fontsize=14)
-                ax3.set_xlabel(x_label, fontsize=14)
-                ax3.set_ylabel("Global sensitivity", fontsize=14)
-                # ax3.set_yscale('log')
-            gsens_labels = [x for x in gsens_keys]
-            ax3.legend(gsens_labels)
-            # ax1.legend(sobol['sobol_norm (qoi 0)'].keys())
-            ax3.set_xlim(qois[0], qois[-1] + (np.max(qois[-1]) * 1e-3))
-            ax3.grid()
+            ax2.set_title("Probability density", fontsize=fs)
+            ax2.set_xlabel(r'$y$', fontsize=16)
+            ax2.set_ylabel(r'$p(y)$', fontsize=16)
             plt.tight_layout()
-            plt.show()
+
+            if fn_plot is not None:
+                plt.savefig(os.path.splitext(fn_plot)[0] + "_qoi_" + str(output_idx[i]) + '.png', dpi=1200)
+                plt.savefig(os.path.splitext(fn_plot)[0] + "_qoi_" + str(output_idx[i]) + '.pdf')
+                plt.close()

@@ -143,7 +143,7 @@ class SGPC(GPC):
         else:
             raise AssertionError("Provide either ""coeffs"" or ""samples"" to determine mean!")
 
-        mean = mean[np.newaxis, :]
+        # mean = mean[np.newaxis, :]
 
         return mean
 
@@ -175,7 +175,7 @@ class SGPC(GPC):
         else:
             raise AssertionError("Provide either ""coeffs"" or ""samples"" to determine standard deviation!")
 
-        std = std[np.newaxis, :]
+        # std = std[np.newaxis, :]
 
         return std
 

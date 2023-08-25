@@ -294,21 +294,17 @@ class Algorithm(object):
             Updated (fixed) grid object instance the results are computed for not containing the grid points where
             the results were NaN.
         """
-        # get the indices of the sampling points where any of the QOIs where NaN
+        # get the indices of the sampling points where any of the QOIs were NaN
         idx_nan = np.unique(np.where(np.isnan(results))[0])
+        idx_nan_gradient = np.array([])
 
         if gradient_results is not None:
-            # TODO: distinguish between cases where gradients were "for free" and where we actually sampled additional
-            # points to get them
-            idx_nan_gradient = np.unique(np.where(np.isnan(gradient_results))[0])
+            idx_nan_gradient_local = np.unique(np.where(np.isnan(gradient_results))[0])
 
-            if len(idx_nan_gradient) > 0:
-                idx_nan_gradient = gradient_results_idx[idx_nan_gradient]
+            if len(idx_nan_gradient_local) > 0:
+                idx_nan_gradient = gradient_results_idx[idx_nan_gradient_local]
 
-        else:
-            idx_nan_gradient = np.array([])
-
-        idx_nan = np.hstack((idx_nan, idx_nan_gradient))
+        idx_nan = np.unique(np.hstack((idx_nan, idx_nan_gradient)).astype(int))
 
         if resample:
             while len(idx_nan) > 0:
@@ -331,11 +327,21 @@ class Algorithm(object):
 
                 # Determine gradient [n_grid x n_out x dim]
                 if gradient_results is not None:
-                    gradient_results, gradient_results_idx = get_gradient(
+                    if self.options["gradient_calculation"] == "FD_fwd":
+                        # for forward gradient calculation only pass the resampled grid points
+                        grid_gradient = copy.deepcopy(grid)
+                        idx_not_nan = np.array([i for i in range(grid.n_grid) if i not in idx_nan])
+                        grid_gradient.delete(idx=idx_not_nan)
+
+                    else:
+                        # for gradient calculation from adjacent grid points pass the complete grid
+                        grid_gradient = grid
+
+                    gradient_results_resample, gradient_results_idx_resample = get_gradient(
                         model=self.problem.model,
                         problem=self.problem,
-                        grid=grid,
-                        results=results,
+                        grid=grid_gradient,
+                        results=results_resample,
                         com=com,
                         method=self.options["gradient_calculation"],
                         gradient_results_present=None,
@@ -344,9 +350,15 @@ class Algorithm(object):
                         i_subiter=None,
                         print_func_time=self.options["print_func_time"],
                         dx=self.options["gradient_calculation_options"]["dx"],
-                        distance_weight=
-                        self.options["gradient_calculation_options"]["distance_weight"],
+                        distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
                         verbose=self.options["verbose"])
+
+                    if self.options["gradient_calculation"] == "FD_fwd":
+                        gradient_results[idx_nan, :, :] = gradient_results_resample
+                        gradient_results_idx[idx_nan] = idx_nan[gradient_results_idx_resample]
+                    else:
+                        gradient_results = gradient_results_resample
+                        gradient_results_idx = gradient_results_idx_resample
 
                 # replace NaN results with new results at resampled grid points
                 results[idx_nan, :] = results_resample
@@ -359,6 +371,10 @@ class Algorithm(object):
 
             # remove NaN results
             results = np.delete(results, idx_nan, axis=0)
+
+            if gradient_results is not None:
+                gradient_results = np.delete(gradient_results, idx_nan_gradient_local, axis=0)
+                gradient_results_idx = np.delete(gradient_results_idx, idx_nan_gradient_local, axis=0)
 
         return results, gradient_results, gradient_results_idx, grid
 
@@ -711,7 +727,7 @@ class Static(Algorithm):
         eps_pre = eps + 1
         i_grid = 0
 
-        res_list = []
+        res = np.array([])
 
         # determine gpc approximation and determine error (increase grid size in case of adaptive sampling)
         while eps > self.options["eps"]:
@@ -721,16 +737,21 @@ class Static(Algorithm):
 
             start_time = time.time()
 
-            res_list.append(com.run(model=self.problem.model,
-                                    problem=self.problem,
-                                    coords=gpc.grid.coords[i_grid:gpc.grid.n_grid, :],
-                                    coords_norm=gpc.grid.coords_norm[i_grid:gpc.grid.n_grid, :],
-                                    i_iter=gpc.order_max,
-                                    i_subiter=gpc.interaction_order,
-                                    fn_results=None,
-                                    print_func_time=self.options["print_func_time"],
-                                    verbose=self.options["verbose"]))
-            res = np.vstack(res_list)
+            res_new = com.run(model=self.problem.model,
+                              problem=self.problem,
+                              coords=gpc.grid.coords[i_grid:gpc.grid.n_grid, :],
+                              coords_norm=gpc.grid.coords_norm[i_grid:gpc.grid.n_grid, :],
+                              i_iter=gpc.order_max,
+                              i_subiter=gpc.interaction_order,
+                              fn_results=None,
+                              print_func_time=self.options["print_func_time"],
+                              verbose=self.options["verbose"])
+
+            if len(res) > 0:
+                res = np.vstack((res, res_new))
+            else:
+                res = res_new
+
             i_grid = gpc.grid.n_grid
 
             iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
@@ -797,7 +818,7 @@ class Static(Algorithm):
                     gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid, self.options["grid_extension_method"]),
                     tab=0, verbose=self.options["verbose"])
                 if self.options["grid_extension_method"] == "GPR":
-                    gpc.grid.extend_random_grid(n_grid_new=n_grid_new, results=res)
+                    gpc.grid.extend_random_grid(n_grid_new=n_grid_new, results=res, type="GP")
                 else:
                     gpc.grid.extend_random_grid(n_grid_new=n_grid_new)
 
@@ -985,7 +1006,7 @@ class MEStatic(Algorithm):
             raise ValueError("If grid is not provided during initialization please provide options['n_grid']")
 
         elif self.options["grid"] == Random or self.options["grid"] == LHS or self.options["grid"] == GP:
-            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
+            print(f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(n_grid)}")
             grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                         n_grid=n_grid,
                                         options=self.options["grid_options"])
@@ -1030,6 +1051,8 @@ class MEStatic(Algorithm):
                                  options=self.options,
                                  validation=self.validation)
 
+            res_all = np.array([])
+
             # determine gpc approximation and determine error (increase grid size in case of adaptive sampling)
             while eps > self.options["eps"]:
                 if i_grid < grid.n_grid:
@@ -1039,17 +1062,20 @@ class MEStatic(Algorithm):
 
                     start_time = time.time()
 
-                    res_all_list.append(com.run(model=self.problem.model,
-                                                problem=self.problem,
-                                                coords=grid.coords[i_grid:grid.n_grid, :],
-                                                coords_norm=grid.coords_norm[i_grid:grid.n_grid, :],
-                                                i_iter=self.options["order_max"],
-                                                i_subiter=self.options["interaction_order"],
-                                                fn_results=None,
-                                                print_func_time=self.options["print_func_time"],
-                                                verbose=self.options["verbose"]))
+                    res_new = com.run(model=self.problem.model,
+                                      problem=self.problem,
+                                      coords=grid.coords[i_grid:grid.n_grid, :],
+                                      coords_norm=grid.coords_norm[i_grid:grid.n_grid, :],
+                                      i_iter=self.options["order_max"],
+                                      i_subiter=self.options["interaction_order"],
+                                      fn_results=None,
+                                      print_func_time=self.options["print_func_time"],
+                                      verbose=self.options["verbose"])
 
-                    res_all = np.vstack(res_all_list)
+                    if len(res_all) > 0:
+                        res_all = np.vstack(res_all, res_new)
+                    else:
+                        res_all = res_new
 
                     if i_qoi == 0 and i_grid == 0:
                         if self.options["qoi"] == "all":
@@ -1671,12 +1697,12 @@ class StaticProjection(Algorithm):
                                                  coords_gradient_norm=self.grid.coords_gradient_norm,
                                                  options=self.options["grid_options"])
         elif self.options["grid"] == Random or self.options["grid"] == GP:
-            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
+            print(f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(n_grid)}")
             grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
                                    n_grid=n_grid,
                                    options=self.options["grid_options"])
         else:
-            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid}")
+            print(f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(n_grid)}")
             grid_original = LHS(parameters_random=self.problem.parameters_random,
                                 n_grid=n_grid,
                                 options={"criterion": "ese",
@@ -2069,7 +2095,7 @@ class MEStaticProjection(Algorithm):
                                         options=self.options["grid_options"])
 
         elif self.options["grid"] == Random or self.options["grid"] == LHS or self.options["grid"] == GP:
-            print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid']}")
+            print(f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(self.options['n_grid'])}")
             grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                         n_grid=self.options["n_grid"],
                                         options=self.options["grid_options"])
@@ -2097,6 +2123,8 @@ class MEStaticProjection(Algorithm):
 
         n_qoi = len(qoi_idx)
 
+        res_all = np.array([])
+
         while i_qoi < n_qoi:
             q_idx = qoi_idx[i_qoi]
             print_str = "Determining gPC approximation for QOI #{}:".format(q_idx)
@@ -2110,7 +2138,7 @@ class MEStaticProjection(Algorithm):
                                  options=self.options,
                                  validation=self.validation)
 
-            eps_pre = eps + 1
+            eps = self.options["eps"] + 1
 
             # determine gpc approximation and determine error (increase grid size in case of adaptive sampling)
             while eps > self.options["eps"]:
@@ -2121,17 +2149,20 @@ class MEStaticProjection(Algorithm):
 
                     start_time = time.time()
 
-                    res_all_list.append(com.run(model=self.problem.model,
-                                                problem=self.problem,
-                                                coords=grid.coords[i_grid:grid.n_grid, :],
-                                                coords_norm=grid.coords_norm[i_grid:grid.n_grid, :],
-                                                i_iter=self.options["order_max"],
-                                                i_subiter=self.options["interaction_order"],
-                                                fn_results=None,
-                                                print_func_time=self.options["print_func_time"],
-                                                verbose=self.options["verbose"]))
+                    res_new = com.run(model=self.problem.model,
+                                      problem=self.problem,
+                                      coords=grid.coords[i_grid:grid.n_grid, :],
+                                      coords_norm=grid.coords_norm[i_grid:grid.n_grid, :],
+                                      i_iter=self.options["order_max"],
+                                      i_subiter=self.options["interaction_order"],
+                                      fn_results=None,
+                                      print_func_time=self.options["print_func_time"],
+                                      verbose=self.options["verbose"])
 
-                    res_all = np.vstack(res_all_list)
+                    if len(res_all) > 0:
+                        res_all = np.vstack(res_all, res_new)
+                    else:
+                        res_all = res_new
 
                     if i_qoi == 0 and i_grid == 0:
                         if self.options["qoi"] == "all":
@@ -2506,7 +2537,7 @@ class RegAdaptive(Algorithm):
                                             options=self.options["grid_options"])
         else:
             n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
-            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid_init}")
+            print(f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(n_grid_init)}")
 
             if self.options["grid"] in [L1, L1_LHS, LHS_L1, FIM, CO]:
                 if "n_pool" in self.options["grid_options"]:
@@ -2691,10 +2722,6 @@ class RegAdaptive(Algorithm):
                                                                      distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
                                                                      verbose=self.options["verbose"])
 
-                            if self.options["gradient_calculation"] == "FD_fwd":
-                                gradient_idx_FD_fwd = gradient_idx
-                                grad_res_3D_FD_fwd = grad_res_3D
-
                             iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
                                    tab=0, verbose=self.options["verbose"])
 
@@ -2704,6 +2731,10 @@ class RegAdaptive(Algorithm):
                                                                                       gradient_results_idx=gradient_idx,
                                                                                       grid=gpc.grid,
                                                                                       com=com)
+
+                        if self.options["gradient_enhanced"] and self.options["gradient_calculation"] == "FD_fwd":
+                            gradient_idx_FD_fwd = gradient_idx
+                            grad_res_3D_FD_fwd = grad_res_3D
 
                         i_grid = gpc.grid.coords.shape[0]
 
@@ -2961,7 +2992,7 @@ class MERegAdaptiveProjection(Algorithm):
                                  options=self.options["grid_options"])
 
         elif self.options["grid"] == Random or self.options["grid"] == LHS or self.options["grid"] == GP:
-            print(f"Creating initial grid ({self.options['grid']}) with n_grid={n_grid_init}")
+            print(f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(n_grid_init)}")
             grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                         n_grid=n_grid_init,
                                         options=self.options["grid_options"])
@@ -3902,6 +3933,7 @@ class MERegAdaptiveProjection(Algorithm):
                                                solver=megpc[i_qoi].gpc[d].solver,
                                                settings=megpc[i_qoi].gpc[d].settings,
                                                verbose=self.options["verbose"])
+            megpc[i_qoi].error = error[i_qoi]
 
             # save gpc object and gpc coeffs
             if self.options["fn_results"] is not None:
@@ -4117,12 +4149,12 @@ class RegAdaptiveProjection(Algorithm):
                                                  options=self.options["grid_options"])
 
         elif self.options["grid"] == Random or self.options["grid"] == GP:
-            print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid_gradient']}")
+            print(f"Creating initial grid ({self.options['grid'].__init__}) with n_grid={int(self.options['n_grid_gradient'])}")
             grid_original = self.options["grid"](parameters_random=self.problem.parameters_random,
                                                  n_grid=self.options["n_grid_gradient"],
                                                  options=self.options["grid_options"])
         else:
-            print(f"Creating initial grid ({self.options['grid']}) with n_grid={self.options['n_grid_gradient']}")
+            print(f"Creating initial grid ({self.options['grid'].__init__}) with n_grid={int(self.options['n_grid_gradient'])}")
             grid_original = LHS(parameters_random=self.problem.parameters_random,
                                 n_grid=self.options["n_grid_gradient"],
                                 options={"criterion": "ese",
@@ -4382,6 +4414,30 @@ class RegAdaptiveProjection(Algorithm):
 
                             i_grid = grid_original.coords.shape[0]
 
+                            # Determine gradient and update projection matrix in case of gradient enhanced gPC
+                            start_time = time.time()
+                            grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
+                                                                         problem=self.problem,
+                                                                         grid=grid_original,
+                                                                         results=res_all,
+                                                                         com=com,
+                                                                         method=self.options["gradient_calculation"],
+                                                                         gradient_results_present=grad_res_3D_all_FD_fwd,
+                                                                         gradient_idx_skip=gradient_idx_FD_fwd,
+                                                                         i_iter=basis_order[0],
+                                                                         i_subiter=basis_order[1],
+                                                                         print_func_time=self.options["print_func_time"],
+                                                                         dx=self.options["gradient_calculation_options"]["dx"],
+                                                                         distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
+                                                                         verbose=self.options["verbose"])
+
+                            if self.options["gradient_calculation"] == "FD_fwd":
+                                gradient_idx_FD_fwd = gradient_idx
+                                grad_res_3D_all_FD_fwd = grad_res_3D_all
+
+                            iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
+                                   tab=0, verbose=self.options["verbose"])
+
                             # check validity of results and resample in case the model could not be evaluated at some sampling points
                             res_all, grad_res_3D_all, gradient_idx, grid_original = self.check_results(
                                 results=res_all,
@@ -4390,89 +4446,56 @@ class RegAdaptiveProjection(Algorithm):
                                 grid=grid_original,
                                 com=com)
 
-                            # Determine gradient and update projection matrix in case of gradient enhanced gPC
-                            if self.options["gradient_enhanced"]:
-                                start_time = time.time()
-                                grad_res_3D_all, gradient_idx = get_gradient(model=self.problem.model,
-                                                                             problem=self.problem,
-                                                                             grid=grid_original,
-                                                                             results=res_all,
-                                                                             com=com,
-                                                                             method=self.options["gradient_calculation"],
-                                                                             gradient_results_present=grad_res_3D_all_FD_fwd,
-                                                                             gradient_idx_skip=gradient_idx_FD_fwd,
-                                                                             i_iter=basis_order[0],
-                                                                             i_subiter=basis_order[1],
-                                                                             print_func_time=self.options["print_func_time"],
-                                                                             dx=self.options["gradient_calculation_options"]["dx"],
-                                                                             distance_weight=self.options["gradient_calculation_options"]["distance_weight"],
-                                                                             verbose=self.options["verbose"])
+                            # Determine projection matrix
+                            p_matrix, p_matrix_complete = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
+                                                                                      lambda_eps=self.options["lambda_eps_gradient"])
+                            p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
 
-                                if self.options["gradient_calculation"] == "FD_fwd":
-                                    gradient_idx_FD_fwd = gradient_idx
-                                    grad_res_3D_all_FD_fwd = grad_res_3D_all
+                            # save projection matrix in gPC object
+                            gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
+                            gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
 
-                                iprint('Gradient evaluation: ' + str(time.time() - start_time) + ' sec',
-                                       tab=0, verbose=self.options["verbose"])
+                            # Set up reduced gPC
+                            dim_reduced = p_matrix.shape[0]
+                            iprint("Dimension of reduced problem: {}".format(dim_reduced),
+                                   tab=0, verbose=self.options["verbose"])
 
-                                # check validity of results and resample in case the model could not be evaluated at some sampling points
-                                res_all, grad_res_3D_all, gradient_idx, grid_original = self.check_results(
-                                    results=res_all,
-                                    gradient_results=grad_res_3D_all,
-                                    gradient_results_idx=gradient_idx,
-                                    grid=grid_original,
-                                    com=com)
+                            # Update gPC object if dimension has changed
+                            if dim_reduced != gpc[i_qoi].problem.dim:
+                                parameters_reduced = OrderedDict()
 
-                                # Determine projection matrix
-                                p_matrix, p_matrix_complete = determine_projection_matrix(gradient_results=grad_res_3D_all[:, q_idx, :],
-                                                                                          lambda_eps=self.options["lambda_eps_gradient"])
-                                p_matrix_norm = np.sum(np.abs(p_matrix), axis=1)
+                                for i in range(dim_reduced):
+                                    parameters_reduced["n{}".format(i)] = Beta(pdf_shape=[1., 1.],
+                                                                               pdf_limits=[-1., 1.])
+
+                                self.problem_reduced[i_qoi] = Problem(model=self.problem.model,
+                                                                      parameters=parameters_reduced)
+
+                                # Create reduced gPC object of order - 1 and add rest of basisfunctions
+                                # of this subiteration afterwards
+                                gpc[i_qoi] = Reg(problem=self.problem_reduced[i_qoi],
+                                                 order=basis_order[0] * np.ones(self.problem_reduced[i_qoi].dim),
+                                                 order_max=basis_order[0],
+                                                 order_max_norm=self.options["order_max_norm"],
+                                                 interaction_order=self.options["interaction_order"],
+                                                 interaction_order_current=basis_order[1],
+                                                 options=self.options,
+                                                 validation=self.validation)
+
+                                # save original problem
+                                gpc[i_qoi].problem_original = self.problem
 
                                 # save projection matrix in gPC object
                                 gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
                                 gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
 
-                                # Set up reduced gPC
-                                dim_reduced = p_matrix.shape[0]
-                                iprint("Dimension of reduced problem: {}".format(dim_reduced),
-                                       tab=0, verbose=self.options["verbose"])
-
-                                # Update gPC object if dimension has changed
-                                if dim_reduced != gpc[i_qoi].problem.dim:
-                                    parameters_reduced = OrderedDict()
-
-                                    for i in range(dim_reduced):
-                                        parameters_reduced["n{}".format(i)] = Beta(pdf_shape=[1., 1.],
-                                                                                   pdf_limits=[-1., 1.])
-
-                                    self.problem_reduced[i_qoi] = Problem(model=self.problem.model,
-                                                                          parameters=parameters_reduced)
-
-                                    # Create reduced gPC object of order - 1 and add rest of basisfunctions
-                                    # of this subiteration afterwards
-                                    gpc[i_qoi] = Reg(problem=self.problem_reduced[i_qoi],
-                                                     order=basis_order[0] * np.ones(self.problem_reduced[i_qoi].dim),
-                                                     order_max=basis_order[0],
-                                                     order_max_norm=self.options["order_max_norm"],
-                                                     interaction_order=self.options["interaction_order"],
-                                                     interaction_order_current=basis_order[1],
-                                                     options=self.options,
-                                                     validation=self.validation)
-
-                                    # save original problem
-                                    gpc[i_qoi].problem_original = self.problem
-
-                                    # save projection matrix in gPC object
-                                    gpc[i_qoi].p_matrix = copy.deepcopy(p_matrix)
-                                    gpc[i_qoi].p_matrix_norm = copy.deepcopy(p_matrix_norm)
-
-                                    # Save settings and options in gpc object
-                                    gpc[i_qoi].solver = self.options["solver"]
-                                    gpc[i_qoi].settings = self.options["settings"]
-                                    gpc[i_qoi].options = copy.deepcopy(self.options)
-                                    gpc[i_qoi].error = error
-                                    gpc[i_qoi].relative_error_nrmsd = nrmsd
-                                    gpc[i_qoi].relative_error_loocv = loocv
+                                # Save settings and options in gpc object
+                                gpc[i_qoi].solver = self.options["solver"]
+                                gpc[i_qoi].settings = self.options["settings"]
+                                gpc[i_qoi].options = copy.deepcopy(self.options)
+                                gpc[i_qoi].error = error
+                                gpc[i_qoi].relative_error_nrmsd = nrmsd
+                                gpc[i_qoi].relative_error_loocv = loocv
 
                     # assign transformed grid
                     gpc[i_qoi].grid = project_grid(grid=grid_original, p_matrix=p_matrix, mode="reduce")

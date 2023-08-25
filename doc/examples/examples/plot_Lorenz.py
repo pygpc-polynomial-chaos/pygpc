@@ -30,6 +30,8 @@ At first, we import the packages we need to set up the problem.
 import pygpc
 import numpy as np
 from collections import OrderedDict
+import matplotlib
+matplotlib.use("Qt5Agg")
 
 #%%
 # At first, we are loading the model:
@@ -93,30 +95,26 @@ pygpc.get_sensitivities_hdf5(fn_gpc=session.fn_results,
                              output_idx=None,
                              calc_sobol=True,
                              calc_global_sens=True,
-                             calc_pdf=False,
-                             n_samples=int(1e4))
+                             calc_pdf=False)
 
 # extract sensitivity coefficients from results .hdf5 file
 sobol, gsens = pygpc.get_sens_summary(fn_gpc=fn_results,
                                       parameters_random=session.parameters_random,
                                       fn_out=fn_results + "_sens_summary.txt")
 
-# plot time course of sensitivity coefficients and mean and standard deviation of x(t)
+# plot time course of mean together with probability density, sobol sensitivity coefficients and global derivatives
 t = np.arange(0.0, parameters["t_end"], parameters["step_size"])
-pygpc.plot_sens_summary(sobol=sobol,
+pygpc.plot_sens_summary(session=session,
+                        coeffs=coeffs,
+                        sobol=sobol,
                         gsens=gsens,
-                        multiple_qoi=True,
+                        plot_pdf_over_output_idx=True,
                         qois=t,
-                        results=results,
+                        mean=pygpc.SGPC.get_mean(coeffs),
+                        std=pygpc.SGPC.get_std(coeffs),
                         x_label="t in s",
-                        y_label="x(t)")
-
-# plot probability density of output over time (qoi)
-pygpc.plot_gpc(session=session,
-               coeffs=coeffs,
-               output_idx="all",
-               zlim=[0, 0.4],
-               plot_pdf_over_output_idx=True)
+                        y_label="x(t)",
+                        zlim=[0, 0.4])
 
 #
 # On Windows subprocesses will import (i.e. execute) the main module at start.

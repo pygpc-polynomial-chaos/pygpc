@@ -1648,6 +1648,93 @@ class Peaks(AbstractModel):
         return y_out, additional_data
 
 
+class Peaks_NaN(AbstractModel):
+    """
+    Three-dimensional peaks function returning NaN values for certain parameters (for testing).
+
+    .. math::
+      y = 3(1-x_1)^2 e^{-(x_1^2)-(x_3+1)^2}-10(\\frac{x_1}{5}-x_1^3-x_3^5) e^{-x_1^2-x_3^2}-
+      \\frac{1}{3} e^{-(x_1+1)^2 - x_3^2} + x_2
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        Parameter 1
+    p["x2"]: float or ndarray of float [n_grid]
+        Parameter 2
+    p["x3"]: float or ndarray of float [n_grid]
+        Parameter 3
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x n_out]
+        Output data
+    misc: dict or list of dict [n_grid]
+        Additional data, will be saved under its keys in the .hdf5 file during gPC simulations for every grid point
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       constants = OrderedDict()
+       constants["x3"] = 0.
+       plot("Peaks", parameters, constants, plot_3d=False)
+    """
+
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        if type(self.p["x1"]) is np.ndarray:
+            self.p["x1"] = self.p["x1"].flatten()
+        if type(self.p["x2"]) is np.ndarray:
+            self.p["x2"] = self.p["x2"].flatten()
+        if type(self.p["x3"]) is np.ndarray:
+            self.p["x3"] = self.p["x3"].flatten()
+
+        y = (3.0 * (1 - self.p["x1"]) ** 2. * np.exp(-(self.p["x1"] ** 2) - (self.p["x3"] + 1) ** 2)
+             - 10.0 * (self.p["x1"] / 5.0 - self.p["x1"] ** 3 - self.p["x3"] ** 5)
+             * np.exp(-self.p["x1"] ** 2 - self.p["x3"] ** 2) - 1.0 / 3
+             * np.exp(-(self.p["x1"] + 1) ** 2 - self.p["x3"] ** 2)) + self.p["x2"]
+
+        # add some NaN values for testing
+        mask_nan = self.p["x1"] < 1.5
+
+        y[mask_nan] = np.NaN
+
+        additional_data = {"additional_data/list_mult_int": [1, 2, 3],
+                           "additional_data/list_single_float": [0.2],
+                           "additional_data/list_single_str": ["test"],
+                           "additional_data/list_mult_str": ["test1", "test2"],
+                           "additional_data/single_float": 0.2,
+                           "additional_data/single_int": 2,
+                           "additional_data/single_str": "test"}
+
+        # # two output variables for testing
+        # if y.size > 1:
+        #     y_out = np.array([y, 2 * y]).transpose()
+        #     additional_data = y.size * [additional_data]
+        # else:
+        #     y_out = np.array([y, 2 * y])
+        if y.ndim == 1:
+            y_out = y[:, np.newaxis]
+
+        return y_out, additional_data
+
+
 class DiscontinuousRidgeManufactureDecayGenzDiscontinuous(AbstractModel):
     """
     N-dimensional discontinuous test function. The first QOI corresponds to the
@@ -1923,6 +2010,89 @@ class SurfaceCoverageSpecies(AbstractModel):
             y_out[i, 0] = np.array([y[-1]])
 
         # y_out = np.hstack((y_out, 2.*y_out))
+
+        return y_out
+
+
+class SurfaceCoverageSpecies_NaN(AbstractModel):
+    """
+    Differential equation describing the time-evolution of the surface coverage rho [0, 1] for a given species [1].
+    This problem has one or two fixed points according to the value of the recombination rate beta and it exhibits
+    smooth dependence on the other parameters. The statistics of the solution at t=1 are investigated considering
+    uncertainties in the initial coverage rho_0 and in the reaction parameter beta. Additionally uncertainty
+    in the surface absorption rate alpha can be considered to make the problem 3-dimensional.
+    Gamma=0.01 denotes the desorption rate.
+
+    .. math:: \\frac{d\\rho}{dt} = \\alpha (1 - \\rho) - \\gamma \\rho - \\beta (\\rho - 1)^2 \\rho
+
+    Parameters
+    ----------
+    p["rho_0"]: ndarray of float [1]
+        Initial value rho(t=0) (uniform distributed [0, 1])
+    p["beta"]: ndarray of float [1]
+        Recombination rate (uniform distributed [0, 20])
+    p["alpha"]: ndarray of float [1]
+        Surface absorption rate (1 or uniform distributed [0.1, 2])
+
+    Returns
+    -------
+    y: ndarray of float [1 x 1]
+        rho(t->1)
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["rho_0"] = np.linspace(0, 1, 100)
+       parameters["beta"] = np.linspace(0, 20, 100)
+
+       constants = OrderedDict()
+       constants["alpha"] = 1.
+
+       plot("SurfaceCoverageSpecies", parameters, constants, plot_3d=False)
+
+    .. [1] Le Maitre, O.P., Najm, H.N., Ghanem, R.G., Knio, O.M., (2004).
+       Multi-resolution analysis of Wiener-type uncertainty propagation schemes.
+       Journal of Computational Physics, 197, 502-531.
+    """
+
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+        # System of 1st order DEQ
+        def deq(rho, t, alpha, beta, gamma):
+            return alpha * (1. - rho) - gamma * rho - beta * (rho - 1) ** 2 * rho
+
+        # Constants
+        gamma = 0.01
+
+        # Simulation parameters
+        dt = 0.01
+        t_end = 1.
+        t = np.arange(0, t_end, dt)
+
+        # Solve
+        y_out = np.zeros((len(self.p["rho_0"]), 1))
+
+        for i in range(len(y_out)):
+            y = odeint(deq, self.p["rho_0"].flatten()[i], t,
+                       args=(self.p["alpha"].flatten()[i], self.p["beta"].flatten()[i], gamma,))
+            y_out[i, 0] = np.array([y[-1]])
+
+        # add some NaN values for testing
+        mask_nan = self.p["beta"] > 18.5
+
+        y_out[mask_nan, 0] = np.NaN
 
         return y_out
 
@@ -2414,6 +2584,79 @@ class GenzOscillatory(AbstractModel):
         return y_out
 
 
+class GenzOscillatory_NaN(AbstractModel):
+    """
+    N-dimensional "Oscillatory" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
+
+    .. math:: y = \\cos \\left( 2 \\pi u_1 + \\sum_{i=1}^{N}a_i x_i \\right)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter defined in [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 100)
+       parameters["x2"] = np.linspace(0, 1, 100)
+
+       plot("GenzOscillatory", parameters)
+
+    .. [1] Genz, A. (1984), Testing multidimensional integration routines.
+       Proc. of international conference on Tools, methods and languages for scientific
+       and engineering computation, Elsevier North-Holland, Inc., NewYork, NY, USA, pp. 81-94.
+
+    .. [2] https://www.sfu.ca/~ssurjano/oscil.html
+    """
+
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+        n = len(self.p.keys())
+
+        # set constants
+        u = 0.5 * np.ones(n)
+        a = 5 * np.ones(n)
+
+        # determine sum
+        s = np.zeros(np.array(self.p[list(self.p.keys())[0]]).size)
+
+        for i, key in enumerate(self.p.keys()):
+            s += a[i] * self.p[key]
+
+        # determine output
+        y = np.cos(2 * np.pi * u[0] + s)
+
+        y_out = y[:, np.newaxis]
+
+        # insert some NaN values for testing
+        mask = self.p[list(self.p.keys())[0]] > 0.8
+        y_out[mask, 0] = np.NaN
+
+        return y_out
+
+
 class GenzProductPeak(AbstractModel):
     """
     N-dimensional "ProductPeak" Genz function [1]. It is defined in the interval [0, 1] x ... x [0, 1].
@@ -2710,6 +2953,112 @@ class Ishigami(AbstractModel):
             y = np.array([y])
 
         y_out = y[:, np.newaxis]
+
+        return y_out
+
+
+class Ishigami_NaN(AbstractModel):
+    """
+    Three-dimensional test function of Ishigami.
+
+    The Ishigami function of Ishigami & Homma (1990) [1] is used as an example
+    for uncertainty and sensitivity analysis methods, because it exhibits
+    strong nonlinearity and nonmonotonicity. It also has a peculiar
+    dependence on x3, as described by Sobol' & Levitan (1999) [2].
+    The values of a and b used by Crestaux et al. (2007) [3] and Marrel et al. (2009) [4] are: a = 7 and b = 0.1.
+
+    .. math:: y = \sin(x_1) + a \sin(x_2)^2 + b x_3^4 \sin(x_1)
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter defined in [-pi, pi]
+    p["x2"]: float or ndarray of float [n_grid]
+        Second parameter defined in [-pi, pi]
+    p["x3"]: float or ndarray of float [n_grid]
+        Third parameter defined in [-pi, pi]
+    p["a"]: float
+        shape parameter (a=7)
+    p["b"]: float
+        shape parameter (b=0.1)
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(-np.pi, np.pi, 100)
+       parameters["x2"] = np.linspace(-np.pi, np.pi, 100)
+
+       constants = OrderedDict()
+       constants["a"] = 7.
+       constants["b"] = 0.1
+       constants["x3"] = 0.
+
+       plot("Ishigami", parameters, constants, plot_3d=False)
+
+    .. [1] Ishigami, T., Homma, T. (1990, December). An importance quantification
+       technique in uncertainty analysis for computer models. In Uncertainty
+       Modeling and Analysis, 1990. Proceedings., First International Symposium
+       on (pp. 398-403). IEEE.
+
+    .. [2] Sobol', I.M., Levitan, Y.L. (1999). On the use of variance reducing
+       multipliers in Monte Carlo computations of a global sensitivity index.
+       Computer Physics Communications, 117(1), 52-61.
+
+    .. [3] Crestaux, T., Martinez, J.-M., Le Maitre, O., & Lafitte, O. (2007).
+       Polynomial chaos expansion for uncertainties quantification and sensitivity analysis [PowerPoint slides].
+       Retrieved from SAMO 2007 website: http://samo2007.chem.elte.hu/lectures/Crestaux.pdf.
+
+    .. [4] Marrel, A., Iooss, B., Laurent, B., & Roustant, O. (2009).
+       Calculations of sobol indices for the gaussian process metamodel.
+       Reliability Engineering & System Safety, 94(3), 742-751.
+    """
+
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        if self.p["x1"] is not np.ndarray:
+            self.p["x1"] = np.array(self.p["x1"])
+
+        if self.p["x2"] is not np.ndarray:
+            self.p["x2"] = np.array(self.p["x2"])
+
+        if self.p["x3"] is not np.ndarray:
+            self.p["x3"] = np.array(self.p["x3"])
+
+        if self.p["a"] is not np.ndarray:
+            self.p["a"] = np.array(self.p["a"])
+
+        if self.p["b"] is not np.ndarray:
+            self.p["b"] = np.array(self.p["b"])
+
+        y = (np.sin(self.p["x1"].flatten()) + self.p["a"].flatten() * np.sin(self.p["x2"].flatten()) ** 2
+             + self.p["b"].flatten() * self.p["x3"].flatten() ** 4 * np.sin(self.p["x1"].flatten()))
+
+        if type(y) is not np.ndarray:
+            y = np.array([y])
+
+        y_out = y[:, np.newaxis]
+
+        # insert some NaN values for testing
+        mask = (self.p["x1"] > 2).flatten()
+        y_out[mask, 0] = np.NaN
 
         return y_out
 
@@ -3067,6 +3416,92 @@ class DiscontinuousRidgeManufactureDecay(AbstractModel):
 
         y_out = y[:, np.newaxis]
         y_out = np.hstack((y_out, y_out))
+
+        return y_out
+
+
+class DiscontinuousRidgeManufactureDecay_NaN(AbstractModel):
+    """
+    N-dimensional testfunction containing a linear discontinuity.
+    On the one side the output corresponds to the Ridge function
+    and on the other side it correspond to the ManufactureDecay testfunction.
+
+    .. math::
+       y = \\begin{cases}
+       \\text{ManufactureDecay}(x), & \\text{if } \\sum_{i=1}^{N}x_i \\leq 1 \\\\
+       \\text{Ridge}(x), & \\text{otherwise}
+       \\end{cases}
+
+    Parameters
+    ----------
+    p["x1"]: float or ndarray of float [n_grid]
+        First parameter [0, 1]
+    p["xi"]: float or ndarray of float [n_grid]
+        i-th parameter defined in [0, 1]
+    p["xN"]: float or ndarray of float [n_grid]
+        Nth parameter [0, 1]
+
+    Returns
+    -------
+    y: ndarray of float [n_grid x 1]
+        Output data
+
+    Notes
+    -----
+    .. plot::
+
+       import numpy as np
+       from pygpc.testfunctions import plot_testfunction as plot
+       from collections import OrderedDict
+
+       parameters = OrderedDict()
+       parameters["x1"] = np.linspace(0, 1, 250)
+       parameters["x2"] = np.linspace(0, 1, 250)
+
+       plot("DiscontinuousRidgeManufactureDecay", parameters)
+    """
+
+    def __init__(self, matlab_model=False):
+        super(type(self), self).__init__(matlab_model=matlab_model)
+        self.fname = inspect.getfile(inspect.currentframe())
+
+    def validate(self):
+        pass
+
+    def simulate(self, process_id=None, matlab_engine=None):
+
+        for key in self.p.keys():
+            if self.p[key].ndim == 1:
+                self.p[key] = self.p[key][:, np.newaxis]
+
+        x = np.hstack([self.p[key] for key in self.p.keys()])
+
+        y = np.zeros(x.shape[0])
+        mask = (np.sum(x, axis=1) <= 1.).flatten()
+        # mask = np.logical_and(mask, np.linalg.norm(x-0.85, axis=1) > .8)
+
+        p_1 = OrderedDict()
+        p_2 = OrderedDict()
+
+        for i, key in enumerate(self.p.keys()):
+            p_1[key] = x[mask, i]
+            p_2[key] = x[np.logical_not(mask), i]
+
+        model_1 = ManufactureDecay().set_parameters(p_1)
+        model_2 = Ridge().set_parameters(p_2)
+
+        y_1 = model_1.simulate()
+        y_2 = model_2.simulate()
+
+        y[mask] = y_1.flatten()
+        y[np.logical_not(mask)] = y_2.flatten()
+
+        y_out = y[:, np.newaxis]
+        y_out = np.hstack((y_out, y_out))
+
+        # insert some NaN values for testing
+        mask = (self.p[list(self.p.keys())[0]] > 0.8).flatten()
+        y_out[mask, 0] = np.NaN
 
         return y_out
 

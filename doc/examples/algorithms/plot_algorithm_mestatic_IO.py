@@ -110,7 +110,6 @@ pygpc.plot_gpc(session=session,
                n_grid=[100, 100],
                coords=grid.coords,
                results=results,
-               fn_out=None,
                camera_pos=[45., 65])
 
 # On Windows subprocesses will import (i.e. execute) the main module at start.
