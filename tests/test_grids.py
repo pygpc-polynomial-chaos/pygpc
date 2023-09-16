@@ -76,7 +76,7 @@ class TestPygpcMethods(unittest.TestCase):
         Testing Grids [TensorGrid, SparseGrid]
         """
         global folder, plot
-        test_name = 'pygpc_test_010_quadrature_grids'
+        test_name = 'test_grids_001_quadrature_grids'
         print(test_name)
 
         # define testfunction
@@ -104,7 +104,7 @@ class TestPygpcMethods(unittest.TestCase):
         Testing Grids [Random]
         """
         global folder, plot, seed
-        test_name = 'pygpc_test_011_random_grid'
+        test_name = 'test_grids_002_random_grid'
         print(test_name)
 
         # define testfunction
@@ -237,7 +237,7 @@ class TestPygpcMethods(unittest.TestCase):
         Testing Grids [LHS]
         """
         global folder, plot, seed
-        test_name = 'pygpc_test_012_LHS_grid'
+        test_name = 'test_grids_003_LHS_grid'
         print(test_name)
 
         # define testfunction
@@ -390,7 +390,7 @@ class TestPygpcMethods(unittest.TestCase):
         Testing Grids [L1]
         """
         global folder, plot, seed
-        test_name = 'pygpc_test_013_L1_grid'
+        test_name = 'test_grids_004_L1_grid'
         print(test_name)
 
         # define testfunction

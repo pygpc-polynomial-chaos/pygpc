@@ -59,6 +59,12 @@ options["save_session_format"] = save_session_format
 options["backend"] = "omp"
 options["verbose"] = True
 
+# determine number of gPC coefficients (hint: compare it with the amount of output data you have)
+n_coeffs = pygpc.get_num_coeffs_sparse(order_dim_max=options["order"],
+                                       order_glob_max=options["order_max"],
+                                       order_inter_max=options["interaction_order"],
+                                       dim=len(parameters))
+
 # define algorithm
 algorithm = pygpc.Static_IO(parameters=parameters, options=options, grid=grid, results=results)
 
@@ -87,15 +93,19 @@ pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
                              calc_pdf=True,
                              algorithm="standard")
 
+# get a summary of the sensitivity coefficients
+sobol, gsens = pygpc.get_sens_summary(fn_results, parameters)
+print(sobol)
+print(gsens)
+
 # plot gPC approximation and IO data
 pygpc.plot_gpc(session=session,
                coeffs=coeffs,
                random_vars=["x1", "x3"],
-               output_idx= 0,
+               output_idx=0,
                n_grid=[100, 100],
                coords=grid.coords,
-               results=results,
-               fn_out=None)
+               results=results)
 
 # On Windows subprocesses will import (i.e. execute) the main module at start.
 # You need to insert an if __name__ == '__main__': guard in the main module to avoid

@@ -100,6 +100,8 @@ The model can then be called in the associated analysis script:
     import pygpc
     import numpy as np
     from collections import OrderedDict
+    import matplotlib
+    matplotlib.use("Qt5Agg")
 
     # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
     # def main():
@@ -162,14 +164,17 @@ The model can then be called in the associated analysis script:
 
     # plot sobol indices over time and mean and standard deviation of x(t)
     t = np.arange(0.0, parameters["t_end"], parameters["step_size"])
-    pygpc.plot_sens_summary(sobol=sobol,
+    pygpc.plot_sens_summary(session=session,
+                            coeffs=coeffs,
+                            sobol=sobol,
                             gsens=gsens,
-                            multiple_qoi=True,
+                            plot_pdf_over_output_idx=True,
                             qois=t,
-                            results=results,
+                            mean=pygpc.SGPC.get_mean(coeffs),
+                            std=pygpc.SGPC.get_std(coeffs),
                             x_label="t in s",
-                            y_label="x(t)")
-
+                            y_label="x(t)",
+                            zlim=[0, 0.4])
 """
 import matplotlib.pyplot as plt
 

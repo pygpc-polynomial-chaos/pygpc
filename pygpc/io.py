@@ -98,7 +98,7 @@ def write_session_hdf5(obj, fname, folder="session", overwrite=True):
     write_dict_to_hdf5(fn_hdf5=fname, data=obj.__dict__, folder=folder)
 
 
-def read_session(fname, folder="session"):
+def read_session(fname, folder=None):
     """
     Reads a gpc session in pickle or hdf5 file formal depending on the
     file extension in fname (.pkl or .hdf5)
@@ -107,7 +107,7 @@ def read_session(fname, folder="session"):
     ----------
     fname : str
         path to input file
-    folder : str, optional, default: "session"
+    folder : str, optional, default: None
         Path in .hdf5 file
 
     Returns
@@ -176,7 +176,10 @@ def read_session_hdf5(fname, folder="session", verbose=False):
     from .RandomParameter import RandomParameter
 
     # model
-    model = read_model_from_hdf5(fn_hdf5=fname, folder=folder + "/model", verbose=verbose)
+    try:
+        model = read_model_from_hdf5(fn_hdf5=fname, folder=folder + "/model", verbose=verbose)
+    except KeyError:
+        model = None
 
     # parameters
     parameters_unsorted = read_parameters_from_hdf5(fn_hdf5=fname, folder=folder + "/problem/parameters",

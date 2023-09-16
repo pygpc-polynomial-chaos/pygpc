@@ -465,14 +465,14 @@ def plot_beta_pdf_fit(data, a_beta, b_beta, p_beta, q_beta, a_uni=None, b_uni=No
 
     plt.figure(1)
     plt.clf()
-    plt.rc('text', usetex=True)
+    plt.rc('text', usetex=False)
     plt.rc('font', size=18)
     ax = plt.gca()
     # legendtext = [r"e-pdf", r"$\beta$-pdf"]
-    legendtext = [r"$\beta$-pdf"]
+    legendtext = ["$\\beta$-pdf"]
 
     # plot histogram of data
-    n, bins, patches = plt.hist(data, bins=16, normed=1, color=[1, 1, 0.6], alpha=0.5)
+    n, bins, patches = plt.hist(data, bins=16, density=1, color=[1, 1, 0.6], alpha=0.5)
 
     # plot beta pdf (kernel density estimate)
     # plt.plot(kde_x, kde_y, 'r--', linewidth=2)

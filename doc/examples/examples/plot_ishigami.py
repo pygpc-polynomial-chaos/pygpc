@@ -18,6 +18,8 @@ import os
 import pygpc
 import numpy as np
 from collections import OrderedDict
+import matplotlib
+matplotlib.use("Qt5Agg")
 
 fn_results = "tmp/example_ishigami"
 
@@ -112,8 +114,8 @@ nrmsd = pygpc.validate_gpc_mc(session=session,
 #%%
 # Sensitivity analysis
 # ^^^^^^^^^^^^^^^^^^^^
-sobol, gsens = pygpc.get_sens_summary(fn_results, parameters_random)
-pygpc.plot_sens_summary(sobol, gsens)
+sobol, gsens = pygpc.get_sens_summary(fn_results, parameters_random, fn_results + "_sens_summary.txt")
+pygpc.plot_sens_summary(sobol=sobol, gsens=gsens)
 
 #
 # On Windows subprocesses will import (i.e. execute) the main module at start.
