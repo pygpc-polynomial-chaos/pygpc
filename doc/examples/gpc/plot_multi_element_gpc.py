@@ -36,7 +36,7 @@ In the following, an example of a discontinuous test problem is provided:
 import pygpc
 from collections import OrderedDict
 import matplotlib
-matplotlib.use("Qt5Agg")
+# matplotlib.use("Qt5Agg")
 
 fn_results = 'tmp/mestatic'       # filename of output
 save_session_format = ".pkl"      # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)

@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 import matplotlib
-matplotlib.use("Qt5Agg")
+# matplotlib.use("Qt5Agg")
 
 # disable numpy warnings
 import warnings
