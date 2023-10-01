@@ -10,14 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.10", "3.11"]
         include:
-          - python-version: "3.8"
-            cibw-string: "cp38-*"
-          - python-version: "3.9"
-            cibw-string: "cp39-*"
           - python-version: "3.10"
             cibw-string: "cp310-*"
+          - python-version: "3.11"
+            cibw-string: "cp311-*"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -55,14 +53,12 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.10", "3.11"]
         include:
-          - python-version: "3.8"
-            cibw-string: "cp38-*"
-          - python-version: "3.9"
-            cibw-string: "cp39-*"
           - python-version: "3.10"
             cibw-string: "cp310-*"
+          - python-version: "3.11"
+            cibw-string: "cp311-*"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -98,14 +94,12 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.10", "3.11"]
         include:
-          - python-version: "3.8"
-            cibw-string: "cp38-*"
-          - python-version: "3.9"
-            cibw-string: "cp39-*"
           - python-version: "3.10"
             cibw-string: "cp310-*"
+          - python-version: "3.11"
+            cibw-string: "cp311-*"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -114,11 +108,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        brew install gcc@9
+        brew install gcc@13
         python -m pip install --upgrade pip
         pip install Cython matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
-        CC=gcc-9 CXX=g++-9 pip install .
+        CC=gcc-13 CXX=g++-13 pip install .
     - name: Test with unittest
       run: |
         cd tests
@@ -132,8 +126,8 @@ jobs:
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: ${{ matrix.cibw-string }} 
         CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} {wheel}"
-        CC: gcc-9
-        CXX: g++-9
+        CC: gcc-13
+        CXX: g++-13
     - name: Upload with twine
       if: "contains(github.event.head_commit.message, 'PyPI')"
       run: |
