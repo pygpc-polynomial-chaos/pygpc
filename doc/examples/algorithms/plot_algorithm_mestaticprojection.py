@@ -31,15 +31,15 @@ problem = pygpc.Problem(model, parameters)
 # gPC options
 options = dict()
 options["method"] = "reg"
-options["solver"] = "Moore-Penrose"
+options["solver"] = "LarsLasso"
 options["settings"] = None
-options["order"] = [3, 3]
-options["order_max"] = 3
+options["order"] = [5, 5]
+options["order_max"] = 5
 options["interaction_order"] = 2
 options["n_cpu"] = 0
-options["gradient_enhanced"] = True
-options["gradient_calculation"] = "FD_fwd"
-options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
+# options["gradient_enhanced"] = False
+# options["gradient_calculation"] = "FD_fwd"
+# options["gradient_calculation_options"] = {"dx": 0.001, "distance_weight": -2}
 options["error_type"] = "nrmsd"
 options["n_samples_validation"] = 1e3
 options["qoi"] = "all"
@@ -52,7 +52,7 @@ options["fn_results"] = fn_results
 options["save_session_format"] = save_session_format
 options["grid"] = pygpc.Random
 options["grid_options"] = {"seed": 1}
-options["n_grid"] = 1000
+options["n_grid"] = 2000
 options["adaptive_sampling"] = False
 
 # define algorithm

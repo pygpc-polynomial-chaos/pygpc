@@ -75,7 +75,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
         Testing testfunctions (multi-threading and inherited parallelization)
         """
-        test_name = 'pygpc_test_008_testfunctions'
+        test_name = 'test_utils_001_testfunctions'
         print(test_name)
 
         tests = []
@@ -146,7 +146,7 @@ class TestPygpcMethods(unittest.TestCase):
         Testing RandomParameters
         """
         global folder, plot
-        test_name = 'pygpc_test_009_RandomParameters'
+        test_name = 'test_utils_002_RandomParameters'
         print(test_name)
 
         parameters = OrderedDict()
@@ -177,7 +177,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
 
         global folder, gpu
-        test_name = 'pygpc_test_023_backends'
+        test_name = 'test_utils_003_backends'
         print(test_name)
 
         backends = ["python", "cpu", "omp", "cuda"]
@@ -280,7 +280,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
 
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_025_gradient_estimation_methods'
+        test_name = 'test_utils_004_gradient_estimation_methods'
         print(test_name)
 
         methods_options = dict()

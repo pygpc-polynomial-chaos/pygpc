@@ -471,9 +471,12 @@ class GPC(object):
                                              error_norm=self.options["error_norm"]))
             self.error.append(self.relative_error_loocv[-1])
 
+        elif self.options["error_type"] is None:
+            self.error.append(None)
+
         return self.error[-1]
 
-    def get_pdf(self, coeffs, n_samples, output_idx=None):
+    def get_pdf(self, coeffs, n_samples, output_idx=None, filter=True, return_samples=False):
         """ Determine the estimated pdfs of the output quantities
 
         pdf_x, pdf_y = SGPC.get_pdf(coeffs, n_samples, output_idx=None)
@@ -486,6 +489,10 @@ class GPC(object):
             Number of samples used to estimate output pdfs
         output_idx: ndarray, optional, default=None [1 x n_out]
             Index of output quantities to consider (if output_idx=None, all output quantities are considered)
+        filter : bool, optional, default: True
+            Use savgol_filter to smooth probability density
+        return_samples : bool, optional, default: False
+            Additionally returns in and output samples with which the pdfs were computed
 
         Returns
         -------
@@ -493,6 +500,10 @@ class GPC(object):
             x-coordinates of output pdfs of output quantities
         pdf_y: ndarray of float [100 x n_out]
             y-coordinates of output pdfs (probability density of output quantity)
+        samples_in : ndarray of float [n_samples x dim] (optional)
+            Input samples (if return_samples=True)
+        samples_out : ndarray of float [n_samples x n_out] (optional)
+            Output samples (if return_samples=True)
         """
 
         # handle (N,) arrays
@@ -501,7 +512,7 @@ class GPC(object):
 
         # if output index array is not provided, determine pdfs of all outputs
         if output_idx is None:
-            output_idx = np.linspace(0, coeffs.shape[1])
+            output_idx = np.arange(0, coeffs.shape[1])
             output_idx = output_idx[np.newaxis, :]
 
         n_out = len(output_idx)
@@ -518,13 +529,17 @@ class GPC(object):
             pdf_y[:, i_out], tmp = np.histogram(samples_out[:, i_out], bins=100, density=True)
             pdf_x[:, i_out] = (tmp[1:] + tmp[0:-1]) / 2.
 
-            pdf_y[:, i_out] = savgol_filter(pdf_y[:, i_out], 51, 5)
+            if filter:
+                pdf_y[:, i_out] = savgol_filter(pdf_y[:, i_out], 51, 5)
 
             # kde = scipy.stats.gaussian_kde(samples_out[:, i_out], bw_method=0.1 / samples_out[:, i_out].std(ddof=1))
             # pdf_y[:, i_out] = kde(pdf_x[:, i_out])
             # pdf_x[:, i_out] = np.linspace(samples_out[:, i_out].min(), samples_out[:, i_out].max(), 100)
 
-        return pdf_x, pdf_y
+        if return_samples:
+            return pdf_x, pdf_y, samples_in, samples_out
+        else:
+            return pdf_x, pdf_y
 
     def get_samples(self, coeffs, n_samples, output_idx=None):
         """

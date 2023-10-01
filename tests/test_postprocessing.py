@@ -7,9 +7,10 @@ import pygpc
 import shutil
 import unittest
 import numpy as np
-
-from scipy.integrate import odeint
+import matplotlib.pyplot as plt
 from collections import OrderedDict
+import matplotlib
+matplotlib.use("Qt5Agg")
 
 # disable numpy warnings
 import warnings
@@ -79,7 +80,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_021_random_vars_postprocessing_sobol'
+        test_name = 'test_postprocessing_001_random_vars_postprocessing'
         print(test_name)
 
         # define model
@@ -175,6 +176,131 @@ class TestPygpcMethods(unittest.TestCase):
                                     n_cpu=options["n_cpu"])
 
         print("done!\n")
+
+    def test_postprocessing_002_plot_functions(self):
+        """
+        Algorithm: Static
+        Method: Regression
+        Solver: Moore-Penrose
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_postprocessing_002_plot_functions'
+        print(test_name)
+
+        # %%
+        # At first, we are loading the model:
+        model = pygpc.testfunctions.Lorenz_System()
+
+        # %%
+        # In the next step, we are defining the random variables (ensure that you are using an OrderedDict! Otherwise,
+        # the parameter can be mixed up during postprocessing because Python reorders the parameters in standard dictionaries!).
+        # Further details on how to define random variables can be found in the tutorial :ref:`How to define a gPC problem`.
+        parameters = OrderedDict()
+        parameters["sigma"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[10 - 1, 10 + 1])
+        parameters["beta"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[28 - 10, 28 + 10])
+        parameters["rho"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[(8 / 3) - 1, (8 / 3) + 1])
+
+        # %%
+        # To complete the parameter definition, we will also define the deterministic parameters, which are assumed to be
+        # constant during the uncertainty and sensitivity analysis:
+        parameters["x_0"] = 1.0  # initial value for x
+        parameters["y_0"] = 1.0  # initial value for y
+        parameters["z_0"] = 1.0  # initial value for z
+        parameters["t_end"] = 5.0  # end time of simulation
+        parameters["step_size"] = 0.05  # step size for differential equation integration
+
+        # %%
+        # With the model and the parameters dictionary, the pygpc problem can be defined:
+        problem = pygpc.Problem(model, parameters)
+
+        # %%
+        # Now we are ready to define the gPC options, like expansion orders, error types, gPC matrix properties etc.:
+        fn_results = "tmp/example_lorenz"
+        options = dict()
+        options["order_start"] = 6
+        options["order_end"] = 20
+        options["solver"] = "Moore-Penrose"
+        options["interaction_order"] = 2
+        options["order_max_norm"] = 0.7
+        options["n_cpu"] = 0
+        options["error_type"] = 'nrmsd'
+        options["error_norm"] = 'absolute'
+        options["n_samples_validation"] = 1000
+        options["matrix_ratio"] = 5
+        options["fn_results"] = fn_results
+        options["eps"] = 0.01
+        options["grid_options"] = {"seed": 1}
+
+        # %%
+        # Now we chose the algorithm to conduct the gPC expansion and initialize the gPC Session:
+        algorithm = pygpc.RegAdaptive(problem=problem, options=options)
+        session = pygpc.Session(algorithm=algorithm)
+
+        # %%
+        # Finally, we are ready to run the gPC. An .hdf5 results file will be created as specified in the options["fn_results"]
+        # field from the gPC options dictionary.
+        session, coeffs, results = session.run()
+
+        # %%
+        # Postprocessing
+        # ^^^^^^^^^^^^^^
+        # Postprocess gPC and add sensitivity coefficients to results .hdf5 file
+        pygpc.get_sensitivities_hdf5(fn_gpc=session.fn_results,
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=False)
+
+        # extract sensitivity coefficients from results .hdf5 file
+        sobol, gsens = pygpc.get_sens_summary(fn_gpc=fn_results,
+                                              parameters_random=session.parameters_random,
+                                              fn_out=fn_results + "_sens_summary.txt")
+
+        # plot time course of mean together with probability density, sobol sensitivity coefficients and global derivatives
+        t = np.arange(0.0, parameters["t_end"], parameters["step_size"])
+        pygpc.plot_sens_summary(session=session,
+                                coeffs=coeffs,
+                                sobol=sobol,
+                                gsens=gsens,
+                                plot_pdf_over_output_idx=True,
+                                qois=t,
+                                mean=pygpc.SGPC.get_mean(coeffs),
+                                std=pygpc.SGPC.get_std(coeffs),
+                                x_label="t in s",
+                                y_label="x(t)",
+                                zlim=[0, 0.4],
+                                fn_plot=fn_results + "_sens_summary_test_1.pdf")
+
+        # plot time course of mean together with std, sobol sensitivity coefficients and global derivatives
+        pygpc.plot_sens_summary(session=session,
+                                coeffs=coeffs,
+                                sobol=sobol,
+                                gsens=gsens,
+                                plot_pdf_over_output_idx=False,
+                                qois=t,
+                                mean=pygpc.SGPC.get_mean(coeffs),
+                                std=pygpc.SGPC.get_std(coeffs),
+                                x_label="t in s",
+                                y_label="x(t)",
+                                fn_plot=fn_results + "_sens_summary_test_2.png")
+
+        # plot sensitivities at one time point with donut plot
+        pygpc.plot_sens_summary(sobol=sobol,
+                                gsens=gsens,
+                                output_idx=50,
+                                fn_plot=fn_results + "_sens_summary_test_3.png")
+
+        # plot probability density of output over time (qoi)
+        pygpc.plot_gpc(session=session,
+                       coeffs=coeffs,
+                       output_idx="all",
+                       zlim=[0, 0.4],
+                       plot_pdf_over_output_idx=True,
+                       qois=t,
+                       x_label="t in s",
+                       y_label="x(t)",
+                       fn_plot=fn_results + "_plot_gpc_test_1.png")
 
 
 if __name__ == '__main__':

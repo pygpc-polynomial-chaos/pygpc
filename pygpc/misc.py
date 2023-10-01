@@ -364,11 +364,13 @@ def get_beta_pdf_fit(data, beta_tolerance=0, uni_interval=0, fn_plot=None):
     ----------
     data: ndarray of float
         Data to fit beta distribution on
-    beta_tolerance: float, optional, default=0
-        Tolerance interval to calculate the bounds of beta distribution
-        from observed data, e.g. 0.2 (+-20% tolerance on observed max and min value)
-    uni_interval: float, optional, default=0
-        uniform distribution interval defined as fraction of beta distribution interval (e.g. 0.95 (95%))
+    beta_tolerance: float or list of float, optional, default=0
+        Specifies bounds of beta distribution. If float, it calculates the tolerance
+        from observed data, e.g. 0.2 (+-20% tolerance on observed max and min value).
+        If list, it takes [min, max] as bounds [a, b].
+    uni_interval: float or list of float, optional, default=0
+        uniform distribution interval. If float, the bounds are defined as a fraction of the beta distribution
+        interval (e.g. 0.95 (95%)). If list, it takes [min, max] as bounds [a, b].
     fn_plot: str
         Filename of plot so save (.pdf and .png)
     
@@ -388,7 +390,11 @@ def get_beta_pdf_fit(data, beta_tolerance=0, uni_interval=0, fn_plot=None):
     data_std = np.std(data)
     
     # fit beta distribution to data
-    if beta_tolerance > 0:
+    if type(beta_tolerance) is list:
+        a_beta = beta_tolerance[0]
+        b_beta = beta_tolerance[1]
+        p_beta, q_beta, a_beta, ab_beta = scipy.stats.beta.fit(data, floc=a_beta, fscale=b_beta - a_beta)
+    elif beta_tolerance > 0:
         # use user beta_tolerance of to set limits of distribution
         data_range = data.max()-data.min()
         a_beta = data.min()-beta_tolerance*data_range
@@ -411,7 +417,11 @@ def get_beta_pdf_fit(data, beta_tolerance=0, uni_interval=0, fn_plot=None):
 
     # determine limits of uniform distribution [a_uni, b_uni] covering the
     # interval uni_interval of the beta distribution
-    if uni_interval > 0:
+    if type(uni_interval) is list:
+        a_uni = uni_interval[0]
+        b_uni = uni_interval[1]
+        uni_parameters = np.array([a_uni, b_uni])
+    elif uni_interval > 0:
         a_uni = scipy.stats.beta.ppf((1 - uni_interval) / 2, p_beta, q_beta, loc=a_beta, scale=b_beta - a_beta)
         b_uni = scipy.stats.beta.ppf((1 + uni_interval) / 2, p_beta, q_beta, loc=a_beta, scale=b_beta - a_beta)
         uni_parameters = np.array([a_uni, b_uni])

@@ -79,7 +79,7 @@ class TestPygpcMethods(unittest.TestCase):
         Grid: Random
         """
         global folder, plot, matlab, save_session_format
-        test_name = 'pygpc_test_020_Matlab_gpc'
+        test_name = 'test_interface_001_Matlab_gpc'
         print(test_name)
 
         if matlab:
@@ -177,7 +177,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
 
         global folder, plot, save_session_format
-        test_name = 'pygpc_test_024_save_and_load_session'
+        test_name = 'test_interface_002_save_and_load_session'
         print(test_name)
         # define model
         model = pygpc.testfunctions.Peaks()
