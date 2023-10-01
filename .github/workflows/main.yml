@@ -43,7 +43,7 @@ jobs:
         CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
         CIBW_BEFORE_BUILD: "pip install numpy"
         CIBW_BUILD: ${{ matrix.cibw-string }}
-        CIBW_SKIP: "*-musllinux_*"
+        CIBW_SKIP: "*-musllinux_* *i686*"
     - name: Upload with twine
       if: "contains(github.event.head_commit.message, 'PyPI')"
       run: |
