@@ -124,6 +124,7 @@ jobs:
         ls wheelhouse/
       env:
         CIBW_BEFORE_BUILD: "pip install numpy"
+        CIBW_ARCHS_MACOS: x86_64 arm64
         CIBW_BUILD: ${{ matrix.cibw-string }} 
         CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} {wheel}"
         CC: gcc-13
