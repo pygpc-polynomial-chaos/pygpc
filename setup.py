@@ -40,7 +40,7 @@ extensions = [Extension('pygpc.pygpc_extensions',
 
 
 setup(name='pygpc',
-      version='0.3.6',
+      version='0.3.7',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
