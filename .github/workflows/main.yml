@@ -10,14 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.10", "3.11"]
         include:
-          - python-version: "3.8"
-            cibw-string: "cp38-*"
-          - python-version: "3.9"
-            cibw-string: "cp39-*"
           - python-version: "3.10"
             cibw-string: "cp310-*"
+          - python-version: "3.11"
+            cibw-string: "cp311-*"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -55,14 +53,12 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.10", "3.11"]
         include:
-          - python-version: "3.8"
-            cibw-string: "cp38-*"
-          - python-version: "3.9"
-            cibw-string: "cp39-*"
           - python-version: "3.10"
             cibw-string: "cp310-*"
+          - python-version: "3.11"
+            cibw-string: "cp311-*"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -98,14 +94,12 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.10", "3.11"]
         include:
-          - python-version: "3.8"
-            cibw-string: "cp38-*"
-          - python-version: "3.9"
-            cibw-string: "cp39-*"
           - python-version: "3.10"
             cibw-string: "cp310-*"
+          - python-version: "3.11"
+            cibw-string: "cp311-*"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
