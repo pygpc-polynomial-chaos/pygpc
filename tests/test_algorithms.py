@@ -1324,11 +1324,11 @@ class TestPygpcMethods(unittest.TestCase):
         nrmsd = session.gpc[0].error[-1] * 100
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        # self.expect_true(nrmsd < 1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 1, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
-        # files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
-        # self.expect_true(files_consistent, error_msg)
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
+        self.expect_true(files_consistent, error_msg)
 
         print("done!\n")
 

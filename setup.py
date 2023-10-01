@@ -25,7 +25,6 @@ from setuptools import setup, find_packages, Extension
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 openmp_compile_args = ['-fopenmp']
 openmp_link_args = ['-lgomp']
 pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
@@ -41,7 +40,7 @@ extensions = [Extension('pygpc.pygpc_extensions',
 
 
 setup(name='pygpc',
-      version='0.3.5',
+      version='0.3.6q',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
