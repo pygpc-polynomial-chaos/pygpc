@@ -234,7 +234,7 @@ tags
 # ignore error log
 error.txt
 
-# ignore build and dist folder
+# ignore build, dist and dist_fixed folder
 build/
 dist/
 dist_fixed/
