@@ -101,7 +101,7 @@ The model can then be called in the associated analysis script:
     import numpy as np
     from collections import OrderedDict
     import matplotlib
-    matplotlib.use("Qt5Agg")
+    # matplotlib.use("Qt5Agg")
 
     # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
     # def main():

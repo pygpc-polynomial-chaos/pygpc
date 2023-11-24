@@ -8,7 +8,7 @@ from setuptools import setup, find_packages, Extension
 # analysis of complex systems. See also:
 # https://github.com/pygpc-polynomial-chaos/pygpc
 #
-# Copyright (C) 2017-2020 the original author (Konstantin Weise),
+# Copyright (C) 2017-2023 the original author (Konstantin Weise),
 # the Max-Planck-Institute for Human Cognitive Brain Sciences ("MPI CBS")
 # and contributors
 #
@@ -25,7 +25,6 @@ from setuptools import setup, find_packages, Extension
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 openmp_compile_args = ['-fopenmp']
 openmp_link_args = ['-lgomp']
 pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
@@ -41,7 +40,7 @@ extensions = [Extension('pygpc.pygpc_extensions',
 
 
 setup(name='pygpc',
-      version='0.3.4',
+      version='0.3.8',
       description='A sensitivity and uncertainty analysis toolbox for Python',
       author='Konstantin Weise',
       author_email='kweise@cbs.mpg.de',
@@ -65,19 +64,3 @@ setup(name='pygpc',
         "Source Code": "https://github.com/pygpc-polynomial-chaos/pygpc"},
       zip_safe=False,
       include_package_data=True)
-
-
-"""
-Notes for Mac M1 users:
-
-1. You’ll need to install: llvm and libomp from homebrew (be sure it’s arm versions).
-
-2. You’ll need to prepend llvm path (by default it’s /opt/homebrew/opt/llvm/bin) so system clang compilers from llvm (I did it with version 16)
-
-3. You’ll need to setup LDFLAGS and CPPFLAGS flags to include BOTH llvm and libomp so:
-LDFLAGS = “-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/libomp/lib”
-CPPFLAFS = “-I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include”
-(of course these are the default location… you can get the location with brew info llvm and brew info libomp)
-
-4. Finally, you just need to change openmp_link_args inside setup.py for pyGPC to “-lomp” instead of “-lgomp”
-"""

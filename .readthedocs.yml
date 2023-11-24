@@ -1,12 +1,15 @@
 version: 2
 
 sphinx:
-  configuration: doc/source/conf.py
+  configuration: doc/conf.py
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.11"
 
 python:
-   version: 3.7
    install:
       - requirements: doc/requirements.txt
       - method: pip
         path: .
-   system_packages: true

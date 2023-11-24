@@ -19,7 +19,7 @@ import pygpc
 import numpy as np
 from collections import OrderedDict
 import matplotlib
-matplotlib.use("Qt5Agg")
+# matplotlib.use("Qt5Agg")
 
 fn_results = "tmp/example_ishigami"
 

@@ -31,7 +31,7 @@ import pygpc
 import numpy as np
 from collections import OrderedDict
 import matplotlib
-matplotlib.use("Qt5Agg")
+# matplotlib.use("Qt5Agg")
 
 #%%
 # At first, we are loading the model:
