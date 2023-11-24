@@ -4263,6 +4263,7 @@ class Lorenz_System(AbstractModel):
 
         return x_out
 
+
 class Lorenz_System_julia(AbstractModel):
     """
     Model for the Lorenz System of differential equations in julia. It is nonlinear and shows chaotic behaviour

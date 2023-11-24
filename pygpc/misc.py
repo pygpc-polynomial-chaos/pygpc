@@ -9,7 +9,11 @@ import numpy as np
 import scipy.stats
 import scipy.special
 import scipy.spatial
-import matplotlib.pyplot as plt
+
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 from scipy.spatial.distance import cdist
 from .Visualization import plot_beta_pdf_fit
