@@ -1,8 +1,5 @@
 import os
 import h5py
-import matplotlib
-import seaborn as sns
-import matplotlib.pyplot as plt
 import scipy.stats
 from scipy.signal import savgol_filter
 from .misc import nrmsd
@@ -11,6 +8,13 @@ from pygpc.Computation import *
 from .MEGPC import *
 from .Grid import *
 from .Visualization import *
+
+try:
+    import matplotlib
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 
 def validate_gpc_mc(session, coeffs, coords=None, data_original=None, n_samples=1e4, output_idx=0, n_cpu=1,
