@@ -23,7 +23,14 @@ _ = plt.axis('off')
 # .. code-block:: julia
 #
 #    import Pkg
-#    Pkg.install("PyCall")
+#    Pkg.add("PyCall")
+#
+# For our example we also need the DifferentialEquations package, which can be installed within Julia:
+#
+# .. code-block:: julia
+#
+#    import Pkg
+#    Pkg.add("DifferentialEquations")
 #
 # In Python you need to download and install the Julia package from pip for example:
 #
@@ -40,14 +47,6 @@ _ = plt.axis('off')
 #    import julia
 #    julia.install()
 #
-#
-# After installation is finished, you can set:
-#
-# .. code-block:: python
-#
-#    options["julia_model"] = True
-#
-# in the gPC options section of your gPC run-file.
 #
 # Setting up the Julia model
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^

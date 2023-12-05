@@ -4263,6 +4263,7 @@ class Lorenz_System(AbstractModel):
 
         return x_out
 
+
 class Lorenz_System_julia(AbstractModel):
     """
     Model for the Lorenz System of differential equations in julia. It is nonlinear and shows chaotic behaviour
@@ -4307,22 +4308,26 @@ class Lorenz_System_julia(AbstractModel):
 
         from julia import Main
         # the package DifferentialEquations.jl needs to be installed in the julia environment
-        # for this example the folder "julia_env" is located in the same folder as the julia file
-        fname_folder = os.path.split(self.fname_julia)[0]
-        Main.fname_environment = os.path.join(fname_folder, 'julia_env')
-        Main.eval('import Pkg; Pkg.activate(fname_environment)')
+        # you can add dependencies of your model by using a dedicated environment, for this example
+        # the folder "julia_env" is located in the same folder as the julia file
+        # if you installed the DifferentialEquations package by yourself in julia, you do not have to use a
+        # dedicated environment (if julia updates, the environments also have to be updated from time to time
+        # to keep working)
+
+        #fname_folder = os.path.split(self.fname_julia)[0]
+        #Main.fname_environment = os.path.join(fname_folder, 'julia_env')
+        #Main.eval('import Pkg; Pkg.activate(fname_environment)')
 
         # access .jl file
         Main.fname_julia = self.fname_julia
         Main.include(Main.fname_julia)
 
         x_out_shape = self.p["sigma"].shape[0]
-        t_span = (0.0, self.p["t_end"][0])
         t = np.arange(0.0, self.p["t_end"][0], self.p["step_size"][0])
         sols = np.zeros((x_out_shape, t.shape[0]))
         for i in range(x_out_shape):
             p = [self.p["sigma"][i], self.p["beta"][i], self.p["rho"][i]]
-            y0 = [self.p["y1_0"][i], self.p["y2_0"][i], self.p["y3_0"][i]]
+            y0 = [self.p["x_0"][i], self.p["y_0"][i], self.p["z_0"][i]]
             # only save x-coordinate (index 0)
             sols[i, :] = Main.Julia_Lorenz(p, y0, t)[0]
         x_out = sols

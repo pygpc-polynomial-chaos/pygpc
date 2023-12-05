@@ -62,9 +62,13 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
             # in this example, the package DifferentialEquations.jl needs to be installed in the
             # julia environment for this example the folder "julia_env" is located in the same
             # folder as the julia model file
-            fname_folder = os.path.split(self.fname_julia)[0]
-            Main.fname_environment = os.path.join(fname_folder, 'julia_env')
-            Main.eval('import Pkg; Pkg.activate(fname_environment)')
+            # if you installed the DifferentialEquations package by yourself in julia, you do not have to use a
+            # dedicated environment (if julia updates, the environments also have to be updated from time to time
+            # to keep working)
+
+            #fname_folder = os.path.split(self.fname_julia)[0]
+            #Main.fname_environment = os.path.join(fname_folder, 'julia_env')
+            #Main.eval('import Pkg; Pkg.activate(fname_environment)')
 
             # access .jl file
             Main.fname_julia = self.fname_julia
@@ -72,7 +76,6 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
 
             # create time and solution arrays
             n_grid = self.p["sigma"].shape[0]
-            t_span = (0.0, self.p["t_end"][0])
             t = np.arange(0.0, self.p["t_end"][0], self.p["step_size"][0])
             sols = np.zeros((n_grid, t.shape[0]))
 
@@ -83,7 +86,7 @@ This code is implemented in :class:`Lorenz system (julia) <pygpc.testfunctions.t
 
                 # assign initial values (the same for all parameter combinations but pygpc duplicates
                 # all "static" (deterministic) parameters for each parameter set)
-                y0 = [self.p["y1_0"][i], self.p["y2_0"][i], self.p["y3_0"][i]]
+                y0 = [self.p["x_0"][i], self.p["y_0"][i], self.p["z_0"][i]]
 
                 # Call julia and save x-coordinate for this particular example (index 0)
                 sols[i, :] = Main.Julia_Lorenz(p, y0, t)[0]
@@ -108,8 +111,7 @@ The model can then be called in the associated analysis script:
     fn_results = "tmp/example_lorenz_julia"
 
     # define model
-    model = pygpc.testfunctions.Lorenz_System_julia(
-        fname_julia=os.path.join(pygpc.__path__[0], "testfunctions", "Lorenz_System.jl"))
+    model = Lorenz_System_julia(fname_julia=os.path.join(pygpc.__path__[0], "testfunctions", "Lorenz_System.jl"))
 
     # define problem
     parameters = OrderedDict()
