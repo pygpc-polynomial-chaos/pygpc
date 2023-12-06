@@ -257,3 +257,6 @@ tests/tmp
 
 # ignore PyCharm folder
 .idea/
+
+# ignode OSX DS_Store
+.DS_Store
