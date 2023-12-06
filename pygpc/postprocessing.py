@@ -1,5 +1,4 @@
 import h5py
-import matplotlib
 import numpy as np
 import pandas as pd
 
@@ -7,6 +6,10 @@ from .Grid import *
 from .MEGPC import *
 from .io import read_session
 
+try:
+    import matplotlib
+except ImportError:
+    pass
 
 def get_sensitivities_hdf5(fn_gpc, output_idx=False, calc_sobol=True, calc_global_sens=False, calc_pdf=False,
                            algorithm="standard", n_samples=1e5):

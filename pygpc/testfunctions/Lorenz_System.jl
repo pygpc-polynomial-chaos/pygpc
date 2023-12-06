@@ -1,3 +1,8 @@
+# sometimes required to set up julia when starting for the first time:
+
+# import Pkg
+# Pkg.instantiate()
+
 using DifferentialEquations
 
 function lorenz!(du,u,p,t)

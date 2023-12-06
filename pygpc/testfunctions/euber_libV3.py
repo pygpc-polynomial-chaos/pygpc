@@ -6,8 +6,12 @@ import numpy as np
 import scipy.optimize
 import pdb
 import mpmath as mp
-from matplotlib.patches import Rectangle
-import matplotlib.pyplot as plt
+
+try:
+    from matplotlib.patches import Rectangle
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 
 class euber():

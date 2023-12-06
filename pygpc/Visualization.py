@@ -2,8 +2,12 @@ import numpy as np
 import os
 import sys
 import scipy.stats
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+
+try:
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 
 class Visualization:

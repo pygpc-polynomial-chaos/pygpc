@@ -31,7 +31,6 @@ if __name__ == '__main__':
     options["gradient_enhanced"] = False
     options["fn_results"] = fn_results
     options["eps"] = 0.0075
-    options["julia_model"] = True
 
     # define algorithm
     algorithm = pygpc.RegAdaptive(problem=problem, options=options)
