@@ -52,7 +52,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.twine_api_key }}
         TWINE_USERNAME: __token__
   windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11"]
@@ -95,7 +95,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.twine_api_key }}
         TWINE_USERNAME: __token__
   macos:
-    runs-on: macos-latest
+    runs-on: macos-11
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11"]
