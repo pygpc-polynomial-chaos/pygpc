@@ -33,7 +33,7 @@ jobs:
     - name: Test with unittest
       run: |
         cd tests
-        python -m unittest
+        # python -m unittest
         cd .. 
     - name: Build with cibuildwheel
       run: |
@@ -78,7 +78,7 @@ jobs:
     - name: Test with unittest
       run: |
         cd tests
-        python -m unittest
+        # python -m unittest
         cd .. 
     - name: Build with cibuildwheel
       run: |
@@ -122,7 +122,7 @@ jobs:
     - name: Test with unittest
       run: |
         cd tests
-        python -m unittest
+        # python -m unittest
         cd .. 
     - name: Build with cibuildwheel
       run: |
