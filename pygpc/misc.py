@@ -17,7 +17,11 @@ except ImportError:
 
 from scipy.spatial.distance import cdist
 from .Visualization import plot_beta_pdf_fit
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+try:
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+except:
+    pass
 
 
 def squared_exponential_kernel(x, y, lengthscale, variance):

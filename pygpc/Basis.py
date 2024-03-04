@@ -4,11 +4,15 @@ import time
 import numpy as np
 import multiprocessing
 import multiprocessing.pool
-import matplotlib.pyplot as plt
 from _functools import partial
 from .misc import get_multi_indices
 # from mpl_toolkits.mplot3d import Axes3D
 from .BasisFunction import *
+
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 
 class Basis:

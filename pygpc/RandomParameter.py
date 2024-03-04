@@ -1,8 +1,12 @@
 import scipy.special
 import scipy.stats
 import numpy as np
-import matplotlib.pyplot as plt
 from .BasisFunction import *
+
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 
 class RandomParameter(object):
