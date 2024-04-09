@@ -1,5 +1,4 @@
 import numpy as np
-import fastmat as fm
 import scipy.stats
 import copy
 import h5py
@@ -22,6 +21,11 @@ from .Grid import *
 
 try:
     from .pygpc_extensions_cuda import create_gpc_matrix_cuda
+except ImportError:
+    pass
+
+try:
+    import fastmat as fm
 except ImportError:
     pass
 

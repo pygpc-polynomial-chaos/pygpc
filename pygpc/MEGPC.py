@@ -1,5 +1,4 @@
 import numpy as np
-import fastmat as fm
 import scipy.stats
 import copy
 import h5py
@@ -20,6 +19,10 @@ from .Classifier import *
 from .Grid import *
 from .SGPC import *
 
+try:
+    import fastmat as fm
+except ImportError:
+    pass
 
 class MEGPC(object):
     """
