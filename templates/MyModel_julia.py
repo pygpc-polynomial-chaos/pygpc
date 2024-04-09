@@ -1,8 +1,11 @@
 import inspect
 import numpy as np
-from julia import Main
 from pygpc.AbstractModel import AbstractModel
 
+try:
+    from julia import Main
+except ImportError:
+    pass
 
 class MyModel_julia(AbstractModel):
     """
