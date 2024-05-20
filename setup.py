@@ -63,7 +63,7 @@ setup(name='pygpc',
                         'h5py',
                         'tqdm',
                         'pandas',
-                        'mpl_toolkits'],
+                        ],
       ext_modules=extensions,
       package_data={'pygpc': ['*.so', '*.dll', '*.dylib']},
       project_urls={
