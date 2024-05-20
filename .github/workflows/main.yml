@@ -114,11 +114,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        brew install gcc@13
+        brew install gcc@14
         python -m pip install --upgrade pip
         pip install Cython matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
-        CC=gcc-13 CXX=g++-13 pip install .
+        CC=gcc-14 CXX=g++-14 pip install .
     - name: Test with unittest
       run: |
         cd tests
@@ -133,9 +133,9 @@ jobs:
         CIBW_ARCHS_MACOS: x86_64
         CIBW_BUILD: ${{ matrix.cibw-string }} 
         CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
-        CC: gcc-13
-        CXX: g++-13
-        # MACOSX_DEPLOYMENT_TARGET: "10.13"
+        CC: gcc-14
+        CXX: g++-14
+        MACOSX_DEPLOYMENT_TARGET: "10.11"
     - name: Upload with twine
       if: "contains(github.event.head_commit.message, 'PyPI')"
       run: |
