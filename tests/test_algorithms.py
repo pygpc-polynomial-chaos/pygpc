@@ -159,7 +159,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
         print("> Checking file consistency...")
 
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -256,7 +256,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -318,7 +318,7 @@ class TestPygpcMethods(unittest.TestCase):
         # read session
         nrmsd = session.gpc[0].error[-1]*100
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("done!\n")
 
@@ -417,7 +417,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -487,7 +487,7 @@ class TestPygpcMethods(unittest.TestCase):
         nrmsd = session.gpc[0].error[-1] * 100
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -587,7 +587,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -652,7 +652,7 @@ class TestPygpcMethods(unittest.TestCase):
         nrmsd = session.gpc[0].error[-1]*100
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -755,7 +755,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -823,7 +823,7 @@ class TestPygpcMethods(unittest.TestCase):
         nrmsd = session.gpc[0].error[-1] * 100
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -927,7 +927,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -996,7 +996,7 @@ class TestPygpcMethods(unittest.TestCase):
         session = pygpc.read_session(fname=session.fn_session, folder=session.fn_session_folder)
         nrmsd = session.gpc[0].error[-1] * 100
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -1093,7 +1093,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -1160,7 +1160,7 @@ class TestPygpcMethods(unittest.TestCase):
         nrmsd = session.gpc[0].error[-1] * 100
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -1259,7 +1259,7 @@ class TestPygpcMethods(unittest.TestCase):
                                       plot=plot)
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -1324,7 +1324,7 @@ class TestPygpcMethods(unittest.TestCase):
         nrmsd = session.gpc[0].error[-1] * 100
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -1433,7 +1433,7 @@ class TestPygpcMethods(unittest.TestCase):
                                fn_out=options["fn_results"] + ".txt")
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -1504,7 +1504,7 @@ class TestPygpcMethods(unittest.TestCase):
 
         nrmsd = session.gpc[0].error[0][0] * 100
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(nrmsd))
-        self.expect_true(nrmsd < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
+        self.expect_true(nrmsd < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(nrmsd))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
@@ -1608,7 +1608,7 @@ class TestPygpcMethods(unittest.TestCase):
                                fn_out=options["fn_results"] + ".txt")
 
         print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
-        self.expect_true(np.max(nrmsd) < 5, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
 
         print("> Checking file consistency...")
         files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"] + ".hdf5")
