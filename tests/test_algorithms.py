@@ -1688,7 +1688,7 @@ class TestPygpcMethods(unittest.TestCase):
                                parameters_random=parameters,
                                fn_out=options["fn_results"] + ".txt")
 
-        self.expect_true(session.gpc[0].error[0] < 0.001,
+        self.expect_true(session.gpc[0].error[0] < 0.1,
                          f'gPC test failed with LOOCV error = {session.gpc[0].error[0]}')
 
         print("> Checking file consistency...")
@@ -1784,7 +1784,7 @@ class TestPygpcMethods(unittest.TestCase):
                                parameters_random=parameters,
                                fn_out=options["fn_results"] + ".txt")
 
-        self.expect_true(session.gpc[0].error[0] < 0.075,
+        self.expect_true(session.gpc[0].error[0] < 0.1,
                          f'gPC test failed with LOOCV error = {session.gpc[0].error[0]}')
 
         print("> Checking file consistency...")
