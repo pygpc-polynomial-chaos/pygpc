@@ -1032,7 +1032,8 @@ class GPC(object):
             # reg.fit(matrix_norm, results_complete)
             # coeffs = reg.coef_
 
-            reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False, normalize=False)
+            # reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False, normalize=False)
+            reg = linear_model.LassoLars(alpha=settings["alpha"], fit_intercept=False)
             reg.fit(matrix, results_complete)
             coeffs = reg.coef_
 
