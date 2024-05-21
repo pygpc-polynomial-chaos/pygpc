@@ -114,7 +114,7 @@ jobs:
           - python-version: "3.11"
             cibw-string: "cp311-*"
           - python-version: "3.12"
-          cibw-string: "cp311-*"
+            cibw-string: "cp311-*"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -131,7 +131,7 @@ jobs:
     - name: Test with unittest
       run: |
         cd tests
-        # python -m unittest
+        python -m unittest
         cd .. 
   #   - name: Build with cibuildwheel
   #     run: |
