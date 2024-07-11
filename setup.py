@@ -1,5 +1,5 @@
-import argparse
 import os
+import sys
 import numpy as np
 from setuptools import setup, find_packages, Extension
 
@@ -8,7 +8,7 @@ from setuptools import setup, find_packages, Extension
 # analysis of complex systems. See also:
 # https://github.com/pygpc-polynomial-chaos/pygpc
 #
-# Copyright (C) 2017-2023 the original author (Konstantin Weise),
+# Copyright (C) 2017-2024 the original author (Konstantin Weise),
 # the Max-Planck-Institute for Human Cognitive Brain Sciences ("MPI CBS")
 # and contributors
 #
@@ -32,12 +32,14 @@ pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
 pygpc_extensions_include_path = [os.path.join('pckg', 'pygpc_extensions',
                                               'include'), np.get_include()]
 
-extensions = [Extension('pygpc.pygpc_extensions',
-                        sources=pygpc_extensions_src_file_path,
-                        include_dirs=pygpc_extensions_include_path,
-                        extra_compile_args=openmp_compile_args,
-                        extra_link_args=openmp_link_args)]
-
+if sys.platform == 'darwin':
+  extensions = []
+else:
+  extensions = [Extension('pygpc.pygpc_extensions',
+                      sources=pygpc_extensions_src_file_path,
+                      include_dirs=pygpc_extensions_include_path,
+                      extra_compile_args=openmp_compile_args,
+                      extra_link_args=openmp_link_args)]
 
 setup(name='pygpc',
       version='0.3.9',

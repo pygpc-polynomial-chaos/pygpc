@@ -21,7 +21,7 @@ import pygpc
 # -- Project information -----------------------------------------------------
 
 project = u'pygpc'
-copyright = u'2023, Konstantin Weise'
+copyright = u'2024, Konstantin Weise'
 author = u'Konstantin Weise'
 
 # The short X.Y version
