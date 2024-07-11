@@ -260,3 +260,6 @@ tests/tmp
 
 # ignode OSX DS_Store
 .DS_Store
+
+# ignore Wheelhouse
+/wheelhouse
