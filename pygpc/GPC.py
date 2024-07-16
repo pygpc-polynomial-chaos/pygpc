@@ -212,8 +212,11 @@ class GPC(object):
 
         iprint('Constructing gPC matrix...', verbose=verbose, tab=0)
 
-        # CPU backend (CPU single core)
+        if self.backend not in ["cpu", "omp", "cuda", "python"]:
+            raise NotImplementedError(f"Backend {self.backend} is not implemented")
+
         if self.backend == "cpu":
+            # CPU backend (CPU single core)
             try:
                 from .pygpc_extensions import create_gpc_matrix_cpu
                 if not gradient:
@@ -228,9 +231,8 @@ class GPC(object):
             except (ImportError):
                 print("The CPU-extension is not installed. Fall back to pure Python as backend.")
                 self.backend = "python"
-
-        # OpenMP backend (CPU multi core)
         elif self.backend == "omp":
+            # OpenMP backend (CPU multi core)
             try:
                 from .pygpc_extensions import create_gpc_matrix_omp
                 if not gradient:
@@ -245,9 +247,8 @@ class GPC(object):
             except (ImportError):
                 print("The OMP-extension is not installed. Fall back to pure Python as backend.")
                 self.backend = "python"
-
-        # CUDA backend (GPU multi core)
         elif self.backend == "cuda":
+            # CUDA backend (GPU multi core)
             try:
                 from .pygpc_extensions_cuda import create_gpc_matrix_cuda
                 if not gradient:
@@ -262,9 +263,9 @@ class GPC(object):
             except (ImportError):
                 print("The CUDA-extension is not installed. Fall back to pure Python as backend.")
                 self.backend = "python"
-
-        # Python backend
+                
         if self.backend == "python":
+            # Python backend
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
                 for i_basis in range(len(b)):
@@ -281,8 +282,6 @@ class GPC(object):
                                 derivative = False
                             gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[self.gradient_idx, i_dim],
                                                                                         derivative=derivative)
-        else:
-            raise NotImplementedError
 
         if gpc_matrix.ndim == 1 and x.shape[0] == 1:
             gpc_matrix = gpc_matrix[np.newaxis, :]
