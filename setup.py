@@ -25,43 +25,57 @@ from setuptools import setup, find_packages, Extension
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-openmp_compile_args = ['-fopenmp']
-openmp_link_args = ['-lgomp']
-pygpc_extensions_src_file_path = [os.path.join('pckg', 'pygpc_extensions',
-                                               'src', 'pygpc_extensions.cpp')]
-pygpc_extensions_include_path = [os.path.join('pckg', 'pygpc_extensions',
-                                              'include'), np.get_include()]
+openmp_compile_args = ["-fopenmp"]
+openmp_link_args = ["-lgomp"]
+pygpc_extensions_src_file_path = [
+    os.path.join("pckg", "pygpc_extensions", "src", "pygpc_extensions.cpp")
+]
+pygpc_extensions_include_path = [
+    os.path.join("pckg", "pygpc_extensions", "include"),
+    np.get_include(),
+]
 
-if sys.platform == 'darwin':
-  extensions = []
-else:
-  extensions = [Extension('pygpc.pygpc_extensions',
-                      sources=pygpc_extensions_src_file_path,
-                      include_dirs=pygpc_extensions_include_path,
-                      extra_compile_args=openmp_compile_args,
-                      extra_link_args=openmp_link_args)]
+# if sys.platform == 'darwin':
+#   extensions = []
+# else:
+#   extensions = [Extension('pygpc.pygpc_extensions',
+#                       sources=pygpc_extensions_src_file_path,
+#                       include_dirs=pygpc_extensions_include_path,
+#                       extra_compile_args=openmp_compile_args,
+#                       extra_link_args=openmp_link_args)]
 
-setup(name='pygpc',
-      version='0.3.9',
-      description='A sensitivity and uncertainty analysis toolbox for Python',
-      author='Konstantin Weise',
-      author_email='kweise@cbs.mpg.de',
-      license='GPL3',
-      packages=find_packages(exclude=['tests',
-                                      'tests.*',
-                                      'templates',
-                                      'templates.*']),
-      install_requires=['scipy',
-                        'numpy',
-                        'scikit-learn',
-                        'h5py',
-                        'tqdm',
-                        'pandas',
-                        ],
-      ext_modules=extensions,
-      package_data={'pygpc': ['*.so', '*.dll', '*.dylib']},
-      project_urls={
+extensions = [
+    Extension(
+        "pygpc.pygpc_extensions",
+        sources=pygpc_extensions_src_file_path,
+        include_dirs=pygpc_extensions_include_path,
+        extra_compile_args=openmp_compile_args,
+        extra_link_args=openmp_link_args,
+    )
+]
+
+setup(
+    name="pygpc",
+    version="0.3.9",
+    description="A sensitivity and uncertainty analysis toolbox for Python",
+    author="Konstantin Weise",
+    author_email="kweise@cbs.mpg.de",
+    license="GPL3",
+    packages=find_packages(exclude=["tests", "tests.*", "templates", "templates.*"]),
+    install_requires=[
+        "scipy",
+        "numpy",
+        "scikit-learn",
+        "h5py",
+        "tqdm",
+        "pandas",
+    ],
+    ext_modules=extensions,
+    package_data={"pygpc": ["*.so", "*.dll", "*.dylib"]},
+    project_urls={
         "Documentation": "https://pygpc.readthedocs.io/en/latest/",
-        "Source Code": "https://github.com/pygpc-polynomial-chaos/pygpc"},
-      zip_safe=False,
-      include_package_data=True)
+        "Source Code": "https://github.com/pygpc-polynomial-chaos/pygpc",
+    },
+    zip_safe=False,
+    include_package_data=True,
+)
