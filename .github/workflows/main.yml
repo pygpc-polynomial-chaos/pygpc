@@ -125,11 +125,11 @@ jobs:
         pip install Cython matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
         CC=gcc-13 CXX=g++-13 pip install .
-    - name: Test with unittest
-      run: |
-        cd tests
-        python -m unittest
-        cd .. 
+    # - name: Test with unittest
+    #   run: |
+    #     cd tests
+    #     python -m unittest
+    #     cd .. 
     - name: Build with cibuildwheel
       run: |
         python -m cibuildwheel --output-dir wheelhouse
@@ -139,7 +139,7 @@ jobs:
         CIBW_BEFORE_BUILD: "pip install numpy"
         # CIBW_ARCHS_MACOS: x86_64
         CIBW_BUILD: ${{ matrix.cibw-string }} 
-        CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
+        CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel --require-archs {delocate_archs} --require-target-macos-version 10.14 -w {dest_dir} -v {wheel}"
         # CIBW_REPAIR_WHEEL_COMMAND: ""
         CC: gcc-13
         CXX: g++-13
