@@ -143,7 +143,7 @@ jobs:
         ls wheelhouse/
       env:
         MACOSX_DEPLOYMENT_TARGET: "14"
-        CIBW_BEFORE_BUILD: "pip install numpy"
+        CIBW_BEFORE_BUILD: "pip install numpy delocate==0.10.7"
         # CIBW_ARCHS_MACOS: x86_64
         CIBW_BUILD: ${{ matrix.cibw-string }} 
         CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel --require-archs {delocate_archs} --require-target-macos-version 10.14 -w {dest_dir} -v {wheel}"
