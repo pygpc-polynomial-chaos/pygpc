@@ -12,17 +12,9 @@ from .misc import display_fancy_bar
 from .misc import nrmsd
 from .misc import mat2ten
 from .misc import ten2mat
-from .pygpc_extensions import create_gpc_matrix_cpu
-from .pygpc_extensions import create_gpc_matrix_omp
 from .ValidationSet import *
 from .Computation import *
 from .Grid import *
-
-
-try:
-    from .pygpc_extensions_cuda import create_gpc_matrix_cuda
-except ImportError:
-    pass
 
 try:
     import fastmat as fm
@@ -220,8 +212,60 @@ class GPC(object):
 
         iprint('Constructing gPC matrix...', verbose=verbose, tab=0)
 
-        # Python backend
+        if self.backend not in ["cpu", "omp", "cuda", "python"]:
+            raise NotImplementedError(f"Backend {self.backend} is not implemented")
+
+        if self.backend == "cpu":
+            # CPU backend (CPU single core)
+            try:
+                from .pygpc_extensions import create_gpc_matrix_cpu
+                if not gradient:
+                    # the third dimension is important and should not be removed
+                    # otherwise the code could produce undefined behaviour
+                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
+                    create_gpc_matrix_cpu(x, self.basis.b_array, gpc_matrix)
+                    gpc_matrix = np.squeeze(gpc_matrix)
+                else:
+                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                    create_gpc_matrix_cpu(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
+            except (ImportError):
+                print("The CPU-extension is not installed. Fall back to pure Python as backend.")
+                self.backend = "python"
+        elif self.backend == "omp":
+            # OpenMP backend (CPU multi core)
+            try:
+                from .pygpc_extensions import create_gpc_matrix_omp
+                if not gradient:
+                    # the third dimension is important and should not be removed
+                    # otherwise the code could produce undefined behaviour
+                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
+                    create_gpc_matrix_omp(x, self.basis.b_array, gpc_matrix)
+                    gpc_matrix = np.squeeze(gpc_matrix)
+                else:
+                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                    create_gpc_matrix_omp(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
+            except (ImportError):
+                print("The OMP-extension is not installed. Fall back to pure Python as backend.")
+                self.backend = "python"
+        elif self.backend == "cuda":
+            # CUDA backend (GPU multi core)
+            try:
+                from .pygpc_extensions_cuda import create_gpc_matrix_cuda
+                if not gradient:
+                    # the third dimension is important and should not be removed
+                    # otherwise the code could produce undefined behaviour
+                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
+                    create_gpc_matrix_cuda(x, self.basis.b_array, gpc_matrix)
+                    gpc_matrix = np.squeeze(gpc_matrix)
+                else:
+                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                    create_gpc_matrix_cuda(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
+            except (ImportError):
+                print("The CUDA-extension is not installed. Fall back to pure Python as backend.")
+                self.backend = "python"
+                
         if self.backend == "python":
+            # Python backend
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
                 for i_basis in range(len(b)):
@@ -238,50 +282,6 @@ class GPC(object):
                                 derivative = False
                             gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[self.gradient_idx, i_dim],
                                                                                         derivative=derivative)
-
-        # CPU backend (CPU single core)
-        elif self.backend == "cpu":
-            if not gradient:
-                # the third dimension is important and should not be removed
-                # otherwise the code could produce undefined behaviour
-                gpc_matrix = np.empty([x.shape[0], len(b), 1])
-                create_gpc_matrix_cpu(x, self.basis.b_array, gpc_matrix)
-                gpc_matrix = np.squeeze(gpc_matrix)
-            else:
-                gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
-                create_gpc_matrix_cpu(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
-
-        # OpenMP backend (CPU multi core)
-        elif self.backend == "omp":
-            if not gradient:
-                # the third dimension is important and should not be removed
-                # otherwise the code could produce undefined behaviour
-                gpc_matrix = np.empty([x.shape[0], len(b), 1])
-                create_gpc_matrix_omp(x, self.basis.b_array, gpc_matrix)
-                gpc_matrix = np.squeeze(gpc_matrix)
-            else:
-                gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
-                create_gpc_matrix_omp(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
-
-        # CUDA backend (GPU multi core)
-        elif self.backend == "cuda":
-            try:
-                from .pygpc_extensions_cuda import create_gpc_matrix_cuda
-            except (ImportError):
-                raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
-            else:
-                if not gradient:
-                    # the third dimension is important and should not be removed
-                    # otherwise the code could produce undefined behaviour
-                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
-                    create_gpc_matrix_cuda(x, self.basis.b_array, gpc_matrix)
-                    gpc_matrix = np.squeeze(gpc_matrix)
-                else:
-                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
-                    create_gpc_matrix_cuda(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
-
-        else:
-            raise NotImplementedError
 
         if gpc_matrix.ndim == 1 and x.shape[0] == 1:
             gpc_matrix = gpc_matrix[np.newaxis, :]
@@ -636,6 +636,15 @@ class GPC(object):
         if self.p_matrix is not None:
             x = np.matmul(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
+        if self.backend == "cuda":
+            try:
+                from .pygpc_extensions_cuda import get_approximation_cuda
+                pce = np.empty([x.shape[0], coeffs.shape[1]])
+                get_approximation_cuda(x, self.basis.b_array, coeffs, pce)
+            except ImportError:
+                print("The CUDA-extension is not installed. Fall back to pure Python as backend.")
+                self.backend = "python"
+
         if self.backend == 'python' or self.backend == 'cpu' or self.backend == 'omp':
             # determine gPC matrix at coordinates x
             gpc_matrix = self.create_gpc_matrix(self.basis.b, x, gradient=False)
@@ -643,14 +652,6 @@ class GPC(object):
             # multiply with gPC coeffs
             pce = np.matmul(gpc_matrix, coeffs)
 
-        elif self.backend == "cuda":
-            try:
-                from .pygpc_extensions_cuda import get_approximation_cuda
-            except ImportError:
-                raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
-            else:
-                pce = np.empty([x.shape[0], coeffs.shape[1]])
-                get_approximation_cuda(x, self.basis.b_array, coeffs, pce)
         else:
             raise NotImplementedError
 
