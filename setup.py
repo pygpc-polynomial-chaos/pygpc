@@ -35,15 +35,6 @@ pygpc_extensions_include_path = [
     np.get_include(),
 ]
 
-# if sys.platform == 'darwin':
-#   extensions = []
-# else:
-#   extensions = [Extension('pygpc.pygpc_extensions',
-#                       sources=pygpc_extensions_src_file_path,
-#                       include_dirs=pygpc_extensions_include_path,
-#                       extra_compile_args=openmp_compile_args,
-#                       extra_link_args=openmp_link_args)]
-
 extensions = [
     Extension(
         "pygpc.pygpc_extensions",
@@ -56,7 +47,7 @@ extensions = [
 
 setup(
     name="pygpc",
-    version="0.3.9",
+    version="0.4.0",
     description="A sensitivity and uncertainty analysis toolbox for Python",
     author="Konstantin Weise",
     author_email="kweise@cbs.mpg.de",
