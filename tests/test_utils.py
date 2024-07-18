@@ -141,35 +141,35 @@ class TestPygpcMethods(unittest.TestCase):
 
             print("done!\n")
 
-    # def test_utils_002_RandomParameters(self):
-    #     """
-    #     Testing RandomParameters
-    #     """
-    #     global folder, plot
-    #     test_name = 'test_utils_002_RandomParameters'
-    #     print(test_name)
+    def test_utils_002_RandomParameters(self):
+        """
+        Testing RandomParameters
+        """
+        global folder, plot
+        test_name = 'test_utils_002_RandomParameters'
+        print(test_name)
 
-    #     parameters = OrderedDict()
-    #     parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
-    #     parameters["x2"] = pygpc.Beta(pdf_shape=[5, 5], pdf_limits=[0, 1])
-    #     parameters["x3"] = pygpc.Beta(pdf_shape=[5, 2], pdf_limits=[0, 1])
-    #     parameters["x4"] = pygpc.Beta(pdf_shape=[2, 5], pdf_limits=[0, 1])
-    #     parameters["x5"] = pygpc.Beta(pdf_shape=[0.75, 0.75], pdf_limits=[0, 1])
-    #     parameters["x6"] = pygpc.Norm(pdf_shape=[5, 1])
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[0, 1])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[5, 5], pdf_limits=[0, 1])
+        parameters["x3"] = pygpc.Beta(pdf_shape=[5, 2], pdf_limits=[0, 1])
+        parameters["x4"] = pygpc.Beta(pdf_shape=[2, 5], pdf_limits=[0, 1])
+        parameters["x5"] = pygpc.Beta(pdf_shape=[0.75, 0.75], pdf_limits=[0, 1])
+        parameters["x6"] = pygpc.Norm(pdf_shape=[5, 1])
 
-    #     if plot:
-    #         import matplotlib.pyplot as plt
-    #         fig = plt.figure()
-    #         ax = parameters["x1"].plot_pdf()
-    #         ax = parameters["x2"].plot_pdf()
-    #         ax = parameters["x3"].plot_pdf()
-    #         ax = parameters["x4"].plot_pdf()
-    #         ax = parameters["x5"].plot_pdf()
-    #         ax = parameters["x6"].plot_pdf()
-    #         ax.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
-    #         ax.savefig(os.path.join(folder, test_name) + ".png")
+        if plot:
+            import matplotlib.pyplot as plt
+            fig = plt.figure()
+            ax = parameters["x1"].plot_pdf()
+            ax = parameters["x2"].plot_pdf()
+            ax = parameters["x3"].plot_pdf()
+            ax = parameters["x4"].plot_pdf()
+            ax = parameters["x5"].plot_pdf()
+            ax = parameters["x6"].plot_pdf()
+            ax.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
+            ax.savefig(os.path.join(folder, test_name) + ".png")
 
-    #         print("done!\n")
+            print("done!\n")
 
     def test_utils_003_backends(self):
         """
