@@ -20,7 +20,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # test options
 folder = 'tmp'                  # output folder
-plot = False                    # plot and save output
+plot = True                     # plot and save output
 matlab = False                  # test Matlab functionality
 save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
 seed = 1                        # random seed for grids
@@ -159,15 +159,16 @@ class TestPygpcMethods(unittest.TestCase):
 
         if plot:
             import matplotlib.pyplot as plt
-            fig = plt.figure()
-            ax = parameters["x1"].plot_pdf()
-            ax = parameters["x2"].plot_pdf()
-            ax = parameters["x3"].plot_pdf()
-            ax = parameters["x4"].plot_pdf()
-            ax = parameters["x5"].plot_pdf()
-            ax = parameters["x6"].plot_pdf()
-            ax.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
-            ax.savefig(os.path.join(folder, test_name) + ".png")
+            import matplotlib
+            matplotlib.use("qt5agg")
+            parameters["x1"].plot_pdf()
+            parameters["x2"].plot_pdf()
+            parameters["x3"].plot_pdf()
+            parameters["x4"].plot_pdf()
+            parameters["x5"].plot_pdf()
+            parameters["x6"].plot_pdf()
+            plt.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
+            plt.savefig(os.path.join(folder, test_name) + ".png")
 
             print("done!\n")
 
