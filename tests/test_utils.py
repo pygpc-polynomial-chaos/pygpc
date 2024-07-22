@@ -168,7 +168,6 @@ class TestPygpcMethods(unittest.TestCase):
             parameters["x5"].plot_pdf()
             parameters["x6"].plot_pdf()
             plt.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
-            plt.savefig(os.path.join(folder, test_name) + ".png")
 
             print("done!\n")
 
