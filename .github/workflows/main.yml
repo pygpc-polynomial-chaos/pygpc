@@ -29,7 +29,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install Cython cibuildwheel twine
+        pip install Cython fastmat cibuildwheel twine
         pip install -r requirements.txt
         pip install .
     - name: Test with unittest
@@ -76,7 +76,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install Cython cibuildwheel twine
+        pip install Cython fastmat cibuildwheel twine
         pip install -r requirements.txt
         pip install .
     - name: Test with unittest
@@ -122,7 +122,7 @@ jobs:
       run: |
         brew install gcc@13
         python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn cibuildwheel twine
+        pip install Cython fastmat matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
         CC=gcc-13 CXX=g++-13 pip install .
     - name: Test with unittest
@@ -172,14 +172,7 @@ jobs:
       run: |
         brew install gcc@13
         python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn cibuildwheel twine
-        pip install -r requirements.txt
-        CC=gcc-13 CXX=g++-13 pip install .
-    - name: Install dependencies
-      run: |
-        brew install gcc@13
-        python -m pip install --upgrade pip
-        pip install Cython matplotlib seaborn cibuildwheel twine
+        pip install Cython fastmat matplotlib seaborn cibuildwheel twine
         pip install -r requirements.txt
         CC=gcc-13 CXX=g++-13 pip install .
     - name: Test with unittest
