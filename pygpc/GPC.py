@@ -16,11 +16,6 @@ from .ValidationSet import *
 from .Computation import *
 from .Grid import *
 
-try:
-    import fastmat as fm
-except ImportError:
-    pass
-
 
 class GPC(object):
     """
@@ -1001,6 +996,10 @@ class GPC(object):
         # Orthogonal Matching Pursuit #
         ###############################
         elif solver == 'OMP':
+            try:
+                import fastmat as fm
+            except ImportError:
+                raise ImportError("Please install the fastmat package to use the OMP solver.")
             # transform gPC matrix to fastmat format
             matrix_fm = fm.Matrix(matrix)
 
