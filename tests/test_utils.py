@@ -8,22 +8,28 @@ import shutil
 import unittest
 import numpy as np
 
+import matplotlib
+matplotlib.use("Agg")
+
 from scipy.integrate import odeint
 from collections import OrderedDict
 
 # disable numpy warnings
 import warnings
+
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 # test options
-folder = 'tmp'                  # output folder
-plot = True                     # plot and save output
-matlab = False                  # test Matlab functionality
-save_session_format = ".pkl"    # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
-seed = 1                        # random seed for grids
+folder = "tmp"  # output folder
+plot = True  # plot and save output
+matlab = False  # test Matlab functionality
+save_session_format = (
+    ".pkl"  # file format of saved gpc session ".hdf5" (slow) or ".pkl" (fast)
+)
+seed = 1  # random seed for grids
 
 # temporary folder
 try:
@@ -49,24 +55,30 @@ class TestPygpcMethods(unittest.TestCase):
         except failure.__class__:
             self._result.addFailure(self, sys.exc_info())
 
-    def expect_isclose(self, a, b, msg='', atol=None, rtol=None):
+    def expect_isclose(self, a, b, msg="", atol=None, rtol=None):
         if atol is None:
-            atol = 1.e-8
+            atol = 1.0e-8
         if rtol is None:
-            rtol = 1.e-5
+            rtol = 1.0e-5
 
         if not np.isclose(a, b, atol=atol, rtol=rtol).all():
-            msg = '({}) Expected {} to be close {}. '.format(self._num_expectations, a, b) + msg
+            msg = (
+                "({}) Expected {} to be close {}. ".format(self._num_expectations, a, b)
+                + msg
+            )
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def expect_equal(self, a, b, msg=''):
+    def expect_equal(self, a, b, msg=""):
         if a != b:
-            msg = '({}) Expected {} to equal {}. '.format(self._num_expectations, a, b) + msg
+            msg = (
+                "({}) Expected {} to equal {}. ".format(self._num_expectations, a, b)
+                + msg
+            )
             self._fail(self.failureException(msg))
         self._num_expectations += 1
 
-    def expect_true(self, a, msg=''):
+    def expect_true(self, a, msg=""):
         if not a:
             self._fail(self.failureException(msg))
         self._num_expectations += 1
@@ -75,7 +87,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
         Testing testfunctions (multi-threading and inherited parallelization)
         """
-        test_name = 'test_utils_001_testfunctions'
+        test_name = "test_utils_001_testfunctions"
         print(test_name)
 
         tests = []
@@ -117,25 +129,35 @@ class TestPygpcMethods(unittest.TestCase):
 
         for n_cpu in [4, 0]:
             if n_cpu != 0:
-                print("Running testfunctions using multi-threading with {} cores...".format(n_cpu))
+                print(
+                    "Running testfunctions using multi-threading with {} cores...".format(
+                        n_cpu
+                    )
+                )
             else:
-                print("Running testfunctions using inherited function parallelization...")
+                print(
+                    "Running testfunctions using inherited function parallelization..."
+                )
 
             com = pygpc.Computation(n_cpu=n_cpu)
 
             for t in tests:
-                grid = pygpc.Random(parameters_random=t.problem.parameters_random,
-                                    n_grid=10,
-                                    options={"seed": 1})
+                grid = pygpc.Random(
+                    parameters_random=t.problem.parameters_random,
+                    n_grid=10,
+                    options={"seed": 1},
+                )
 
-                res = com.run(model=t.problem.model,
-                              problem=t.problem,
-                              coords=grid.coords,
-                              coords_norm=grid.coords_norm,
-                              i_iter=None,
-                              i_subiter=None,
-                              fn_results=None,
-                              print_func_time=False)
+                res = com.run(
+                    model=t.problem.model,
+                    problem=t.problem,
+                    coords=grid.coords,
+                    coords_norm=grid.coords_norm,
+                    i_iter=None,
+                    i_subiter=None,
+                    fn_results=None,
+                    print_func_time=False,
+                )
 
             com.close()
 
@@ -146,7 +168,7 @@ class TestPygpcMethods(unittest.TestCase):
         Testing RandomParameters
         """
         global folder, plot
-        test_name = 'test_utils_002_RandomParameters'
+        test_name = "test_utils_002_RandomParameters"
         print(test_name)
 
         parameters = OrderedDict()
@@ -158,17 +180,12 @@ class TestPygpcMethods(unittest.TestCase):
         parameters["x6"] = pygpc.Norm(pdf_shape=[5, 1])
 
         if plot:
-            import matplotlib.pyplot as plt
-            import matplotlib
-            matplotlib.use("qt5agg")
             parameters["x1"].plot_pdf()
             parameters["x2"].plot_pdf()
             parameters["x3"].plot_pdf()
             parameters["x4"].plot_pdf()
             parameters["x5"].plot_pdf()
             parameters["x6"].plot_pdf()
-            plt.legend(["x1", "x2", "x3", "x4", "x5", "x6"])
-
             print("done!\n")
 
     def test_utils_003_backends(self):
@@ -177,7 +194,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
 
         global folder, gpu
-        test_name = 'test_utils_003_backends'
+        test_name = "test_utils_003_backends"
         print(test_name)
 
         backends = ["python", "cpu", "omp", "cuda"]
@@ -193,9 +210,9 @@ class TestPygpcMethods(unittest.TestCase):
         problem = pygpc.Problem(model, parameters)
 
         # define test grid
-        grid = pygpc.Random(parameters_random=problem.parameters_random,
-                            n_grid=100,
-                            options={"seed": 1})
+        grid = pygpc.Random(
+            parameters_random=problem.parameters_random, n_grid=100, options={"seed": 1}
+        )
 
         # gPC options
         options = dict()
@@ -226,14 +243,16 @@ class TestPygpcMethods(unittest.TestCase):
                 options["backend"] = b
 
                 # setup gPC
-                gpc = pygpc.Reg(problem=problem,
-                                order=[8, 8],
-                                order_max=8,
-                                order_max_norm=0.8,
-                                interaction_order=2,
-                                interaction_order_current=2,
-                                options=options,
-                                validation=None)
+                gpc = pygpc.Reg(
+                    problem=problem,
+                    order=[8, 8],
+                    order_max=8,
+                    order_max_norm=0.8,
+                    interaction_order=2,
+                    interaction_order_current=2,
+                    options=options,
+                    validation=None,
+                )
 
                 gpc.grid = grid
 
@@ -242,7 +261,7 @@ class TestPygpcMethods(unittest.TestCase):
                 gpc.init_gpc_matrix(gradient_idx=np.arange(grid.coords.shape[0]))
                 stop = time.time()
 
-                print(b, "Time create_gpc_matrix: ", stop-start)
+                print(b, "Time create_gpc_matrix: ", stop - start)
 
                 # perform polynomial chaos expansion
                 coeffs = np.ones([len(gpc.basis.b), 2])
@@ -250,7 +269,7 @@ class TestPygpcMethods(unittest.TestCase):
                 pce = gpc.get_approximation(coeffs, gpc.grid.coords_norm)
                 stop = time.time()
 
-                print(b, "Time get_approximation: ", stop-start)
+                print(b, "Time get_approximation: ", stop - start)
 
                 gpc_matrix[b] = gpc.gpc_matrix
                 gpc_matrix_gradient[b] = gpc.gpc_matrix_gradient
@@ -263,14 +282,38 @@ class TestPygpcMethods(unittest.TestCase):
         for b_ref in backends:
             for b_compare in backends:
                 if b_compare != b_ref:
-                    self.expect_isclose(gpc_matrix[b_ref], gpc_matrix[b_compare], atol=1e-6,
-                                        msg="gpc matrices between "+b_ref+" and "+b_compare+" are not equal")
+                    self.expect_isclose(
+                        gpc_matrix[b_ref],
+                        gpc_matrix[b_compare],
+                        atol=1e-6,
+                        msg="gpc matrices between "
+                        + b_ref
+                        + " and "
+                        + b_compare
+                        + " are not equal",
+                    )
 
-                    self.expect_isclose(gpc_matrix_gradient[b_ref], gpc_matrix_gradient[b_compare], atol=1e-6,
-                                        msg="gpc matrices between "+b_ref+" and "+b_compare+" are not equal")
+                    self.expect_isclose(
+                        gpc_matrix_gradient[b_ref],
+                        gpc_matrix_gradient[b_compare],
+                        atol=1e-6,
+                        msg="gpc matrices between "
+                        + b_ref
+                        + " and "
+                        + b_compare
+                        + " are not equal",
+                    )
 
-                    self.expect_isclose(pce_matrix[b_ref], pce_matrix[b_compare], atol=1e-6,
-                                        msg="pce matrices between "+b_ref+" and "+b_compare+" are not equal")
+                    self.expect_isclose(
+                        pce_matrix[b_ref],
+                        pce_matrix[b_compare],
+                        atol=1e-6,
+                        msg="pce matrices between "
+                        + b_ref
+                        + " and "
+                        + b_compare
+                        + " are not equal",
+                    )
 
         print("done!\n")
 
@@ -280,7 +323,7 @@ class TestPygpcMethods(unittest.TestCase):
         """
 
         global folder, plot, save_session_format
-        test_name = 'test_utils_004_gradient_estimation_methods'
+        test_name = "test_utils_004_gradient_estimation_methods"
         print(test_name)
 
         methods_options = dict()
@@ -302,9 +345,11 @@ class TestPygpcMethods(unittest.TestCase):
 
         # define grid
         n_grid = 1000
-        grid = pygpc.Random(parameters_random=problem.parameters_random,
-                            n_grid=n_grid,
-                            options={"seed": 1})
+        grid = pygpc.Random(
+            parameters_random=problem.parameters_random,
+            n_grid=n_grid,
+            options={"seed": 1},
+        )
 
         # create grid points for finite difference approximation
         grid.create_gradient_grid(delta=1e-3)
@@ -313,40 +358,50 @@ class TestPygpcMethods(unittest.TestCase):
         com = pygpc.Computation(n_cpu=0, matlab_model=False)
 
         # [n_grid x n_out]
-        res = com.run(model=model,
-                      problem=problem,
-                      coords=grid.coords,
-                      coords_norm=grid.coords_norm,
-                      i_iter=None,
-                      i_subiter=None,
-                      fn_results=None,
-                      print_func_time=False)
+        res = com.run(
+            model=model,
+            problem=problem,
+            coords=grid.coords,
+            coords_norm=grid.coords_norm,
+            i_iter=None,
+            i_subiter=None,
+            fn_results=None,
+            print_func_time=False,
+        )
 
         grad_res = dict()
         gradient_idx = dict()
         for m in methods:
             # [n_grid x n_out x dim]
-            grad_res[m], gradient_idx[m] = pygpc.get_gradient(model=model,
-                                                              problem=problem,
-                                                              grid=grid,
-                                                              results=res,
-                                                              com=com,
-                                                              method=m,
-                                                              gradient_results_present=None,
-                                                              gradient_idx_skip=None,
-                                                              i_iter=None,
-                                                              i_subiter=None,
-                                                              print_func_time=False,
-                                                              dx=methods_options[m]["dx"],
-                                                              distance_weight=methods_options[m]["distance_weight"])
+            grad_res[m], gradient_idx[m] = pygpc.get_gradient(
+                model=model,
+                problem=problem,
+                grid=grid,
+                results=res,
+                com=com,
+                method=m,
+                gradient_results_present=None,
+                gradient_idx_skip=None,
+                i_iter=None,
+                i_subiter=None,
+                print_func_time=False,
+                dx=methods_options[m]["dx"],
+                distance_weight=methods_options[m]["distance_weight"],
+            )
 
             if m != "FD_fwd":
-                nrmsd = pygpc.nrmsd(grad_res[m][:, 0, :], grad_res["FD_fwd"][gradient_idx[m], 0, :])
-                self.expect_true((nrmsd < 0.05).all(),
-                                 msg="gPC test failed during gradient estimation: {} error too large".format(m))
+                nrmsd = pygpc.nrmsd(
+                    grad_res[m][:, 0, :], grad_res["FD_fwd"][gradient_idx[m], 0, :]
+                )
+                self.expect_true(
+                    (nrmsd < 0.05).all(),
+                    msg="gPC test failed during gradient estimation: {} error too large".format(
+                        m
+                    ),
+                )
 
         print("done!\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

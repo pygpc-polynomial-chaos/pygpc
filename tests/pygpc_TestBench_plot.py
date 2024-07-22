@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib
+matplotlib.use("Agg")
 
 folder = "/data/pt_01756/studies/pygpc/TestBenchContinuous/"
 algorithms = os.listdir(folder)

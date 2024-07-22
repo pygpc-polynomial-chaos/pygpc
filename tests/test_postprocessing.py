@@ -7,10 +7,11 @@ import pygpc
 import shutil
 import unittest
 import numpy as np
-import matplotlib.pyplot as plt
+
 from collections import OrderedDict
+
 import matplotlib
-# matplotlib.use("Qt5Agg")
+matplotlib.use("Agg")
 
 # disable numpy warnings
 import warnings

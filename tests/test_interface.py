@@ -8,6 +8,9 @@ import shutil
 import unittest
 import numpy as np
 
+import matplotlib
+matplotlib.use("Agg")
+
 from scipy.integrate import odeint
 from collections import OrderedDict
 
