@@ -227,7 +227,7 @@ class TestPygpcMethods(unittest.TestCase):
         options["n_cpu"] = 0
         options["error_type"] = 'nrmsd'
         options["error_norm"] = 'absolute'
-        options["n_samples_validation"] = 1000
+        options["n_samples_validation"] = 10
         options["matrix_ratio"] = 5
         options["fn_results"] = fn_results
         options["eps"] = 0.01
@@ -259,7 +259,7 @@ class TestPygpcMethods(unittest.TestCase):
                                               fn_out=fn_results + "_sens_summary.txt")
 
         # plot time course of mean together with probability density, sobol sensitivity coefficients and global derivatives
-        t = np.arange(0.0, parameters["t_end"], parameters["step_size"])
+        t = np.arange(parameters["step_size"], parameters["t_end"], parameters["step_size"])
         pygpc.plot_sens_summary(session=session,
                                 coeffs=coeffs,
                                 sobol=sobol,

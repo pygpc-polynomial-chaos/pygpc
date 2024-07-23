@@ -4259,7 +4259,7 @@ class Lorenz_System(AbstractModel):
             y0 = [self.p["x_0"][i], self.p["y_0"][i], self.p["z_0"][i]]
             # only save x-coordinate (index 0)
             sols[i, :] = odeint(lorenz, y0, t, p, tfirst=True)[:, 0]
-        x_out = sols
+        x_out = sols[:, 1:]   # skip first timestep
 
         return x_out
 
@@ -4330,6 +4330,6 @@ class Lorenz_System_julia(AbstractModel):
             y0 = [self.p["x_0"][i], self.p["y_0"][i], self.p["z_0"][i]]
             # only save x-coordinate (index 0)
             sols[i, :] = Main.Julia_Lorenz(p, y0, t)[0]
-        x_out = sols
+        x_out = sols[:, 1:]     # skip first timestep
 
         return x_out
