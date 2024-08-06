@@ -1403,7 +1403,7 @@ class Random(RandomGrid):
                                      coords_gradient_id=coords_gradient_id,
                                      grid_pre=grid_pre)
 
-        if coords is not None or coords_norm is not None:
+        if self.coords is not None or self.coords_norm is not None:
             grid_present = True
         else:
             grid_present = False
@@ -1606,7 +1606,7 @@ class GP(RandomGrid):
                                  coords_gradient_id=coords_gradient_id,
                                  grid_pre=grid_pre)
 
-        if coords is not None or coords_norm is not None:
+        if self.coords is not None or self.coords_norm is not None:
             grid_present = True
         else:
             grid_present = False
@@ -1768,7 +1768,7 @@ class LHS(RandomGrid):
         #         if parameters_random[p].p_perc is None:
         #             self.shift_outer = True
 
-        if coords is not None and coords_norm is not None:
+        if self.coords is not None and self.coords_norm is not None:
             grid_present = True
         else:
             grid_present = False
@@ -2977,7 +2977,7 @@ class FIM(RandomGrid):
                                   coords_gradient_id=coords_gradient_id,
                                   grid_pre=grid_pre)
 
-        if coords_norm is not None:
+        if self.coords_norm is not None:
             self.gpc.grid = Random(parameters_random=parameters_random,
                                    coords_norm=coords_norm,
                                    coords=coords,
@@ -3356,7 +3356,7 @@ class L1_LHS(RandomGrid):
 
         self.weights = options["weights"]
 
-        if coords_norm is None:
+        if self.coords_norm is None:
             self.n_grid_L1 = int(np.round(self.n_grid * self.weights[0]))
             self.n_grid_LHS = self.n_grid - self.n_grid_L1
         else:
@@ -3364,7 +3364,7 @@ class L1_LHS(RandomGrid):
             self.n_grid_LHS = None
 
         # create L1 grid
-        if coords_norm is None and self.n_grid_L1 > 0:
+        if self.coords_norm is None and self.n_grid_L1 > 0:
             self.grid_L1 = L1(parameters_random=parameters_random,
                               n_grid=self.n_grid_L1,
                               gpc=gpc,
@@ -3384,7 +3384,7 @@ class L1_LHS(RandomGrid):
                 self.grid_pre = self.grid_L1
 
         # create LHS (ese) grid
-        if coords_norm is None and self.n_grid_LHS > 0:
+        if self.coords_norm is None and self.n_grid_LHS > 0:
             self.grid_LHS = LHS(parameters_random=parameters_random,
                                 n_grid=self.n_grid_LHS,
                                 grid_pre=self.grid_pre,
@@ -3533,7 +3533,7 @@ class LHS_L1(RandomGrid):
 
         self.weights = options["weights"]
 
-        if coords_norm is None:
+        if self.coords_norm is None:
             self.n_grid_LHS = int(np.round(self.n_grid * self.weights[0]))
             self.n_grid_L1 = self.n_grid - self.n_grid_LHS
         else:
@@ -3541,7 +3541,7 @@ class LHS_L1(RandomGrid):
             self.n_grid_L1 = None
 
         # create LHS (ese) grid
-        if coords_norm is None and self.n_grid_LHS > 0:
+        if self.coords_norm is None and self.n_grid_LHS > 0:
             self.grid_LHS = LHS(parameters_random=parameters_random,
                                 n_grid=self.n_grid_LHS,
                                 grid_pre=grid_pre,
@@ -3556,7 +3556,7 @@ class LHS_L1(RandomGrid):
                 self.grid_pre = self.grid_LHS
 
         # create L1 grid
-        if coords_norm is None and self.n_grid_L1 > 0:
+        if self.coords_norm is None and self.n_grid_L1 > 0:
             self.grid_L1 = L1(parameters_random=parameters_random,
                               n_grid=self.n_grid_L1,
                               grid_pre=self.grid_pre,
