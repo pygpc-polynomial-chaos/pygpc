@@ -176,8 +176,9 @@ class Algorithm(object):
                 self.options["settings"] = None
             elif self.options["method"] == "reg" and not (self.options["solver"] == "Moore-Penrose" or
                                                           self.options["solver"] == "OMP" or
-                                                          self.options["solver"] == "LarsLasso"):
-                raise AssertionError("Please specify 'Moore-Penrose' or 'OMP' as solver for 'reg' method")
+                                                          self.options["solver"] == "LarsLasso"or 
+                                                          self.options["solver"] == "Tikhonov"):
+                raise AssertionError("Please specify 'Moore-Penrose', 'OMP', 'LarLasso' or 'Tikhonov' as solver for 'reg' method")
 
         if "n_cpu" in self.options.keys():
             self.n_cpu = self.options["n_cpu"]
