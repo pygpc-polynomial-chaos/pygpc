@@ -913,13 +913,16 @@ class GPC(object):
             - 'Moore-Penrose' ... Pseudoinverse of gPC matrix (SGPC.Reg, EGPC)
             - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
             - 'LarsLasso' ... Least-Angle Regression using Lasso model (SGPC.Reg, EGPC)
+            - 'Tikhonov' ... Tikhonov regularization (SGPC.Reg, EGPC)
             - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
         settings : dict
             Solver settings
             - 'Moore-Penrose' ... None
             - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0 or "sparsity": float 0...1
             - 'LarsLasso' ... {"alpha": float 0...1} Regularization parameter
+            - 'Tikhonov' ... {"alpha": float} Regularization parameter
             - 'NumInt' ... None
+            - 
         matrix : ndarray of float, optional, default: self.gpc_matrix or [self.gpc_matrix, self.gpc_matrix_gradient]
             Matrix to invert. Depending on gradient_enhanced option, this matrix consist of the standard gPC matrix and
             their derivatives.
@@ -1041,7 +1044,26 @@ class GPC(object):
                 coeffs = coeffs[:, np.newaxis]
             else:
                 coeffs = coeffs.transpose()
+                
+        #########################
+        # Tikhonov Regularization #
+        #########################
+        elif solver == 'Tikhonov':
+            # solves inv(A.T A + alpha*Id) * A.T b based on the sklearn
+            if results.ndim == 1:
+                data = results[:, None]
 
+            if "alpha" in settings.keys():
+                alpha = settings["alpha"]
+            else:
+                raise AttributeError("Please specify 'regularization_factor' in solver setting dictionary!")
+
+            n_samples, n_features = matrix.shape
+            AtA = matrix.T.dot(matrix)
+            Atb = matrix.T.dot(results)
+            AtA.flat[::n_features-1] += alpha
+            coeffs = scipy.linalg.solve(AtA, Atb, assume_a="pos", overwrite_a=True)
+            
         #########################
         # Numerical Integration #
         #########################
