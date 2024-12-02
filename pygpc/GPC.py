@@ -340,13 +340,13 @@ class GPC(object):
                                 matrix=matrix[~g, :],
                                 settings=self.options["settings"],
                                 verbose=False)
-            sim_results_temp = results_complete[~g,:]
+            sim_results_temp = results_complete[g,:]
             if error_norm == "relative":
                 norm = scipy.linalg.norm(sim_results_temp)
             else:
                 norm = 1.
 
-            eps += scipy.linalg.norm(sim_results_temp - np.matmul(matrix[~g,:], coeffs_g)) / norm
+            eps += scipy.linalg.norm(sim_results_temp - np.matmul(matrix[g,:], coeffs_g)) / norm
             display_fancy_bar("Cross Validation", int(i), int(k))
             i += 1
         eps /= k
