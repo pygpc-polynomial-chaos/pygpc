@@ -1161,7 +1161,7 @@ class GPC(object):
             n_samples, n_features = matrix.shape
             AtA = matrix.T.dot(matrix)
             Atb = matrix.T.dot(results)
-            AtA.flat[::n_features-1] += alpha
+            AtA.flat[::n_features + 1] += alpha
             coeffs = scipy.linalg.solve(AtA, Atb, assume_a="pos", overwrite_a=True)        
         
         else:
