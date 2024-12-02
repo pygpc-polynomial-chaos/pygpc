@@ -18,6 +18,9 @@ from .misc import get_coords_discontinuity
 from .misc import increment_basis
 from .misc import get_coords_discontinuity
 from .misc import get_num_coeffs_sparse
+from .misc import poly_expand_SimNIBS
+from .misc import choose_to_expand
+
 from .testfunctions import Dummy
 from .Grid import *
 from .MEGPC import *
@@ -4699,6 +4702,248 @@ class RegAdaptiveProjection(Algorithm):
                     except (RuntimeError, ValueError):
                         del f["misc/error_type"]
                         f.create_dataset("misc/error_type", data=self.options["error_type"])
+
+        com.close()
+
+        return gpc, coeffs, res
+
+
+class SimNIBS(Algorithm):
+    """
+    Adaptive gPC algorithm proposed by G. B. Saturnino,
+
+    Parameters
+    ---------
+    problems: Problem class instance
+        GPC problem under investigation
+    options["order_start"]: int, optional, default=0
+        Initial gPC expansion order (maximum order)
+    options["order+_
+    """
+
+    def __init__(self, problem, options, validation=None, grid=None):
+        """
+        Constructor; Initializes RegAdaptive_SimNIBS algorithm
+        """
+        super(SimNIBS, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
+
+        self.qoi_specific = False
+
+        # check contents of settings dict and set defaults
+        # for SimNIBS, start order has to be 0
+        if "order_start" not in self.options.keys():
+            self.options["order_start"] = 0
+
+        if "order_end" not in self.options.keys():
+            self.options["order_end"] = 1000
+
+        if "interaction_order" not in self.options.keys():
+            self.options["interaction_order"] = problem.dim
+
+        if "order_max_norm" not in self.options.keys():
+            self.options["order_max_norm"] = 1.
+
+        # if "eps" not in self.options.keys():
+        #     self.options["eps"] = 1E-3
+
+        # if "adaptive_sampling" not in self.options.keys():
+        #     self.options["adaptive_sampling"] = True
+
+        if "regularization_factors" not in self.options.keys():
+            self.options["regularization_factors"] = np.logspace(-5, 3, 9)
+
+        if "max_iter" not in self.options.keys():
+            self.options["max_iter"] = 1000
+
+
+    def run(self):
+
+        # initialize iterators
+        eps = self.options["eps"] + 1.0
+        i_grid = 0
+        # order = self.options["order_start"]
+        first_iter = True
+        i_iter = 0
+        DIM = self.problem.dim
+
+
+        grad_res_3D = None
+        gradient_idx = None
+        gradient_idx_FD_fwd = None
+        grad_res_3D_FD_fwd = None
+
+        basis_order = np.array([self.options["order_start"],
+                                min(self.options["interaction_order"], self.options["order_start"])])
+
+
+
+        # Initialize parallel Computation class
+        com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
+
+        # Initialize Reg gPC object
+        print("Initializing gPC object...")
+        gpc = Reg(problem=self.problem,
+                  order=self.options["order_start"] * np.ones(self.problem.dim),
+                  order_max=self.options["order_start"],
+                  order_max_norm=self.options["order_max_norm"],
+                  interaction_order=self.options["interaction_order"],
+                  interaction_order_current=self.options["interaction_order"],
+                  options=self.options,
+                  validation=self.validation)
+        extended_basis = True
+
+        # # Add a validation set if nrmsd is chosen and no validation set is yet present
+        # if self.options["error_type"] == "nrmsd" and not isinstance(self.validation, ValidationSet):
+        #     gpc.create_validation_set(n_samples=self.options["n_samples_validation"],
+        #                               n_cpu=self.options["n_cpu"])
+
+        # Initialize Grid object
+        if self.grid is not None:
+            print(f"Using user-predefined grid with n_grid={self.grid.n_grid}")
+            gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                            coords=self.grid.coords,
+                                            coords_norm=self.grid.coords_norm,
+                                            coords_gradient=self.grid.coords_gradient,
+                                            coords_gradient_norm=self.grid.coords_gradient_norm,
+                                            options=self.options["grid_options"])
+        else:
+            n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
+            print(f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(n_grid_init)}")
+
+            # now SimNIBS only support random grid
+            gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
+                                            n_grid=n_grid_init,
+                                            options=self.options["grid_options"])
+
+        gpc.solver = self.options["solver"]
+        gpc.settings = self.options["settings"]
+        gpc.options = copy.deepcopy(self.options)
+
+        # Initialize gpc matrix
+        print("Initializing gPC matrix...")
+        gpc.init_gpc_matrix(gradient_idx=gradient_idx)
+        gpc.n_grid.pop(0)
+        gpc.n_basis.pop(0)
+
+        if gpc.options["gradient_enhanced"]:
+            gpc.grid.create_gradient_grid()
+
+        # Main iterations (order)
+        i_iter = 0
+        active_set = gpc.basis.multi_indices
+        to_expand = tuple(0 for d in range(gpc.problem.dim))
+        old_set = []
+
+        while eps > self.options["eps"]:
+            if i_iter != 0 :
+                # find the multi-indices with highest normailized coefficient
+                to_expand = choose_to_expand(multi_indices=gpc.basis.multi_indices,
+                                             active_set=active_set,
+                                             old_set=old_set,
+                                             coeffs=coeffs,
+                                             order_max=self.options["order_end"],
+                                             interaction_max=self.options["interaction_order"])
+                # expand the multi-indices
+                active_set, old_set, expand = poly_expand_SimNIBS(active_set,
+                                                                  old_set,
+                                                                  to_expand,
+                                                                  order_max=self.options["order_end"],
+                                                                  interaction_max=self.options["interaction_order"])
+                # update basis
+                b_added = gpc.basis.add_basis_poly_by_order(multi_indices=expand,
+                                                            problem=gpc.problem)
+
+                if b_added is not None:
+                    print_str = f"Added multi-indices to basis: \n {np.matrix(expand)}"
+                    iprint(print_str, tab=0, verbose=self.options["verbose"])
+                    iprint("=" * 100, tab=0, verbose=self.options["verbose"])
+
+
+            i_iter += 1
+
+            # increase sample size according to matrix ratio w.r.t. number of basis functions
+            n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
+
+            # run model if grid points were added
+            if i_grid < n_grid_new:
+                iprint("Extending grid from {} to {} by {} sampling points".format(
+                    gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
+                    tab=0, verbose=self.options["verbose"])
+
+                gpc.grid.extend_random_grid(n_grid_new=n_grid_new)
+
+                # run simulations
+                iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
+                               tab=0, verbose=self.options["verbose"])
+
+                start_time = time.time()
+
+                res_new = com.run(model=gpc.problem.model,
+                                  problem=gpc.problem,
+                                  coords=gpc.grid.coords[int(i_grid):int(len(gpc.grid.coords))],
+                                  coords_norm=gpc.grid.coords_norm[int(i_grid):int(len(gpc.grid.coords))],
+                                  i_iter=basis_order[0],
+                                  i_subiter=basis_order[1],
+                                  fn_results=gpc.fn_results,
+                                  print_func_time=self.options["print_func_time"],
+                                  verbose=self.options["verbose"])
+
+                iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+                               tab=0, verbose=self.options["verbose"])
+
+                # Append result to solution matrix (RHS)
+                if i_grid == 0:
+                    res = res_new
+                else:
+                    res = np.vstack([res, res_new])
+
+                i_grid = gpc.grid.coords.shape[0]
+
+            # Update gCP matrix
+            gpc.init_gpc_matrix()
+
+            # cross validation for regularization parameters
+            if gpc.solver == 'Tikhonov' and isinstance(gpc.settings.get('alpha'), np.ndarray):
+
+                regularization_factors = gpc.settings.get('alpha')
+                errors = np.zeros_like(regularization_factors, dtype=float)
+                coeffs = None
+                selected_reg = None
+                min_error = float('inf')
+
+                for reg_factor in regularization_factors:
+                    # determine gpc coefficients
+                    coeffs_temp = gpc.solve(results=res,
+                                       gradient_results=grad_res_3D,
+                                       solver=gpc.solver,
+                                       settings={'alpha': reg_factor},
+                                       verbose=self.options["verbose"])
+                    # validate gPC approximation
+                    errors_temp = gpc.validate(coeffs=coeffs_temp,
+                                             results=res,
+                                             settings={'alpha': reg_factor},
+                                             gradient_results=grad_res_3D)
+                    if errors_temp < min_error:
+                        eps = errors_temp
+                        coeffs = coeffs_temp
+                        selected_reg = reg_factor
+
+            else:
+                # determine gpc coefficients
+                coeffs = gpc.solve(results=res,
+                           gradient_results=grad_res_3D,
+                           solver=gpc.solver,
+                           settings=gpc.settings,
+                           verbose=self.options["verbose"])
+                # validate gPC approximation
+                eps = gpc.validate(coeffs=coeffs,
+                           results=res,
+                           gradient_results=grad_res_3D)
+
+            iprint("-> {} {} error = {}".format(self.options["error_norm"],
+                                            self.options["error_type"],
+                                            eps), tab=0, verbose=self.options["verbose"])
+
 
         com.close()
 
