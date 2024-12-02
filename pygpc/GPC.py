@@ -111,6 +111,7 @@ class GPC(object):
         self.n_grid = []
         self.relative_error_nrmsd = []
         self.relative_error_loocv = []
+        self.relative_error_kcv = []
         self.error = []
         self.n_out = []
         self.gradient_idx = None
@@ -289,6 +290,69 @@ class GPC(object):
 
         return gpc_matrix
 
+    def get_kcv(self, results,  error_norm="relative",k=10):
+        """
+        Perfrom k-fold cross validation of gPC approximation and add error value to self.relative_error_kcv.
+        Parameters
+        ----------
+        results: ndarray of float [n_grid x n_out]
+            Results from n_grid simulations with n_out output quantities
+        error_norm: str, optional, default="relative"
+            Decide if error is determined "relative" or "absolute"
+        k: int, optional, default=10
+            Number of folds for k-fold cross-validation
+        Returns:
+        -------
+        relative_error_kcv: float
+            Relative mean error of k-fold cross validation
+        """
+        # prepare necessary data
+        # if results.ndim == 1:
+        #     results = results[:, None]
+        matrix = self.gpc_matrix
+        results_complete = results
+        # define number of performed cross validations
+        n_simulations = results_complete.shape[0]
+        if n_simulations <= k:
+            k = n_simulations
+
+        start = time.time()
+        relative_error = np.zeros(k)
+        # random assign results to k groups for cross-validation
+        shuffle = np.arange(n_simulations, dtype=int)
+        np.random.shuffle(shuffle)
+        groups = np.zeros((k, n_simulations), dtype=int)
+        group_sizes = float(n_simulations) / k
+        for i in range(k):
+            f = int(i * group_sizes)
+            t = int((i + 1) * group_sizes)
+            if i == k - 1:
+                t = n_simulations
+            groups[i, shuffle[f:t]] = True
+        eps = 0.0
+        i = 1
+        # error estimation
+        for g in groups:
+            # determine regression coefficients
+            coeffs_g = self.solve(results=results_complete[~g,:],
+                                solver=self.options["solver"],
+                                matrix=matrix[~g, :],
+                                settings=self.options["settings"],
+                                verbose=False)
+            sim_results_temp = results_complete[~g,:]
+            if error_norm == "relative":
+                norm = scipy.linalg.norm(sim_results_temp)
+            else:
+                norm = 1.
+
+            eps += scipy.linalg.norm(sim_results_temp - np.matmul(matrix[~g,:], coeffs_g)) / norm
+            display_fancy_bar("Cross Validation", int(i), int(k))
+            i += 1
+        eps /= k
+        iprint("Cross-Validation time: {} sec". format(time.time() - start), tab=0, verbose=True)
+
+        return eps    
+    
     def get_loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
         """
         Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
