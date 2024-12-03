@@ -4716,9 +4716,18 @@ class SimNIBS(Algorithm):
     ---------
     problems: Problem class instance
         GPC problem under investigation
-    options["order_start"]: int, optional, default=0
+    options["order_start"] : int, optional, default = 0
         Initial gPC expansion order (maximum order)
-    options["order+_
+    options["order_end"] : int, optioanl, default =  100
+        Maximum polynomial order to be considered by the adaptive algorithm.
+        The algorithm will only include polynomials with orders less than this value.
+    options["interaction_order"]: int. optional, default = problem.dim
+        Maximum polynomial interaction order to be considered by the adaptive algorithm.
+        The algorithm will only include polynomials with interaction orders less than this value.
+    options["eps"]: float. optional, default = 1e-3
+         The target error tolerance for the adaptive algorithm.
+    options["max_iter"]
+        The maximum number of iterations the algorithm will execute.
     """
 
     def __init__(self, problem, options, validation=None, grid=None):
@@ -4743,14 +4752,14 @@ class SimNIBS(Algorithm):
         if "order_max_norm" not in self.options.keys():
             self.options["order_max_norm"] = 1.
 
-        # if "eps" not in self.options.keys():
-        #     self.options["eps"] = 1E-3
+        if "eps" not in self.options.keys():
+            self.options["eps"] = 1E-3
 
         # if "adaptive_sampling" not in self.options.keys():
         #     self.options["adaptive_sampling"] = True
 
-        if "regularization_factors" not in self.options.keys():
-            self.options["regularization_factors"] = np.logspace(-5, 3, 9)
+        # if "regularization_factors" not in self.options.keys():
+        #     self.options["regularization_factors"] = np.logspace(-5, 3, 9)
 
         if "max_iter" not in self.options.keys():
             self.options["max_iter"] = 1000
