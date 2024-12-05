@@ -141,7 +141,7 @@ class ComputationPoolMap:
 
         # deepcopy model and delete attributes
         model_ = copy.deepcopy(model)
-        # model_.__clean__()
+        model_.__clean__()
 
         for j, random_var_instances in enumerate(grid_new):
 
