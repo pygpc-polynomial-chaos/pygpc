@@ -4898,8 +4898,8 @@ class SimNIBS(Algorithm):
                                   i_iter=basis_order[0],
                                   i_subiter=basis_order[1],
                                   fn_results=gpc.fn_results,
-                                  print_func_time=self.options["print_func_time"],
-                                  verbose=self.options["verbose"])
+                                  print_func_time=False,
+                                  verbose=False)
 
                 # iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
                 #                tab=0, verbose=self.options["verbose"])
@@ -4930,12 +4930,13 @@ class SimNIBS(Algorithm):
                                        gradient_results=grad_res_3D,
                                        solver=gpc.solver,
                                        settings={'alpha': reg_factor},
-                                       verbose=self.options["verbose"])
+                                       verbose=False)
                     # validate gPC approximation
                     errors_temp = gpc.validate(coeffs=coeffs_temp,
                                              results=res,
                                              settings={'alpha': reg_factor},
-                                             gradient_results=grad_res_3D)
+                                             gradient_results=grad_res_3D,
+                                              verbose=False)
                     if errors_temp < min_error:
                         eps = errors_temp
                         coeffs = coeffs_temp
@@ -4947,11 +4948,12 @@ class SimNIBS(Algorithm):
                            gradient_results=grad_res_3D,
                            solver=gpc.solver,
                            settings=gpc.settings,
-                           verbose=self.options["verbose"])
+                           verbose=False)
                 # validate gPC approximation
                 eps = gpc.validate(coeffs=coeffs,
-                           results=res,
-                           gradient_results=grad_res_3D)
+                                   results=res,
+                                   gradient_results=grad_res_3D,
+                                   verbose=False)
 
             iprint("-> {} {} error = {}".format(self.options["error_norm"],
                                             self.options["error_type"],
