@@ -4862,14 +4862,18 @@ class SimNIBS(Algorithm):
                 b_added = gpc.basis.add_basis_poly_by_order(multi_indices=expand,
                                                             problem=gpc.problem)
 
-                if b_added is not None:
-                    print_str = f"Added multi-indices to basis: \n {np.matrix(expand)}"
-                    iprint(print_str, tab=0, verbose=self.options["verbose"])
-                    iprint("=" * 100, tab=0, verbose=self.options["verbose"])
+                # if b_added is not None:
+                #     print_str = f"Added multi-indices to basis: \n {np.matrix(expand)}"
+                #     iprint(print_str, tab=0, verbose=self.options["verbose"])
+                #     iprint("=" * 100, tab=0, verbose=self.options["verbose"])
+                    
 
 
             i_iter += 1
 
+            iprint(f"Iteration #{i_iter}", tab=0, verbose=self.options["verbose"])
+            iprint("===============", tab=0, verbose=self.options["verbose"])
+            
             # increase sample size according to matrix ratio w.r.t. number of basis functions
             n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
 
@@ -4897,8 +4901,8 @@ class SimNIBS(Algorithm):
                                   print_func_time=self.options["print_func_time"],
                                   verbose=self.options["verbose"])
 
-                iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-                               tab=0, verbose=self.options["verbose"])
+                # iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
+                #                tab=0, verbose=self.options["verbose"])
 
                 # Append result to solution matrix (RHS)
                 if i_grid == 0:
