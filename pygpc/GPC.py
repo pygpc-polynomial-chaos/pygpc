@@ -362,7 +362,7 @@ class GPC(object):
 
         return eps
 
-    def get_loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
+    def get_loocv(self, coeffs, results, gradient_results=None, error_norm="relative",verbose=False):
         """
         Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
         The loocv error is calculated analytically after eq. (35) in [1] but omitting the "1 - " term, i.e. it
@@ -457,7 +457,7 @@ class GPC(object):
                                     solver=self.options["solver"],
                                     matrix=matrix[mask, :],
                                     settings=self.options["settings"],
-                                    verbose=False)
+                                    verbose=verbose)
 
             sim_results_temp = results_complete[loocv_point_idx[i], :]
 
