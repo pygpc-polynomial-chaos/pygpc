@@ -4744,7 +4744,7 @@ class SimNIBS(Algorithm):
             self.options["order_start"] = 0
 
         if "order_end" not in self.options.keys():
-            self.options["order_end"] = 1000
+            self.options["order_end"] = 100
 
         if "interaction_order" not in self.options.keys():
             self.options["interaction_order"] = problem.dim
@@ -4764,6 +4764,8 @@ class SimNIBS(Algorithm):
         if "max_iter" not in self.options.keys():
             self.options["max_iter"] = 1000
 
+        if "min_iter" not in self.options.keys():
+            self.options["min_iter"] = 0
 
     def run(self):
 
@@ -4783,8 +4785,6 @@ class SimNIBS(Algorithm):
 
         basis_order = np.array([self.options["order_start"],
                                 min(self.options["interaction_order"], self.options["order_start"])])
-
-
 
         # Initialize parallel Computation class
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
@@ -4843,8 +4843,8 @@ class SimNIBS(Algorithm):
         to_expand = tuple(0 for d in range(gpc.problem.dim))
         old_set = []
 
-        while eps > self.options["eps"]:
-            if i_iter != 0 :
+        while i_iter < self.options["max_iter"]:
+            if i_iter != 0:
                 # find the multi-indices with highest normailized coefficient
                 to_expand = choose_to_expand(multi_indices=gpc.basis.multi_indices,
                                              active_set=active_set,
@@ -4866,14 +4866,12 @@ class SimNIBS(Algorithm):
                 #     print_str = f"Added multi-indices to basis: \n {np.matrix(expand)}"
                 #     iprint(print_str, tab=0, verbose=self.options["verbose"])
                 #     iprint("=" * 100, tab=0, verbose=self.options["verbose"])
-                    
-
 
             i_iter += 1
 
             iprint(f"Iteration #{i_iter}", tab=0, verbose=self.options["verbose"])
             iprint("===============", tab=0, verbose=self.options["verbose"])
-            
+
             # increase sample size according to matrix ratio w.r.t. number of basis functions
             n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
 
@@ -4887,7 +4885,7 @@ class SimNIBS(Algorithm):
 
                 # run simulations
                 iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
-                               tab=0, verbose=self.options["verbose"])
+                       tab=0, verbose=self.options["verbose"])
 
                 start_time = time.time()
 
@@ -4906,6 +4904,7 @@ class SimNIBS(Algorithm):
 
                 # Append result to solution matrix (RHS)
                 if i_grid == 0:
+                    # res = res_new[None, :]
                     res = res_new
                 else:
                     res = np.vstack([res, res_new])
@@ -4919,7 +4918,7 @@ class SimNIBS(Algorithm):
             if gpc.solver == 'Tikhonov' and isinstance(gpc.settings.get('alpha'), np.ndarray):
 
                 regularization_factors = gpc.settings.get('alpha')
-                errors = np.zeros_like(regularization_factors, dtype=float)
+                # errors = np.zeros_like(regularization_factors, dtype=float)
                 coeffs = None
                 selected_reg = None
                 min_error = float('inf')
@@ -4927,17 +4926,18 @@ class SimNIBS(Algorithm):
                 for reg_factor in regularization_factors:
                     # determine gpc coefficients
                     coeffs_temp = gpc.solve(results=res,
-                                       gradient_results=grad_res_3D,
-                                       solver=gpc.solver,
-                                       settings={'alpha': reg_factor},
-                                       verbose=False)
+                                            gradient_results=grad_res_3D,
+                                            solver=gpc.solver,
+                                            settings={'alpha': reg_factor},
+                                            verbose=False)
                     # validate gPC approximation
                     errors_temp = gpc.validate(coeffs=coeffs_temp,
-                                             results=res,
-                                             settings={'alpha': reg_factor},
-                                             gradient_results=grad_res_3D,
-                                              verbose=False)
+                                               results=res,
+                                               settings={'alpha': reg_factor},
+                                               gradient_results=grad_res_3D,
+                                               verbose=False)
                     if errors_temp < min_error:
+                        min_error = errors_temp
                         eps = errors_temp
                         coeffs = coeffs_temp
                         selected_reg = reg_factor
@@ -4945,10 +4945,10 @@ class SimNIBS(Algorithm):
             else:
                 # determine gpc coefficients
                 coeffs = gpc.solve(results=res,
-                           gradient_results=grad_res_3D,
-                           solver=gpc.solver,
-                           settings=gpc.settings,
-                           verbose=False)
+                                   gradient_results=grad_res_3D,
+                                   solver=gpc.solver,
+                                   settings=gpc.settings,
+                                   verbose=False)
                 # validate gPC approximation
                 eps = gpc.validate(coeffs=coeffs,
                                    results=res,
@@ -4956,9 +4956,13 @@ class SimNIBS(Algorithm):
                                    verbose=False)
 
             iprint("-> {} {} error = {}".format(self.options["error_norm"],
-                                            self.options["error_type"],
-                                            eps), tab=0, verbose=self.options["verbose"])
+                                                self.options["error_type"],
+                                                eps), tab=0, verbose=self.options["verbose"])
+            if eps <= self.options["eps"] and i_iter >= min_iter:
+                break
 
+        if i_iter >= max_iter:
+            raise ValueError('Maximum number of iterations reached')
 
         com.close()
 
