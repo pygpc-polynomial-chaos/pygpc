@@ -4958,10 +4958,10 @@ class SimNIBS(Algorithm):
             iprint("-> {} {} error = {}".format(self.options["error_norm"],
                                                 self.options["error_type"],
                                                 eps), tab=0, verbose=self.options["verbose"])
-            if eps <= self.options["eps"] and i_iter >= min_iter:
+            if eps <= self.options["eps"] and i_iter >= self.options["min_iter"]:
                 break
 
-        if i_iter >= max_iter:
+        if i_iter >= self.options["max_iter"]:
             raise ValueError('Maximum number of iterations reached')
 
         com.close()
