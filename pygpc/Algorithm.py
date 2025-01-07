@@ -4777,12 +4777,6 @@ class SimNIBS(Algorithm):
         i_iter = 0
         DIM = self.problem.dim
 
-
-        grad_res_3D = None
-        gradient_idx = None
-        gradient_idx_FD_fwd = None
-        grad_res_3D_FD_fwd = None
-
         basis_order = np.array([self.options["order_start"],
                                 min(self.options["interaction_order"], self.options["order_start"])])
 
@@ -4830,7 +4824,7 @@ class SimNIBS(Algorithm):
 
         # Initialize gpc matrix
         print("Initializing gPC matrix...")
-        gpc.init_gpc_matrix(gradient_idx=gradient_idx)
+        gpc.init_gpc_matrix()
         gpc.n_grid.pop(0)
         gpc.n_basis.pop(0)
 
@@ -4926,7 +4920,6 @@ class SimNIBS(Algorithm):
                 for reg_factor in regularization_factors:
                     # determine gpc coefficients
                     coeffs_temp = gpc.solve(results=res,
-                                            gradient_results=grad_res_3D,
                                             solver=gpc.solver,
                                             settings={'alpha': reg_factor},
                                             verbose=False)
@@ -4934,7 +4927,6 @@ class SimNIBS(Algorithm):
                     errors_temp = gpc.validate(coeffs=coeffs_temp,
                                                results=res,
                                                settings={'alpha': reg_factor},
-                                               gradient_results=grad_res_3D,
                                                verbose=False)
                     if errors_temp < min_error:
                         min_error = errors_temp
@@ -4945,14 +4937,12 @@ class SimNIBS(Algorithm):
             else:
                 # determine gpc coefficients
                 coeffs = gpc.solve(results=res,
-                                   gradient_results=grad_res_3D,
                                    solver=gpc.solver,
                                    settings=gpc.settings,
                                    verbose=False)
                 # validate gPC approximation
                 eps = gpc.validate(coeffs=coeffs,
                                    results=res,
-                                   gradient_results=grad_res_3D,
                                    verbose=False)
 
             iprint("-> {} {} error = {}".format(self.options["error_norm"],
