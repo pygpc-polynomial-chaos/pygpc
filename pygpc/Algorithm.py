@@ -4905,7 +4905,7 @@ class SimNIBS(Algorithm):
 
                 i_grid = gpc.grid.coords.shape[0]
 
-            # Update gCP matrix
+            # Update gPC matrix
             gpc.init_gpc_matrix()
 
             # cross validation for regularization parameters
