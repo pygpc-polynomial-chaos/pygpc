@@ -1,6 +1,5 @@
 import h5py
 import numpy as np
-import pandas as pd
 
 from .Grid import *
 from .MEGPC import *
@@ -539,10 +538,10 @@ def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
 
     Returns
     -------
-    sobol : pandas DataFrame
-        Pandas DataFrame containing the normalized Sobol indices by significance
-    gsens : pandas DataFrame
-        Pandas DataFrame containing the global derivative based sensitivity coefficients
+    sobol : OrderedDict
+        OrderedDict containing the normalized Sobol indices by significance
+    gsens : OrderedDict
+        OrderedDict containing the global derivative based sensitivity coefficients
     """
 
     parameter_names = list(parameters_random.keys())
@@ -564,17 +563,12 @@ def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
         sobol_dict[str(params[-1])] = s
         p_length.append(len(str(params[-1])))
 
-    sobol = pd.DataFrame.from_dict(sobol_dict, orient="index", columns=[f"sobol_norm (qoi {i})"
-                                                                        for i in range(sobol_norm.shape[1])])
     len_max = np.max(p_length)
 
     # Extract global derivative sensitivity coefficients
     gsens_dict = OrderedDict()
     for i_p, p in enumerate(parameter_names):
         gsens_dict[p] = global_sens[i_p, :]
-
-    gsens = pd.DataFrame.from_dict(gsens_dict, orient="index", columns=[f"global_sens (qoi {i})"
-                                                                        for i in range(sobol_norm.shape[1])])
 
     # write output file
     if fn_out:
@@ -622,7 +616,7 @@ def get_sens_summary(fn_gpc, parameters_random, fn_out=None):
             for line in gsens_text:
                 f.write(line)
 
-    return sobol, gsens
+    return sobol_dict, gsens_dict
 
 
 def plot_sens_summary(sobol, gsens, session=None, coeffs=None, qois=None, mean=None, std=None, output_idx=None,
@@ -637,10 +631,10 @@ def plot_sens_summary(sobol, gsens, session=None, coeffs=None, qois=None, mean=N
         GPC session object containing all information i.e., gPC, Problem, Model, Grid, Basis, RandomParameter instances
     coeffs : ndarray of float [n_coeffs x n_out] or list of ndarray of float [n_qoi][n_coeffs x n_out]
         GPC coefficients
-    sobol : pandas DataFrame
-        Pandas DataFrame containing the normalized Sobol indices from get_sens_summary()
-    gsens: pandas DataFrame
-        Pandas DataFrame containing the global derivative based sensitivity coefficients from get_sens_summary()
+    sobol : OrderedDict
+        OrderedDict containing the normalized Sobol indices from get_sens_summary()
+    gsens: OrderedDict
+        OrderedDict containing the global derivative based sensitivity coefficients from get_sens_summary()
     sobol_donut : Boolean
         Option to plot the sobol indices as donut (pie) chart instead of bars, default is True
     multiple_qoi: Boolean
@@ -676,11 +670,11 @@ def plot_sens_summary(sobol, gsens, session=None, coeffs=None, qois=None, mean=N
         else:
             output_idx = np.array([0])
 
-    glob_sens = gsens.values[:, output_idx].flatten()
-    gsens_keys = gsens["global_sens (qoi 0)"].keys()
+    glob_sens = np.array([gsens[key] for key in gsens.keys()])[:, output_idx].flatten()
+    gsens_keys = list(gsens.keys())
 
-    sobols = sobol.values[:, output_idx].flatten()
-    sobol_keys = sobol["sobol_norm (qoi 0)"].keys()
+    sobols = np.array([sobol[key] for key in sobol.keys()])[:, output_idx].flatten()
+    sobol_keys = list(sobol.keys())
 
     # ignore very low Sobol indices
     mask = sobols >= 0.001
@@ -814,8 +808,8 @@ def plot_sens_summary(sobol, gsens, session=None, coeffs=None, qois=None, mean=N
             ax1.fill_between(qois, mean - std, mean + std, color="grey", alpha=0.5)
 
         # sobol
-        for i in range(sobol.values.shape[0]):
-            ax2.plot(qois, sobol.values[i])
+        for i in range(len(sobol.keys())):
+            ax2.polt(qois, sobol[list(sobol.keys())[i]])
             ax2.set_title("Sobol indices of the parameters over the qois", fontsize=14)
             ax2.set_xlabel(x_label, fontsize=14)
             ax2.set_ylabel("Sobol index", fontsize=14)
@@ -827,8 +821,8 @@ def plot_sens_summary(sobol, gsens, session=None, coeffs=None, qois=None, mean=N
         ax2.grid()
 
         # gsens
-        for i in range(gsens.values.shape[0]):
-            ax3.plot(qois, gsens.values[i])
+        for i in range(len(gsens.keys())):
+            ax3.plot(qois, gsens[list(gsens.keys())[i]])
             ax3.set_title("Global derivatives of the parameters over the qois", fontsize=14)
             ax3.set_xlabel(x_label, fontsize=14)
             ax3.set_ylabel("Global sensitivity", fontsize=14)
