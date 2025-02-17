@@ -176,7 +176,7 @@ class Basis:
         #     self.b_array = np.concatenate([o[1] for o in out])
         #     self.b_array_grad = np.concatenate([o[2] for o in out])
 
-        This is the single core implementation:
+        # This is the single core implementation:
         self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
         
         for i_basis in range(self.n_basis):
