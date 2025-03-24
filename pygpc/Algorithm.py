@@ -18,7 +18,7 @@ from .misc import get_coords_discontinuity
 from .misc import increment_basis
 from .misc import get_coords_discontinuity
 from .misc import get_num_coeffs_sparse
-from .misc import poly_expand_SimNIBS
+from .misc import poly_expand_OldSet
 from .misc import choose_to_expand
 
 from .testfunctions import Dummy
@@ -4856,7 +4856,7 @@ class RegAdaptiveOldSet(Algorithm):
                                              order_max=self.options["order_end"],
                                              interaction_max=self.options["interaction_order"])
                 # expand the multi-indices
-                active_set, old_set, expand = poly_expand_SimNIBS(active_set,
+                active_set, old_set, expand = poly_expand_OldSet(active_set,
                                                                   old_set,
                                                                   to_expand,
                                                                   order_max=self.options["order_end"],
@@ -4962,6 +4962,47 @@ class RegAdaptiveOldSet(Algorithm):
         if i_iter >= self.options["max_iter"]:
             self.options["print_function"]('Maximum number of iterations reached')
 
+        # save gpc object and gpc coeffs
+        if self.options["fn_results"] is not None:
+
+            with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "a") as f:
+                if "coeffs" in f.keys():
+                    del f['coeffs']
+                f.create_dataset("coeffs", data=coeffs, maxshape=None, dtype="float64")
+
+                try:
+                    del f["gpc_matrix"]
+                except KeyError:
+                    pass
+                f.create_dataset("gpc_matrix",
+                                 data=gpc.gpc_matrix,
+                                 maxshape=None, dtype="float64")
+
+                if gpc.gpc_matrix_gradient is not None:
+                    try:
+                        del f["gpc_matrix_gradient"]
+                    except KeyError:
+                        pass
+                    f.create_dataset("gpc_matrix_gradient",
+                                     data=gpc.gpc_matrix_gradient,
+                                     maxshape=None, dtype="float64")
+
+                # misc
+                f.create_dataset("misc/fn_session",
+                                 data=np.array([os.path.split(self.options["fn_session"])[1]]).astype("|S"))
+                f.create_dataset("misc/fn_session_folder",
+                                 data=np.array([self.options["fn_session_folder"]]).astype("|S"))
+                f.create_dataset("misc/error_type", data=self.options["error_type"])
+                f.create_dataset("error", data=eps, maxshape=None, dtype="float64")
+
+                if gpc.validation is not None:
+                    f.create_dataset("validation/model_evaluations/results", data=gpc.validation.results,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("validation/grid/coords", data=gpc.validation.grid.coords,
+                                     maxshape=None, dtype="float64")
+                    f.create_dataset("validation/grid/coords_norm", data=gpc.validation.grid.coords_norm,
+                                     maxshape=None, dtype="float64")
+                    
         com.close()
 
         return gpc, coeffs, res
