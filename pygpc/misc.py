@@ -1367,8 +1367,8 @@ def plot_basis_by_multiindex(a):
     plt.show()
 
 
-def poly_expand_SimNIBS(active_set, old_set, to_expand, order_max, interaction_max):
-    '''Algorithm by Guiherme B. Saturnino'''
+def poly_expand_OldSet(active_set, old_set, to_expand, order_max, interaction_max):
+    '''Expand the polynomials which is the adimissible neighbors of the old set'''
     active_set  = [tuple(a) for a in active_set]
     old_set = [tuple(o) for o in old_set]
     to_expand = tuple(to_expand)
@@ -1399,7 +1399,7 @@ def choose_to_expand(multi_indices, active_set, old_set, coeffs, order_max, inte
     coeffs = np.linalg.norm(coeffs, axis=1)
     for idx in multi_indices[coeffs.argsort()[::-1]]:
         if tuple(idx) in active_set:
-            _, _, expand = poly_expand_SimNIBS(active_set=active_set,
+            _, _, expand = poly_expand_OldSet(active_set=active_set,
                                                old_set=old_set,
                                                to_expand=tuple(idx),
                                                order_max=order_max,
