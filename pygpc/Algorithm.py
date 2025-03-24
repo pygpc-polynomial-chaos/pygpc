@@ -4708,9 +4708,11 @@ class RegAdaptiveProjection(Algorithm):
         return gpc, coeffs, res
 
 
-class SimNIBS(Algorithm):
+
+
+class RegAdaptiveOldSet(Algorithm):
     """
-    Adaptive gPC algorithm proposed by G. B. Saturnino,
+    Adaptive regression approach based on cross validation error estimation and the algorithm proposed in [1]
 
     Parameters
     ---------
@@ -4728,13 +4730,17 @@ class SimNIBS(Algorithm):
          The target error tolerance for the adaptive algorithm.
     options["max_iter"]
         The maximum number of iterations the algorithm will execute.
+
+    Note: 
+    -----
+    [1] Saturnino, Guilherme B., et al. "A principled approach to conductivity uncertainty analysis in electric field calculations." Neuroimage 188 (2019): 821-834.
     """
 
     def __init__(self, problem, options, validation=None, grid=None):
         """
-        Constructor; Initializes RegAdaptive_SimNIBS algorithm
+        Constructor; Initializes RegAdaptiveOldSet algorithm
         """
-        super(SimNIBS, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
+        super(RegAdaptiveOldSet, self).__init__(problem=problem, options=options, validation=validation, grid=grid)
 
         self.qoi_specific = False
 
@@ -4767,6 +4773,9 @@ class SimNIBS(Algorithm):
         if "min_iter" not in self.options.keys():
             self.options["min_iter"] = 0
 
+        if "print_function" not in self.options.keys():
+            self.options["print_function"] = print
+
     def run(self):
 
         # initialize iterators
@@ -4784,7 +4793,7 @@ class SimNIBS(Algorithm):
         com = Computation(n_cpu=self.n_cpu, matlab_model=self.options["matlab_model"])
 
         # Initialize Reg gPC object
-        print("Initializing gPC object...")
+        self.options["print_function"]("Initializing gPC object...")
         gpc = Reg(problem=self.problem,
                   order=self.options["order_start"] * np.ones(self.problem.dim),
                   order_max=self.options["order_start"],
@@ -4802,7 +4811,7 @@ class SimNIBS(Algorithm):
 
         # Initialize Grid object
         if self.grid is not None:
-            print(f"Using user-predefined grid with n_grid={self.grid.n_grid}")
+            self.options["print_function"](f"Using user-predefined grid with n_grid={self.grid.n_grid}")
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                             coords=self.grid.coords,
                                             coords_norm=self.grid.coords_norm,
@@ -4811,9 +4820,9 @@ class SimNIBS(Algorithm):
                                             options=self.options["grid_options"])
         else:
             n_grid_init = np.ceil(self.options["matrix_ratio"] * gpc.basis.n_basis)
-            print(f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(n_grid_init)}")
+            self.options["print_function"](f"Creating initial grid ({self.options['grid'].__name__}) with n_grid={int(n_grid_init)}")
 
-            # now SimNIBS only support random grid
+            # now RegAdaptiveOldSet only support random grid
             gpc.grid = self.options["grid"](parameters_random=self.problem.parameters_random,
                                             n_grid=n_grid_init,
                                             options=self.options["grid_options"])
@@ -4823,7 +4832,7 @@ class SimNIBS(Algorithm):
         gpc.options = copy.deepcopy(self.options)
 
         # Initialize gpc matrix
-        print("Initializing gPC matrix...")
+        self.options["print_function"]("Initializing gPC matrix...")
         gpc.init_gpc_matrix()
         gpc.n_grid.pop(0)
         gpc.n_basis.pop(0)
@@ -4863,23 +4872,22 @@ class SimNIBS(Algorithm):
 
             i_iter += 1
 
-            iprint(f"Iteration #{i_iter}", tab=0, verbose=self.options["verbose"])
-            iprint("===============", tab=0, verbose=self.options["verbose"])
+            self.options["print_function"](f"Iteration #{i_iter}")
+            self.options["print_function"]("===============")
 
             # increase sample size according to matrix ratio w.r.t. number of basis functions
             n_grid_new = int(np.ceil(gpc.basis.n_basis * self.options["matrix_ratio"]))
 
             # run model if grid points were added
             if i_grid < n_grid_new:
-                iprint("Extending grid from {} to {} by {} sampling points".format(
-                    gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid),
-                    tab=0, verbose=self.options["verbose"])
-
+                self.options["print_function"]("Extending grid from {} to {} by {} sampling points".format(
+                    gpc.grid.n_grid, n_grid_new, n_grid_new - gpc.grid.n_grid))
+                
                 gpc.grid.extend_random_grid(n_grid_new=n_grid_new)
 
                 # run simulations
-                iprint("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]),
-                       tab=0, verbose=self.options["verbose"])
+                self.options["print_function"]("Performing simulations " + str(i_grid + 1) + " to " + str(gpc.grid.coords.shape[0]))
+
 
                 start_time = time.time()
 
@@ -4893,8 +4901,6 @@ class SimNIBS(Algorithm):
                                   print_func_time=False,
                                   verbose=False)
 
-                # iprint('Total parallel function evaluation: ' + str(time.time() - start_time) + ' sec',
-                #                tab=0, verbose=self.options["verbose"])
 
                 # Append result to solution matrix (RHS)
                 if i_grid == 0:
@@ -4937,22 +4943,24 @@ class SimNIBS(Algorithm):
             else:
                 # determine gpc coefficients
                 coeffs = gpc.solve(results=res,
+                                   # gradient_results=grad_res_3D,
                                    solver=gpc.solver,
                                    settings=gpc.settings,
                                    verbose=False)
                 # validate gPC approximation
                 eps = gpc.validate(coeffs=coeffs,
                                    results=res,
+                                   # gradient_results=grad_res_3D,
                                    verbose=False)
-
-            iprint("-> {} {} error = {}".format(self.options["error_norm"],
+            self.options["print_function"]("-> {} {} error = {}".format(self.options["error_norm"],
                                                 self.options["error_type"],
-                                                eps), tab=0, verbose=self.options["verbose"])
+                                                eps))
+
             if eps <= self.options["eps"] and i_iter >= self.options["min_iter"]:
                 break
 
         if i_iter >= self.options["max_iter"]:
-            raise ValueError('Maximum number of iterations reached')
+            self.options["print_function"]('Maximum number of iterations reached')
 
         com.close()
 
