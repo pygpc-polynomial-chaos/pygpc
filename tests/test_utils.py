@@ -401,6 +401,30 @@ class TestPygpcMethods(unittest.TestCase):
                 )
 
         print("done!\n")
+        
+    def test_utlis_005_poly_expand(self):
+        '''
+        Test poly expand
+        '''
+        active_set = [(1, 0), (0, 1)]
+        old_set = [(0, 0)]
+        to_expand = (1, 0)
+        order_max = 10
+        interaction_max = 10
+        active_set, old_set, expand = pygpc.misc.poly_expand_OldSet(
+           active_set, old_set, to_expand, order_max, interaction_max)
+        assert active_set == [(0, 1), (2, 0)]
+        assert old_set == [(0, 0), (1, 0)]
+        assert np.array_equal(expand, np.array([(2, 0)]))
+
+        to_expand = (0, 1)
+        active_set, old_set, expand = pygpc.misc.poly_expand_OldSet(
+           active_set, old_set, to_expand, order_max, interaction_max)
+        assert active_set == [(2, 0), (1, 1), (0, 2)]
+        assert old_set == [(0, 0), (1, 0), (0, 1)]
+        assert np.array_equal(expand, np.array([(1, 1), (0, 2)]))
+
+        print("done!\n")
 
 
 if __name__ == "__main__":

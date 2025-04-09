@@ -1365,3 +1365,46 @@ def plot_basis_by_multiindex(a):
     ax.set_ylim(0, 3)
     ax.set_zlim(0, 3)
     plt.show()
+
+
+def poly_expand_OldSet(active_set, old_set, to_expand, order_max, interaction_max):
+    '''Expand the polynomials which is the adimissible neighbors of the old set'''
+    active_set  = [tuple(a) for a in active_set]
+    old_set = [tuple(o) for o in old_set]
+    to_expand = tuple(to_expand)
+    active_set.remove(to_expand)
+    old_set += [to_expand]
+    expand = []
+
+    for e1 in range(len(to_expand)):
+        forward = np.asarray(to_expand, dtype=int)
+        forward[e1] += 1
+        has_predecessors = True
+        for e2 in range(len(to_expand)):
+            if forward[e2] > 0:
+                predecessor = forward.copy()
+                predecessor[e2] -= 1
+                predecessor = tuple(predecessor)
+                has_predecessors *= predecessor in old_set
+        if has_predecessors and np.sum(np.abs(forward)) <= order_max \
+            and np.sum(forward > 0) <= interaction_max:
+            expand += [tuple(forward)]
+            active_set += [tuple(forward)]
+
+    return active_set, old_set, np.array(expand)
+
+def choose_to_expand(multi_indices, active_set, old_set, coeffs, order_max, interaction_max):
+
+    active_set = [tuple(a) for a in active_set]
+    coeffs = np.linalg.norm(coeffs, axis=1)
+    for idx in multi_indices[coeffs.argsort()[::-1]]:
+        if tuple(idx) in active_set:
+            _, _, expand = poly_expand_OldSet(active_set=active_set,
+                                               old_set=old_set,
+                                               to_expand=tuple(idx),
+                                               order_max=order_max,
+                                               interaction_max=interaction_max)
+            if len(expand) > 0:
+                return tuple(idx)
+
+    raise ValueError('Could not find a polynomial in the expansion and in the active set')

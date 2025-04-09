@@ -178,7 +178,7 @@ class Basis:
 
         # This is the single core implementation:
         # self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
-        #
+        
         # for i_basis in range(self.n_basis):
         #     for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects
         #         self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(

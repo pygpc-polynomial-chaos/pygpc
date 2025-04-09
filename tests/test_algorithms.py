@@ -1796,6 +1796,87 @@ class TestPygpcMethods(unittest.TestCase):
 
         print("done!\n")
 
+    def test_algorithms_012_RegAdaptiveOldSet_gpc(self):
+        """
+        Algorithm: RegAdaptiveOldSet
+        Method: Regression
+        Solver: Tikhonov
+        Grid: Random
+        """
+        global folder, plot, save_session_format
+        test_name = 'test_algorithm_012_RegAdaptiveOldSet_gpc'
+        print(test_name)
+
+        # Model
+        model = pygpc.testfunctions.Ishigami()
+
+        # Problem
+        parameters = OrderedDict()
+        parameters["x1"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["x2"] = pygpc.Beta(pdf_shape=[1, 1], pdf_limits=[-np.pi, np.pi])
+        parameters["x3"] = 0.
+        parameters["a"] = 7.
+        parameters["b"] = 0.1
+
+        problem = pygpc.Problem(model, parameters)
+
+        # gPC options
+        options = dict()
+        options["order_start"] = 0
+        options["order_end"] = 20
+        options["solver"] = "Tikhonov"
+        options["settings"] = {"alpha": np.logspace(-5, 3, 9)}
+        options["interaction_order"] = 2
+        options["eps"] = 0.075
+        options["grid"] = pygpc.Random
+        options["grid_options"] = {"seed": seed}
+        options["error_type"] = "kcv"
+        options["fn_results"] = os.path.join(folder, test_name)
+        options["save_session_format"] = save_session_format
+        # define algorithm
+        algorithm = pygpc.RegAdaptiveOldSet(problem=problem, options=options)
+
+        # Initialize algorithm
+        session = pygpc.Session(algorithm=algorithm)
+
+        # run session
+        session, coeffs, results = session.run()
+
+        # read session
+        session = pygpc.read_session(fname=session.fn_session, folder=session.fn_session_folder)
+
+        # Post-process gPC
+        pygpc.get_sensitivities_hdf5(fn_gpc=options["fn_results"],
+                                     output_idx=None,
+                                     calc_sobol=True,
+                                     calc_global_sens=True,
+                                     calc_pdf=True,
+                                     algorithm="sampling",
+                                     n_samples=int(1e3))
+
+        pygpc.get_sens_summary(fn_gpc=options["fn_results"],
+                               parameters_random=problem.parameters_random,
+                               fn_out=options["fn_results"] + ".txt")
+
+        # Validate gPC vs original model function (Monte Carlo)
+        nrmsd = pygpc.validate_gpc_mc(session=session,
+                                      coeffs=coeffs,
+                                      n_samples=int(1e4),
+                                      output_idx=0,
+                                      n_cpu=options["n_cpu"],
+                                      smooth_pdf=True,
+                                      fn_out=options["fn_results"],
+                                      folder="gpc_vs_original_mc",
+                                      plot=plot)
+
+        print("> Maximum NRMSD (gpc vs original): {:.2}%".format(np.max(nrmsd)*100))
+        self.expect_true(np.max(nrmsd) < 10, 'gPC test failed with NRMSD error = {:1.2f}%'.format(np.max(nrmsd)*100))
+
+        print("> Checking file consistency...")
+        files_consistent, error_msg = pygpc.check_file_consistency(options["fn_results"]+".hdf5")
+        self.expect_true(files_consistent, error_msg)
+
+        print("done!\n")
 
 if __name__ == '__main__':
     unittest.main()

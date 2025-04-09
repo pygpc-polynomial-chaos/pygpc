@@ -12,9 +12,22 @@ from .misc import display_fancy_bar
 from .misc import nrmsd
 from .misc import mat2ten
 from .misc import ten2mat
+from .pygpc_extensions import create_gpc_matrix_cpu
+from .pygpc_extensions import create_gpc_matrix_omp
 from .ValidationSet import *
 from .Computation import *
 from .Grid import *
+
+
+try:
+    from .pygpc_extensions_cuda import create_gpc_matrix_cuda
+except ImportError:
+    pass
+
+try:
+    import fastmat as fm
+except ImportError:
+    pass
 
 
 class GPC(object):
@@ -73,6 +86,7 @@ class GPC(object):
         - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
         - 'LarsLasso' ... {"alpha": float 0...1} Regularization parameter
         - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
+        - 'Tikhonov' ... Tikhonov regularization {"alpha": float 0...1}  Regularization parameter
     verbose: bool
         Boolean value to determine if to print out the progress into the standard output
     fn_results : string, optional, default=None
@@ -111,6 +125,7 @@ class GPC(object):
         self.n_grid = []
         self.relative_error_nrmsd = []
         self.relative_error_loocv = []
+        self.relative_error_kcv = []
         self.error = []
         self.n_out = []
         self.gradient_idx = None
@@ -207,60 +222,8 @@ class GPC(object):
 
         iprint('Constructing gPC matrix...', verbose=verbose, tab=0)
 
-        if self.backend not in ["cpu", "omp", "cuda", "python"]:
-            raise NotImplementedError(f"Backend {self.backend} is not implemented")
-
-        if self.backend == "cpu":
-            # CPU backend (CPU single core)
-            try:
-                from .pygpc_extensions import create_gpc_matrix_cpu
-                if not gradient:
-                    # the third dimension is important and should not be removed
-                    # otherwise the code could produce undefined behaviour
-                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
-                    create_gpc_matrix_cpu(x, self.basis.b_array, gpc_matrix)
-                    gpc_matrix = np.squeeze(gpc_matrix)
-                else:
-                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
-                    create_gpc_matrix_cpu(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
-            except (ImportError):
-                print("The CPU-extension is not installed. Fall back to pure Python as backend.")
-                self.backend = "python"
-        elif self.backend == "omp":
-            # OpenMP backend (CPU multi core)
-            try:
-                from .pygpc_extensions import create_gpc_matrix_omp
-                if not gradient:
-                    # the third dimension is important and should not be removed
-                    # otherwise the code could produce undefined behaviour
-                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
-                    create_gpc_matrix_omp(x, self.basis.b_array, gpc_matrix)
-                    gpc_matrix = np.squeeze(gpc_matrix)
-                else:
-                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
-                    create_gpc_matrix_omp(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
-            except (ImportError):
-                print("The OMP-extension is not installed. Fall back to pure Python as backend.")
-                self.backend = "python"
-        elif self.backend == "cuda":
-            # CUDA backend (GPU multi core)
-            try:
-                from .pygpc_extensions_cuda import create_gpc_matrix_cuda
-                if not gradient:
-                    # the third dimension is important and should not be removed
-                    # otherwise the code could produce undefined behaviour
-                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
-                    create_gpc_matrix_cuda(x, self.basis.b_array, gpc_matrix)
-                    gpc_matrix = np.squeeze(gpc_matrix)
-                else:
-                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
-                    create_gpc_matrix_cuda(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
-            except (ImportError):
-                print("The CUDA-extension is not installed. Fall back to pure Python as backend.")
-                self.backend = "python"
-                
+        # Python backend
         if self.backend == "python":
-            # Python backend
             if not gradient:
                 gpc_matrix = np.ones([x.shape[0], len(b)])
                 for i_basis in range(len(b)):
@@ -278,6 +241,50 @@ class GPC(object):
                             gpc_matrix[:, i_basis, i_dim_gradient] *= b[i_basis][i_dim](x[self.gradient_idx, i_dim],
                                                                                         derivative=derivative)
 
+        # CPU backend (CPU single core)
+        elif self.backend == "cpu":
+            if not gradient:
+                # the third dimension is important and should not be removed
+                # otherwise the code could produce undefined behaviour
+                gpc_matrix = np.empty([x.shape[0], len(b), 1])
+                create_gpc_matrix_cpu(x, self.basis.b_array, gpc_matrix)
+                gpc_matrix = np.squeeze(gpc_matrix)
+            else:
+                gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                create_gpc_matrix_cpu(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
+
+        # OpenMP backend (CPU multi core)
+        elif self.backend == "omp":
+            if not gradient:
+                # the third dimension is important and should not be removed
+                # otherwise the code could produce undefined behaviour
+                gpc_matrix = np.empty([x.shape[0], len(b), 1])
+                create_gpc_matrix_omp(x, self.basis.b_array, gpc_matrix)
+                gpc_matrix = np.squeeze(gpc_matrix)
+            else:
+                gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                create_gpc_matrix_omp(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
+
+        # CUDA backend (GPU multi core)
+        elif self.backend == "cuda":
+            try:
+                from .pygpc_extensions_cuda import create_gpc_matrix_cuda
+            except (ImportError):
+                raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
+            else:
+                if not gradient:
+                    # the third dimension is important and should not be removed
+                    # otherwise the code could produce undefined behaviour
+                    gpc_matrix = np.empty([x.shape[0], len(b), 1])
+                    create_gpc_matrix_cuda(x, self.basis.b_array, gpc_matrix)
+                    gpc_matrix = np.squeeze(gpc_matrix)
+                else:
+                    gpc_matrix = np.empty([len(self.gradient_idx), len(b), self.problem.dim])
+                    create_gpc_matrix_cuda(x[self.gradient_idx, :], self.basis.b_array_grad, gpc_matrix)
+
+        else:
+            raise NotImplementedError
+
         if gpc_matrix.ndim == 1 and x.shape[0] == 1:
             gpc_matrix = gpc_matrix[np.newaxis, :]
         elif gpc_matrix.ndim == 1 and self.basis.n_basis == 1:
@@ -289,7 +296,73 @@ class GPC(object):
 
         return gpc_matrix
 
-    def get_loocv(self, coeffs, results, gradient_results=None, error_norm="relative"):
+    def get_kcv(self, results, settings=None, error_norm="relative",k=10, verbose=True):
+        """
+        Perfrom k-fold cross validation of gPC approximation and add error value to self.relative_error_kcv.
+        Parameters
+        ----------
+        results: ndarray of float [n_grid x n_out]
+            Results from n_grid simulations with n_out output quantities
+        error_norm: str, optional, default="relative"
+            Decide if error is determined "relative" or "absolute"
+        k: int, optional, default=10
+            Number of folds for k-fold cross-validation
+        Returns:
+        -------
+        relative_error_kcv: float
+            Relative mean error of k-fold cross validation
+        """
+        if settings == None:
+            settings = self.options["settings"]
+        # prepare necessary data
+        if results.ndim == 1:
+            results = results[:, None]
+        matrix = self.gpc_matrix
+        results_complete = results
+        # define number of performed cross validations
+        n_simulations = results_complete.shape[0]
+        if n_simulations <= k:
+            k = n_simulations
+
+        start = time.time()
+        relative_error = np.zeros(k)
+        # random assign results to k groups for cross-validation
+        shuffle = np.arange(n_simulations, dtype=int)
+        np.random.shuffle(shuffle)
+        groups = np.zeros((k, n_simulations), dtype=bool)
+        group_sizes = float(n_simulations) / k
+        for i in range(k):
+            f = int(i * group_sizes)
+            t = int((i + 1) * group_sizes)
+            if i == k - 1:
+                t = n_simulations
+            groups[i, shuffle[f:t]] = True
+        eps = 0.0
+        i = 1
+        # error estimation
+        for g in groups:
+            # determine regression coefficients
+            coeffs_g = self.solve(results=results_complete[~g,:],
+                                solver=self.options["solver"],
+                                matrix=matrix[~g, :],
+                                settings=settings,
+                                verbose=False)
+            sim_results_temp = results_complete[g,:]
+            if error_norm == "relative":
+                norm = scipy.linalg.norm(sim_results_temp)
+            else:
+                norm = 1.
+
+            eps += scipy.linalg.norm(sim_results_temp - np.matmul(matrix[g,:], coeffs_g)) / norm
+            if verbose:
+                display_fancy_bar("Cross Validation", int(i), int(k))
+            i += 1
+        eps /= k
+        iprint("Cross-Validation time: {} sec". format(time.time() - start), tab=0, verbose=verbose)
+
+        return eps
+
+    def get_loocv(self, coeffs, results, gradient_results=None, error_norm="relative",verbose=False):
         """
         Perform leave-one-out cross validation of gPC approximation and add error value to self.relative_error_loocv.
         The loocv error is calculated analytically after eq. (35) in [1] but omitting the "1 - " term, i.e. it
@@ -384,7 +457,7 @@ class GPC(object):
                                     solver=self.options["solver"],
                                     matrix=matrix[mask, :],
                                     settings=self.options["settings"],
-                                    verbose=False)
+                                    verbose=verbose)
 
             sim_results_temp = results_complete[loocv_point_idx[i], :]
 
@@ -396,15 +469,16 @@ class GPC(object):
             relative_error[i] = scipy.linalg.norm(sim_results_temp - np.matmul(matrix[loocv_point_idx[i], :],
                                                                             coeffs_loo))\
                                 / norm
-            display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
+            if verbose:
+                display_fancy_bar("LOOCV", int(i + 1), int(n_loocv_points))
 
         # store result in relative_error_loocv
         relative_error_loocv = np.mean(relative_error)
-        iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=True)
+        iprint("LOOCV computation time: {} sec".format(time.time() - start), tab=0, verbose=verbose)
 
         return relative_error_loocv
 
-    def validate(self, coeffs, results=None, gradient_results=None, qoi_idx=None):
+    def validate(self, coeffs, results=None, settings=None, gradient_results=None, qoi_idx=None, verbose=False):
         """
         Validate gPC approximation using the ValidationSet object contained in the Problem object.
         Determines the normalized root mean square deviation between the gpc approximation and the
@@ -435,7 +509,7 @@ class GPC(object):
 
         if n_nan > 0:
             iprint("In {}/{} output quantities NaN's were found.".format(n_nan, results.shape[1]),
-                   tab=0, verbose=self.options["verbose"])
+                   tab=0, verbose=verbose)
 
         results = results[:, non_nan_mask]
 
@@ -467,8 +541,15 @@ class GPC(object):
             self.relative_error_loocv.append(self.get_loocv(coeffs=coeffs,
                                              results=results,
                                              gradient_results=gradient_results,
-                                             error_norm=self.options["error_norm"]))
+                                             error_norm=self.options["error_norm"],
+                                             verbose=verbose))
             self.error.append(self.relative_error_loocv[-1])
+
+        elif self.options["error_type"] == "kcv":
+            self.relative_error_kcv.append(self.get_kcv(results=results,
+                                                        settings=settings,
+                                                        verbose=verbose))
+            self.error.append(self.relative_error_kcv[-1])
 
         elif self.options["error_type"] is None:
             self.error.append(None)
@@ -631,15 +712,6 @@ class GPC(object):
         if self.p_matrix is not None:
             x = np.matmul(x, self.p_matrix.transpose() / self.p_matrix_norm[np.newaxis, :])
 
-        if self.backend == "cuda":
-            try:
-                from .pygpc_extensions_cuda import get_approximation_cuda
-                pce = np.empty([x.shape[0], coeffs.shape[1]])
-                get_approximation_cuda(x, self.basis.b_array, coeffs, pce)
-            except ImportError:
-                print("The CUDA-extension is not installed. Fall back to pure Python as backend.")
-                self.backend = "python"
-
         if self.backend == 'python' or self.backend == 'cpu' or self.backend == 'omp':
             # determine gPC matrix at coordinates x
             gpc_matrix = self.create_gpc_matrix(self.basis.b, x, gradient=False)
@@ -647,6 +719,14 @@ class GPC(object):
             # multiply with gPC coeffs
             pce = np.matmul(gpc_matrix, coeffs)
 
+        elif self.backend == "cuda":
+            try:
+                from .pygpc_extensions_cuda import get_approximation_cuda
+            except ImportError:
+                raise NotImplementedError("The CUDA-extension is not installed. Use the build script to install.")
+            else:
+                pce = np.empty([x.shape[0], coeffs.shape[1]])
+                get_approximation_cuda(x, self.basis.b_array, coeffs, pce)
         else:
             raise NotImplementedError
 
@@ -914,12 +994,14 @@ class GPC(object):
             - 'OMP' ... Orthogonal Matching Pursuit, sparse recovery approach (SGPC.Reg, EGPC)
             - 'LarsLasso' ... Least-Angle Regression using Lasso model (SGPC.Reg, EGPC)
             - 'NumInt' ... Numerical integration, spectral projection (SGPC.Quad)
+            - 'Tikhonov' ... Tikhonov regularization
         settings : dict
             Solver settings
             - 'Moore-Penrose' ... None
             - 'OMP' ... {"n_coeffs_sparse": int} Number of gPC coefficients != 0 or "sparsity": float 0...1
             - 'LarsLasso' ... {"alpha": float 0...1} Regularization parameter
             - 'NumInt' ... None
+            - 'Tikhonov' ... {"alpha": float} Regularization parameter
         matrix : ndarray of float, optional, default: self.gpc_matrix or [self.gpc_matrix, self.gpc_matrix_gradient]
             Matrix to invert. Depending on gradient_enhanced option, this matrix consist of the standard gPC matrix and
             their derivatives.
@@ -996,10 +1078,6 @@ class GPC(object):
         # Orthogonal Matching Pursuit #
         ###############################
         elif solver == 'OMP':
-            try:
-                import fastmat as fm
-            except ImportError:
-                raise ImportError("Please install the fastmat package to use the OMP solver.")
             # transform gPC matrix to fastmat format
             matrix_fm = fm.Matrix(matrix)
 
@@ -1076,7 +1154,24 @@ class GPC(object):
 
             # determine gpc coefficients [n_coeffs x n_output]
             coeffs = np.matmul(results_complete.transpose(), matrix_weighted).transpose()
+        #########################
+        # Tikhonov Regularization #
+        #########################
+        elif solver == 'Tikhonov':
+            # solves inv(A.T A + alpha*Id) * A.T b based on the sklearn
+            if results.ndim == 1:
+                data = results[:, None]
 
+            if "alpha" in settings.keys():
+                reg_factor = settings["alpha"]
+            else:
+                raise AttributeError("Please specify 'alpha' in solver setting dictionary!")
+
+            n_samples, n_features = matrix.shape
+            AtA = matrix.T.dot(matrix)
+            Atb = matrix.T.dot(results)
+            AtA.flat[::n_features + 1] += reg_factor
+            coeffs = scipy.linalg.solve(AtA, Atb, assume_a="pos", overwrite_a=True)
         else:
             raise AttributeError("Unknown solver: '{}'!")
 
