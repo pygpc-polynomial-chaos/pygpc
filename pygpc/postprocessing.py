@@ -809,7 +809,7 @@ def plot_sens_summary(sobol, gsens, session=None, coeffs=None, qois=None, mean=N
 
         # sobol
         for i in range(len(sobol.keys())):
-            ax2.polt(qois, sobol[list(sobol.keys())[i]])
+            ax2.plot(qois, sobol[list(sobol.keys())[i]])
             ax2.set_title("Sobol indices of the parameters over the qois", fontsize=14)
             ax2.set_xlabel(x_label, fontsize=14)
             ax2.set_ylabel("Sobol index", fontsize=14)
