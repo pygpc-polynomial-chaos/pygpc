@@ -170,19 +170,19 @@ class Basis:
         # initialize array of basis coefficients
         workhorse_partial = partial(self.set_basis, problem=problem)
 
-        # with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-        #     out = pool.map(workhorse_partial, range(self.n_basis))
-        #     self.b = [o[0] for o in out]
-        #     self.b_array = np.concatenate([o[1] for o in out])
-        #     self.b_array_grad = np.concatenate([o[2] for o in out])
+        with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+            out = pool.map(workhorse_partial, range(self.n_basis))
+            self.b = [o[0] for o in out]
+            self.b_array = np.concatenate([o[1] for o in out])
+            self.b_array_grad = np.concatenate([o[2] for o in out])
 
         # This is the single core implementation:
-        self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
+        # self.b = [[0 for _ in range(self.dim)] for _ in range(self.n_basis)]
         
-        for i_basis in range(self.n_basis):
-            for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects
-                self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(
-                    order=self.multi_indices[i_basis, i_dim])
+        # for i_basis in range(self.n_basis):
+        #     for i_dim, p in enumerate(problem.parameters_random):   # OrderedDict of RandomParameter objects
+        #         self.b[i_basis][i_dim] = problem.parameters_random[p].init_basis_function(
+        #             order=self.multi_indices[i_basis, i_dim])
 
         # Generate unique IDs of basis functions
         self.b_id = [uuid.uuid4() for _ in range(self.n_basis)]
