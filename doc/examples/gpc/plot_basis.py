@@ -10,7 +10,7 @@ Polynomial basis functions
 # included in the gPC expansion. The coordinates of the boxes correspond to the multi-indices
 # :math:`\mathbf{\alpha}`, which correspond to the polynomial degrees of the individual basis functions
 # forming the joint basis functions. For a total-order gPC, the number of basis functions, and hence,
-# coefficients to determine, increases exponentially in this case :math:`N_c=(P+1)^d`
+# coefficients to determine, increases exponentially in this case :math:`N_c=(p+1)^d`
 
 # sphinx_gallery_thumbnail_number = 2
 
@@ -48,7 +48,7 @@ basis.plot_basis(dims=[0, 1, 2])
 # ^^^^^^^^^^^^^^^^^
 # In practical applications, the more economical maximum total order gPC is preferably used.
 # In this case, the set :math:`\mathcal{A}(p_g)` includes all polynomials whose total order
-# does not exceed a predefined value :math:`P_g`.
+# does not exceed a predefined value :math:`p_g`.
 #
 # .. math::
 #
@@ -95,7 +95,7 @@ basis.plot_basis(dims=[0, 1, 2])
 #     \forall i \in \{1,...,d\}) \right\}
 #
 # It includes all elements from a total order gPC with the restriction of the interaction order
-# :math:`P_i`. Additionally, univariate polynomials of higher orders specified in :math:`\mathbf{P}_u`
+# :math:`p_i`. Additionally, univariate polynomials of higher orders specified in :math:`\mathbf{p}_u`
 # may be added to the set of basis functions.
 
 # reduced basis gPC
