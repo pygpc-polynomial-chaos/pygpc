@@ -2495,6 +2495,8 @@ class RegAdaptive(Algorithm):
 
             if os.path.exists(fn_results + ".hdf5"):
                 os.remove(fn_results + ".hdf5")
+                with h5py.File(os.path.splitext(self.options["fn_results"])[0] + ".hdf5", "w", fs_strategy="page", fs_persist=True):
+                    pass
         else:
             fn_results = None
 
