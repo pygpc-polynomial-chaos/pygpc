@@ -54,7 +54,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.twine_api_key }}
         TWINE_USERNAME: __token__
   windows:
-    runs-on: windows-2019
+    runs-on: windows-2025
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
