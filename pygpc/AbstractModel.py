@@ -162,7 +162,8 @@ class AbstractModel:
                             dtype='float64'
                         elif type(data_dict[d][0][0]) is np.int64:
                             dtype = 'int'
-                        elif type(data_dict[d][0][0]) is np.string_ or type(data_dict[d][0][0]) is np.str_:
+                        # elif type(data_dict[d][0][0]) is np.string_ or type(data_dict[d][0][0]) is np.str_:
+                        elif type(data_dict[d][0][0]) is np.str_:                           
                             dtype = 'str'
                         else:
                             dtype='float64'

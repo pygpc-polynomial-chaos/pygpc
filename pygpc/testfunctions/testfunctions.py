@@ -1713,7 +1713,7 @@ class Peaks_NaN(AbstractModel):
         # add some NaN values for testing
         mask_nan = self.p["x1"] < 1.5
 
-        y[mask_nan] = np.NaN
+        y[mask_nan] = np.nan
 
         additional_data = {"additional_data/list_mult_int": [1, 2, 3],
                            "additional_data/list_single_float": [0.2],
@@ -2092,7 +2092,7 @@ class SurfaceCoverageSpecies_NaN(AbstractModel):
         # add some NaN values for testing
         mask_nan = self.p["beta"] > 18.5
 
-        y_out[mask_nan, 0] = np.NaN
+        y_out[mask_nan, 0] = np.nan
 
         return y_out
 
@@ -2652,7 +2652,7 @@ class GenzOscillatory_NaN(AbstractModel):
 
         # insert some NaN values for testing
         mask = self.p[list(self.p.keys())[0]] > 0.8
-        y_out[mask, 0] = np.NaN
+        y_out[mask, 0] = np.nan
 
         return y_out
 
@@ -3058,7 +3058,7 @@ class Ishigami_NaN(AbstractModel):
 
         # insert some NaN values for testing
         mask = (self.p["x1"] > 2).flatten()
-        y_out[mask, 0] = np.NaN
+        y_out[mask, 0] = np.nan
 
         return y_out
 
@@ -3501,7 +3501,7 @@ class DiscontinuousRidgeManufactureDecay_NaN(AbstractModel):
 
         # insert some NaN values for testing
         mask = (self.p[list(self.p.keys())[0]] > 0.8).flatten()
-        y_out[mask, 0] = np.NaN
+        y_out[mask, 0] = np.nan
 
         return y_out
 
