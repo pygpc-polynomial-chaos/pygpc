@@ -1427,9 +1427,9 @@ class Random(RandomGrid):
                     for i_p, p in enumerate(self.parameters_random):
 
                         if self.parameters_random[p].pdf_type == "beta":
-                            self.coords_norm[i_grid, i_p] = np.random.beta(self.parameters_random[p].pdf_shape[0],
-                                                                           self.parameters_random[p].pdf_shape[1],
-                                                                           1) * 2.0 - 1
+                            self.coords_norm[i_grid, i_p] = np.random.beta(self.parameters_random[p].pdf_shape[0].item(),
+                                                                           self.parameters_random[p].pdf_shape[1].item(),
+                                                                           1).item() * 2.0 - 1
 
                         if self.parameters_random[p].pdf_type in ["norm", "normal"]:
 
