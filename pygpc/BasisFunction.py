@@ -4,7 +4,7 @@ import numpy as np
 from .Quadrature import get_quadrature_jacobi_1d
 from .Quadrature import get_quadrature_hermite_1d
 from .Quadrature import get_quadrature_laguerre_1d
-from .Grid import *
+
 
 
 class BasisFunction(object):
