@@ -1,0 +1,41 @@
+I've updated the MEP example to download its data from Zenodo with pooch. The download hasn't been tested yet
+because the DOI is still a placeholder. I only checked that both Python files parse.
+
+Changed files and lines
+=======================
+
+doc/examples/examples/plot_MEP_model.py
+- L18: import pooch
+- L23-46: new section "Download the model data" (it shows as its own block on ReadTheDocs):
+  - L30: ZENODO_DOI = "10.5281/zenodo.XXXXXXX", the placeholder you need to replace.
+  - L32-41: pooch.create(...). Files are cached in pooch.os_cache("pygpc") (~/.cache/pygpc on Linux), and setting
+    PYGPC_DATA_DIR overrides that location. Each file has a SHA256 hash computed from your local files.
+  - L43-44: downloads each file once.
+  - L46: data_dir = str(data_fetcher.abspath)
+- L60: model = MUAP_gpc(data_dir=data_dir)
+
+pygpc/testfunctions/testfunctions.py (class MUAP_gpc)
+- L4343-4347: docstring entry for the new data_dir parameter.
+- L4355: __init__(self, data_dir=None, fname_matlab=None, matlab_model=False)
+- L4359: self.data_dir = data_dir
+- L4371-4374: simulate() uses self.data_dir. If it isn't set, it falls back to the old testfunctions/data folder,
+  so existing code keeps working.
+
+doc/requirements.txt
+- L8: pooch>=1.6.0, so the ReadTheDocs build can run the example.
+
+What you need to do on Zenodo
+=============================
+1. Upload the three files under exactly these names: S1.h5, AP.h5, mu_spiketimes_S1.h5.
+2. Put the DOI into L30. Use the version DOI of that specific record, not the "all versions" concept DOI.
+3. If you ever change a file, the hash in the registry must change too. Run sha256sum on the new file and update
+   the matching line.
+
+Other things I noticed
+======================
+- The example's docstring heading (L2-12) still says "Example: Ishigami Testfunction", and that's what
+  ReadTheDocs will show as its title.
+- pooch is only required for building the docs. It's not in setup.py, so pip users need to "pip install pooch" to
+  run this example. We could add it as an extra, e.g. pygpc[examples].
+- pygpc/testfunctions/data/ is still in your working tree. Once Zenodo is live, you can delete it or keep it out
+  of git.
