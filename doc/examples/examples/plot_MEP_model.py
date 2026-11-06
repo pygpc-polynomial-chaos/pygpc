@@ -1,51 +1,79 @@
 """
-Example: Ishigami Testfunction
-==============================
+Spinal-peripheral MEP model
+=====================================================
 
-About the model
-^^^^^^^^^^^^^^^
-This easy tutorial shows the application of pygpc to the Ishigami function, which can be found in the testfunctions
-section.
-The model consists of three random variables that are considered as input parameters (*x1*, *x2*, *x3*). The shape
-parameters of the function are chosen to be :code:`a=7` and :code:`b=0.1`.
+This example applies pygpc to a spinal-peripheral model that spans the
+corticospinal input, the spinal circuitry and the peripheral hand muscles. The
+model was designed to fit individual motor evoked potential (MEP) waveforms
+across a range of intensities of transcranial magnetic stimulation (TMS).
 
-The model returns an output array with a value *y* for every sampling point.
+MEP waveforms are obtained by summing the motor unit action potentials (MUAPs)
+of all motor units (MUs) at the times their motor neurons fire. To keep the
+example fast, the spinal circuitry is not re-simulated: the motor neuron spike
+times were fitted beforehand for one subject and are loaded from disk. Each
+pygpc sample therefore only regenerates the MUAPs and superposes them at the
+stored spike times. The model output is the coefficient of determination
+:math:`R^2` between the simulated and the measured MEPs.
+
+MUAP model
+----------
+
+Each MUAP is modelled with a first-order Hermite-Rodriguez function, normalized so that its positive peak equals the amplitude :math:`A_i`:
+
+.. math::
+
+    H_i(t) = \frac{A_i}{h_{\max}} \, (\tau - t) \,
+             \exp\left(-\left(\frac{\tau - t}{\lambda}\right)^2\right),
+    \qquad
+    h_{\max} = \max_t \left[ (\tau - t) \,
+               \exp\left(-\left(\frac{\tau - t}{\lambda}\right)^2\right) \right]
+
+where :math:`t` is the time after the motor neuron spike, :math:`\lambda` is
+the shape parameter controlling the MUAP duration, and :math:`\tau` is the
+MUAP zero-crossing time. The axonal delay is tied to the MUAP duration and is the same for
+all MUs:
+
+.. math::
+
+    \tau = 2.35\,\lambda - 0.18 \ \text{ms}
+
+The MUAP amplitudes follow an exponential distribution over the :math:`N = 100`
+MUs, ordered by recruitment:
+
+.. math::
+
+    A_i = b^{\frac{i-1}{N-1}}, \qquad i = 1, \dots, N
+
+
+Fixed settings
+--------------
+
+These settings belong to the spinal circuitry model and describe how the
+stored spike times were generated:
+
+* ``SUBJ``: subject whose MEPs are fitted
+* ``WITHRC``: if 1, Renshaw cells are included in the spinal circuitry model
+* ``AMPAWEIGHT``: fraction of AMPA-mediated synaptic currents; if ``None``,
+  it was optimized during the fit
+* ``SPIKE_FILE``: file containing the previously fitted motor neuron spike times
+
+Random parameters
+-----------------
+
+The sensitivity analysis is performed on the two MUAP parameters:
+
+* ``b``: MUAP amplitude parameter
+* ``lam``: MUAP shape parameter
 """
 # Windows users have to encapsulate the code into a main function to avoid multiprocessing errors.
 # def main():
 import os
 import h5py
-import pooch
 import pygpc
 from collections import OrderedDict
 from pygpc.testfunctions import MUAP_gpc
 
-#%%
-# Download the model data
-# ^^^^^^^^^^^^^^^^^^^^^^^
-# The MEP model needs measured data that is not shipped with pygpc. It is hosted on Zenodo and downloaded with
-# `pooch <https://www.fatiando.org/pooch/>`_ on the first run. The files are cached locally (default: the OS cache
-# folder, e.g. ~/.cache/pygpc on Linux; override with the environment variable PYGPC_DATA_DIR) and verified by
-# their SHA256 hashes, so subsequent runs do not download them again.
-ZENODO_DOI = "10.5281/zenodo.XXXXXXX"  # TODO: replace with the DOI of the Zenodo record (version DOI)
-
-data_fetcher = pooch.create(
-    path=pooch.os_cache("pygpc"),
-    base_url=f"doi:{ZENODO_DOI}/",
-    env="PYGPC_DATA_DIR",
-    registry={
-        "S1.h5": "sha256:f8e280c4b88a72e0765a502ebe95934e22296d1cd41a0c66df33a7ba47aa6ede",
-        "AP.h5": "sha256:71ae734270495766b0bee3697f476b76760dec324399382e5d09728a4c0bc895",
-        "mu_spiketimes_S1.h5": "sha256:8e690e1783b8e1350dfad95314fd21a60f90b0e7499704532eb9956531be7277",
-    },
-)
-
-for fname in data_fetcher.registry:
-    data_fetcher.fetch(fname, progressbar=True)
-
-data_dir = str(data_fetcher.abspath)
-
-fn_results = "pygpc/test"
+fn_results = "tmp/example_MEP"
 
 if os.path.exists(fn_results + ".hdf5"):
     os.remove(fn_results + ".hdf5")
@@ -57,7 +85,7 @@ if os.path.exists(fn_results + "_mc.hdf5"):
     os.remove(fn_results + "_mc.hdf5")
 
 # define model
-model = MUAP_gpc(data_dir=data_dir)
+model = MUAP_gpc()
 
 # define problem
 parameters = OrderedDict()
@@ -105,10 +133,12 @@ with h5py.File(fn_results + ".hdf5", "r") as f:
     fn_session = os.path.join(os.path.split(fn_results)[0], f["misc/fn_session"][0].astype(str))
     fn_session_folder = f["misc/fn_session_folder"][0].astype(str)
 
-# print("> Loading gpc session object: {}".format(fn_session))
 session = pygpc.io.read_session(fname=fn_session, folder=fn_session_folder)
 
+#%%
 # Validation
+# ^^^^^^^^^^
+# Validate gPC vs original model function
 pygpc.validate_gpc_plot(session=session,
                         coeffs=coeffs,
                         random_vars=["b", "lam"],
@@ -125,7 +155,10 @@ nrmsd = pygpc.validate_gpc_mc(session=session,
                                 fn_out=session.fn_results + '_mc')
 
 
-# Sensitivity analysis
+#%%
+# Postprocessing
+# ^^^^^^^^^^^^^^
+# Postprocess gPC and add results to .hdf5 file
 pygpc.get_sensitivities_hdf5(fn_gpc=session.fn_results,
                                 output_idx=None,
                                 calc_sobol=True,
@@ -133,6 +166,9 @@ pygpc.get_sensitivities_hdf5(fn_gpc=session.fn_results,
                                 calc_pdf=True,
                                 n_samples=int(1e4))
 
+#%%
+# Sensitivity analysis
+# ^^^^^^^^^^^^^^^^^^^^
 sobol, gsens = pygpc.get_sens_summary(fn_results, parameters, fn_results + "_sens_summary.txt")
 pygpc.plot_sens_summary(sobol=sobol, gsens=gsens, fn_plot=session.fn_results + "_sens_summary.pdf")
 
